@@ -1,0 +1,245 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid()) @map("user_id")
+  username  String   @db.VarChar(255) @unique
+  email     String   @db.VarChar(255) @unique
+  password  String   @db.VarChar(255)
+  role      UserRole
+  createdAt DateTime @default(now()) @map("created_at")
+
+  displayName String?   @db.VarChar(255) @map("display_name")
+  bio         String?   @db.Text
+  avatarUrl   String?   @db.Text @map("avatar_url")
+  dateOfBirth DateTime? @map("date_of_birth")
+  gender      Gender?
+  phoneNumber String?   @db.VarChar(20) @map("phone_number")
+  isVerified  Boolean   @default(false) @map("is_verified")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  reports              Report[]
+  donations            Donation[]
+  consultationsAsUser  Consultation[]  @relation("UserConsultations")
+  consultationsAsPsych Consultation[]  @relation("PsychologistConsultations")
+  channelMemberships   ChannelMember[]
+  chats                Chat[]
+
+  name          String
+  emailVerified Boolean   @default(false)
+  image         String?
+  banned        Boolean?  @default(false)
+  banReason     String?
+  banExpires    DateTime?
+  sessions      Session[]
+  accounts      Account[]
+
+  @@map("users")
+}
+
+enum UserRole {
+  USER
+  PSYCHOLOGIST
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+  PREFER_NOT_TO_SAY
+}
+
+model Report {
+  id          Int          @id @default(autoincrement()) @map("report_id")
+  userId      String       @map("user_id")
+  title       String       @db.VarChar(255)
+  description String       @db.VarChar(255)
+  location    String       @db.VarChar(255)
+  timestamp   DateTime     @default(now())
+  status      ReportStatus
+  isAnonymous Boolean      @default(false) @map("is_anonymous")
+  isPublic    Boolean      @default(true) @map("is_public")
+
+  user          User           @relation(fields: [userId], references: [id])
+  donations     Donation[]
+  consultations Consultation[]
+
+  @@map("reports")
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  RESOLVED
+  REJECTED
+}
+
+model Consultation {
+  id             Int                @id @default(autoincrement()) @map("consult_id")
+  userId         String             @map("user_id")
+  psychologistId String             @map("psychologist_id")
+  reportId       Int                @map("report_id")
+  lastConsult    DateTime           @map("last_consult")
+  status         ConsultationStatus
+  note           String?            @db.Text
+
+  user         User   @relation("UserConsultations", fields: [userId], references: [id])
+  psychologist User   @relation("PsychologistConsultations", fields: [psychologistId], references: [id])
+  report       Report @relation(fields: [reportId], references: [id])
+
+  @@map("consultations")
+}
+
+enum ConsultationStatus {
+  SCHEDULED
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+model Donation {
+  id            Int           @id @default(autoincrement()) @map("donation_id")
+  userId        String        @map("user_id")
+  reportId      Int           @map("report_id")
+  amount        Float
+  paymentMethod PaymentMethod @map("payment_method")
+  paymentStatus PaymentStatus @map("payment_status")
+  timestamp     DateTime      @default(now())
+
+  user   User   @relation(fields: [userId], references: [id])
+  report Report @relation(fields: [reportId], references: [id])
+
+  @@map("donations")
+}
+
+enum PaymentMethod {
+  BANK_TRANSFER
+  CREDIT_CARD
+  EWALLET
+  QRIS
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+model Channel {
+  id          Int         @id @default(autoincrement()) @map("channel_id")
+  name        String      @db.VarChar(100) @unique
+  description String?     @db.Text
+  coverUrl    String?     @db.Text @map("cover_url")
+  type        ChannelType @default(PUBLIC)
+  createdAt   DateTime    @default(now()) @map("created_at")
+
+  members ChannelMember[]
+  chats   Chat[]
+
+  @@map("channels")
+}
+
+model ChannelMember {
+  channelId Int         @map("channel_id")
+  userId    String      @map("user_id")
+  role      ChannelRole @default(MEMBER)
+  joinedAt  DateTime    @default(now()) @map("joined_at")
+
+  channel Channel @relation(fields: [channelId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+
+  @@id([channelId, userId])
+  @@map("channel_members")
+}
+
+model Chat {
+  id          Int       @id @default(autoincrement()) @map("chat_id")
+  channelId   Int       @map("channel_id")
+  userId      String    @map("user_id")
+  content     String    @db.Text
+  mediaUrl    String?   @db.Text @map("media_url")
+  isAnonymous Boolean   @default(false) @map("is_anonymous")
+  replyToId   Int?      @map("reply_to_id")
+  timestamp   DateTime  @default(now())
+  editedAt    DateTime? @map("edited_at")
+
+  channel Channel @relation(fields: [channelId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+  replyTo Chat?   @relation("ChatReplies", fields: [replyToId], references: [id])
+  replies Chat[]  @relation("ChatReplies")
+
+  @@map("chats")
+}
+
+enum ChannelType {
+  PUBLIC
+  PRIVATE
+}
+
+enum ChannelRole {
+  OWNER
+  MODERATOR
+  MEMBER
+}
+
+model Session {
+  id             String   @id
+  expiresAt      DateTime
+  token          String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  ipAddress      String?
+  userAgent      String?
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  impersonatedBy String?
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
