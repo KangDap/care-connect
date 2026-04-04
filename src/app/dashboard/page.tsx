@@ -4,7 +4,6 @@ import React from "react";
 import Link from "next/link";
 import { RECENT_CONSULTATIONS, REPORT_STATUS } from "../../constants"; 
 
-// --- 1. DATA DUMMY YANG NANTINYA DIAMBIL DARI DATABASE ---
 const userData = {
   name: "Sarah Jenkins",
   stats: {
