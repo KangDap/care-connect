@@ -1,11 +1,17 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation"; // Import ini untuk baca URL
-import { RECENT_CONSULTATIONS, REPORT_STATUS, DONATION_HISTORY } from "../../constants"; 
+import { useSearchParams } from "next/navigation"; 
+// Pastikan INITIAL_PROFILE_DATA sudah ada di constants.ts
+import { 
+  RECENT_CONSULTATIONS, 
+  REPORT_STATUS, 
+  DONATION_HISTORY, 
+  INITIAL_PROFILE_DATA 
+} from "../../constants"; 
 
-// --- ICONS (Tetap sama) ---
+// --- ICONS ---
 const ConsultationIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#193C1F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle>
@@ -25,23 +31,25 @@ const DonationsIcon = () => (
 );
 
 export default function DashboardPage() {
-  // 1. AMBIL QUERY DARI URL
+  // 1. AMBIL DATA USER DARI CONSTANT
+  // Kita pakai state supaya kalau nanti ada fitur edit, tampilannya ikut berubah
+  const [userData] = useState(INITIAL_PROFILE_DATA);
+
+  // 2. AMBIL QUERY DARI URL
   const searchParams = useSearchParams();
   const searchBarQuery = searchParams.get("search")?.toLowerCase() || "";
 
-  // 2. LOGIKA FILTER DATA
-  // Filter Konsultasi berdasarkan nama Dokter
+  // 3. LOGIKA FILTER DATA
   const filteredConsultations = RECENT_CONSULTATIONS.filter((item) =>
     item.dr.toLowerCase().includes(searchBarQuery)
   );
 
-  // Filter Laporan berdasarkan ID atau Tipe
   const filteredReports = REPORT_STATUS.filter((item) =>
     item.id.toLowerCase().includes(searchBarQuery) || 
     item.type.toLowerCase().includes(searchBarQuery)
   );
 
-  // 3. HITUNG TOTAL DONASI (Tetap pakai semua data asli)
+  // 4. HITUNG TOTAL DONASI
   const totalDonationAmount = DONATION_HISTORY.reduce((acc, curr) => {
     const cleanAmount = parseFloat(curr.amount.replace(/[Rp.+$ ,]/g, ""));
     return acc + (isNaN(cleanAmount) ? 0 : cleanAmount);
@@ -62,7 +70,7 @@ export default function DashboardPage() {
       <div className="flex justify-between items-end">
         <div>
           <h2 className="text-[36px] font-black text-[#193C1F] tracking-tight leading-tight">
-            Welcome back, Sarah
+            Welcome back, {userData.displayName}
           </h2>
           <p className="text-[#8EA087] text-[16px] font-medium mt-1">
             {searchBarQuery 
@@ -71,8 +79,16 @@ export default function DashboardPage() {
           </p>
         </div>
         <div className="flex gap-4">
-          <button className="px-7 py-3.5 bg-[#8EA087] hover:bg-[#193C1F] text-white rounded-2xl font-bold text-[14px] transition-all shadow-lg">+ New Consultation</button>
-          <button className="px-7 py-3.5 bg-white border-2 border-[#D0D5CB] text-[#193C1F] rounded-2xl font-bold text-[14px] transition-all">+ New Report</button>
+          <Link href="/consultation">
+            <button className="px-7 py-3.5 bg-[#8EA087] hover:bg-[#193C1F] text-white rounded-2xl font-bold text-[14px] transition-all shadow-lg active:scale-95">
+              + New Consultation
+            </button>
+          </Link>
+          <Link href="/report">
+            <button className="px-7 py-3.5 bg-white border-2 border-[#D0D5CB] text-[#193C1F] rounded-2xl font-bold text-[14px] transition-all active:scale-95">
+              + New Report
+            </button>
+          </Link>
         </div>
       </div>
 
@@ -103,7 +119,7 @@ export default function DashboardPage() {
           <div className="p-8 border-b border-[#F7F3ED] flex justify-between items-center bg-[#FDFCFB]">
             <h3 className="font-bold text-[18px] text-[#193C1F]">Recent Consultations</h3>
             <Link href="/dashboard/consultations">
-              <button className="text-[11px] font-black text-[#8EA087] tracking-[0.2em] uppercase">View All</button>
+              <button className="text-[11px] font-black text-[#8EA087] tracking-[0.2em] uppercase hover:text-[#193C1F] transition-colors">View All</button>
             </Link>
           </div>
           <table className="w-full text-left">
@@ -116,7 +132,7 @@ export default function DashboardPage() {
             </thead>
             <tbody className="text-[14px] text-[#193C1F]">
               {filteredConsultations.slice(0, 3).map((row, i) => (
-                <tr key={i} className="border-b border-[#F7F3ED] hover:bg-[#FDFCFB]">
+                <tr key={i} className="border-b border-[#F7F3ED] hover:bg-[#FDFCFB] transition-colors">
                   <td className="px-8 py-5 font-bold">{row.dr}</td>
                   <td className="px-8 py-5 opacity-70">{row.date}</td>
                   <td className="px-8 py-5">
@@ -136,7 +152,7 @@ export default function DashboardPage() {
           <div className="p-8 border-b border-[#F7F3ED] flex justify-between items-center bg-[#FDFCFB]">
             <h3 className="font-bold text-[18px] text-[#193C1F]">Report Status</h3>
             <Link href="/dashboard/reports">
-              <button className="text-[11px] font-black text-[#8EA087] tracking-[0.2em] uppercase">View All</button>
+              <button className="text-[11px] font-black text-[#8EA087] tracking-[0.2em] uppercase hover:text-[#193C1F] transition-colors">View All</button>
             </Link>
           </div>
           <table className="w-full text-left">
@@ -149,7 +165,7 @@ export default function DashboardPage() {
             </thead>
             <tbody className="text-[14px] text-[#193C1F]">
               {filteredReports.slice(0, 3).map((row, i) => (
-                <tr key={i} className="border-b border-[#F7F3ED] hover:bg-[#FDFCFB]">
+                <tr key={i} className="border-b border-[#F7F3ED] hover:bg-[#FDFCFB] transition-colors">
                   <td className="px-8 py-5 font-bold">{row.id}</td>
                   <td className="px-8 py-5 opacity-70">{row.type}</td>
                   <td className="px-8 py-5">

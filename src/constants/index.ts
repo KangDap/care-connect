@@ -1,3 +1,33 @@
+// src/constants/index.ts
+
+// --- 1. USER PROFILE DATA (DATA BARU) ---
+export interface UserProfile {
+  userId: string;
+  username: string;
+  email: string;
+  displayName: string;
+  bio: string;
+  birthDate: string;
+  gender: 'male' | 'female' | 'other';
+  phoneNumber: string;
+  avatarUrl: string;
+  password: string; // Optional, hanya untuk simulasi login
+}
+
+export const INITIAL_PROFILE_DATA: UserProfile = {
+  userId: "CC-88219",
+  username: "sarahjenkins",
+  email: "sarah.j@email.com",
+  displayName: "Sarah",
+  bio: "Passionate about community health and mental wellness.",
+  birthDate: "1998-05-12",
+  gender: "female",
+  phoneNumber: "081234567890",
+  avatarUrl: "https://i.pravatar.cc/150?u=sarah",
+  password: "password123", // Hanya untuk simulasi, jangan simpan password asli di frontend
+};
+
+// --- 2. CONSULTATION DATA ---
 export const RECENT_CONSULTATIONS = [
   { id: 1, dr: "Dr. Robert Chen", spec: "General Practitioner", date: "Oct 12, 2023", time: "02:00 PM", status: "COMPLETED" },
   { id: 2, dr: "Dr. Sarah Meyer", spec: "Psychologist", date: "Oct 15, 2023", time: "10:00 AM", status: "UPCOMING" },
@@ -11,6 +41,7 @@ export const RECENT_CONSULTATIONS = [
   { id: 10, dr: "Dr. Sarah Meyer", spec: "Psychologist", date: "Aug 05, 2023", time: "10:00 AM", status: "COMPLETED" },
 ];
 
+// --- 3. REPORT DATA ---
 export const REPORT_STATUS = [
   { id: "#REP-8821", type: "Incident Recovery", status: "PENDING REVIEW", date: "Oct 12, 2023" },
   { id: "#REP-8790", type: "Legal Aid Request", status: "APPROVED", date: "Oct 10, 2023" },
@@ -24,6 +55,7 @@ export const REPORT_STATUS = [
   { id: "#REP-7885", type: "General Feedback", status: "APPROVED", date: "Aug 20, 2023" },
 ];
 
+// --- 4. DONATION DATA ---
 export const DONATION_HISTORY = [
   { name: "Anonymous Donor", date: "Oct 12, 2023", amount: "+Rp 5.000.000", via: "Community Pool" },
   { name: "NGO Support Fund", date: "Oct 01, 2023", amount: "+Rp 12.500.000", via: "Medical Aid Grant" },
