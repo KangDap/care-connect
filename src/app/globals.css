@@ -17,6 +17,14 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
+  /* Custom Palette for Care Connect */
+  --color-deep-green: #193C1F;
+  --color-muted-green: #8EA087;
+  --color-tan: #D1B698;
+  --color-light-beige: #EDE4D8;
+  --color-pale-green-grey: #D0D5CB;
+  --color-off-white: #F7F3ED;
+
   /* Mendaftarkan Animasi ke Sistem Tailwind v4 */
   --animate-fade-in: fade-in 1s var(--animation-delay, 0s) ease forwards;
   --animate-fade-up: fade-up 1s var(--animation-delay, 0s) ease forwards;
@@ -51,12 +59,13 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
+/* Removed dark mode to prevent black background */
+/* @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
-}
+} */
 
 /* Base Styles dari Anima */
 @layer base {
