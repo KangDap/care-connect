@@ -14,12 +14,14 @@ export async function submitConsultationForm(formData: FormData) {
 
     const title = formData.get("title") as string
     const nature = formData.get("nature") as string
+    const date = formData.get("date") as string
+    const time = formData.get("time") as string
     const description = formData.get("description") as string
     const isAnonymous = formData.get("isAnonymous") === "on"
 
     // Validate inputs
-    if (!title || !nature || !description) {
-      return { success: false, error: "Please fill out all required fields." }
+    if (!title || !nature || !date || !time || !description) {
+      return { success: false, error: "Please fill out all required fields, including date and time." }
     }
 
     // 1. Create the Report for the consultation request
@@ -27,7 +29,7 @@ export async function submitConsultationForm(formData: FormData) {
       data: {
         userId: session.user.id,
         title: title,
-        description: `[${nature}] ${description}`,
+        description: `[${nature}] [Scheduled: ${date} at ${time}] ${description}`,
         location: "Online Consultation", // Default value
         status: "PENDING",
         isAnonymous: isAnonymous,

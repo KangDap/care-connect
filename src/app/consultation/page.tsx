@@ -7,18 +7,34 @@ import { submitConsultationForm } from './actions';
 export default function ConsultationPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+  const [selectedDate, setSelectedDate] = useState('');
+  const [selectedTime, setSelectedTime] = useState('');
+
+  // Available time slots based on the selected date
+  const timeSlots = ["09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00"];
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    
+    if (!selectedDate || !selectedTime) {
+      setMessage({ type: 'error', text: 'Please select both a date and a time for your consultation.' });
+      return;
+    }
+
     setIsSubmitting(true);
     setMessage({ type: '', text: '' });
 
     const formData = new FormData(e.currentTarget);
+    formData.append('date', selectedDate);
+    formData.append('time', selectedTime);
+
     const result = await submitConsultationForm(formData);
 
     if (result.success) {
       setMessage({ type: 'success', text: result.message || 'Consultation requested successfully!' });
       (e.target as HTMLFormElement).reset();
+      setSelectedDate('');
+      setSelectedTime('');
     } else {
       setMessage({ type: 'error', text: result.error || 'Failed to request consultation.' });
     }
@@ -88,12 +104,62 @@ export default function ConsultationPage() {
             <div>
               <label className="block text-sm font-semibold text-[#193C1F] mb-2" htmlFor="consultation-nature">Nature of Consultation</label>
               <div className="relative">
-                <select name="nature" required className="w-full px-4 py-4 rounded-xl border border-[#D0D5CB] bg-white text-[#193C1F]/60 focus:ring-[#8EA087] focus:border-[#8EA087] appearance-none" id="consultation-nature" defaultValue="">
+                <select name="nature" required className="w-full px-4 py-4 rounded-xl border border-[#D0D5CB] bg-white text-[#193C1F]/90 focus:ring-[#8EA087] focus:border-[#8EA087] appearance-none" id="consultation-nature" defaultValue="">
                   <option disabled value="">Select the type of assistance needed</option>
-                  <option value="legal">Legal Advice</option>
-                  <option value="therapy">Therapy Session</option>
-                  <option value="emergency">Emergency Support</option>
+                  <option value="Bullying">Bullying</option>
+                  <option value="Harassment">Harassment</option>
+                  <option value="Domestic Violence">Domestic Violence</option>
+                  <option value="Mental Health Support">Mental Health Support</option>
+                  <option value="Academic Stress">Academic Stress</option>
+                  <option value="Other">Other</option>
                 </select>
+              </div>
+            </div>
+
+            {/* Date and Time Picker Section */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Date Column */}
+              <div>
+                <label className="block text-sm font-semibold text-[#193C1F] mb-2" htmlFor="consultation-date">Preferred Date</label>
+                <input 
+                  type="date" 
+                  id="consultation-date"
+                  className="w-full px-4 py-4 rounded-xl border border-[#D0D5CB] bg-white text-[#193C1F] focus:ring-[#8EA087] focus:border-[#8EA087] min-h-[58px]"
+                  min={new Date().toISOString().split('T')[0]} // Prevents picking past dates
+                  value={selectedDate}
+                  onChange={(e) => {
+                    setSelectedDate(e.target.value);
+                    setSelectedTime(''); // Reset time when date changes
+                  }}
+                  required
+                />
+              </div>
+
+              {/* Time Slots Column */}
+              <div>
+                <label className="block text-sm font-semibold text-[#193C1F] mb-2">Available Time Slots</label>
+                {!selectedDate ? (
+                  <div className="w-full h-[58px] px-4 rounded-xl border border-[#D0D5CB] border-dashed bg-[#F7F3ED] text-[#193C1F]/40 flex items-center justify-center text-sm">
+                    Select a date to view available times
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-3 gap-2">
+                    {timeSlots.map((time) => (
+                      <button
+                        key={time}
+                        type="button"
+                        onClick={() => setSelectedTime(time)}
+                        className={`py-2 px-1 rounded-lg border text-sm font-medium transition-colors ${
+                          selectedTime === time 
+                            ? "bg-[#8EA087] border-[#8EA087] text-[#F7F3ED] shadow-sm" 
+                            : "bg-white border-[#D0D5CB] text-[#193C1F] hover:border-[#8EA087] hover:bg-[#F7F3ED]"
+                        }`}
+                      >
+                        {time}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
