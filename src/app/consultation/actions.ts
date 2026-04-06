@@ -1,7 +1,7 @@
 "use server"
 
 import { prisma } from "@/lib/prisma"
-import { auth } from "@/lib/auth"
+import { auth } from "@/lib/auth/auth"
 import { headers } from "next/headers"
 
 export async function submitConsultationForm(formData: FormData) {
@@ -24,37 +24,46 @@ export async function submitConsultationForm(formData: FormData) {
       return { success: false, error: "Please fill out all required fields, including date and time." }
     }
 
-    // 1. Create the Report for the consultation request
-    const report = await prisma.report.create({
-      data: {
-        userId: session.user.id,
-        title: title,
-        description: `[${nature}] [Scheduled: ${date} at ${time}] ${description}`,
-        location: "Online Consultation", // Default value
-        status: "PENDING",
-        isAnonymous: isAnonymous,
-        isPublic: false
-      }
-    })
-
-    // 2. Try to find an available Psychologist
+    // 1. Optional auto-assignment: if psychologist exists, assign immediately.
     const psych = await prisma.user.findFirst({
       where: { role: "PSYCHOLOGIST" }
     })
 
-    // If psychologist found, create Consultation immediately
-    if (psych) {
-      await prisma.consultation.create({
-        data: {
-          userId: session.user.id,
-          psychologistId: psych.id,
-          reportId: report.id,
-          lastConsult: new Date(),
-          status: "SCHEDULED",
-          note: "Initial consultation request"
-        }
-      })
+    // 2. Create consultation with current schema fields.
+    // psychologistId is nullable, so request can be submitted before admin assignment.
+    const consultationDate = new Date(date)
+    const consultationTime = new Date(`1970-01-01T${time}`)
+
+    if (Number.isNaN(consultationDate.getTime()) || Number.isNaN(consultationTime.getTime())) {
+      return { success: false, error: "Invalid date or time format." }
     }
+
+    await prisma.consultation.create({
+      data: {
+        userId: session.user.id,
+        psychologistId: psych?.id ?? null,
+        title,
+        category: nature,
+        description,
+        date: consultationDate,
+        time: consultationTime,
+        isAnonymous,
+        status: "SCHEDULED",
+      }
+    })
+
+    // 3. Keep report creation so request is still tracked in reporting module.
+    await prisma.report.create({
+      data: {
+        userId: session.user.id,
+        title,
+        description: `[${nature}] [Scheduled: ${date} at ${time}] ${description}`,
+        location: "Online Consultation",
+        status: "PENDING",
+        isAnonymous,
+        isPublic: false
+      }
+    })
 
     return { success: true, message: "Consultation requested successfully!" }
   } catch (error: any) {

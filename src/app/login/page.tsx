@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth/auth-client";
 
 // ==========================================
 // 1. KOMPONEN SVG ICONS (PIXEL PERFECT)
@@ -133,8 +134,51 @@ const InputField = ({ Icon, ...props }: any) => (
 // ==========================================
 
 export default function LoginPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState<"login" | "register">("register");
-  const [showPassword, setShowPassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = async (e: React.SubmitEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    if (activeTab === "register") {
+      const { data, error } = await authClient.signUp.email({
+        name,
+        email,
+        password,
+      });
+
+    console.log("Register data:", data);
+    console.log("Register error:", error);
+
+      if (error) {
+        setError(error.message ?? "Registration Failed.");
+      } else {
+        router.push("/dashboard");
+      }
+    } else {
+      const { error } = await authClient.signIn.email({
+        email,
+        password,
+      });
+
+      if (error) {
+        setError(error.message ?? "Login failed.");
+      } else {
+        router.push("/dashboard");
+      }
+    }
+
+    setLoading(false);
+  };
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
@@ -173,13 +217,13 @@ export default function LoginPage() {
             {/* TAB SWITCHER */}
             <div className="flex border-b border-[#D0D5CB] mb-[48px] relative h-[56px]">
               <button
-                onClick={() => setActiveTab("login")}
+                onClick={() => {setActiveTab("login"); setError("");}}
                 className={`flex-1 flex justify-center items-center font-bold text-[18px] transition-all duration-300 ${activeTab === "login" ? "text-[#193C1F]" : "text-[#8EA087] opacity-60"}`}
               >
                 Login
               </button>
               <button
-                onClick={() => setActiveTab("register")}
+                onClick={() => {setActiveTab("register"); setError("");}}
                 className={`flex-1 flex justify-center items-center font-bold text-[18px] transition-all duration-300 ${activeTab === "register" ? "text-[#193C1F]" : "text-[#8EA087] opacity-60"}`}
               >
                 Register
@@ -195,26 +239,48 @@ export default function LoginPage() {
             </div>
 
             {/* FORM FIELDS */}
-            <form className="space-y-[24px]" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-[24px]" onSubmit={handleSubmit}>
               
-              {/* Username (Selalu Ada) */}
-              <div className="space-y-[8px]">
-                <label className="text-[14px] font-bold text-[#193C1F]">Username</label>
-                <InputField Icon={UserIcon} type="text" placeholder="Choose a username" />
+              {/* Email untuk login, username untuk register */}
+              <div className="space-y-[8px] animate-fade-in" key={`auth-field-${activeTab}`}>
+                <label className="text-[14px] font-bold text-[#193C1F]">
+                  {activeTab === "login" ? "Email Address" : "Username"}
+                </label>
+                <InputField
+                  Icon={activeTab === "login" ? MailIcon : UserIcon}
+                  type={activeTab === "login" ? "email" : "text"}
+                  placeholder={activeTab === "login" ? "name@example.com" : "Choose a username"}
+                  value={activeTab === "login" ? email : name}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    activeTab === "login" ? setEmail(e.target.value) : setName(e.target.value)
+                  }
+                />
               </div>
 
-              {/* Email (Hanya di Register) */}
+              {/* Email tambahan hanya di register */}
               {activeTab === "register" && (
                 <div className="space-y-[8px] animate-fade-in">
                   <label className="text-[14px] font-bold text-[#193C1F]">Email Address</label>
-                  <InputField Icon={MailIcon} type="email" placeholder="name@example.com" />
+                  <InputField
+                    Icon={MailIcon}
+                    type="email"
+                    placeholder="name@example.com"
+                    value={email}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                  />
                 </div>
               )}
 
               {/* Password (Selalu Ada) */}
               <div className="space-y-[8px] relative">
                 <label className="text-[14px] font-bold text-[#193C1F]">Password</label>
-                <InputField Icon={LockIcon} type={showPassword ? "text" : "password"} placeholder="••••••••" />
+                <InputField 
+                Icon={LockIcon} 
+                type={showPassword ? "text" : "password"} 
+                placeholder="••••••••" 
+                value={password}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
+                />
                 <button 
                   type="button" 
                   onClick={() => setShowPassword(!showPassword)}
@@ -224,12 +290,21 @@ export default function LoginPage() {
                 </button>
               </div>
 
+              {/* Error message */}
+              {error && (
+                <p className="text-red-500 text-[14px] text-center">{error}</p>
+              )}
+
               {/* Submit Button */}
               <button 
                 type="submit" 
-                className="w-full h-[56px] bg-[#9BB095] hover:bg-[#8EA087] text-white rounded-[12px] text-[18px] font-bold shadow-sm active:scale-[0.99] transition-all mt-[16px]"
-              >
-                {activeTab === "register" ? "Create Account" : "Login"}
+                disabled={loading}
+                className="w-full h-[56px] bg-[#9BB095] hover:bg-[#8EA087] disabled:opacity-60 text-white rounded-[12px] text-[18px] font-bold shadow-sm active:scale-[0.99] transition-all mt-[16px]"              >
+                {loading
+                  ? "Loading..."
+                  : activeTab === "register"
+                  ? "Create Account"
+                  : "Login"}
               </button>
 
               {/* Footer Text */}
