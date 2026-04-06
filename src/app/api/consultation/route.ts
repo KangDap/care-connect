@@ -1,26 +1,25 @@
+import { auth } from '@/lib/auth/auth';
 import { prisma } from '@/lib/prisma';
 import { getSupabaseClient } from '@/lib/supabase';
+import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   try {
-    // const session = await auth.api.getSession({ headers: await headers() });
+    const session = await auth.api.getSession({ headers: await headers() });
 
-    // if (!session || !session.user) {
-    //   return NextResponse.json(
-    //     { error: "Unauthorized" },
-    //     { status: 401 }
-    //   );
-    // }
+    if (!session?.user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
-    // if (!session.user.id) {
-    //   return NextResponse.json(
-    //     { error: "Invalid user session" },
-    //     { status: 401 }
-    //   );
-    // }
+    if (!session.user.id) {
+      return NextResponse.json(
+        { error: 'Invalid user session' },
+        { status: 401 },
+      );
+    }
 
-    const userId = '4FmE332k37qyeZEYsb4b45cb34jydLke';
+    const userId = session.user.id;
 
     const formData = await req.formData();
 
@@ -120,15 +119,12 @@ export async function POST(req: Request) {
     //   );
     // }
 
-    const psychologistId = '4FmE332k37qyeZEYsb4b45cb34jydLke';
-
     //5. CREATE CONSULTATION
     const consultation = await prisma.consultation.create({
       data: {
-        // userId: session.user.id,
         userId: userId,
-        // psychologistId: availablePsych,
-        psychologistId: psychologistId,
+        // Will be assigned later by admin flow.
+        psychologistId: null,
 
         title,
         category,

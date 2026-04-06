@@ -1,9 +1,11 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
 export default function ConsultationPage() {
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [selectedDate, setSelectedDate] = useState('');
@@ -37,6 +39,7 @@ export default function ConsultationPage() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    const form = e.currentTarget;
 
     if (!selectedDate || !selectedTime) {
       setMessage({
@@ -49,34 +52,59 @@ export default function ConsultationPage() {
     setIsSubmitting(true);
     setMessage({ type: '', text: '' });
 
-    const formData = new FormData(e.currentTarget);
+    const formData = new FormData(form);
 
     formData.append('date', selectedDate);
     formData.append('time', selectedTime);
 
-    const res = await fetch('/api/consultation', {
-      method: 'POST',
-      body: formData,
-    });
+    try {
+      const res = await fetch('/api/consultation', {
+        method: 'POST',
+        body: formData,
+      });
 
-    const result = await res.json();
+      const result = (await res.json().catch(() => ({}))) as {
+        success?: boolean;
+        data?: unknown;
+        error?: string;
+      };
 
-    if (result.success) {
+      const isSuccess = res.ok && (result.success ?? true);
+
+      if (!isSuccess) {
+        setMessage({
+          type: 'error',
+          text: result.error || 'Failed to request consultation.',
+        });
+        return;
+      }
+
       setMessage({
         type: 'success',
-        text: result.message || 'Consultation requested successfully!',
+        text: 'Consultation requested successfully. Redirecting to dashboard...',
       });
-      (e.target as HTMLFormElement).reset();
+
+      form.reset();
       setSelectedDate('');
       setSelectedTime('');
-    } else {
+      setFile(null);
+
+      await new Promise((resolve) => setTimeout(resolve, 1200));
+      router.replace('/dashboard');
+      setTimeout(() => {
+        if (window.location.pathname === '/consultation') {
+          window.location.href = '/dashboard';
+        }
+      }, 300);
+    } catch (error) {
+      console.error('Consultation submit failed:', error);
       setMessage({
         type: 'error',
-        text: result.error || 'Failed to request consultation.',
+        text: 'Failed to submit request. Please try again.',
       });
+    } finally {
+      setIsSubmitting(false);
     }
-
-    setIsSubmitting(false);
   }
 
   return (
