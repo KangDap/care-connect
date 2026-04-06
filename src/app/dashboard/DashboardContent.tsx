@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const ConsultationIcon = () => (
   <svg
@@ -117,6 +117,7 @@ export default function DashboardContent({
   displayName,
   pendingReportsCount,
 }: DashboardContentProps) {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const searchBarQuery = searchParams.get('search')?.toLowerCase() || '';
 
@@ -132,7 +133,7 @@ export default function DashboardContent({
     })
     .map((item) => ({
       id: item.id,
-      doctor: item.psychologist?.name ?? 'Assigned Psychologist',
+      doctor: item.psychologist?.name ?? 'Waiting for psychologist...',
       dateLabel: formatDateLabel(item.date),
       status: item.status,
     }));
@@ -174,7 +175,10 @@ export default function DashboardContent({
           </p>
         </div>
         <div className="flex gap-4">
-          <button className="px-7 py-3.5 bg-[#8EA087] hover:bg-[#193C1F] text-white rounded-2xl font-bold text-[14px] transition-all shadow-lg">
+          <button
+            onClick={() => router.push('/consultation')}
+            className="px-7 py-3.5 bg-[#8EA087] hover:bg-[#193C1F] text-white rounded-2xl font-bold text-[14px] transition-all shadow-lg"
+          >
             + New Consultation
           </button>
           <button className="px-7 py-3.5 bg-white border-2 border-[#D0D5CB] text-[#193C1F] rounded-2xl font-bold text-[14px] transition-all">

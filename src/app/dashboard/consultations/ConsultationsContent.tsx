@@ -92,7 +92,7 @@ export default function ConsultationsContent({
                 >
                   <td className="px-8 py-6">
                     <p className="font-bold">
-                      {row.psychologist?.name ?? 'Assigned Psychologist'}
+                      {row.psychologist?.name ?? 'Waiting for psychologist...'}
                     </p>
                     <p className="text-[12px] opacity-60 font-medium">
                       {row.title} • {row.category}
