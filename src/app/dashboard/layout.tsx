@@ -161,6 +161,9 @@ const LogoutIcon = () => (
   </svg>
 );
 
+// Generic Silhouette Avatar SVG
+const SILHOUETTE_AVATAR = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23e5e7eb'/%3E%3Ccircle cx='100' cy='70' r='35' fill='%239ca3af'/%3E%3Cpath d='M40 140c0-30 27-50 60-50s60 20 60 50v50H40z' fill='%239ca3af'/%3E%3C/svg%3E`;
+
 type SidebarItemProps = {
   icon: React.ElementType;
   label: string;
@@ -198,8 +201,7 @@ export default function DashboardLayout({
   const profileId = session?.user?.id
     ? `ID: #${session.user.id.slice(-5).toUpperCase()}`
     : 'ID: -';
-  const profileAvatar =
-    session?.user?.image || 'https://i.pravatar.cc/150?u=careconnect-user';
+  const profileAvatar = session?.user?.image || SILHOUETTE_AVATAR;
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false); // State untuk Modal Logout
