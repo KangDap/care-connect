@@ -13,39 +13,82 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid()) @map("user_id")
-  username  String   @db.VarChar(255) @unique
-  email     String   @db.VarChar(255) @unique
-  password  String   @db.VarChar(255)
-  role      UserRole
-  createdAt DateTime @default(now()) @map("created_at")
-
-  displayName String?   @db.VarChar(255) @map("display_name")
-  bio         String?   @db.Text
-  avatarUrl   String?   @db.Text @map("avatar_url")
-  dateOfBirth DateTime? @map("date_of_birth")
-  gender      Gender?
-  phoneNumber String?   @db.VarChar(20) @map("phone_number")
-  isVerified  Boolean   @default(false) @map("is_verified")
-  updatedAt   DateTime  @updatedAt @map("updated_at")
-
-  reports              Report[]
-  donations            Donation[]
-  consultationsAsUser  Consultation[]  @relation("UserConsultations")
-  consultationsAsPsych Consultation[]  @relation("PsychologistConsultations")
-  channelMemberships   ChannelMember[]
-  chats                Chat[]
-
+  id            String    @id
   name          String
+  email         String
   emailVerified Boolean   @default(false)
   image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  role          String    @default("USER")
   banned        Boolean?  @default(false)
   banReason     String?
   banExpires    DateTime?
+  bio           String?
+  date_of_birth DateTime?
+  gender        String?
+  phone_number  String?
+  reports       Report[]
+  donations     Donation[]
+  consultationsAsUser  Consultation[] @relation("UserConsultations")
+  consultationsAsPsych Consultation[] @relation("PsychologistConsultations")
+  channelMemberships   ChannelMember[]
+  chats                Chat[]
+  schedules      Schedule[]
   sessions      Session[]
   accounts      Account[]
 
-  @@map("users")
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id             String   @id
+  expiresAt      DateTime
+  token          String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  ipAddress      String?
+  userAgent      String?
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  impersonatedBy String?
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }
 
 enum UserRole {
@@ -74,7 +117,6 @@ model Report {
 
   user          User           @relation(fields: [userId], references: [id])
   donations     Donation[]
-  consultations Consultation[]
 
   @@map("reports")
 }
@@ -89,15 +131,25 @@ enum ReportStatus {
 model Consultation {
   id             Int                @id @default(autoincrement()) @map("consult_id")
   userId         String             @map("user_id")
-  psychologistId String             @map("psychologist_id")
-  reportId       Int                @map("report_id")
-  lastConsult    DateTime           @map("last_consult")
-  status         ConsultationStatus
-  note           String?            @db.Text
+  psychologistId String?            @map("psychologist_id")
+  
+  title          String             @db.VarChar(255)
+  category       String             @db.VarChar(255)
+  description    String             @db.VarChar(255)
 
-  user         User   @relation("UserConsultations", fields: [userId], references: [id])
-  psychologist User   @relation("PsychologistConsultations", fields: [psychologistId], references: [id])
-  report       Report @relation(fields: [reportId], references: [id])
+  date           DateTime           @db.Date
+  time           DateTime           @db.Time
+
+  isAnonymous    Boolean            @default(false) @map("is_anonymous")
+  attachmentUrl  String?            @map("attachment_url")
+
+  status         ConsultationStatus
+  
+  createdAt      DateTime           @default(now()) @map("created_at")
+  updatedAt      DateTime           @updatedAt @map("updated_at")
+
+  user         User    @relation("UserConsultations", fields: [userId], references: [id])
+  psychologist User?   @relation("PsychologistConsultations", fields: [psychologistId], references: [id], onDelete: SetNull)
 
   @@map("consultations")
 }
@@ -195,51 +247,19 @@ enum ChannelRole {
   MEMBER
 }
 
-model Session {
-  id             String   @id
-  expiresAt      DateTime
-  token          String
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  ipAddress      String?
-  userAgent      String?
-  userId         String
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  impersonatedBy String?
+model Schedule {
+  id           Int                   @id @default(autoincrement())
 
-  @@unique([token])
-  @@index([userId])
-  @@map("session")
-}
+  userId       String                @map("user_id")
 
-model Account {
-  id                    String    @id
-  accountId             String
-  providerId            String
-  userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?
-  refreshToken          String?
-  idToken               String?
-  accessTokenExpiresAt  DateTime?
-  refreshTokenExpiresAt DateTime?
-  scope                 String?
-  password              String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  dayOfWeek    Int                   @map("day_of_week")
 
-  @@index([userId])
-  @@map("account")
-}
+  startTime    DateTime              @db.Time @map("start_time")
+  endTime      DateTime              @db.Time @map("end_time")
 
-model Verification {
-  id         String   @id
-  identifier String
-  value      String
-  expiresAt  DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt    DateTime              @default(now()) @map("created_at")
 
-  @@index([identifier])
-  @@map("verification")
+  user       User     @relation(fields: [userId], references: [id])
+
+  @@map("schedules")
 }
