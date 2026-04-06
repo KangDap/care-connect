@@ -1,9 +1,9 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  
+
   /* Variabel Animasi dari Anima */
   --animate-spin: spin 1s linear infinite;
   --shimmer-width: 100px;
@@ -18,12 +18,12 @@
   --font-mono: var(--font-geist-mono);
 
   /* Custom Palette for Care Connect */
-  --color-deep-green: #193C1F;
-  --color-muted-green: #8EA087;
-  --color-tan: #D1B698;
-  --color-light-beige: #EDE4D8;
-  --color-pale-green-grey: #D0D5CB;
-  --color-off-white: #F7F3ED;
+  --color-deep-green: #193c1f;
+  --color-muted-green: #8ea087;
+  --color-tan: #d1b698;
+  --color-light-beige: #ede4d8;
+  --color-pale-green-grey: #d0d5cb;
+  --color-off-white: #f7f3ed;
 
   /* Mendaftarkan Animasi ke Sistem Tailwind v4 */
   --animate-fade-in: fade-in 1s var(--animation-delay, 0s) ease forwards;
@@ -31,31 +31,58 @@
   --animate-marquee: marquee var(--duration) infinite linear;
   --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
   --animate-shimmer: shimmer 8s infinite;
-  
+
   /* Custom Keyframes */
   @keyframes fade-in {
-    0% { opacity: 0; transform: translateY(-10px); }
-    100% { opacity: 1; transform: none; }
+    0% {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    100% {
+      opacity: 1;
+      transform: none;
+    }
   }
 
   @keyframes fade-up {
-    0% { opacity: 0; transform: translateY(20px); }
-    100% { opacity: 1; transform: none; }
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    100% {
+      opacity: 1;
+      transform: none;
+    }
   }
 
   @keyframes shimmer {
-    0%, 90%, 100% { background-position: calc(-100% - var(--shimmer-width)) 0; }
-    30%, 60% { background-position: calc(100% + var(--shimmer-width)) 0; }
+    0%,
+    90%,
+    100% {
+      background-position: calc(-100% - var(--shimmer-width)) 0;
+    }
+    30%,
+    60% {
+      background-position: calc(100% + var(--shimmer-width)) 0;
+    }
   }
 
   @keyframes marquee {
-    0% { transform: translate(0); }
-    100% { transform: translateX(calc(-100% - var(--gap))); }
+    0% {
+      transform: translate(0);
+    }
+    100% {
+      transform: translateX(calc(-100% - var(--gap)));
+    }
   }
 
   @keyframes marquee-vertical {
-    0% { transform: translateY(0); }
-    100% { transform: translateY(calc(-100% - var(--gap))); }
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(calc(-100% - var(--gap)));
+    }
   }
 }
 
@@ -77,7 +104,7 @@
     border-width: 0;
     outline: none;
   }
-  
+
   body {
     background: var(--background);
     color: var(--foreground);
