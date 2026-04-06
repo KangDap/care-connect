@@ -1,16 +1,52 @@
 'use client';
 
-import { DONATION_HISTORY } from '@/constants';
 import { useSearchParams } from 'next/navigation';
 
-export default function DonationsContent() {
+type DonationItem = {
+  id: number;
+  amount: number;
+  paymentMethod: string;
+  paymentStatus: string;
+  timestamp: Date;
+  report: {
+    title: string;
+  };
+};
+
+type DonationsContentProps = {
+  donations: DonationItem[];
+};
+
+const formatRupiah = (value: number) =>
+  new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+  }).format(value);
+
+const formatDateLabel = (value: Date) =>
+  new Intl.DateTimeFormat('id-ID', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  }).format(value);
+
+const formatPaymentMethod = (value: string) =>
+  value
+    .toLowerCase()
+    .split('_')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+
+export default function DonationsContent({ donations }: DonationsContentProps) {
   const searchParams = useSearchParams();
   const query = searchParams.get('search')?.toLowerCase() || '';
 
-  const filteredData = DONATION_HISTORY.filter(
+  const filteredData = donations.filter(
     (item) =>
-      item.name.toLowerCase().includes(query) ||
-      item.via.toLowerCase().includes(query),
+      item.report.title.toLowerCase().includes(query) ||
+      item.paymentMethod.toLowerCase().includes(query) ||
+      item.paymentStatus.toLowerCase().includes(query),
   );
 
   return (
@@ -40,18 +76,20 @@ export default function DonationsContent() {
           </thead>
           <tbody className="text-[14px] text-[#193C1F]">
             {filteredData.length > 0 ? (
-              filteredData.map((row, i) => (
+              filteredData.map((row) => (
                 <tr
-                  key={i}
+                  key={row.id}
                   className="border-b border-[#F7F3ED] hover:bg-[#FDFCFB] transition-colors"
                 >
-                  <td className="px-8 py-6 font-bold">{row.name}</td>
-                  <td className="px-8 py-6 opacity-60">{row.date}</td>
+                  <td className="px-8 py-6 font-bold">{row.report.title}</td>
+                  <td className="px-8 py-6 opacity-60">
+                    {formatDateLabel(row.timestamp)}
+                  </td>
                   <td className="px-8 py-6 font-medium italic text-[#8EA087]">
-                    {row.via}
+                    {formatPaymentMethod(row.paymentMethod)}
                   </td>
                   <td className="px-8 py-6 text-right font-black text-[16px]">
-                    {row.amount}
+                    {formatRupiah(row.amount)}
                   </td>
                 </tr>
               ))
