@@ -2,13 +2,27 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { submitConsultationForm } from './actions';
 
 export default function ConsultationPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
+  const [file, setFile] = useState<File | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (!selected) return;
+
+    const maxSize = 10 * 1024 * 1024;
+
+    if (selected.size > maxSize) {
+      alert("File max 10MB");
+      return;
+    }
+
+    setFile(selected); 
+  };
 
   // Available time slots based on the selected date
   const timeSlots = ["09:00", "10:00", "11:00", "13:00", "14:00", "15:00", "16:00"];
@@ -25,10 +39,16 @@ export default function ConsultationPage() {
     setMessage({ type: '', text: '' });
 
     const formData = new FormData(e.currentTarget);
-    formData.append('date', selectedDate);
-    formData.append('time', selectedTime);
 
-    const result = await submitConsultationForm(formData);
+    formData.append("date", selectedDate);
+    formData.append("time", selectedTime);
+
+    const res = await fetch("/api/consultation", {
+      method: "POST",
+      body: formData
+    });
+
+    const result = await res.json();
 
     if (result.success) {
       setMessage({ type: 'success', text: result.message || 'Consultation requested successfully!' });
@@ -171,14 +191,27 @@ export default function ConsultationPage() {
             <div>
               <label className="block text-sm font-semibold text-[#193C1F] mb-2">Relevant Documents (Optional)</label>
               <div className="border-2 border-dashed border-[#D0D5CB] rounded-xl p-8 flex flex-col items-center justify-center bg-[#F7F3ED] hover:bg-white transition-colors cursor-pointer relative overflow-hidden group">
-                <input type="file" name="document" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept=".png,.jpg,.jpeg,.pdf" />
+                <input type="file" name="document" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept=".png,.jpg,.jpeg,.pdf" onChange={handleFileChange}/>
                 <svg className="h-10 w-10 text-[#D0D5CB] mb-3 group-hover:text-[#8EA087] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"></path>
                 </svg>
                 <p className="text-[#193C1F] font-medium">Click to upload or drag and drop</p>
-                <p className="text-[#193C1F]/50 text-xs mt-1">PNG, JPG or PDF (max 10MB)</p>
               </div>
             </div>
+            {file && (
+              <div className="mt-4">
+                <div className="flex items-center justify-between bg-[#F7F3ED] border border-[#D0D5CB] rounded-lg px-4 py-2">
+                  <div className="flex items-center gap-2 text-[#193C1F]">
+                    <span>{file.type.includes("pdf") ? "📄" : "🖼️"}</span>
+                    <span className="text-sm truncate max-w-[300px]">{file.name}</span>
+                  </div>
+                  <button type="button" onClick={() => setFile(null)} className="text-[#8EA087] hover:text-red-500 text-sm transition">
+                    ✕
+                  </button>
+                </div>
+              </div>
+            )}
+
 
             <div className="bg-[#F7F3ED] border border-[#D0D5CB] rounded-xl px-6 py-5 flex items-center justify-between">
               <div>
