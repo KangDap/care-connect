@@ -115,8 +115,18 @@ export default function ConsultationPage() {
           {message.type === 'success' ? (
             <div className="bg-white p-10 rounded-2xl shadow-xl flex flex-col items-center gap-4 text-center max-w-sm w-full mx-4 transform transition-all scale-100">
               <div className="w-20 h-20 bg-[#8EA087]/10 rounded-full flex items-center justify-center mb-2">
-                <svg className="h-10 w-10 text-[#8EA087]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                <svg
+                  className="h-10 w-10 text-[#8EA087]"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 13l4 4L19 7"
+                  ></path>
                 </svg>
               </div>
               <h3 className="text-2xl font-bold text-[#193C1F]">Success!</h3>
@@ -124,13 +134,32 @@ export default function ConsultationPage() {
             </div>
           ) : (
             <div className="bg-white p-10 rounded-2xl shadow-xl flex flex-col items-center gap-6 text-center max-w-sm w-full mx-4">
-              <svg className="animate-spin h-12 w-12 text-[#8EA087]" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <svg
+                className="animate-spin h-12 w-12 text-[#8EA087]"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  fill="none"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
               <div>
-                <h3 className="text-xl font-bold text-[#193C1F] mb-1">Processing request...</h3>
-                <p className="text-sm text-[#193C1F]/60">Please wait while we secure your slot.</p>
+                <h3 className="text-xl font-bold text-[#193C1F] mb-1">
+                  Processing request...
+                </h3>
+                <p className="text-sm text-[#193C1F]/60">
+                  Please wait while we secure your slot.
+                </p>
               </div>
             </div>
           )}
