@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
 type ConsultationItem = {
@@ -109,9 +110,12 @@ export default function ConsultationsContent({
                     </span>
                   </td>
                   <td className="px-8 py-6 text-right">
-                    <button className="text-[12px] font-bold text-[#8EA087] hover:text-[#193C1F] underline">
-                      Details
-                    </button>
+                    <Link
+                      href="/consultation-chat"
+                      className="text-[12px] font-bold text-[#8EA087] hover:text-[#193C1F] underline"
+                    >
+                      {row.status === 'ONGOING' ? 'Join Chat' : 'Details'}
+                    </Link>
                   </td>
                 </tr>
               ))
