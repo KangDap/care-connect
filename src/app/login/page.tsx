@@ -11,6 +11,18 @@ import React, { useState } from 'react';
 // 1. SUB-KOMPONEN INTERNAL (IKON-IKON)
 // ==========================================
 
+const MailIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 2-10 11L2 2"/><path d="M22 2H2v14c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V2z"/></svg>
+);
+
+const UserIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+);
+
+const SmallLockIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+);
+
 interface IconProps {
   className?: string;
 }
@@ -132,7 +144,6 @@ export default function LoginPage() {
       }
       router.push('/dashboard');
     } catch (err) {
-      // Benerin error 'any' dengan pengecekan instance
       if (err instanceof Error) {
         setError(err.message);
       } else {
@@ -210,7 +221,8 @@ export default function LoginPage() {
               {activeTab === 'register' && (
                 <Input
                   label="Username"
-                  placeholder="Choose a username"
+                  placeholder="Enter your username"
+                  icon={<UserIcon />}
                   value={name}
                   onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                     setName(e.target.value)
@@ -223,6 +235,7 @@ export default function LoginPage() {
                 label="Email Address"
                 type="email"
                 placeholder="name@example.com"
+                icon={<MailIcon />}
                 value={email}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setEmail(e.target.value)
@@ -234,6 +247,7 @@ export default function LoginPage() {
                 label="Password"
                 type="password"
                 placeholder="••••••••"
+                icon={<SmallLockIcon />}
                 value={password}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   setPassword(e.target.value)

@@ -50,7 +50,7 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
   );
 
   return (
-    <div className="p-12 space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in">
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-[32px] font-black text-[#193C1F]">
