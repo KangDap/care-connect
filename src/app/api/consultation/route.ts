@@ -1,153 +1,69 @@
 import { auth } from '@/lib/auth/auth';
-import { prisma } from '@/lib/prisma';
-import { getSupabaseClient } from '@/lib/supabase';
+import { ApiError, Errors } from '@/lib/error';
+import { ConsultationService } from '@/modules/consultation/consultation.service';
 import { headers } from 'next/headers';
 import { NextResponse } from 'next/server';
+
+export async function GET(req: Request) {
+  try {
+    const url = new URL(req.url);
+    const validatedQuery = ConsultationService.validateScheduleQuery({
+      date: url.searchParams.get('date') || undefined,
+    });
+
+    const slots = await ConsultationService.getScheduleAvailability(
+      validatedQuery.date,
+    );
+
+    return NextResponse.json({ success: true, data: slots });
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
+    }
+    console.error('CONSULTATION GET ROUTE ERROR:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 },
+    );
+  }
+}
 
 export async function POST(req: Request) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
 
     if (!session?.user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      throw Errors.unauthorized('Authentication required');
     }
 
     if (!session.user.id) {
-      return NextResponse.json(
-        { error: 'Invalid user session' },
-        { status: 401 },
-      );
+      throw Errors.unauthorized('Invalid user session');
     }
-
-    const userId = session.user.id;
 
     const formData = await req.formData();
+    const validatedData =
+      ConsultationService.validateCreateConsultation(formData);
 
-    const title = formData.get('title') as string;
-    const category = formData.get('nature') as string;
-    const description = formData.get('description') as string;
-    const date = formData.get('date') as string;
-    const time = formData.get('time') as string;
-    const isAnonymous = formData.get('isAnonymous') === 'on';
+    const consultation = await ConsultationService.createConsultation(
+      session.user.id,
+      validatedData,
+    );
 
-    const file = formData.get('document') as File;
-
-    let attachmentUrl = null;
-
-    const supabase = getSupabaseClient();
-
-    if (file && file.size > 0 && supabase) {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}.${fileExt}`;
-
-      const { error } = await supabase.storage
-        .from('consultation-files')
-        .upload(fileName, file);
-
-      if (error) {
-        console.error(error);
-        return NextResponse.json(
-          { error: 'File upload failed' },
-          { status: 500 },
-        );
-      }
-
-      const { data: publicUrl } = supabase.storage
-        .from('consultation-files')
-        .getPublicUrl(fileName);
-
-      attachmentUrl = publicUrl.publicUrl;
-    } else if (file && file.size > 0) {
-      attachmentUrl = null;
-    }
-
-    if (!title || !category || !description || !date || !time) {
-      return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
-    }
-
-    const selectedDate = new Date(date);
-    const selectedTime = new Date(`1970-01-01T${time}:00`);
-
-    // //1. CARI PSIKOLOG BERDASARKAN HARI
-    // const dayOfWeek = selectedDate.getDay();
-
-    // const schedules = await prisma.schedule.findMany({
-    //   where: { dayOfWeek }
-    // });
-
-    // const availablePsychIds = schedules
-    //   .filter(s =>
-    //     s.startTime <= selectedTime &&
-    //     s.endTime >= selectedTime
-    //   )
-    //   .map(s => s.userId);
-
-    // if (availablePsychIds.length === 0) {
-    //   return NextResponse.json(
-    //     { error: "No psychologist available at this time" },
-    //     { status: 400 }
-    //   );
-    // }
-
-    // //2. AMBIL CONSULTATION DI HARI ITU
-    // const existing = await prisma.consultation.findMany({
-    //   where: {
-    //     date: {
-    //       gte: new Date(date + "T00:00:00"),
-    //       lt: new Date(date + "T23:59:59")
-    //     }
-    //   }
-    // });
-
-    // //3. FILTER YANG JAM SAMA
-    // const usedPsychIds = existing
-    //   .filter(c => {
-    //     const bookedTime = c.time.toTimeString().slice(0, 5);
-    //     return bookedTime === time;
-    //   })
-    //   .map(c => c.psychologistId);
-
-    // //4. PILIH PSIKOLOG YANG MASIH FREE
-    // const availablePsych = availablePsychIds.find(
-    //   id => !usedPsychIds.includes(id)
-    // );
-
-    // if (!availablePsych) {
-    //   return NextResponse.json(
-    //     { error: "This time slot is full" },
-    //     { status: 400 }
-    //   );
-    // }
-
-    //5. CREATE CONSULTATION
-    const consultation = await prisma.consultation.create({
-      data: {
-        userId: userId,
-        // Will be assigned later by admin flow.
-        psychologistId: null,
-
-        title,
-        category,
-        description,
-
-        date: selectedDate,
-        time: selectedTime,
-
-        isAnonymous,
-        status: 'SCHEDULED',
-
-        attachmentUrl,
-      },
-    });
-
-    //6. RESPONSE SUCCESS
-    return NextResponse.json({
-      success: true,
-      data: consultation,
-    });
+    return NextResponse.json({ success: true, data: consultation });
   } catch (error) {
-    console.error('CONSULTATION ERROR FULL:', error);
-
-    return NextResponse.json({ error: String(error) }, { status: 500 });
+    if (error instanceof ApiError) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
+    }
+    console.error('CONSULTATION POST ROUTE ERROR:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 },
+    );
   }
 }
