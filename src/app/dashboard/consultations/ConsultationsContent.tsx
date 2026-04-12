@@ -61,7 +61,7 @@ export default function ConsultationsContent({
   );
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="p-12 space-y-8 animate-fade-in">
       <div>
         <h2 className="text-[32px] font-black text-[#193C1F]">
           My Consultations
