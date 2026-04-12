@@ -74,13 +74,21 @@ const LogoutIcon = () => (
 
 const SILHOUETTE_AVATAR = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23e5e7eb'/%3E%3Ccircle cx='100' cy='70' r='35' fill='%239ca3af'/%3E%3Cpath d='M40 140c0-30 27-50 60-50s60 20 60 50v50H40z' fill='%239ca3af'/%3E%3C/svg%3E`;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// 1. Tambahkan Interface Props
+interface HeaderProps {
+  withSearch?: boolean;
+  withLogo?: boolean;
+  onProfileClick?: () => void;
+  onLogoutClick?: () => void;
+}
+
 export const Header = ({
   withSearch = true,
   withLogo = false,
   onProfileClick,
   onLogoutClick,
-}: any) => {
+}: HeaderProps) => {
+  // 2. Gunakan interface di sini
   const router = useRouter();
   const pathname = usePathname();
   const { data: session } = authClient.useSession();
@@ -121,7 +129,6 @@ export const Header = ({
   return (
     <>
       <header className="h-[90px] border-b border-[#D0D5CB] flex items-center justify-between px-12 bg-[#F7F3ED]/80 backdrop-blur-md shrink-0 relative z-[100]">
-        {/* KIRI: Logo & Search */}
         <div className="flex items-center gap-8 flex-grow">
           {withLogo && (
             <div className="shrink-0">
@@ -138,7 +145,7 @@ export const Header = ({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search records, doctors, or reports..."
+                placeholder="Type to search..."
                 className="w-full h-[52px] bg-[#EBE6DE] border border-transparent focus:border-[#8EA087] focus:bg-white rounded-2xl pl-14 pr-6 outline-none text-[15px] text-[#193C1F] shadow-sm transition-all"
               />
             </div>
@@ -147,7 +154,6 @@ export const Header = ({
           )}
         </div>
 
-        {/* KANAN: Notif & User Info */}
         <div className="flex items-center gap-6 ml-10">
           <button className="relative w-12 h-12 flex items-center justify-center rounded-2xl bg-white border border-[#D0D5CB] hover:bg-[#EBE6DE] transition-all shadow-sm">
             <BellIcon />
@@ -194,7 +200,7 @@ export const Header = ({
                   onClick={() => {
                     setIsProfileOpen(false);
                     if (onLogoutClick) {
-                      onLogoutClick(); // Ini akan memicu alert yang ada di Page/Layout kamu
+                      onLogoutClick();
                     }
                   }}
                   className="w-full flex items-center gap-3 px-6 py-4 text-[14px] text-red-500 font-bold hover:bg-red-50 transition-colors"
@@ -206,17 +212,6 @@ export const Header = ({
           </div>
         </div>
       </header>
-
-      {/*    <Alert 
-        isOpen={showLogoutAlert}
-        onClose={() => setShowLogoutAlert(false)}
-        onConfirm={handleLogout}
-        type="danger"
-        title="End Session?"
-        description="Are you sure you want to log out from CareConnect?"
-        confirmText={isLoggingOut ? "Logging out..." : "Log Out"}
-      />
-*/}
     </>
   );
 };
