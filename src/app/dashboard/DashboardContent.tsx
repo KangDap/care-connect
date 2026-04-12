@@ -160,7 +160,7 @@ export default function DashboardContent({
   );
 
   return (
-    <div className="p-12 space-y-10 animate-fade-in">
+    <div className="space-y-10 animate-fade-in">
       <div className="flex justify-between items-end">
         <div>
           <h2 className="text-[36px] font-black text-[#193C1F] tracking-tight leading-tight">
@@ -181,7 +181,10 @@ export default function DashboardContent({
           >
             + New Consultation
           </button>
-          <button className="px-7 py-3.5 bg-white border-2 border-[#D0D5CB] text-[#193C1F] rounded-2xl font-bold text-[14px] transition-all">
+          <button
+            onClick={() => router.push('/report')}
+            className="px-7 py-3.5 bg-white border-2 border-[#D0D5CB] text-[#193C1F] rounded-2xl font-bold text-[14px] transition-all shadow-lg hover:bg-[#EBE6DE]"
+          >
             + New Report
           </button>
         </div>
