@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { Input } from '@/components/input';
-import { Button } from '@/components/button';
 import { Alert } from '@/components/alert';
+import { Button } from '@/components/button';
 import { Header } from '@/components/header';
+import { Input } from '@/components/input';
+import { Toast } from '@/components/toast';
+import { usePathname, useRouter } from 'next/navigation';
+import React, { useEffect, useRef, useState } from 'react';
 
 export default function AnonymousReportPage() {
   const router = useRouter();
@@ -13,33 +14,42 @@ export default function AnonymousReportPage() {
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isAnonymous, setIsAnonymous] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
   const [showExitAlert, setShowExitAlert] = useState(false);
+  const [showLogoutAlert, setShowLogoutAlert] = useState(false);
   const [pendingPath, setPendingPath] = useState('');
-  const fileInputRef = React.useRef<HTMLInputElement>(null);
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  
-  const [formData, setFormData] = useState({
-    title: '', 
-    type: '', 
-    date: '', 
-    location: '', 
-    description: '',
-    agreement: false
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const [toast, setToast] = useState({
+    show: false,
+    msg: '',
+    type: 'error' as 'success' | 'error',
   });
 
-  // Simpan path untuk fitur 'kembali' di halaman lain
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
+  const [formData, setFormData] = useState({
+    title: '',
+    type: '',
+    date: '',
+    location: '',
+    description: '',
+    agreement: false,
+  });
+
   useEffect(() => {
     localStorage.setItem('prevPath', pathname);
   }, [pathname]);
 
   const steps = [
-    { id: 1, title: 'General Info', desc: 'Basic data' },
-    { id: 2, title: 'Details', desc: 'Where & how' },
-    { id: 3, title: 'Evidence', desc: 'Attachments' },
-    { id: 4, title: 'Review', desc: 'Final check' },
+    { id: 1, title: 'General Info' },
+    { id: 2, title: 'Details' },
+    { id: 3, title: 'Evidence' },
+    { id: 4, title: 'Review' },
   ];
 
-  // Logic Persentase
   const calculateProgress = () => {
     if (currentStep === 1) return 0;
     if (currentStep === 2) return 33;
@@ -47,292 +57,486 @@ export default function AnonymousReportPage() {
     return 100;
   };
 
-  // Validasi Field Wajib
   const isStepValid = () => {
-    if (currentStep === 1) return formData.title !== '' && formData.type !== '' && formData.date !== '';
-    if (currentStep === 2) return formData.location !== '' && formData.description !== '';
+    if (currentStep === 1)
+      return (
+        formData.title.trim() !== '' &&
+        formData.type !== '' &&
+        formData.date !== ''
+      );
+    if (currentStep === 2)
+      return (
+        formData.location.trim() !== '' && formData.description.trim() !== ''
+      );
     if (currentStep === 4) return formData.agreement === true;
     return true;
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type, checked }: any = e.target;
-    setFormData(prev => ({ 
-      ...prev, 
-      [name]: type === 'checkbox' ? checked : value 
-    }));
-  };
-
-  // Intercept navigasi dari Header
-  const handleNavIntercept = (path: string) => {
-    setPendingPath(path);
-    setShowExitAlert(true);
+  const handleInputChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
+    const { name, type, value } = e.target;
+    const finalValue =
+      type === 'checkbox' && e.target instanceof HTMLInputElement
+        ? e.target.checked
+        : value;
+    setFormData((prev) => ({ ...prev, [name]: finalValue }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  if (e.target.files) {
-    const filesArray = Array.from(e.target.files);
-    setSelectedFiles(filesArray);
-    // Kamu bisa simpan ke formData juga kalau mau
-    console.log("Files selected:", filesArray);
-  }
-};
+    if (e.target.files) {
+      const filesArray = Array.from(e.target.files);
+      setSelectedFiles((prev) => [...prev, ...filesArray]);
+    }
+  };
 
-  const nextStep = () => {
-    if (isStepValid()) setCurrentStep((prev) => Math.min(prev + 1, 4));
+  const removeFile = (index: number) => {
+    setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleAction = () => {
+    if (isStepValid()) {
+      if (currentStep === 4) {
+        setIsRedirecting(true);
+        setToast({
+          show: true,
+          msg: 'Report submitted successfully! Redirecting...',
+          type: 'success',
+        });
+
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 2000);
+      } else {
+        setCurrentStep((prev) => Math.min(prev + 1, 4));
+      }
+    } else {
+      setToast({
+        show: true,
+        msg:
+          currentStep === 4
+            ? 'You must agree to the terms before submitting'
+            : 'Please fill in all required fields marked with *',
+        type: 'error',
+      });
+    }
   };
 
   const prevStep = () => setCurrentStep((prev) => Math.max(prev - 1, 1));
 
   return (
     <div className="min-h-screen bg-[#F7F3ED] flex flex-col font-sans">
-      
-      {/* HEADER: Sticky, No Search, With Logo */}
+      {isRedirecting && (
+        <div className="fixed inset-0 z-[999] bg-white/10 pointer-events-auto cursor-wait" />
+      )}
+
+      <Toast
+        show={toast.show}
+        msg={toast.msg}
+        type={toast.type}
+        onClose={() => setToast({ ...toast, show: false })}
+      />
+
       <div className="sticky top-0 z-[100] w-full bg-[#F7F3ED]/80 backdrop-blur-md">
-        <Header 
-          withSearch={false} 
-          withLogo={true} 
-          onProfileClick={() => handleNavIntercept('/profile')}
-          onLogoutClick={() => handleNavIntercept('/api/auth/signout')}
+        <Header
+          withSearch={false}
+          withLogo={true}
+          onProfileClick={() => {
+            setPendingPath('/profile');
+            setShowExitAlert(true);
+          }}
+          onLogoutClick={() => setShowLogoutAlert(true)}
         />
       </div>
 
       <main className="max-w-[1400px] mx-auto w-full py-12 px-10 flex-1">
-        
-        {/* JUDUL & KETERANGAN */}
         <div className="mb-12 text-center">
           <h1 className="text-[40px] font-black text-[#193C1F] leading-tight tracking-tighter mb-3">
             Violence Report Form
           </h1>
           <p className="text-[#8EA087] font-bold text-base max-w-xl mx-auto">
-            Your safety is our priority. Please fill out this form accurately. 
-            Information is handled with strict confidentiality.
+            Your voice matters. Help us create a safer community.
           </p>
         </div>
 
         <div className="grid grid-cols-12 gap-10 items-start">
-          
-          {/* LEFT SIDEBAR: PROGRESS & PERCENTAGE (Sticky) */}
+          {/* Progress Sidebar */}
           <aside className="col-span-3 sticky top-32">
             <div className="bg-white border border-[#D0D5CB] rounded-[32px] p-8 shadow-sm">
-              <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8EA087] mb-8 opacity-60 text-center">Form Progress</h3>
+              <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#8EA087] mb-8 text-center opacity-60">
+                Progress
+              </h3>
               <div className="space-y-8 pl-2">
                 {steps.map((step) => (
                   <div key={step.id} className="flex gap-5 relative">
                     {step.id < 4 && (
-                      <div className={`absolute left-[15px] top-9 w-[2px] h-8 transition-colors duration-500 ${currentStep > step.id ? 'bg-[#193C1F]' : 'bg-[#EBE6DE]'}`} />
+                      <div
+                        className={`absolute left-[15px] top-9 w-[2px] h-8 transition-colors ${currentStep > step.id ? 'bg-[#193C1F]' : 'bg-[#EBE6DE]'}`}
+                      />
                     )}
-                    <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 z-10 transition-all duration-500
-                      ${currentStep >= step.id ? 'bg-[#193C1F] text-white shadow-lg' : 'bg-[#EBE6DE] text-[#193C1F]/20'}`}>
+                    <div
+                      className={`w-8 h-8 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 z-10 transition-all ${currentStep >= step.id ? 'bg-[#193C1F] text-white shadow-lg' : 'bg-[#EBE6DE] text-[#193C1F]/20'}`}
+                    >
                       {step.id}
                     </div>
-                    <div>
-                      <p className={`font-black text-[12px] uppercase tracking-wider ${currentStep >= step.id ? 'text-[#193C1F]' : 'text-[#193C1F]/20'}`}>{step.title}</p>
-                      <p className={`text-[10px] font-medium mt-0.5 ${currentStep >= step.id ? 'text-[#8EA087]' : 'text-[#193C1F]/10'}`}>{step.desc}</p>
-                    </div>
+                    <p
+                      className={`font-black text-[12px] uppercase tracking-wider ${currentStep >= step.id ? 'text-[#193C1F]' : 'text-[#193C1F]/20'}`}
+                    >
+                      {step.title}
+                    </p>
                   </div>
                 ))}
               </div>
-
-              {/* PERSENTASE CARD */}
-              <div className="mt-10 pt-6 border-t border-[#F7F3ED]">
+              <div className="mt-10 pt-6 border-t border-[#D0D5CB]">
                 <div className="flex justify-between items-end mb-3">
-                  <span className="text-[10px] font-black text-[#193C1F] uppercase tracking-widest opacity-60">Completion</span>
-                  <span className="text-[20px] font-black text-[#193C1F] leading-none">{calculateProgress()}%</span>
+                  <span className="text-[10px] font-black text-[#193C1F] opacity-60 uppercase tracking-widest">
+                    Done
+                  </span>
+                  <span className="text-[14px] font-black text-[#193C1F]">
+                    {calculateProgress()}%
+                  </span>
                 </div>
                 <div className="h-2 w-full bg-[#EBE6DE] rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-[#193C1F] transition-all duration-700 ease-in-out" 
-                    style={{ width: `${calculateProgress()}%` }} 
+                  <div
+                    className="h-full bg-[#193C1F] transition-all duration-700"
+                    style={{ width: `${calculateProgress()}%` }}
                   />
                 </div>
               </div>
             </div>
           </aside>
 
-          {/* CENTER: MAIN FORM AREA */}
+          {/* Form Content */}
           <div className="col-span-6">
-            <div className="bg-white border border-[#D0D5CB] rounded-[40px] shadow-sm p-12 min-h-[550px] flex flex-col transition-all">
+            <div className="bg-white border border-[#D0D5CB] rounded-[40px] shadow-sm p-12 min-h-[580px] flex flex-col">
               <div className="flex-1">
-                
-                {/* STEP 1: GENERAL INFO */}
                 {currentStep === 1 && (
-                  <div className="space-y-8 animate-in fade-in duration-500">
+                  <div className="space-y-8 animate-in fade-in duration-300">
                     <div className="flex justify-between items-center bg-[#F7F3ED] p-6 rounded-[24px] border border-[#D0D5CB]">
-                      <div>
-                        <p className="text-[13px] font-black text-[#193C1F] uppercase tracking-wide">Anonymous Submission</p>
-                        <p className="text-[11px] text-[#8EA087] font-medium italic">Identity will be hidden.</p>
-                      </div>
-                      <button onClick={() => setIsAnonymous(!isAnonymous)} className={`w-12 h-6 rounded-full relative transition-all ${isAnonymous ? 'bg-[#193C1F]' : 'bg-[#D0D5CB]'}`}>
-                        <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${isAnonymous ? 'right-1' : 'left-1'}`} />
+                      <p className="text-[13px] font-black text-[#193C1F] uppercase tracking-wide">
+                        Anonymous Report
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setIsAnonymous(!isAnonymous)}
+                        className={`w-12 h-6 rounded-full relative transition-all ${isAnonymous ? 'bg-[#193C1F]' : 'bg-[#D0D5CB]'}`}
+                      >
+                        <div
+                          className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${isAnonymous ? 'right-1' : 'left-1'}`}
+                        />
                       </button>
                     </div>
-                    <Input label="Report Title *" name="title" value={formData.title} onChange={handleInputChange} placeholder="e.g. Physical assault near park" />
+                    <Input
+                      label="Report Title *"
+                      name="title"
+                      value={formData.title}
+                      onChange={handleInputChange}
+                      placeholder="Brief title"
+                    />
                     <div className="grid grid-cols-2 gap-6">
-                      <Input label="Category *" name="type" type="select" value={formData.type} onChange={handleInputChange}>
+                      <Input
+                        label="Category *"
+                        name="type"
+                        type="select"
+                        value={formData.type}
+                        onChange={handleInputChange}
+                      >
                         <option value="">Select Category</option>
                         <option value="Physical">Physical Violence</option>
                         <option value="Sexual">Sexual Harassment</option>
-                        <option value="Psychological">Psychological/Verbal</option>
-                        <option value="Other">Other</option>
+                        <option value="Psychological">
+                          Psychological/Verbal
+                        </option>
+                        <option value="other">Other</option>
                       </Input>
-                      <Input label="Date of Incident *" name="date" type="date" value={formData.date} onChange={handleInputChange} />
+                      <Input
+                        label="Date *"
+                        name="date"
+                        type="date"
+                        value={formData.date}
+                        onChange={handleInputChange}
+                      />
                     </div>
                   </div>
                 )}
 
-                {/* STEP 2: DETAILS */}
                 {currentStep === 2 && (
-                  <div className="space-y-8 animate-in fade-in duration-500">
-                    <Input label="Incident Location *" name="location" value={formData.location} onChange={handleInputChange} placeholder="Specific location or landmark" />
-                    <div className="space-y-2">
-                      <label className="text-[13px] font-black text-[#193C1F] uppercase tracking-wide">Description *</label>
-                      <textarea 
+                  <div className="space-y-8 animate-in fade-in duration-300">
+                    <Input
+                      label="Location *"
+                      name="location"
+                      value={formData.location}
+                      onChange={handleInputChange}
+                      placeholder="Where did it happen?"
+                    />
+                    <div className="space-y-2 text-left">
+                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                      <Input
+                        label="Description *"
                         name="description"
+                        type="textarea"
                         value={formData.description}
                         onChange={handleInputChange}
-                        className="w-full h-48 p-5 bg-[#F7F3ED] border border-[#D0D5CB] rounded-[24px] outline-none focus:border-[#193C1F] transition-all text-sm leading-relaxed"
-                        placeholder="Detail incident..."
+                        placeholder="Tell us more..."
+                        {...({
+                          rows: 10,
+                          className:
+                            'w-full min-h-[200px] p-5 text-left align-top break-words overflow-y-auto',
+                        } as any)}
                       />
                     </div>
                   </div>
                 )}
 
-                {/* STEP 3: EVIDENCE */}
                 {currentStep === 3 && (
-  <div className="space-y-8 animate-in fade-in duration-500 text-center py-10">
-    <div className="w-20 h-20 bg-[#F7F3ED] rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-dashed border-[#D0D5CB]">
-      <span className="text-2xl">📁</span>
-    </div>
-    <h3 className="font-black text-[#193C1F] uppercase tracking-widest text-sm">Upload Evidence</h3>
-    <p className="text-[#8EA087] text-xs px-10 mb-6 italic">
-      {selectedFiles.length > 0 
-        ? `${selectedFiles.length} file(s) selected` 
-        : "Photos or documents (Optional)."}
-    </p>
+                  <div className="space-y-6 animate-in fade-in duration-300">
+                    <div className="w-full border-2 border-dashed border-[#D0D5CB] rounded-[32px] p-10 bg-[#F7F3ED]/50 text-center">
+                      <span className="text-4xl mb-4 block">📁</span>
+                      <p className="font-bold text-[#193C1F]">
+                        Upload Evidence (Optional)
+                      </p>
+                      <p className="text-[11px] text-[#8EA087] mb-6">
+                        PDF, Images, or Documents
+                      </p>
 
-    {/* Input File yang disembunyikan */}
-    <input 
-      type="file" 
-      ref={fileInputRef}
-      onChange={handleFileChange}
-      multiple 
-      className="hidden" 
-      accept="image/*,.pdf,.doc,.docx"
-    />
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        multiple
+                        className="hidden"
+                        accept=".pdf,image/*,.doc,.docx"
+                      />
 
-    <Button 
-      type="button"
-      onClick={() => fileInputRef.current?.click()} // Memicu klik input file
-      className="bg-[#EBE6DE] text-[#193C1F] hover:bg-[#D0D5CB] shadow-none"
-    >
-      {selectedFiles.length > 0 ? "Change Files" : "Select Files"}
-    </Button>
-
-    {/* List nama file yang terpilih (Optional) */}
-    {selectedFiles.length > 0 && (
-      <div className="mt-4 space-y-1">
-        {selectedFiles.map((file, idx) => (
-          <p key={idx} className="text-[10px] text-[#193C1F] font-bold">{file.name}</p>
-        ))}
-      </div>
-    )}
-  </div>
-)}
-
-                {/* STEP 4: REVIEW */}
-                {currentStep === 4 && (
-                  <div className="space-y-6 animate-in fade-in duration-500">
-                    <h3 className="font-black text-[#193C1F] uppercase tracking-widest text-sm border-b pb-4">Review Your Report</h3>
-                    <div className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="p-4 bg-[#F7F3ED] rounded-2xl">
-                          <p className="text-[10px] text-[#8EA087] font-black uppercase mb-1">Title</p>
-                          <p className="text-sm font-bold text-[#193C1F]">{formData.title}</p>
-                        </div>
-                        <div className="p-4 bg-[#F7F3ED] rounded-2xl">
-                          <p className="text-[10px] text-[#8EA087] font-black uppercase mb-1">Category</p>
-                          <p className="text-sm font-bold text-[#193C1F]">{formData.type}</p>
-                        </div>
-                      </div>
-                      <div className="p-4 bg-[#F7F3ED] rounded-2xl">
-                        <p className="text-[10px] text-[#8EA087] font-black uppercase mb-1">Location</p>
-                        <p className="text-sm font-bold text-[#193C1F]">{formData.location}</p>
+                      {/* Container untuk menengahkan tombol */}
+                      <div className="flex justify-center">
+                        <Button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="bg-white !text-[#193C1F] border border-[#193C1F] hover:bg-[#EBE6DE] hover:text-white transition-all duration-300 px-8"
+                        >
+                          Select Files
+                        </Button>
                       </div>
                     </div>
-                    <label className="flex items-center gap-3 p-4 border border-[#D0D5CB] rounded-2xl cursor-pointer hover:bg-[#F7F3ED] transition-all mt-8">
-                      <input 
-                        type="checkbox" 
-                        name="agreement" 
-                        checked={formData.agreement} 
-                        onChange={handleInputChange} 
-                        className="w-5 h-5 accent-[#193C1F]" 
-                      />
-                      <span className="text-[11px] font-bold text-[#193C1F]">I confirm that the information provided is accurate.</span>
+
+                    {/* List file yang terpilih tetap di bawahnya */}
+                    {selectedFiles.length > 0 && (
+                      <div className="space-y-3">
+                        {selectedFiles.map((file, idx) => (
+                          <div
+                            key={idx}
+                            className="flex justify-between items-center bg-[#F7F3ED] p-4 rounded-2xl border border-[#D0D5CB]"
+                          >
+                            <div className="flex items-center gap-3">
+                              <span className="text-xl">
+                                {file.type.includes('pdf') ? '📕' : '🖼️'}
+                              </span>
+                              <p className="text-[12px] font-bold text-[#193C1F] truncate max-w-[250px]">
+                                {file.name}
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => removeFile(idx)}
+                              className="text-[#193C1F] hover:text-red-500 font-black text-[10px] uppercase tracking-widest px-2"
+                            >
+                              Remove
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {currentStep === 4 && (
+                  <div className="space-y-6 animate-in fade-in duration-300">
+                    <h3 className="font-black text-[#193C1F] uppercase tracking-widest text-sm border-b pb-4 text-left">
+                      Full Report Review
+                    </h3>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-4 bg-[#F7F3ED] rounded-2xl border border-[#D0D5CB]/30 text-left">
+                        <p className="text-[9px] text-[#8EA087] font-black uppercase mb-1 tracking-widest">
+                          Title
+                        </p>
+                        <p className="text-sm font-bold text-[#193C1F]">
+                          {formData.title || '-'}
+                        </p>
+                      </div>
+                      <div className="p-4 bg-[#F7F3ED] rounded-2xl border border-[#D0D5CB]/30 text-left">
+                        <p className="text-[9px] text-[#8EA087] font-black uppercase mb-1 tracking-widest">
+                          Category
+                        </p>
+                        <p className="text-sm font-bold text-[#193C1F]">
+                          {formData.type || '-'}
+                        </p>
+                      </div>
+                      <div className="p-4 bg-[#F7F3ED] rounded-2xl border border-[#D0D5CB]/30 text-left">
+                        <p className="text-[9px] text-[#8EA087] font-black uppercase mb-1 tracking-widest">
+                          Date
+                        </p>
+                        <p className="text-sm font-bold text-[#193C1F]">
+                          {formData.date || '-'}
+                        </p>
+                      </div>
+                      <div className="p-4 bg-[#F7F3ED] rounded-2xl border border-[#D0D5CB]/30 text-left">
+                        <p className="text-[9px] text-[#8EA087] font-black uppercase mb-1 tracking-widest">
+                          Location
+                        </p>
+                        <p className="text-sm font-bold text-[#193C1F]">
+                          {formData.location || '-'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="p-4 bg-[#F7F3ED] rounded-2xl border border-[#D0D5CB]/30 text-left">
+                      <p className="text-[9px] text-[#8EA087] font-black uppercase mb-1 tracking-widest">
+                        Description
+                      </p>
+                      <p className="text-sm font-bold text-[#193C1F] break-words whitespace-pre-wrap">
+                        {formData.description || '-'}
+                      </p>
+                    </div>
+
+                    <label
+                      className={`flex items-center gap-4 p-5 border rounded-[24px] cursor-pointer mt-8 transition-all group ${formData.agreement ? 'bg-[#193C1F]/5 border-[#D0D5CB]' : 'border-[#D0D5CB] hover:bg-[#F7F3ED]'}`}
+                    >
+                      <div className="relative flex items-center justify-center">
+                        <input
+                          type="checkbox"
+                          name="agreement"
+                          checked={formData.agreement}
+                          onChange={handleInputChange}
+                          className="peer appearance-none w-6 h-6 border-2 border-[#D0D5CB] rounded-lg checked:bg-[#193C1F] checked:border-[#193C1F] transition-all cursor-pointer"
+                        />
+                        <svg
+                          className="absolute w-4 h-4 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                      </div>
+                      <span
+                        className={`text-[12px] font-bold text-left leading-tight ${formData.agreement ? 'text-[#193C1F]' : 'text-[#8EA087]'}`}
+                      >
+                        I confirm that the information provided is accurate.
+                      </span>
                     </label>
                   </div>
                 )}
               </div>
 
-              {/* NAVIGATION */}
-              <div className="mt-12 pt-8 border-t border-[#F7F3ED] flex justify-between items-center">
-                <button 
-                  onClick={prevStep} 
+              <div className="mt-12 pt-8 border-t border-[#D0D5CB] flex justify-between items-center">
+                <button
+                  type="button"
+                  onClick={prevStep}
                   className={`text-[12px] font-black uppercase tracking-[0.2em] ${currentStep === 1 ? 'invisible' : 'text-[#8EA087] hover:text-[#193C1F]'}`}
                 >
                   ← Back
                 </button>
-                <Button 
-                  onClick={currentStep === 4 ? () => alert('Submitted!') : nextStep} 
-                  disabled={!isStepValid()}
-                  className={`px-12 py-5 rounded-[20px] text-[13px] font-bold shadow-xl transition-all ${!isStepValid() ? 'opacity-40 grayscale cursor-not-allowed' : 'active:scale-95'}`}
-                >
-                  {currentStep === 4 ? 'Submit Report' : 'Next Step'}
-                </Button>
+                <div className="flex gap-4 items-center">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setToast({
+                        show: true,
+                        msg: 'Draft Saved!',
+                        type: 'success',
+                      })
+                    }
+                    className="text-[11px] font-black text-[#8EA087] hover:text-[#193C1F] uppercase tracking-widest px-4 transition-colors"
+                  >
+                    Save Draft
+                  </button>
+                  <Button
+                    onClick={handleAction}
+                    className={`px-12 py-5 rounded-[20px] text-[13px] font-bold shadow-xl transition-all duration-300 ${!isStepValid() ? 'opacity-50 grayscale cursor-not-allowed' : 'active:scale-95 shadow-[#193C1F]/20'}`}
+                  >
+                    {currentStep === 4 ? 'Submit Report' : 'Next Step'}
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* RIGHT SIDEBAR: EMERGENCY (Sticky) */}
+          {/* Right Sidebar - EMERGENCY CARDS BALIK LAGI */}
           <aside className="col-span-3 space-y-6 sticky top-32">
-            <div className="bg-[#193C1F] text-[#F7F3ED] p-8 rounded-[32px] shadow-lg">
-               <h4 className="font-black text-[14px] uppercase tracking-wider mb-2">🛡️ Safe Submission</h4>
-               <p className="text-[11px] opacity-70 leading-relaxed font-medium">Your data is encrypted. We prioritize your privacy.</p>
+            <div className="bg-[#193C1F] text-[#F7F3ED] p-8 rounded-[32px] shadow-lg text-left">
+              <h4 className="font-black text-[14px] uppercase tracking-wider mb-3">
+                🛡️ Safe Submission
+              </h4>
+              <p className="text-[11px] opacity-70 leading-relaxed font-medium">
+                Your data is encrypted. We prioritize your privacy and security
+                above all.
+              </p>
             </div>
 
-            <div className="bg-[#EBE6DE] border border-[#D0D5CB] p-8 rounded-[32px]">
-               <h4 className="font-black text-[12px] text-[#193C1F] uppercase tracking-widest mb-4">Emergency 24/7</h4>
-               <div className="space-y-3">
-                  <div className="bg-white p-4 rounded-2xl border border-[#D0D5CB]/50 text-center">
-                     <p className="text-[9px] font-black text-[#8EA087] uppercase">Police</p>
-                     <p className="text-sm font-black text-[#193C1F]">110</p>
-                  </div>
-                  <div className="bg-white p-4 rounded-2xl border border-[#D0D5CB]/50 text-center">
-                     <p className="text-[9px] font-black text-[#8EA087] uppercase">Ambulance</p>
-                     <p className="text-sm font-black text-[#193C1F]">118</p>
-                  </div>
-               </div>
+            {/* EMERGENCY CONTACTS CARD */}
+            <div className="bg-white border border-[#D0D5CB] p-8 rounded-[32px] text-left">
+              <h4 className="font-black text-[12px] text-[#193C1F] uppercase tracking-widest mb-6">
+                Emergency Contacts
+              </h4>
+              <div className="space-y-4">
+                <div className="bg-[#F7F3ED] p-4 rounded-2xl border border-[#D0D5CB]/50">
+                  <p className="text-[9px] font-black text-[#8EA087] uppercase mb-1">
+                    National Hotline
+                  </p>
+                  <p className="text-[13px] font-black text-[#193C1F]">
+                    1-800-SAFE-NOW
+                  </p>
+                </div>
+                <div className="bg-[#F7F3ED] p-4 rounded-2xl border border-[#D0D5CB]/50">
+                  <p className="text-[9px] font-black text-[#8EA087] uppercase mb-1">
+                    Crisis SMS
+                  </p>
+                  <p className="text-[13px] font-black text-[#193C1F]">
+                    Text &quot;HELP&quot; to 741741
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-[#E3F2FD] border border-[#B3E5FC] p-8 rounded-[32px] text-left">
+              <h4 className="font-black text-[12px] text-[#193C1F] uppercase tracking-widest mb-4">
+                ❓ Need Help?
+              </h4>
+              <ul className="text-[11px] text-[#193C1F] space-y-3 font-medium opacity-80 leading-relaxed">
+                <li>• Be specific with dates.</li>
+                <li>• Photos help validation.</li>
+              </ul>
             </div>
           </aside>
         </div>
       </main>
 
-      {/* ALERT KONFIRMASI KELUAR */}
-      <Alert 
+      {/* Alerts */}
+      <Alert
         isOpen={showExitAlert}
         onClose={() => setShowExitAlert(false)}
-        onConfirm={() => {
-          if (pendingPath.includes('signout')) {
-            window.location.href = pendingPath;
-          } else {
-            router.push(pendingPath);
-          }
-        }}
+        onConfirm={() => router.push(pendingPath)}
         type="warning"
         title="Discard Progress?"
-        description="Your current report data will be lost if you leave this page."
+        description="Data will be lost if you leave."
         confirmText="Discard & Exit"
-        cancelText="Keep Editing"
+      />
+      <Alert
+        isOpen={showLogoutAlert}
+        onClose={() => setShowLogoutAlert(false)}
+        onConfirm={() => {
+          setIsLoggingOut(true);
+          window.location.href = '/api/auth/signout';
+        }}
+        type="danger"
+        title="End Session?"
+        description="Are you sure you want to log out?"
+        confirmText={isLoggingOut ? 'Logging out...' : 'Log Out'}
       />
     </div>
   );
