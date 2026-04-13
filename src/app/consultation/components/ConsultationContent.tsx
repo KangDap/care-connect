@@ -1,15 +1,31 @@
 'use client';
 
+import type { ConsultationScheduleSlot } from '@/modules/consultation/consultation.types';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-export default function ConsultationContent() {
+// Get today's date in WIB timezone (UTC+7)
+const getTodayWIB = (): string => {
+  const now = new Date();
+  const wibOffset = 7 * 60; // WIB is UTC+7
+  const wibDate = new Date(now.getTime() + wibOffset * 60 * 1000);
+
+  const year = wibDate.getUTCFullYear();
+  const month = String(wibDate.getUTCMonth() + 1).padStart(2, '0');
+  const date = String(wibDate.getUTCDate()).padStart(2, '0');
+
+  return `${year}-${month}-${date}`;
+};
+
+export default function ConsultationPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
+  const [timeSlots, setTimeSlots] = useState<ConsultationScheduleSlot[]>([]);
+  const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const [file, setFile] = useState<File | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,25 +33,56 @@ export default function ConsultationContent() {
     if (!selected) return;
 
     const maxSize = 10 * 1024 * 1024;
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
 
     if (selected.size > maxSize) {
-      alert('File max 10MB');
+      alert('File size must be less than 10MB');
+      return;
+    }
+
+    if (!allowedTypes.includes(selected.type)) {
+      alert('Only PDF, JPG, and PNG files are allowed');
       return;
     }
 
     setFile(selected);
   };
 
-  // Available time slots based on the selected date
-  const timeSlots = [
-    '09:00',
-    '10:00',
-    '11:00',
-    '13:00',
-    '14:00',
-    '15:00',
-    '16:00',
-  ];
+  useEffect(() => {
+    if (!selectedDate) {
+      setTimeSlots([]);
+      return;
+    }
+
+    const controller = new AbortController();
+    const fetchSlots = async () => {
+      setIsLoadingSlots(true);
+      try {
+        const response = await fetch(`/api/consultation?date=${selectedDate}`, {
+          signal: controller.signal,
+        });
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          setTimeSlots([]);
+          return;
+        }
+
+        setTimeSlots(result.data ?? []);
+      } catch (error) {
+        if ((error as Error)?.name !== 'AbortError') {
+          console.error('Failed to load time slots:', error);
+          setTimeSlots([]);
+        }
+      } finally {
+        setIsLoadingSlots(false);
+      }
+    };
+
+    fetchSlots();
+
+    return () => controller.abort();
+  }, [selectedDate]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -340,7 +387,7 @@ export default function ConsultationContent() {
                   type="date"
                   id="consultation-date"
                   className="w-full px-4 py-4 rounded-xl border border-[#D0D5CB] bg-white text-[#193C1F] focus:ring-[#8EA087] focus:border-[#8EA087] min-h-[58px]"
-                  min={new Date().toISOString().split('T')[0]} // Prevents picking past dates
+                  min={getTodayWIB()}
                   value={selectedDate}
                   onChange={(e) => {
                     setSelectedDate(e.target.value);
@@ -359,20 +406,31 @@ export default function ConsultationContent() {
                   <div className="w-full h-[58px] px-4 rounded-xl border border-[#D0D5CB] border-dashed bg-[#F7F3ED] text-[#193C1F]/40 flex items-center justify-center text-sm">
                     Select a date to view available times
                   </div>
+                ) : isLoadingSlots ? (
+                  <div className="w-full h-[58px] px-4 rounded-xl border border-[#D0D5CB] bg-[#F7F3ED] text-[#193C1F]/70 flex items-center justify-center text-sm">
+                    Loading available slots...
+                  </div>
+                ) : timeSlots.length === 0 ? (
+                  <div className="w-full h-[58px] px-4 rounded-xl border border-[#D0D5CB] bg-[#F7F3ED] text-[#193C1F]/70 flex items-center justify-center text-sm">
+                    No available slots for this date.
+                  </div>
                 ) : (
                   <div className="grid grid-cols-3 gap-2">
-                    {timeSlots.map((time) => (
+                    {timeSlots.map((slot) => (
                       <button
-                        key={time}
+                        key={slot.time}
                         type="button"
-                        onClick={() => setSelectedTime(time)}
+                        onClick={() => setSelectedTime(slot.time)}
+                        disabled={!slot.available}
                         className={`py-2 px-1 rounded-lg border text-sm font-medium transition-colors ${
-                          selectedTime === time
-                            ? 'bg-[#8EA087] border-[#8EA087] text-[#F7F3ED] shadow-sm'
-                            : 'bg-white border-[#D0D5CB] text-[#193C1F] hover:border-[#8EA087] hover:bg-[#F7F3ED]'
+                          !slot.available
+                            ? 'bg-[#F3F4F6] border-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed'
+                            : selectedTime === slot.time
+                              ? 'bg-[#8EA087] border-[#8EA087] text-[#F7F3ED] shadow-sm'
+                              : 'bg-white border-[#D0D5CB] text-[#193C1F] hover:border-[#8EA087] hover:bg-[#F7F3ED]'
                         }`}
                       >
-                        {time}
+                        {slot.time}
                       </button>
                     ))}
                   </div>
@@ -425,6 +483,9 @@ export default function ConsultationContent() {
                 </svg>
                 <p className="text-[#193C1F] font-medium">
                   Click to upload or drag and drop
+                </p>
+                <p className="text-xs text-[#193C1F]/60 mt-1">
+                  Supported formats: PDF, JPG, PNG (max 10MB)
                 </p>
               </div>
             </div>
