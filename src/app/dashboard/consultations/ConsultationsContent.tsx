@@ -17,6 +17,22 @@ type ConsultationsContentProps = {
   consultations: ConsultationItem[];
 };
 
+// Ikon Chat Kustom
+const ChatIcon = () => (
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2.5"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+  </svg>
+);
+
 const formatDateTimeLabel = (dateValue: Date, timeValue: Date) => {
   const dateLabel = new Intl.DateTimeFormat('id-ID', {
     day: '2-digit',
@@ -69,7 +85,7 @@ export default function ConsultationsContent({
         </h2>
         <p className="text-[#8EA087] font-medium">
           {query
-            ? `Showing results for \"${query}\"`
+            ? `Showing results for "${query}"`
             : 'View and manage your consultation history.'}
         </p>
       </div>
@@ -110,12 +126,24 @@ export default function ConsultationsContent({
                     </span>
                   </td>
                   <td className="px-8 py-6 text-right">
-                    <Link
-                      href="/consultation-chat"
-                      className="text-[12px] font-bold text-[#8EA087] hover:text-[#193C1F] underline"
-                    >
-                      {row.status === 'ONGOING' ? 'Join Chat' : 'Details'}
-                    </Link>
+                    <div className="flex justify-end items-center gap-3">
+                      {/* Button Ikon Chat */}
+                      <Link
+                        href={`/consultation-chat`}
+                        title={
+                          row.status === 'ONGOING'
+                            ? 'Join Chat'
+                            : 'Chat History'
+                        }
+                        className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all shadow-sm border ${
+                          row.status === 'ONGOING'
+                            ? 'bg-[#193C1F] text-white border-[#193C1F] hover:bg-[#122d17]'
+                            : 'bg-white text-[#8EA087] border-[#D0D5CB] hover:bg-[#F7F3ED] hover:text-[#193C1F]'
+                        }`}
+                      >
+                        <ChatIcon />
+                      </Link>
+                    </div>
                   </td>
                 </tr>
               ))

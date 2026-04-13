@@ -172,17 +172,6 @@ export default function DashboardLayout({
             active={pathname.startsWith('/dashboard/donations')}
           />
         </nav>
-
-        <div className="p-8 shrink-0">
-          <div className="bg-[#EBE6DE] p-5 rounded-[24px] text-center border border-[#D0D5CB]/50">
-            <p className="text-[11px] font-black text-[#193C1F] tracking-widest mb-3 uppercase opacity-40">
-              Need Help?
-            </p>
-            <button className="w-full py-4 bg-[#193C1F] hover:bg-[#2d5a35] text-[#F7F3ED] rounded-xl text-[13px] font-bold transition-all shadow-lg active:scale-95">
-              Emergency 24/7
-            </button>
-          </div>
-        </div>
       </aside>
 
       {/* 3. MAIN AREA: Header + Content Area */}
