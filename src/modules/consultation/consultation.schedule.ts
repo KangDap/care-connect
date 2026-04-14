@@ -4,16 +4,13 @@ import {
 } from './consultation.repositories';
 import type { ConsultationScheduleSlot } from './consultation.types';
 
-// convert JS day (0-6) → prisma (1-7)
 export const jsDayToPrismaDay = (jsDay: number) => (jsDay === 0 ? 7 : jsDay);
 
-// format Date → "HH:mm"
 const formatTime = (date: Date) => {
   const wib = new Date(date.getTime() + 7 * 60 * 60 * 1000);
   return wib.toISOString().slice(11, 16);
 };
 
-// generate hourly slots (WIB string)
 const getHourlySlots = (startTime: Date, endTime: Date) => {
   const slots: string[] = [];
 
@@ -66,17 +63,33 @@ export const getScheduleAvailabilityForDate = async (
     bookingCountByTime[time] = (bookingCountByTime[time] ?? 0) + 1;
   });
 
+  const now = new Date();
+  const wibNow = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+  const currentWibDate = wibNow.toISOString().split('T')[0];
+  const currentWibTime = wibNow.toISOString().slice(11, 16);
+
+  // Assuming `date` or `selectedDate` effectively refers to the day being queried.
+  // Because new Date("YYYY-MM-DD") converts to UTC midnight, its ISO string gives back "YYYY-MM-DD"
+  const requestDateString = selectedDate.toISOString().split('T')[0];
+  const isToday = requestDateString === currentWibDate;
+
   return Array.from(slotsByTime.entries())
     .map(([time, psychIds]) => {
       const psychologistIds = Array.from(psychIds);
 
       const bookedCount = bookingCountByTime[time] ?? 0;
 
+      let available = psychologistIds.length > bookedCount;
+
+      if (isToday && time < currentWibTime) {
+        available = false;
+      }
+
       return {
         time,
         psychologistCount: psychologistIds.length,
         bookedCount,
-        available: psychologistIds.length > bookedCount,
+        available,
         availablePsychologistIds: psychologistIds,
       };
     })
