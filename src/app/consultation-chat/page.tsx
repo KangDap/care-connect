@@ -50,9 +50,9 @@ export default function ConsultationChatContent() {
         }}
       />
 
-      <div className="shrink-0 w-full z-10 border-b border-[#D0D5CB]">
+      <div className="sticky top-0 z-[100] w-full bg-[#F7F3ED]/80 backdrop-blur-md border-b border-[#D0D5CB]/30">
         <Header
-          withSearch={true}
+          withSearch={false}
           withLogo={true}
           onLogoutClick={() => setIsLogoutAlertOpen(true)}
         />
@@ -193,14 +193,6 @@ export default function ConsultationChatContent() {
         </aside>
 
         <main className="flex-1 flex flex-col bg-white min-w-0">
-          <div className="shrink-0 w-full z-10 border-b border-[#D0D5CB]">
-        <Header
-          withSearch={true}
-          withLogo={true}
-          onLogoutClick={() => setIsLogoutAlertOpen(true)}
-        />
-      </div>
-
           <section className="flex-1 overflow-y-auto p-6 space-y-8 bg-[#F7F3ED]">
             <div className="flex justify-center">
               <span className="bg-[#D0D5CB] bg-opacity-30 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full text-[#193C1F] opacity-60">
@@ -439,7 +431,7 @@ export default function ConsultationChatContent() {
           </footer>
         </main>
       </div>
-    
+
       <Alert
         isOpen={isLogoutAlertOpen}
         onClose={() => setIsLogoutAlertOpen(false)}
@@ -449,6 +441,6 @@ export default function ConsultationChatContent() {
         description="Are you sure you want to log out?"
         confirmText={isLoggingOut ? 'Logging out...' : 'Log Out'}
       />
-</div>
+    </div>
   );
 }

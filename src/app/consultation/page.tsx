@@ -3,8 +3,6 @@
 import { Alert } from '@/components/alert';
 import { Header } from '@/components/header';
 import { authClient } from '@/lib/auth/auth-client';
-
-
 import type { ConsultationScheduleSlot } from '@/modules/consultation/consultation.types';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -123,7 +121,7 @@ export default function ConsultationPage() {
     }
 
     const data = new FormData(form);
-    
+
     setReviewData({
       title: data.get('title') as string | null,
       nature: data.get('nature') as string | null,
@@ -138,7 +136,7 @@ export default function ConsultationPage() {
 
   async function submitAfterReview() {
     if (!formRef.current) return;
-    
+
     setIsSubmitting(true);
     setMessage({ type: '', text: '' });
 
@@ -257,9 +255,9 @@ export default function ConsultationPage() {
       )}
 
       {/* Header */}
-      <div className="shrink-0 w-full z-10 border-b border-[#D0D5CB]">
+      <div className="sticky top-0 z-[100] w-full bg-[#F7F3ED]/80 backdrop-blur-md border-b border-[#D0D5CB]/30">
         <Header
-          withSearch={true}
+          withSearch={false}
           withLogo={true}
           onLogoutClick={() => setIsLogoutAlertOpen(true)}
         />
@@ -318,7 +316,11 @@ export default function ConsultationPage() {
           )}
 
           {/* Consultation Form Fields */}
-          <form ref={formRef} className={step === "review" ? "hidden" : "space-y-8"} onSubmit={handleReviewTrigger}>
+          <form
+            ref={formRef}
+            className={step === 'review' ? 'hidden' : 'space-y-8'}
+            onSubmit={handleReviewTrigger}
+          >
             <div>
               <label
                 className="block text-sm font-semibold text-[#193C1F] mb-2"
@@ -592,69 +594,97 @@ export default function ConsultationPage() {
                 shortcut in the navigation.
               </p>
             </div>
-          
-            </form>
+          </form>
 
-            {/* Review Section */}
-            {step === 'review' && reviewData && (
-              <div className="space-y-8">
-                <div className="bg-[#F7F3ED] p-8 rounded-xl border border-[#D0D5CB]">
-                  <h3 className="text-xl font-bold text-[#193C1F] mb-6">Review Your Request</h3>
-                  
-                  <div className="space-y-4">
+          {/* Review Section */}
+          {step === 'review' && reviewData && (
+            <div className="space-y-8">
+              <div className="bg-[#F7F3ED] p-8 rounded-xl border border-[#D0D5CB]">
+                <h3 className="text-xl font-bold text-[#193C1F] mb-6">
+                  Review Your Request
+                </h3>
+
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-sm font-semibold text-[#193C1F]/60">
+                      Title
+                    </p>
+                    <p className="text-base text-[#193C1F]">
+                      {reviewData.title}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-[#193C1F]/60">
+                      Nature of Consultation
+                    </p>
+                    <p className="text-base text-[#193C1F]">
+                      {reviewData.nature}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-[#193C1F]/60">
+                      Details
+                    </p>
+                    <p className="text-base text-[#193C1F] whitespace-pre-wrap">
+                      {reviewData.details}
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm font-semibold text-[#193C1F]/60">Title</p>
-                      <p className="text-base text-[#193C1F]">{reviewData.title}</p>
+                      <p className="text-sm font-semibold text-[#193C1F]/60">
+                        Date
+                      </p>
+                      <p className="text-base text-[#193C1F]">
+                        {reviewData.date}
+                      </p>
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-[#193C1F]/60">Nature of Consultation</p>
-                      <p className="text-base text-[#193C1F]">{reviewData.nature}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-[#193C1F]/60">Details</p>
-                      <p className="text-base text-[#193C1F] whitespace-pre-wrap">{reviewData.details}</p>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <p className="text-sm font-semibold text-[#193C1F]/60">Date</p>
-                        <p className="text-base text-[#193C1F]">{reviewData.date}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold text-[#193C1F]/60">Time</p>
-                        <p className="text-base text-[#193C1F]">{reviewData.time}</p>
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-[#193C1F]/60">Urgency</p>
-                      <p className="text-base text-[#193C1F] capitalize">{reviewData.urgency}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm font-semibold text-[#193C1F]/60">Attached File</p>
-                      <p className="text-base text-[#193C1F]">{reviewData.fileName}</p>
+                      <p className="text-sm font-semibold text-[#193C1F]/60">
+                        Time
+                      </p>
+                      <p className="text-base text-[#193C1F]">
+                        {reviewData.time}
+                      </p>
                     </div>
                   </div>
-                </div>
-
-                <div className="flex gap-4 pt-4">
-                  <button
-                    type="button"
-                    onClick={() => setStep('form')}
-                    className="flex-1 px-8 py-4 rounded-xl font-bold text-[#193C1F] bg-[#F7F3ED] border border-[#D0D5CB] hover:bg-[#EBE6DE] transition-colors"
-                  >
-                    Back to Edit
-                  </button>
-                  <button
-                    type="button"
-                    onClick={submitAfterReview}
-                    disabled={isSubmitting}
-                    className="flex-1 px-8 py-4 rounded-xl font-bold text-[#F7F3ED] bg-[#193C1F] hover:bg-[#2d5a35] transition-colors shadow-lg shadow-[#193C1F]/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                  >
-                    Confirm & Submit
-                  </button>
+                  <div>
+                    <p className="text-sm font-semibold text-[#193C1F]/60">
+                      Urgency
+                    </p>
+                    <p className="text-base text-[#193C1F] capitalize">
+                      {reviewData.urgency}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-semibold text-[#193C1F]/60">
+                      Attached File
+                    </p>
+                    <p className="text-base text-[#193C1F]">
+                      {reviewData.fileName}
+                    </p>
+                  </div>
                 </div>
               </div>
-            )}
 
+              <div className="flex gap-4 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setStep('form')}
+                  className="flex-1 px-8 py-4 rounded-xl font-bold text-[#193C1F] bg-[#F7F3ED] border border-[#D0D5CB] hover:bg-[#EBE6DE] transition-colors"
+                >
+                  Back to Edit
+                </button>
+                <button
+                  type="button"
+                  onClick={submitAfterReview}
+                  disabled={isSubmitting}
+                  className="flex-1 px-8 py-4 rounded-xl font-bold text-[#F7F3ED] bg-[#193C1F] hover:bg-[#2d5a35] transition-colors shadow-lg shadow-[#193C1F]/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                >
+                  Confirm & Submit
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </main>
 
@@ -686,7 +716,7 @@ export default function ConsultationPage() {
           </p>
         </div>
       </footer>
-    
+
       <Alert
         isOpen={isLogoutAlertOpen}
         onClose={() => setIsLogoutAlertOpen(false)}
@@ -696,6 +726,6 @@ export default function ConsultationPage() {
         description="Are you sure you want to log out?"
         confirmText={isLoggingOut ? 'Logging out...' : 'Log Out'}
       />
-</div>
+    </div>
   );
 }

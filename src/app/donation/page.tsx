@@ -3,7 +3,6 @@
 import { Alert } from '@/components/alert';
 import { Header } from '@/components/header';
 import { authClient } from '@/lib/auth/auth-client';
-
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
@@ -144,9 +143,9 @@ const DonationContent = () => {
       )}
 
       {/* HEADER */}
-      <div className="shrink-0 w-full z-10 border-b border-[#D0D5CB]">
+      <div className="sticky top-0 z-[100] w-full bg-[#F7F3ED]/80 backdrop-blur-md border-b border-[#D0D5CB]/30">
         <Header
-          withSearch={true}
+          withSearch={false}
           withLogo={true}
           onLogoutClick={() => setIsLogoutAlertOpen(true)}
         />
@@ -485,7 +484,7 @@ const DonationContent = () => {
           </section>
         </aside>
       </main>
-    
+
       <Alert
         isOpen={isLogoutAlertOpen}
         onClose={() => setIsLogoutAlertOpen(false)}
@@ -495,7 +494,7 @@ const DonationContent = () => {
         description="Are you sure you want to log out?"
         confirmText={isLoggingOut ? 'Logging out...' : 'Log Out'}
       />
-</div>
+    </div>
   );
 };
 
