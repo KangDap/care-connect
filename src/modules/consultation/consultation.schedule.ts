@@ -68,8 +68,6 @@ export const getScheduleAvailabilityForDate = async (
   const currentWibDate = wibNow.toISOString().split('T')[0];
   const currentWibTime = wibNow.toISOString().slice(11, 16);
 
-  // Assuming `date` or `selectedDate` effectively refers to the day being queried.
-  // Because new Date("YYYY-MM-DD") converts to UTC midnight, its ISO string gives back "YYYY-MM-DD"
   const requestDateString = selectedDate.toISOString().split('T')[0];
   const isToday = requestDateString === currentWibDate;
 
