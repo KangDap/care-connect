@@ -32,8 +32,8 @@ model User {
   donations     Donation[]
   consultationsAsUser  Consultation[] @relation("UserConsultations")
   consultationsAsPsych Consultation[] @relation("PsychologistConsultations")
-  channelMemberships   ChannelMember[]
-  chats                Chat[]
+  consultationChannelMemberships ConsultationChannelMember[]
+  consultationChats              ConsultationChat[]
   schedules      Schedule[]
   sessions      Session[]
   accounts      Account[]
@@ -172,6 +172,9 @@ model Consultation {
   userId         String             @map("user_id")
   psychologistId String?            @map("psychologist_id")
   
+  consultationChannelId Int?               @unique @map("consultation_channel_id")
+  consultationChannel   ConsultationChannel? @relation(fields: [consultationChannelId], references: [id])
+  
   title          String             @db.VarChar(255)
   category       String             @db.VarChar(255)
   description    String             @db.VarChar(255)
@@ -229,55 +232,62 @@ enum PaymentStatus {
   REFUNDED
 }
 
-model Channel {
-  id          Int         @id @default(autoincrement()) @map("channel_id")
+model ConsultationChannel {
+  id          Int         @id @default(autoincrement()) @map("consultation_channel_id")
   name        String      @db.VarChar(100) @unique
   description String?     @db.Text
   coverUrl    String?     @db.Text @map("cover_url")
   type        ChannelType @default(PUBLIC)
   createdAt   DateTime    @default(now()) @map("created_at")
 
-  members ChannelMember[]
-  chats   Chat[]
+  consultation Consultation?
 
-  @@map("channels")
+  members ConsultationChannelMember[]
+  chats   ConsultationChat[]
+
+  @@map("consultation_channels")
 }
 
-model ChannelMember {
-  channelId Int         @map("channel_id")
-  userId    String      @map("user_id")
-  role      ChannelRole @default(MEMBER)
-  joinedAt  DateTime    @default(now()) @map("joined_at")
+model ConsultationChannelMember {
+  consultationChannelId Int         @map("consultation_channel_id")
+  userId                String      @map("user_id")
+  role                  ConsultationChannelRole @default(MEMBER)
+  joinedAt              DateTime    @default(now()) @map("joined_at")
 
-  channel Channel @relation(fields: [channelId], references: [id])
-  user    User    @relation(fields: [userId], references: [id])
+  consultationChannel ConsultationChannel @relation(fields: [consultationChannelId], references: [id])
+  user                User                @relation(fields: [userId], references: [id])
 
-  @@id([channelId, userId])
-  @@map("channel_members")
+  @@id([consultationChannelId, userId])
+  @@map("consultation_channel_members")
 }
 
-model Chat {
-  id          Int       @id @default(autoincrement()) @map("chat_id")
-  channelId   Int       @map("channel_id")
-  userId      String    @map("user_id")
-  content     String    @db.Text
-  mediaUrl    String?   @db.Text @map("media_url")
-  isAnonymous Boolean   @default(false) @map("is_anonymous")
-  replyToId   Int?      @map("reply_to_id")
-  timestamp   DateTime  @default(now())
-  editedAt    DateTime? @map("edited_at")
+model ConsultationChat {
+  id                    Int       @id @default(autoincrement()) @map("chat_id")
+  consultationChannelId Int       @map("consultation_channel_id")
+  userId                String    @map("user_id")
+  content               String    @db.Text
+  mediaUrl              String?   @db.Text @map("media_url")
+  isAnonymous           Boolean   @default(false) @map("is_anonymous")
+  replyToId             Int?      @map("reply_to_id")
+  timestamp             DateTime  @default(now())
+  editedAt              DateTime? @map("edited_at")
 
-  channel Channel @relation(fields: [channelId], references: [id])
-  user    User    @relation(fields: [userId], references: [id])
-  replyTo Chat?   @relation("ChatReplies", fields: [replyToId], references: [id])
-  replies Chat[]  @relation("ChatReplies")
+  consultationChannel ConsultationChannel @relation(fields: [consultationChannelId], references: [id])
+  user                User                @relation(fields: [userId], references: [id])
+  replyTo ConsultationChat?   @relation("ConsultationChatReplies", fields: [replyToId], references: [id])
+  replies ConsultationChat[]  @relation("ConsultationChatReplies")
 
-  @@map("chats")
+  @@map("consultation_chats")
 }
 
 enum ChannelType {
   PUBLIC
   PRIVATE
+}
+
+enum ConsultationChannelRole {
+  PSYCHOLOGIST
+  MEMBER
 }
 
 enum ChannelRole {
