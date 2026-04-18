@@ -317,12 +317,15 @@ export default function ConsultationChatContent() {
                                         href={chat.mediaUrl}
                                         target="_blank"
                                         rel="noopener noreferrer"
+                                        className="block relative max-w-full h-auto"
                                       >
-                                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                                        <img
+                                        <Image
                                           src={chat.mediaUrl}
                                           alt="Attached Media"
-                                          className="max-w-full rounded-lg"
+                                          width={400}
+                                          height={300}
+                                          className="rounded-lg object-contain bg-white"
+                                          unoptimized
                                         />
                                       </a>
                                     ) : (
@@ -427,12 +430,15 @@ export default function ConsultationChatContent() {
                                       href={chat.mediaUrl}
                                       target="_blank"
                                       rel="noopener noreferrer"
+                                      className="block relative max-w-full h-auto"
                                     >
-                                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                                      <img
+                                      <Image
                                         src={chat.mediaUrl}
                                         alt="Attached Media"
-                                        className="max-w-full rounded-lg bg-white"
+                                        width={400}
+                                        height={300}
+                                        className="rounded-lg object-contain bg-white"
+                                        unoptimized
                                       />
                                     </a>
                                   ) : (
