@@ -6,7 +6,7 @@ type ReportItem = {
   id: number;
   title: string;
   status: string;
-  timestamp: Date;
+  createdAt: Date;
 };
 
 type ReportsContentProps = {
@@ -88,7 +88,7 @@ export default function ReportsContent({ reports }: ReportsContentProps) {
                     {row.title}
                   </td>
                   <td className="px-8 py-6 opacity-60">
-                    {formatDateLabel(row.timestamp)}
+                    {formatDateLabel(row.createdAt)}
                   </td>
                   <td className="px-8 py-6">
                     <span

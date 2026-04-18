@@ -43,13 +43,13 @@ export default async function DashboardPage() {
     }),
     prisma.report.findMany({
       where: { userId: session.user.id },
-      orderBy: { timestamp: 'desc' },
+      orderBy: { createdAt: 'desc' },
       take: 10,
       select: {
         id: true,
         title: true,
         status: true,
-        timestamp: true,
+        createdAt: true,
       },
     }),
     prisma.donation.findMany({

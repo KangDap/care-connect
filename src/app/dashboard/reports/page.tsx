@@ -15,12 +15,12 @@ export default async function ReportsPage() {
 
   const reports = await prisma.report.findMany({
     where: { userId: session.user.id },
-    orderBy: { timestamp: 'desc' },
+    orderBy: { createdAt: 'desc' },
     select: {
       id: true,
       title: true,
       status: true,
-      timestamp: true,
+      createdAt: true,
     },
   });
 

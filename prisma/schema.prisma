@@ -104,21 +104,60 @@ enum Gender {
   PREFER_NOT_TO_SAY
 }
 
+enum ReportCategory {
+  PHYSICAL
+  SEXUAL
+  PSYCHOLOGICAL
+  OTHER
+}
+
 model Report {
-  id          Int          @id @default(autoincrement()) @map("report_id")
-  userId      String       @map("user_id")
-  title       String       @db.VarChar(255)
-  description String       @db.VarChar(255)
-  location    String       @db.VarChar(255)
-  timestamp   DateTime     @default(now())
-  status      ReportStatus
-  isAnonymous Boolean      @default(false) @map("is_anonymous")
-  isPublic    Boolean      @default(true) @map("is_public")
+  id            Int            @id @default(autoincrement()) @map("report_id")
+  userId        String         @map("user_id")
+
+  title         String         @db.VarChar(255)
+  category      ReportCategory @map("category")
+  incidentDate  DateTime       @db.Date @map("incident_date")
+
+  province      String         @db.VarChar(120)
+  city          String         @db.VarChar(120)
+  district      String         @db.VarChar(120)
+  address       String?        @db.VarChar(255)
+
+  description   String         @db.Text
+
+  status        ReportStatus   @default(PENDING)
+  isAnonymous   Boolean        @default(false) @map("is_anonymous")
+  isPublic      Boolean        @default(true) @map("is_public")
+
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
 
   user          User           @relation(fields: [userId], references: [id])
   donations     Donation[]
+  evidences     ReportEvidence[]
 
+  @@index([userId])
+  @@index([status])
+  @@index([incidentDate])
+  @@index([isPublic, status])
+  @@index([category])
   @@map("reports")
+}
+
+model ReportEvidence {
+  id          Int      @id @default(autoincrement()) @map("evidence_id")
+  reportId    Int      @map("report_id")
+  fileName    String   @map("file_name") @db.VarChar(255)
+  fileUrl     String   @map("file_url") @db.Text
+  mimeType    String   @map("mime_type") @db.VarChar(120)
+  fileSize    Int      @map("file_size")
+  uploadedAt  DateTime @default(now()) @map("uploaded_at")
+
+  report      Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([reportId])
+  @@map("report_evidences")
 }
 
 enum ReportStatus {

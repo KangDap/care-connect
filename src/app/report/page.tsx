@@ -10,6 +10,7 @@ import { useState } from 'react';
 
 export default function AnonymousReportPage() {
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [alertConfig, setAlertConfig] = useState({
@@ -19,13 +20,81 @@ export default function AnonymousReportPage() {
     onConfirm: () => {},
   });
 
-  // SEKARANG SUDAH MATCH:
-  const handleFinalSubmit = (data: ReportSubmitData) => {
-    console.log('Submitting:', data);
-    router.push('/dashboard');
+  const mapCategoryToApiValue = (value: string) => {
+    const normalized = value.trim().toUpperCase();
+    switch (normalized) {
+      case 'PHYSICAL':
+      case 'SEXUAL':
+      case 'PSYCHOLOGICAL':
+      case 'OTHER':
+        return normalized;
+      default:
+        return 'OTHER';
+    }
   };
 
-  // ... (sisa kode navigation & return sama, jangan diubah)
+  const handleFinalSubmit = async (data: ReportSubmitData) => {
+    try {
+      setIsSubmitting(true);
+
+      const formData = new FormData();
+      formData.append('title', data.title);
+      formData.append('category', mapCategoryToApiValue(data.type));
+      formData.append('incidentDate', data.date);
+      formData.append('province', data.province);
+      formData.append('city', data.city);
+      formData.append('district', data.district);
+      formData.append('address', data.fullAddress || '');
+      formData.append('description', data.description);
+      formData.append('isAnonymous', data.isAnonymous ? 'on' : '');
+
+      for (const file of data.files) {
+        formData.append('evidence', file);
+      }
+
+      const response = await fetch('/api/report', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        const message =
+          payload?.error?.message ||
+          payload?.error ||
+          'Failed to submit report';
+        throw new Error(message);
+      }
+
+      setAlertConfig({
+        title: 'Report Submitted',
+        description:
+          'Your report has been submitted successfully and is now being reviewed.',
+        type: 'primary',
+        onConfirm: () => {
+          setIsAlertOpen(false);
+          router.push('/dashboard');
+        },
+      });
+      setIsAlertOpen(true);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : 'Failed to submit report. Please try again.';
+
+      setAlertConfig({
+        title: 'Submission Failed',
+        description: message,
+        type: 'danger',
+        onConfirm: () => setIsAlertOpen(false),
+      });
+      setIsAlertOpen(true);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const confirmNavigation = (targetPath: string, mode: 'nav' | 'logout') => {
     setAlertConfig({
@@ -61,6 +130,11 @@ export default function AnonymousReportPage() {
             formSubtitle="Fill in the details below. Your safety and privacy are our top priority."
             onSubmit={handleFinalSubmit}
           />
+          {isSubmitting ? (
+            <p className="mt-4 text-center text-sm font-semibold text-[#8EA087]">
+              Submitting your report...
+            </p>
+          ) : null}
         </div>
       </main>
 
