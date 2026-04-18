@@ -81,7 +81,7 @@ type DashboardContentProps = {
     id: number;
     title: string;
     status: string;
-    timestamp: Date;
+    createdAt: Date;
   }>;
   donations: Array<{ amount: number }>;
   displayName: string;
