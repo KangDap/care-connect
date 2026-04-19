@@ -45,6 +45,7 @@ export const findDonationById = async (donationId: number) => {
     where: { id: donationId },
     select: {
       id: true,
+      userId: true,
       paymentStatus: true,
     },
   });

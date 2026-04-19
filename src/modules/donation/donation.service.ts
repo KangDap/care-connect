@@ -3,6 +3,7 @@ import { ApiError, Errors } from '@/lib/error';
 import {
   createMidtransSnapTransaction,
   getMidtransConfig,
+  getMidtransTransactionStatus,
   verifyMidtransSignature,
 } from '@/lib/midtrans';
 
@@ -21,6 +22,7 @@ import type {
   DonationUserContext,
   HandleWebhookResult,
   MidtransWebhookInput,
+  SyncDonationStatusResult,
 } from './donation.types';
 
 const mapMidtransStatusToDonationStatus = (
@@ -31,17 +33,17 @@ const mapMidtransStatusToDonationStatus = (
     case 'pending':
       return PaymentStatus.PENDING;
     case 'settlement':
-      return PaymentStatus.SUCCESS;
+      return PaymentStatus.PAID;
     case 'capture':
       return fraudStatus === 'challenge'
         ? PaymentStatus.PENDING
-        : PaymentStatus.SUCCESS;
+        : PaymentStatus.PAID;
     case 'deny':
       return PaymentStatus.FAILED;
     case 'cancel':
-      return PaymentStatus.FAILED;
+      return PaymentStatus.CANCELLED;
     case 'expire':
-      return PaymentStatus.FAILED;
+      return PaymentStatus.EXPIRED;
     case 'refund':
     case 'partial_refund':
       return PaymentStatus.REFUNDED;
@@ -111,6 +113,43 @@ export class DonationService {
         throw error;
       }
       throw Errors.internal('Failed to process Midtrans webhook');
+    }
+  }
+
+  static async syncDonationStatusByOrderId(
+    orderId: string,
+    userId: string,
+  ): Promise<SyncDonationStatusResult> {
+    try {
+      const donationId = parseDonationIdFromOrderId(orderId);
+      const donation = await findDonationById(donationId);
+
+      if (!donation || donation.userId !== userId) {
+        throw Errors.notFound('Donation not found for this order');
+      }
+
+      const transaction = await getMidtransTransactionStatus(orderId);
+      const mappedStatus = mapMidtransStatusToDonationStatus(
+        transaction.transaction_status,
+        transaction.fraud_status,
+      );
+
+      if (donation.paymentStatus !== mappedStatus) {
+        await updateDonationStatus(donation.id, mappedStatus);
+      }
+
+      return {
+        donationId: donation.id,
+        paymentStatus: mappedStatus,
+        transactionStatus: transaction.transaction_status,
+      };
+    } catch (error) {
+      console.error('DONATION STATUS SYNC SERVICE ERROR:', error);
+      if (error instanceof ApiError) {
+        throw error;
+      }
+
+      throw Errors.internal('Failed to sync donation status');
     }
   }
 

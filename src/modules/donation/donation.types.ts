@@ -59,3 +59,5 @@ export type HandleWebhookResult = {
   paymentStatus: DonationPaymentStatus;
   transactionStatus: string;
 };
+
+export type SyncDonationStatusResult = HandleWebhookResult;
