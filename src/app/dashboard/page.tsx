@@ -60,6 +60,10 @@ export default async function DashboardPage() {
     }),
   ]);
 
+  const serializedDonations = donations.map((item) => ({
+    amount: Number(item.amount),
+  }));
+
   const pendingReportsCount = reports.filter(
     (item) => item.status === 'PENDING',
   ).length;
@@ -77,7 +81,7 @@ export default async function DashboardPage() {
       <DashboardContent
         consultations={consultations}
         reports={reports}
-        donations={donations}
+        donations={serializedDonations}
         displayName={displayName}
         pendingReportsCount={pendingReportsCount}
       />

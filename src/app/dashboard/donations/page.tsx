@@ -30,11 +30,17 @@ export default async function DonationsPage() {
     },
   });
 
+  const serializedDonations = donations.map((donation) => ({
+    ...donation,
+    amount: Number(donation.amount),
+    timestamp: donation.timestamp.toISOString(),
+  }));
+
   return (
     <React.Suspense
       fallback={<div className="p-12 text-[#8EA087]">Loading donations...</div>}
     >
-      <DonationsContent donations={donations} />
+      <DonationsContent donations={serializedDonations} />
     </React.Suspense>
   );
 }

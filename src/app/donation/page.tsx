@@ -4,7 +4,7 @@ import { Alert } from '@/components/alert';
 import { Header } from '@/components/header';
 import { authClient } from '@/lib/auth/auth-client';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const formatCurrency = (val: number) =>
   new Intl.NumberFormat('id-ID', {
@@ -12,6 +12,29 @@ const formatCurrency = (val: number) =>
     currency: 'IDR',
     minimumFractionDigits: 0,
   }).format(val);
+
+const HARDCODED_REPORT_ID = 2;
+
+type DonationTargetReport = {
+  id: number;
+  title: string;
+  category: string;
+  province: string;
+  city: string;
+  status: string;
+  incidentDate: string;
+  summary: string;
+};
+
+const formatReportDate = (value: string) =>
+  new Intl.DateTimeFormat('id-ID', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date(value));
+
+const formatReportDisplayId = (id: number) =>
+  `#REP-${String(id).padStart(4, '0')}`;
 
 const DonationContent = () => {
   const router = useRouter();
@@ -27,16 +50,93 @@ const DonationContent = () => {
 
   const [amount, setAmount] = useState<number>(50000);
   const [paymentMethod, setPaymentMethod] = useState<string>('CREDIT_CARD');
-  const [supportType, setSupportType] = useState<string>('SUPPORT_VICTIM');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingReport, setIsLoadingReport] = useState(true);
+  const [targetReport, setTargetReport] = useState<DonationTargetReport | null>(
+    null,
+  );
   const [message, setMessage] = useState<{ type: string; text: string }>({
     type: '',
     text: '',
   });
 
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const fetchTargetReport = async () => {
+      try {
+        setIsLoadingReport(true);
+
+        const res = await fetch(`/api/report?id=${HARDCODED_REPORT_ID}`, {
+          signal: controller.signal,
+        });
+        const result = await res.json().catch(() => ({}));
+
+        if (!res.ok || !result?.success || !result?.data) {
+          throw new Error(
+            result?.error?.message || 'Failed to load report details',
+          );
+        }
+
+        const report = result.data;
+        setTargetReport({
+          id: report.id,
+          title: report.title,
+          category: report.category,
+          province: report.province,
+          city: report.city,
+          status: report.status,
+          incidentDate: new Date(report.incidentDate).toISOString(),
+          summary: report.description,
+        });
+      } catch (error) {
+        if (controller.signal.aborted) {
+          return;
+        }
+
+        console.error('Failed to fetch target report:', error);
+        setMessage({
+          type: 'error',
+          text: 'Failed to load donation target report. Please refresh the page.',
+        });
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsLoadingReport(false);
+        }
+      }
+    };
+
+    fetchTargetReport();
+
+    return () => {
+      controller.abort();
+    };
+  }, []);
+
+  useEffect(() => {
+    const handlePageShow = () => {
+      setMessage({ type: '', text: '' });
+      setIsSubmitting(false);
+    };
+
+    window.addEventListener('pageshow', handlePageShow);
+
+    return () => {
+      window.removeEventListener('pageshow', handlePageShow);
+    };
+  }, []);
+
   const handleDonate = async () => {
     if (!amount || amount <= 0) {
       setMessage({ type: 'error', text: 'Please enter a valid amount.' });
+      return;
+    }
+
+    if (!targetReport) {
+      setMessage({
+        type: 'error',
+        text: 'Donation target report is not available yet.',
+      });
       return;
     }
 
@@ -47,7 +147,7 @@ const DonationContent = () => {
       const formData = new FormData();
       formData.append('amount', amount.toString());
       formData.append('paymentMethod', paymentMethod);
-      formData.append('supportType', supportType);
+      formData.append('reportId', targetReport.id.toString());
 
       const res = await fetch('/api/donation', {
         method: 'POST',
@@ -59,20 +159,26 @@ const DonationContent = () => {
       if (!res.ok || !result.success) {
         setMessage({
           type: 'error',
-          text: result.error || 'Failed to process donation.',
+          text: result?.error?.message || 'Failed to process donation.',
         });
         setIsSubmitting(false);
         return;
       }
 
-      setMessage({
-        type: 'success',
-        text: 'Donation processed successfully! Redirecting...',
-      });
+      const redirectUrl = result?.data?.payment?.redirectUrl as
+        | string
+        | undefined;
 
-      setTimeout(() => {
-        router.replace('/dashboard/donations');
-      }, 2000);
+      if (!redirectUrl) {
+        setMessage({
+          type: 'error',
+          text: 'Payment redirect URL is missing. Please try again.',
+        });
+        setIsSubmitting(false);
+        return;
+      }
+
+      window.location.assign(redirectUrl);
     } catch (error) {
       console.error('Donation failed:', error);
       setMessage({
@@ -163,7 +269,7 @@ const DonationContent = () => {
             </p>
           </section>
 
-          {/* Select Donation Type */}
+          {/* Donation Target */}
           <section className="bg-white border border-[#D0D5CB] rounded-xl p-8 shadow-sm">
             <div className="flex items-center gap-2 mb-6 text-[#D1B698]">
               <svg
@@ -173,91 +279,70 @@ const DonationContent = () => {
                 viewBox="0 0 24 24"
               >
                 <path
-                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                  d="M8 10h.01M12 10h.01M16 10h.01M9 16h6M7 4h10a2 2 0 012 2v12a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2z"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth="2"
                 />
               </svg>
               <h2 className="text-[#193C1F] font-bold text-lg">
-                Select Donation Type
+                Report Target ({formatReportDisplayId(HARDCODED_REPORT_ID)})
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div
-                onClick={() => setSupportType('SUPPORT_VICTIM')}
-                className={`border-2 rounded-xl p-6 cursor-pointer transition-all ${supportType === 'SUPPORT_VICTIM' ? 'border-[#193C1F] bg-[#D0D5CB]' : 'border-[#D0D5CB] bg-[#EDE4D8]'}`}
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <div
-                    className={`p-2 rounded-lg ${supportType === 'SUPPORT_VICTIM' ? 'bg-white text-[#193C1F]' : 'bg-white text-[#8EA087]'}`}
-                  >
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                      />
-                    </svg>
-                  </div>
-                  <div
-                    className={`w-4 h-4 rounded-full border-4 ${supportType === 'SUPPORT_VICTIM' ? 'border-[#193C1F] bg-white' : 'border-[#8EA087] bg-transparent'}`}
-                  ></div>
-                </div>
-                <h3 className="text-[#193C1F] font-bold mb-1">
-                  Support a Victim
+            <div className="rounded-xl border border-[#D0D5CB] bg-[#F7F3ED] p-6 space-y-4">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="rounded-full bg-[#193C1F] px-3 py-1 text-xs font-bold text-[#F7F3ED]">
+                  {formatReportDisplayId(
+                    targetReport?.id ?? HARDCODED_REPORT_ID,
+                  )}
+                </span>
+                <span className="rounded-full border border-[#D1B698] px-3 py-1 text-xs font-bold text-[#193C1F]">
+                  {targetReport?.category || 'Loading...'}
+                </span>
+                <span className="rounded-full border border-[#8EA087] px-3 py-1 text-xs font-bold text-[#193C1F]">
+                  {targetReport?.status || 'Loading...'}
+                </span>
+              </div>
+
+              <div>
+                <h3 className="text-xl font-extrabold text-[#193C1F] mb-2">
+                  {targetReport?.title || 'Loading report details...'}
                 </h3>
-                <p className="text-[#8EA087] text-sm leading-tight">
-                  Directly fund recovery efforts and medical bills.
+                <p className="text-sm text-[#193C1F]/70 leading-relaxed">
+                  {targetReport?.summary ||
+                    'Please wait while we fetch report details.'}
                 </p>
               </div>
 
-              <div
-                onClick={() => setSupportType('SUPPORT_PLATFORM')}
-                className={`border-2 rounded-xl p-6 cursor-pointer transition-all ${supportType === 'SUPPORT_PLATFORM' ? 'border-[#193C1F] bg-[#D0D5CB]' : 'border-[#D0D5CB] bg-[#EDE4D8]'}`}
-              >
-                <div className="flex justify-between items-start mb-4">
-                  <div
-                    className={`p-2 rounded-lg ${supportType === 'SUPPORT_PLATFORM' ? 'bg-white text-[#193C1F]' : 'bg-white text-[#8EA087]'}`}
-                  >
-                    <svg
-                      className="w-6 h-6"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
-                  </div>
-                  <div
-                    className={`w-4 h-4 rounded-full border-4 ${supportType === 'SUPPORT_PLATFORM' ? 'border-[#193C1F] bg-white' : 'border-[#8EA087] bg-transparent'}`}
-                  ></div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                <div className="rounded-lg bg-white border border-[#D0D5CB] p-3">
+                  <p className="text-[#8EA087] text-xs mb-1">Location</p>
+                  <p className="font-bold text-[#193C1F]">
+                    {targetReport
+                      ? `${targetReport.city}, ${targetReport.province}`
+                      : '-'}
+                  </p>
                 </div>
-                <h3 className="text-[#193C1F] font-bold mb-1">
-                  Support Platform
-                </h3>
-                <p className="text-[#8EA087] text-sm leading-tight">
-                  Help maintain secure infrastructure and operations.
-                </p>
+                <div className="rounded-lg bg-white border border-[#D0D5CB] p-3">
+                  <p className="text-[#8EA087] text-xs mb-1">Incident Date</p>
+                  <p className="font-bold text-[#193C1F]">
+                    {targetReport
+                      ? formatReportDate(targetReport.incidentDate)
+                      : '-'}
+                  </p>
+                </div>
+                <div className="rounded-lg bg-white border border-[#D0D5CB] p-3">
+                  <p className="text-[#8EA087] text-xs mb-1">Target Donasi</p>
+                  <p className="font-bold text-[#193C1F]">Korban</p>
+                </div>
               </div>
+            </div>
+
+            <div className="mt-4 rounded-lg border border-[#D1B698] bg-[#FFF9F2] p-4 text-xs text-[#6E5A44]">
+              {isLoadingReport
+                ? 'Mengambil data report dari database...'
+                : 'Testing only, waiting for PublicReports page.'}
             </div>
           </section>
 
@@ -382,11 +467,17 @@ const DonationContent = () => {
             </h2>
             <div className="space-y-4 mb-8">
               <div className="flex justify-between items-center">
-                <span className="text-[#8EA087]">Support Type</span>
+                <span className="text-[#8EA087]">Report Target</span>
                 <span className="text-[#193C1F] font-bold">
-                  {supportType === 'SUPPORT_VICTIM'
-                    ? 'Victim Fund'
-                    : 'Platform Support'}
+                  {formatReportDisplayId(
+                    targetReport?.id ?? HARDCODED_REPORT_ID,
+                  )}
+                </span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-[#8EA087]">Case</span>
+                <span className="text-[#193C1F] font-bold text-right max-w-[65%]">
+                  {targetReport?.title || 'Loading report details...'}
                 </span>
               </div>
               <div className="flex justify-between items-center">
@@ -417,7 +508,7 @@ const DonationContent = () => {
 
             <button
               onClick={handleDonate}
-              disabled={isSubmitting}
+              disabled={isSubmitting || isLoadingReport || !targetReport}
               className="w-full bg-[#8EA087] text-[#F7F3ED] py-4 rounded-xl font-bold flex items-center justify-center gap-2 mb-4 hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <svg
@@ -433,7 +524,7 @@ const DonationContent = () => {
                   d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                 />
               </svg>
-              Donate Now
+              {isLoadingReport ? 'Loading Report...' : 'Donate Now'}
             </button>
             <p className="text-center text-xs text-[#8EA087] flex items-center justify-center gap-1">
               <svg
