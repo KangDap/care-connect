@@ -23,6 +23,12 @@ type MidtransSnapTransactionResponse = {
   redirect_url: string;
 };
 
+type MidtransTransactionStatusResponse = {
+  order_id: string;
+  transaction_status: string;
+  fraud_status?: string;
+};
+
 const globalForMidtrans = globalThis as unknown as {
   midtransSnap: InstanceType<typeof midtransClient.Snap> | undefined;
 };
@@ -179,4 +185,12 @@ export const verifyMidtransSignature = (payload: {
     .digest('hex');
 
   return expectedSignature === payload.signature_key;
+};
+
+export const getMidtransTransactionStatus = async (orderId: string) => {
+  const snap = getMidtransSnapClient();
+
+  return (await snap.transaction.status(
+    orderId,
+  )) as MidtransTransactionStatusResponse;
 };
