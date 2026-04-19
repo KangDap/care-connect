@@ -1,6 +1,7 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
 
 type DonationItem = {
   id: number;
@@ -38,9 +39,70 @@ const formatPaymentMethod = (value: string) =>
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 
+const getPaymentNotice = (payment: string | null, orderId: string | null) => {
+  if (!payment) {
+    return null;
+  }
+
+  const orderLabel = orderId ? ` (Order: ${orderId})` : '';
+
+  if (payment === 'success') {
+    return {
+      containerClass: 'border border-green-200 bg-green-50 text-green-800',
+      title: 'Payment Success',
+      description: `Your donation payment was completed successfully${orderLabel}.`,
+    };
+  }
+
+  if (payment === 'pending') {
+    return {
+      containerClass: 'border border-amber-200 bg-amber-50 text-amber-800',
+      title: 'Payment Pending',
+      description: `Your payment is still pending confirmation${orderLabel}. Please complete the payment if needed.`,
+    };
+  }
+
+  if (payment === 'error') {
+    return {
+      containerClass: 'border border-red-200 bg-red-50 text-red-700',
+      title: 'Payment Failed',
+      description: `We could not complete your payment${orderLabel}. Please try again.`,
+    };
+  }
+
+  return null;
+};
+
 export default function DonationsContent({ donations }: DonationsContentProps) {
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const query = searchParams.get('search')?.toLowerCase() || '';
+  const payment = searchParams.get('payment');
+  const orderId = searchParams.get('orderId');
+  const paymentNotice = getPaymentNotice(payment, orderId);
+
+  useEffect(() => {
+    if (!payment && !orderId) {
+      return;
+    }
+
+    const nextParams = new URLSearchParams(searchParams.toString());
+    nextParams.delete('payment');
+    nextParams.delete('orderId');
+
+    const nextQuery = nextParams.toString();
+    const nextUrl = nextQuery ? `${pathname}?${nextQuery}` : pathname;
+
+    // Replace URL so status notification does not reappear on page refresh.
+    const timeout = setTimeout(() => {
+      router.replace(nextUrl);
+    }, 2500);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [orderId, pathname, payment, router, searchParams]);
 
   const filteredData = donations.filter(
     (item) =>
@@ -51,6 +113,17 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
 
   return (
     <div className="space-y-8 animate-fade-in">
+      {paymentNotice && (
+        <div
+          className={`rounded-2xl px-5 py-4 ${paymentNotice.containerClass}`}
+        >
+          <p className="text-sm font-black uppercase tracking-wide">
+            {paymentNotice.title}
+          </p>
+          <p className="text-sm mt-1">{paymentNotice.description}</p>
+        </div>
+      )}
+
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-[32px] font-black text-[#193C1F]">
