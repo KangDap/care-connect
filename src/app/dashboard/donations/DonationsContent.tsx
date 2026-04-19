@@ -39,7 +39,51 @@ const formatPaymentMethod = (value: string) =>
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 
-const getPaymentNotice = (payment: string | null, orderId: string | null) => {
+const formatPaymentStatus = (value: string) =>
+  value
+    .toLowerCase()
+    .split('_')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+
+type PaymentNoticeState =
+  | 'success'
+  | 'pending'
+  | 'failed'
+  | 'expired'
+  | 'cancelled'
+  | 'error';
+
+const getPaymentStatusClass = (status: string) => {
+  const normalized = status.toUpperCase();
+
+  if (normalized === 'PAID') {
+    return 'bg-green-100 text-green-700';
+  }
+
+  if (normalized === 'PENDING') {
+    return 'bg-[#D1B698]/30 text-[#D1B698]';
+  }
+
+  if (normalized === 'FAILED' || normalized === 'CANCELLED') {
+    return 'bg-red-100 text-red-600';
+  }
+
+  if (normalized === 'EXPIRED') {
+    return 'bg-red-100 text-red-600';
+  }
+
+  if (normalized === 'REFUNDED') {
+    return 'bg-blue-100 text-blue-700';
+  }
+
+  return 'bg-[#EBE6DE] text-[#193C1F]';
+};
+
+const getPaymentNotice = (
+  payment: PaymentNoticeState | null,
+  orderId: string | null,
+) => {
   if (!payment) {
     return null;
   }
@@ -62,7 +106,7 @@ const getPaymentNotice = (payment: string | null, orderId: string | null) => {
     };
   }
 
-  if (payment === 'error') {
+  if (payment === 'failed') {
     return {
       containerClass: 'border border-red-200 bg-red-50 text-red-700',
       title: 'Payment Failed',
@@ -70,10 +114,36 @@ const getPaymentNotice = (payment: string | null, orderId: string | null) => {
     };
   }
 
+  if (payment === 'expired') {
+    return {
+      containerClass: 'border border-red-200 bg-red-50 text-red-700',
+      title: 'Payment Expired',
+      description: `Your payment time has expired${orderLabel}. Please create a new donation payment.`,
+    };
+  }
+
+  if (payment === 'cancelled') {
+    return {
+      containerClass: 'border border-red-200 bg-red-50 text-red-700',
+      title: 'Payment Cancelled',
+      description: `Your payment was cancelled${orderLabel}. You can try donating again anytime.`,
+    };
+  }
+
+  if (payment === 'error') {
+    return {
+      containerClass: 'border border-red-200 bg-red-50 text-red-700',
+      title: 'Payment Error',
+      description: `An unexpected payment error occurred${orderLabel}. Please try again.`,
+    };
+  }
+
   return null;
 };
 
-const mapTransactionStatusToNotice = (transactionStatus: string | null) => {
+const mapTransactionStatusToNotice = (
+  transactionStatus: string | null,
+): PaymentNoticeState | null => {
   if (!transactionStatus) {
     return null;
   }
@@ -94,13 +164,27 @@ const mapTransactionStatusToNotice = (transactionStatus: string | null) => {
     normalized === 'expire' ||
     normalized === 'failure'
   ) {
-    return 'error';
+    return 'failed';
+  }
+
+  if (normalized === 'cancel') {
+    return 'cancelled';
+  }
+
+  if (normalized === 'expire') {
+    return 'expired';
+  }
+
+  if (normalized === 'failure') {
+    return 'failed';
   }
 
   return null;
 };
 
-const mapDonationStatusToNotice = (status: string | undefined) => {
+const mapDonationStatusToNotice = (
+  status: string | undefined,
+): PaymentNoticeState | null => {
   if (!status) {
     return null;
   }
@@ -115,12 +199,16 @@ const mapDonationStatusToNotice = (status: string | undefined) => {
     return 'pending';
   }
 
-  if (
-    normalized === 'FAILED' ||
-    normalized === 'EXPIRED' ||
-    normalized === 'CANCELLED'
-  ) {
-    return 'error';
+  if (normalized === 'FAILED') {
+    return 'failed';
+  }
+
+  if (normalized === 'EXPIRED') {
+    return 'expired';
+  }
+
+  if (normalized === 'CANCELLED') {
+    return 'cancelled';
   }
 
   return null;
@@ -134,7 +222,7 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
   const payment = searchParams.get('payment');
   const orderId = searchParams.get('orderId') || searchParams.get('order_id');
   const transactionStatus = searchParams.get('transaction_status');
-  const initialNotice = useMemo(
+  const initialNotice = useMemo<PaymentNoticeState | null>(
     () =>
       mapTransactionStatusToNotice(transactionStatus) ||
       (payment === 'success' || payment === 'pending' || payment === 'error'
@@ -142,9 +230,8 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
         : null),
     [payment, transactionStatus],
   );
-  const [resolvedPayment, setResolvedPayment] = useState<string | null>(
-    initialNotice,
-  );
+  const [resolvedPayment, setResolvedPayment] =
+    useState<PaymentNoticeState | null>(initialNotice);
   const paymentNotice = getPaymentNotice(resolvedPayment, orderId);
 
   useEffect(() => {
@@ -281,6 +368,7 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
               <th className="px-8 py-5">Source / Donor</th>
               <th className="px-8 py-5">Date</th>
               <th className="px-8 py-5">Via</th>
+              <th className="px-8 py-5">Status</th>
               <th className="px-8 py-5 text-right">Amount</th>
             </tr>
           </thead>
@@ -298,6 +386,13 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
                   <td className="px-8 py-6 font-medium italic text-[#8EA087]">
                     {formatPaymentMethod(row.paymentMethod)}
                   </td>
+                  <td className="px-8 py-6">
+                    <span
+                      className={`px-4 py-1.5 rounded-full text-[10px] font-black ${getPaymentStatusClass(row.paymentStatus)}`}
+                    >
+                      {formatPaymentStatus(row.paymentStatus)}
+                    </span>
+                  </td>
                   <td className="px-8 py-6 text-right font-black text-[16px]">
                     {formatRupiah(row.amount)}
                   </td>
@@ -306,7 +401,7 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
             ) : (
               <tr>
                 <td
-                  colSpan={4}
+                  colSpan={5}
                   className="p-20 text-center text-[#8EA087] font-bold"
                 >
                   No donations found.
