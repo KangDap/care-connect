@@ -207,7 +207,8 @@ model Donation {
   id            Int           @id @default(autoincrement()) @map("donation_id")
   userId        String        @map("user_id")
   reportId      Int           @map("report_id")
-  amount        Float
+
+  amount        Decimal       @db.Decimal(15, 2)
   paymentMethod PaymentMethod @map("payment_method")
   paymentStatus PaymentStatus @map("payment_status")
   timestamp     DateTime      @default(now())
@@ -227,9 +228,11 @@ enum PaymentMethod {
 
 enum PaymentStatus {
   PENDING
-  SUCCESS
+  PAID
   FAILED
+  EXPIRED
   REFUNDED
+  CANCELLED
 }
 
 model Channel {
