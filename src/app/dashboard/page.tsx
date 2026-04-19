@@ -1,3 +1,4 @@
+import { PaymentStatus } from '@/generated/prisma/enums';
 import { auth } from '@/lib/auth/auth';
 import { prisma } from '@/lib/prisma';
 import { headers } from 'next/headers';
@@ -53,7 +54,10 @@ export default async function DashboardPage() {
       },
     }),
     prisma.donation.findMany({
-      where: { userId: session.user.id },
+      where: {
+        userId: session.user.id,
+        paymentStatus: PaymentStatus.PAID,
+      },
       select: {
         amount: true,
       },
