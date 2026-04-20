@@ -337,6 +337,7 @@ export default function ReportForm({
                 type="textarea"
                 value={formData.description}
                 onChange={handleInputChange}
+                placeholder="Insert description (20 - 2000 characters)"
                 rows={5}
               />
 
