@@ -179,7 +179,13 @@ export default function ReportForm({
     } else {
       if (formData.agreement) {
         setIsSubmitting(true);
-        onSubmit({ ...formData, isAnonymous, files: selectedFiles });
+        try {
+          await Promise.resolve(
+            onSubmit({ ...formData, isAnonymous, files: selectedFiles }),
+          );
+        } finally {
+          setIsSubmitting(false);
+        }
       }
     }
   };
@@ -331,6 +337,7 @@ export default function ReportForm({
                 type="textarea"
                 value={formData.description}
                 onChange={handleInputChange}
+                placeholder="Insert description (20 - 2000 characters)"
                 rows={5}
               />
 

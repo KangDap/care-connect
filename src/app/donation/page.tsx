@@ -418,8 +418,8 @@ const DonationContent = () => {
               {[
                 { id: 'CREDIT_CARD', label: 'Credit or Debit Card' },
                 { id: 'BANK_TRANSFER', label: 'Bank Transfer' },
-                { id: 'EWALLET', label: 'E-Wallet (OVO, GoPay, etc)' },
-                { id: 'QRIS', label: 'QRIS' },
+                { id: 'EWALLET', label: 'GoPay' },
+                { id: 'QRIS', label: 'Other QRIS' },
               ].map((method) => (
                 <div
                   key={method.id}

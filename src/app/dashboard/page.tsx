@@ -55,7 +55,9 @@ export default async function DashboardPage() {
     }),
     prisma.donation.findMany({
       where: {
-        userId: session.user.id,
+        report: {
+          userId: session.user.id,
+        },
         paymentStatus: PaymentStatus.PAID,
       },
       select: {

@@ -1,7 +1,11 @@
 import midtransClient from 'midtrans-client';
 import crypto from 'node:crypto';
 
-type MidtransPaymentType = 'bank_transfer' | 'credit_card' | 'gopay' | 'qris';
+type MidtransPaymentType =
+  | 'bank_transfer'
+  | 'credit_card'
+  | 'gopay'
+  | 'other_qris';
 
 type CreateMidtransSnapTransactionInput = {
   orderId: string;
@@ -64,19 +68,23 @@ const formatReportDisplayId = (id: number) =>
 const mapPaymentMethodToMidtrans = (
   method: CreateMidtransSnapTransactionInput['paymentMethod'],
 ): MidtransPaymentType[] => {
-  if (method === 'BANK_TRANSFER') {
-    return ['bank_transfer'];
+  const map: Record<
+    CreateMidtransSnapTransactionInput['paymentMethod'],
+    MidtransPaymentType[]
+  > = {
+    BANK_TRANSFER: ['bank_transfer'],
+    CREDIT_CARD: ['credit_card'],
+    EWALLET: ['gopay'],
+    QRIS: ['other_qris'],
+  };
+
+  const enabledPayments = map[method];
+
+  if (!enabledPayments) {
+    throw new Error(`Unsupported payment method: ${method}`);
   }
 
-  if (method === 'CREDIT_CARD') {
-    return ['credit_card'];
-  }
-
-  if (method === 'EWALLET') {
-    return ['gopay'];
-  }
-
-  return ['qris'];
+  return enabledPayments;
 };
 
 export const getMidtransConfig = () => {
