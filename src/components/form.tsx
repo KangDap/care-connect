@@ -179,7 +179,13 @@ export default function ReportForm({
     } else {
       if (formData.agreement) {
         setIsSubmitting(true);
-        onSubmit({ ...formData, isAnonymous, files: selectedFiles });
+        try {
+          await Promise.resolve(
+            onSubmit({ ...formData, isAnonymous, files: selectedFiles }),
+          );
+        } finally {
+          setIsSubmitting(false);
+        }
       }
     }
   };
