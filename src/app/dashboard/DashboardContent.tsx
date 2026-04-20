@@ -187,6 +187,12 @@ export default function DashboardContent({
           >
             + New Report
           </button>
+          <button
+            onClick={() => router.push('/donation')}
+            className="px-7 py-3.5 bg-white border-2 border-[#D0D5CB] text-[#193C1F] rounded-2xl font-bold text-[14px] transition-all shadow-lg hover:bg-[#EBE6DE]"
+          >
+            + New Donation
+          </button>
         </div>
       </div>
 
