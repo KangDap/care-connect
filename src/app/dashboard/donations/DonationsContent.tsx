@@ -359,6 +359,12 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
               : 'Your contributions to the community.'}
           </p>
         </div>
+        <button
+          onClick={() => router.push('/donation')}
+          className="px-7 py-3.5 bg-[#8EA087] hover:bg-[#193C1F] text-white rounded-2xl font-bold text-[14px] transition-all shadow-lg whitespace-nowrap"
+        >
+          + New Donation
+        </button>
       </div>
 
       <div className="bg-white border border-[#D0D5CB] rounded-[32px] overflow-hidden shadow-sm">
