@@ -20,9 +20,12 @@ export default async function ConsultationsPage() {
       id: true,
       title: true,
       category: true,
+      description: true,
       date: true,
       time: true,
       status: true,
+      isAnonymous: true,
+      attachmentUrl: true,
       psychologist: {
         select: {
           name: true,
