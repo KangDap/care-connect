@@ -158,6 +158,7 @@ export default function LoginPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [googleLoading, setGoogleLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -200,6 +201,24 @@ export default function LoginPage() {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleGoogleOAuth = async () => {
+    setError('');
+    setSuccess('');
+    setGoogleLoading(true);
+
+    try {
+      const { error } = await authClient.signIn.social({
+        provider: 'google',
+        callbackURL: '/dashboard',
+      });
+
+      if (error) throw new Error(error.message);
+    } catch {
+      setError('Google sign-in failed. Please try again.');
+      setGoogleLoading(false);
     }
   };
 
@@ -332,6 +351,8 @@ export default function LoginPage() {
                     ? 'Create Account'
                     : 'Login'}
               </Button>
+
+              {/* TODO: add Continue with Google button */}
 
               <p className="text-center text-[12px] text-[#193C1F] opacity-60 leading-relaxed mt-4">
                 By {activeTab === 'register' ? 'registering' : 'logging in'},
