@@ -1,3 +1,4 @@
+import { sendVerificationEmail } from '@/lib/email/email';
 import { prisma } from '@/lib/prisma';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
@@ -38,6 +39,13 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: true,
+    autoSignIn: false,
+  },
+  emailVerification: {
+    sendOnSignUp: true,
+    expiresIn: 60 * 60,
+    sendVerificationEmail,
   },
   plugins: [admin(), openAPI()],
 });
