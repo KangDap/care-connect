@@ -95,21 +95,21 @@ export default function AnonymousReportPage() {
     }
   };
 
-  const confirmNavigation = (targetPath: string, mode: 'nav' | 'logout') => {
-    setAlertConfig({
-      title: mode === 'logout' ? 'Logout?' : 'Leave Page?',
-      description:
-        mode === 'logout'
-          ? 'Are you sure you want to end your session? Your progress will not be saved.'
-          : 'Your report progress will be lost if you navigate away. Continue?',
-      type: mode === 'logout' ? 'danger' : 'warning',
-      onConfirm: () => {
-        setIsAlertOpen(false);
-        router.push(targetPath);
-      },
-    });
-    setIsAlertOpen(true);
-  };
+  // const confirmNavigation = (targetPath: string, mode: 'nav' | 'logout') => {
+  //   setAlertConfig({
+  //     title: mode === 'logout' ? 'Logout?' : 'Leave Page?',
+  //     description:
+  //       mode === 'logout'
+  //         ? 'Are you sure you want to end your session? Your progress will not be saved.'
+  //         : 'Your report progress will be lost if you navigate away. Continue?',
+  //     type: mode === 'logout' ? 'danger' : 'warning',
+  //     onConfirm: () => {
+  //       setIsAlertOpen(false);
+  //       router.push(targetPath);
+  //     },
+  //   });
+  //   setIsAlertOpen(true);
+  // };
 
   return (
     <div className="min-h-screen bg-[#F7F3ED] flex flex-col font-sans">
