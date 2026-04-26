@@ -151,7 +151,9 @@ const FeatureCard = ({
 
 export default function LoginPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'login' | 'register' | 'forgot_password'>('register');
+  const [activeTab, setActiveTab] = useState<
+    'login' | 'register' | 'forgot_password'
+  >('register');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -210,10 +212,37 @@ export default function LoginPage() {
     }
   };
 
-  const handleForgotPassword = (e: React.FormEvent) => {
+  const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsResetModalOpen(true);
-    setActiveTab('login');
+    setError('');
+    setSuccess('');
+    setLoading(true);
+
+    try {
+      const redirectTo = `${window.location.origin}/reset-password`;
+      const { error: requestError } = await authClient.requestPasswordReset({
+        email,
+        redirectTo,
+      });
+
+      if (requestError) {
+        throw new Error(requestError.message);
+      }
+
+      setSuccess(
+        'If the email is registered, a password reset link has been sent.',
+      );
+      setIsResetModalOpen(true);
+      setActiveTab('login');
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Failed to request password reset. Please try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGoogleOAuth = async () => {
@@ -284,7 +313,8 @@ export default function LoginPage() {
                     setSuccess('');
                   }}
                   className={`flex-1 flex justify-center items-center font-bold text-lg transition-all ${
-                    activeTab === tab || (activeTab === 'forgot_password' && tab === 'login')
+                    activeTab === tab ||
+                    (activeTab === 'forgot_password' && tab === 'login')
                       ? 'text-[#193C1F]'
                       : 'text-[#8EA087] opacity-60'
                   }`}
@@ -294,16 +324,31 @@ export default function LoginPage() {
               ))}
               <div
                 className="absolute bottom-0 h-1 bg-[#8EA087] transition-all duration-300 rounded-t-full w-1/2"
-                style={{ left: (activeTab === 'login' || activeTab === 'forgot_password') ? '0%' : '50%' }}
+                style={{
+                  left:
+                    activeTab === 'login' || activeTab === 'forgot_password'
+                      ? '0%'
+                      : '50%',
+                }}
               />
             </div>
 
-            <form className="space-y-6" onSubmit={activeTab === 'forgot_password' ? handleForgotPassword : handleSubmit}>
+            <form
+              className="space-y-6"
+              onSubmit={
+                activeTab === 'forgot_password'
+                  ? handleForgotPassword
+                  : handleSubmit
+              }
+            >
               {activeTab === 'forgot_password' ? (
                 <div className="flex flex-col gap-6 animate-fade-in">
-                  <h2 className="text-xl font-bold text-[#193C1F] mb-4">Reset Password</h2>
+                  <h2 className="text-xl font-bold text-[#193C1F] mb-4">
+                    Reset Password
+                  </h2>
                   <p className="text-sm text-[#193C1F] opacity-80 mb-6">
-                    Enter your email address and we'll send you a link to reset your password.
+                    Enter your email address and we&apos;ll send you a link to
+                    reset your password.
                   </p>
                   <Input
                     label="Email Address"
@@ -311,11 +356,30 @@ export default function LoginPage() {
                     placeholder="name@example.com"
                     icon={<MailIcon />}
                     value={email}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                      setEmail(e.target.value)
+                    }
                     required
                   />
-                  <Button type="submit" variant="secondary" className="w-full h-14">
-                    Send Reset Code
+                  {error && (
+                    <p className="text-red-500 text-sm text-center font-medium">
+                      {error}
+                    </p>
+                  )}
+
+                  {success && (
+                    <p className="text-green-600 text-sm text-center font-medium">
+                      {success}
+                    </p>
+                  )}
+
+                  <Button
+                    type="submit"
+                    variant="secondary"
+                    className="w-full h-14"
+                    disabled={loading}
+                  >
+                    {loading ? 'Sending...' : 'Send Reset Link'}
                   </Button>
                   <button
                     type="button"
@@ -363,7 +427,9 @@ export default function LoginPage() {
                         setPassword(e.target.value)
                       }
                       autoComplete={
-                        activeTab === 'register' ? 'new-password' : 'current-password'
+                        activeTab === 'register'
+                          ? 'new-password'
+                          : 'current-password'
                       }
                       required
                     />
@@ -407,7 +473,9 @@ export default function LoginPage() {
 
                   <div className="relative flex py-2 items-center">
                     <div className="flex-grow border-t border-[#D0D5CB]"></div>
-                    <span className="flex-shrink-0 mx-4 text-[#8EA087] text-sm">or</span>
+                    <span className="flex-shrink-0 mx-4 text-[#8EA087] text-sm">
+                      or
+                    </span>
                     <div className="flex-grow border-t border-[#D0D5CB]"></div>
                   </div>
 
@@ -418,11 +486,29 @@ export default function LoginPage() {
                     onClick={handleGoogleOAuth}
                     disabled={googleLoading}
                   >
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
-                      <path d="M12 23c2.97 0 5.46-1 7.28-2.69l-3.57-2.77c-.99.69-2.26 1.11-3.71 1.11-2.87 0-5.3-1.94-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
-                      <path d="M5.84 14.11c-.22-.69-.35-1.43-.35-2.11s.13-1.42.35-2.11V7.05H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.95l3.66-2.84z" fill="#FBBC05"/>
-                      <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.05l3.66 2.84c.87-2.6 3.3-4.51 6.16-4.51z" fill="#EA4335"/>
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                        fill="#4285F4"
+                      />
+                      <path
+                        d="M12 23c2.97 0 5.46-1 7.28-2.69l-3.57-2.77c-.99.69-2.26 1.11-3.71 1.11-2.87 0-5.3-1.94-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                        fill="#34A853"
+                      />
+                      <path
+                        d="M5.84 14.11c-.22-.69-.35-1.43-.35-2.11s.13-1.42.35-2.11V7.05H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.95l3.66-2.84z"
+                        fill="#FBBC05"
+                      />
+                      <path
+                        d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.05l3.66 2.84c.87-2.6 3.3-4.51 6.16-4.51z"
+                        fill="#EA4335"
+                      />
                     </svg>
                     {googleLoading ? 'Connecting...' : 'Continue with Google'}
                   </Button>
@@ -470,8 +556,9 @@ export default function LoginPage() {
         title="Check Your Email"
       >
         <p className="text-[#193C1F] text-base mb-6 opacity-80 leading-relaxed">
-          Link untuk mereset password telah dikirim ke alamat email <span className="font-bold">{email || "Anda"}</span>.
-          Silakan periksa kotak masuk dan folder spam Anda.
+          A password reset link has been sent to{' '}
+          <span className="font-bold">{email || 'your email'}</span>. Please
+          check your inbox and spam folder.
         </p>
         <Button
           onClick={() => setIsResetModalOpen(false)}
