@@ -80,6 +80,7 @@ interface HeaderProps {
   withLogo?: boolean;
   onProfileClick?: () => void;
   onLogoutClick?: () => void;
+  showBackButton?: boolean;
 }
 
 export const Header = ({
@@ -87,6 +88,7 @@ export const Header = ({
   withLogo = false,
   onProfileClick,
   onLogoutClick,
+  showBackButton = false,
 }: HeaderProps) => {
   // 2. Gunakan interface di sini
   const router = useRouter();
@@ -130,6 +132,28 @@ export const Header = ({
     <>
       <header className="h-[90px] w-full sticky top-0 border-b border-[#D0D5CB] flex items-center justify-between px-12 bg-[#F7F3ED]/80 backdrop-blur-md shrink-0 z-[100]">
         <div className="flex items-center gap-8 flex-grow">
+          {showBackButton && (
+            <button
+              onClick={() => router.back()}
+              className="p-2.5 bg-white border border-[#D0D5CB] hover:bg-[#EBE6DE] rounded-2xl transition-all shadow-sm flex items-center justify-center group shrink-0"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#193C1F"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="group-hover:-translate-x-1 transition-transform"
+              >
+                <path d="M19 12H5"></path>
+                <path d="M12 19l-7-7 7-7"></path>
+              </svg>
+            </button>
+          )}
+
           {withLogo && (
             <div className="shrink-0">
               <Logo />
