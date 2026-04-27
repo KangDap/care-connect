@@ -36,22 +36,45 @@ export async function GET(req: NextRequest) {
 
     // Case B: Fetch active consultations
     const userId = session.user.id;
+    const userRole = session.user.role;
+
+    // Filter strictly based on role
+    const roleFilter =
+      userRole === 'PSYCHOLOGIST'
+        ? { psychologistId: userId }
+        : { userId: userId };
+
     const consultations = await prisma.consultation.findMany({
-      where: {
-        OR: [{ userId: userId }, { psychologistId: userId }],
-      },
+      where: roleFilter,
       include: {
         user: { select: { id: true, name: true, image: true, role: true } },
         psychologist: {
           select: { id: true, name: true, image: true, role: true },
         },
-      },
-      orderBy: {
-        date: 'desc',
+        chats: {
+          orderBy: { timestamp: 'desc' },
+          take: 1,
+          select: { timestamp: true, content: true },
+        },
       },
     });
 
-    return NextResponse.json(consultations);
+    // Sort in memory: newest chat first. If no chat, use consultation updated/created date.
+    const sortedConsultations = consultations.sort((a, b) => {
+      const timeA = a.chats[0]?.timestamp.getTime() ?? a.updatedAt.getTime();
+      const timeB = b.chats[0]?.timestamp.getTime() ?? b.updatedAt.getTime();
+      return timeB - timeA; // Descending
+    });
+
+    // Map the result to include the latest chat preview
+    const result = sortedConsultations.map(({ chats, ...rest }) => ({
+      ...rest,
+      latestChat: chats[0]
+        ? { timestamp: chats[0].timestamp, content: chats[0].content }
+        : null,
+    }));
+
+    return NextResponse.json(result);
   } catch (error: unknown) {
     const err = error as { status?: number; message?: string };
     console.error('API Chat GET error:', err);
