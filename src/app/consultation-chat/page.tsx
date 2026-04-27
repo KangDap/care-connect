@@ -170,14 +170,32 @@ export default function ConsultationChatContent() {
                 (consultation: {
                   id: number;
                   userId: string;
+                  date: string;
+                  createdAt: string;
                   psychologist: { name: string; image: string | null };
                   user: { name: string; image: string | null };
+                  latestChat: { timestamp: string; content: string } | null;
                 }) => {
                   // Determine the other user
                   const isUserClient = consultation.userId === session.user.id;
                   const otherPerson = isUserClient
                     ? consultation.psychologist
                     : consultation.user;
+
+                  const previewDateRaw =
+                    consultation.latestChat?.timestamp ??
+                    consultation.date ??
+                    consultation.createdAt;
+                  const previewDate = previewDateRaw
+                    ? new Date(previewDateRaw).toLocaleDateString([], {
+                        month: 'short',
+                        day: 'numeric',
+                      })
+                    : '';
+
+                  const previewText =
+                    consultation.latestChat?.content ||
+                    'Start a conversation...';
 
                   return (
                     <div
@@ -193,7 +211,7 @@ export default function ConsultationChatContent() {
                         alt={otherPerson?.name || 'Participant'}
                         width={40}
                         height={40}
-                        className="w-10 h-10 rounded-full object-cover bg-white"
+                        className="w-10 h-10 rounded-full object-cover bg-white shrink-0"
                         src={
                           otherPerson?.image ||
                           'https://lh3.googleusercontent.com/aida-public/AB6AXuBEco0p3MDuxX90l9mF4SA0D5WmC84PJazeYS6jFlgGu6Z-L_HxYF4go8gTd7ImSPN8Yg9IYm5nWoKdCW7Azu9bfAq8XhByCCA0h4C3l_yC4OkTfQRzppjGbvuLkHC6-rZVaScgJcjaRYm350CGpQyEHirHU0mOph6TPnQxShR39Kv0qls4iqEaza6VOZncpHcdH6aQXKwLy1R587WGI_FxQ5evlw3n9GBfy59SZ_CAlBuxXdF87MFefAimDan5A6GOVUKeBPYHqA'
@@ -202,12 +220,15 @@ export default function ConsultationChatContent() {
                       />
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-baseline">
-                          <h3 className="text-sm font-semibold text-[#193C1F] truncate">
+                          <h3 className="text-sm font-semibold text-[#193C1F] truncate pr-2">
                             {otherPerson?.name || 'Unknown User'}
                           </h3>
+                          <span className="text-[10px] text-[#193C1F] opacity-50 shrink-0">
+                            {previewDate}
+                          </span>
                         </div>
                         <p className="text-xs text-[#193C1F] opacity-70 truncate mt-1">
-                          Click to view chat
+                          {previewText}
                         </p>
                       </div>
                     </div>
@@ -231,39 +252,94 @@ export default function ConsultationChatContent() {
         {selectedConsultationId ? (
           <main className="flex-1 flex flex-col bg-white min-w-0">
             <section className="flex-1 overflow-y-auto p-6 space-y-8 bg-[#F7F3ED]">
-              <div className="flex justify-center">
-                <span className="bg-[#D0D5CB] bg-opacity-30 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full text-[#193C1F] opacity-60">
-                  Chat Log
-                </span>
-              </div>
-
               {isLoadingMessages ? (
                 <p className="text-center text-[#193C1F] text-xs opacity-50 py-4 animate-pulse">
                   Loading messages...
                 </p>
               ) : chatMessages.length === 0 ? (
-                <p className="text-center text-[#193C1F] text-xs opacity-50 py-4">
-                  No messages yet. Say hello!
-                </p>
+                (() => {
+                  const currentConsultation = activeConsultations.find(
+                    (c: {
+                      id: number;
+                      userId: string;
+                      date: string;
+                      createdAt: string;
+                      psychologist: { name: string; image: string | null };
+                      user: { name: string; image: string | null };
+                      latestChat: { timestamp: string; content: string } | null;
+                    }) => c.id === selectedConsultationId,
+                  );
+                  const roomDateRaw =
+                    currentConsultation?.date ?? currentConsultation?.createdAt;
+                  const roomDate = roomDateRaw
+                    ? new Date(roomDateRaw).toLocaleDateString([], {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })
+                    : 'Unknown Date';
+                  return (
+                    <>
+                      <div className="flex justify-center my-4">
+                        <span className="bg-[#D0D5CB] bg-opacity-30 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full text-[#193C1F] opacity-60">
+                          {roomDate}
+                        </span>
+                      </div>
+                      <p className="text-center text-[#193C1F] text-xs opacity-50 py-4">
+                        No messages yet. Say hello!
+                      </p>
+                    </>
+                  );
+                })()
               ) : (
                 chatMessages.map(
-                  (chat: {
-                    id: number;
-                    user: {
-                      id: string;
-                      name: string;
-                      role: string;
-                      image?: string;
-                    };
-                    timestamp: string;
-                    replyTo?: {
+                  (
+                    chat: {
+                      id: number;
+                      user: {
+                        id: string;
+                        name: string;
+                        role: string;
+                        image?: string;
+                      };
+                      timestamp: string;
+                      replyTo?: {
+                        content: string;
+                        user: { name: string };
+                      } | null;
                       content: string;
-                      user: { name: string };
-                    } | null;
-                    content: string;
-                    mediaUrl?: string | null;
-                  }) => {
+                      mediaUrl?: string | null;
+                    },
+                    index: number,
+                  ) => {
                     const isMe = chat.user.id === session.user.id;
+
+                    const currentChatDate = new Date(
+                      chat.timestamp,
+                    ).toLocaleDateString([], {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    });
+
+                    let showDatePill = false;
+                    if (index === 0) {
+                      showDatePill = true;
+                    } else {
+                      const prevChatDate = new Date(
+                        chatMessages[index - 1].timestamp,
+                      ).toLocaleDateString([], {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      });
+                      if (currentChatDate !== prevChatDate) {
+                        showDatePill = true;
+                      }
+                    }
 
                     // Format time
                     const time = new Date(chat.timestamp).toLocaleTimeString(
@@ -271,230 +347,247 @@ export default function ConsultationChatContent() {
                       { hour: '2-digit', minute: '2-digit' },
                     );
 
-                    if (!isMe) {
-                      return (
-                        <div
-                          key={chat.id}
-                          className="flex flex-col space-y-1 group relative"
-                        >
-                          <div className="flex items-center space-x-2 ml-10 mb-1">
-                            <span className="text-xs font-bold text-[#193C1F] opacity-70">
-                              {chat.user.name || 'Unknown'}
-                              {chat.user.role === 'PSYCHOLOGIST' && (
-                                <span className="ml-2 text-[9px] bg-[#8EA087] text-white px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider">
-                                  Psychologist
-                                </span>
-                              )}
+                    return (
+                      <React.Fragment key={chat.id}>
+                        {showDatePill && (
+                          <div className="flex justify-center my-4">
+                            <span className="bg-[#D0D5CB] bg-opacity-30 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full text-[#193C1F] opacity-60">
+                              {currentChatDate}
                             </span>
                           </div>
-                          <div className="flex items-start space-x-3">
-                            <Image
-                              alt="Avatar"
-                              width={32}
-                              height={32}
-                              className="w-8 h-8 rounded-full mt-1 object-cover"
-                              src={
-                                chat.user.image ||
-                                'https://lh3.googleusercontent.com/aida-public/AB6AXuBEco0p3MDuxX90l9mF4SA0D5WmC84PJazeYS6jFlgGu6Z-L_HxYF4go8gTd7ImSPN8Yg9IYm5nWoKdCW7Azu9bfAq8XhByCCA0h4C3l_yC4OkTfQRzppjGbvuLkHC6-rZVaScgJcjaRYm350CGpQyEHirHU0mOph6TPnQxShR39Kv0qls4iqEaza6VOZncpHcdH6aQXKwLy1R587WGI_FxQ5evlw3n9GBfy59SZ_CAlBuxXdF87MFefAimDan5A6GOVUKeBPYHqA'
-                              }
-                              unoptimized
-                            />
-                            <div className="flex flex-col max-w-xl">
-                              {chat.replyTo && (
-                                <div className="bg-[#EDE4D8] bg-opacity-50 border-l-4 border-[#8EA087] p-2 mb-1 rounded-tr-xl text-[11px] text-[#193C1F] opacity-80 line-clamp-2">
-                                  <span className="font-bold block">
-                                    {chat.replyTo.user.name}
+                        )}
+                        {(() => {
+                          if (!isMe) {
+                            return (
+                              <div
+                                key={chat.id}
+                                className="flex flex-col space-y-1 group relative"
+                              >
+                                <div className="flex items-center space-x-2 ml-10 mb-1">
+                                  <span className="text-xs font-bold text-[#193C1F] opacity-70">
+                                    {chat.user.name || 'Unknown'}
+                                    {chat.user.role === 'PSYCHOLOGIST' && (
+                                      <span className="ml-2 text-[9px] bg-[#8EA087] text-white px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider">
+                                        Psychologist
+                                      </span>
+                                    )}
                                   </span>
-                                  {chat.replyTo.content}
                                 </div>
-                              )}
-                              <div className="bg-[#EDE4D8] text-[#193C1F] rounded-2xl p-4 text-sm shadow-sm leading-relaxed whitespace-pre-wrap relative overflow-hidden">
-                                {chat.content}
-                                {chat.mediaUrl && (
-                                  <div className="mt-2">
-                                    {chat.mediaUrl.match(/\.(png|jpe?g)$/i) ? (
-                                      <a
-                                        href={chat.mediaUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="block relative max-w-full h-auto"
-                                      >
-                                        <Image
-                                          src={chat.mediaUrl}
-                                          alt="Attached Media"
-                                          width={400}
-                                          height={300}
-                                          className="rounded-lg object-contain bg-white"
-                                          unoptimized
-                                        />
-                                      </a>
-                                    ) : (
-                                      <a
-                                        href={chat.mediaUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center space-x-2 text-[#8EA087] hover:underline bg-white p-2 border border-[#D0D5CB] rounded-xl"
-                                      >
-                                        <svg
-                                          className="w-5 h-5"
-                                          fill="none"
-                                          stroke="currentColor"
-                                          viewBox="0 0 24 24"
-                                        >
-                                          <path
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                            strokeWidth="2"
-                                            d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
-                                          ></path>
-                                        </svg>
-                                        <span className="text-xs">
-                                          View File Attachment
+                                <div className="flex items-start space-x-3">
+                                  <Image
+                                    alt="Avatar"
+                                    width={32}
+                                    height={32}
+                                    className="w-8 h-8 rounded-full mt-1 object-cover"
+                                    src={
+                                      chat.user.image ||
+                                      'https://lh3.googleusercontent.com/aida-public/AB6AXuBEco0p3MDuxX90l9mF4SA0D5WmC84PJazeYS6jFlgGu6Z-L_HxYF4go8gTd7ImSPN8Yg9IYm5nWoKdCW7Azu9bfAq8XhByCCA0h4C3l_yC4OkTfQRzppjGbvuLkHC6-rZVaScgJcjaRYm350CGpQyEHirHU0mOph6TPnQxShR39Kv0qls4iqEaza6VOZncpHcdH6aQXKwLy1R587WGI_FxQ5evlw3n9GBfy59SZ_CAlBuxXdF87MFefAimDan5A6GOVUKeBPYHqA'
+                                    }
+                                    unoptimized
+                                  />
+                                  <div className="flex flex-col max-w-xl">
+                                    {chat.replyTo && (
+                                      <div className="bg-[#EDE4D8] bg-opacity-50 border-l-4 border-[#8EA087] p-2 mb-1 rounded-tr-xl text-[11px] text-[#193C1F] opacity-80 line-clamp-2">
+                                        <span className="font-bold block">
+                                          {chat.replyTo.user.name}
                                         </span>
-                                      </a>
+                                        {chat.replyTo.content}
+                                      </div>
+                                    )}
+                                    <div className="bg-[#EDE4D8] text-[#193C1F] rounded-2xl p-4 text-sm shadow-sm leading-relaxed whitespace-pre-wrap relative overflow-hidden">
+                                      {chat.content}
+                                      {chat.mediaUrl && (
+                                        <div className="mt-2">
+                                          {chat.mediaUrl.match(
+                                            /\.(png|jpe?g)$/i,
+                                          ) ? (
+                                            <a
+                                              href={chat.mediaUrl}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="block relative max-w-full h-auto"
+                                            >
+                                              <Image
+                                                src={chat.mediaUrl}
+                                                alt="Attached Media"
+                                                width={400}
+                                                height={300}
+                                                className="rounded-lg object-contain bg-white"
+                                                unoptimized
+                                              />
+                                            </a>
+                                          ) : (
+                                            <a
+                                              href={chat.mediaUrl}
+                                              target="_blank"
+                                              rel="noopener noreferrer"
+                                              className="flex items-center space-x-2 text-[#8EA087] hover:underline bg-white p-2 border border-[#D0D5CB] rounded-xl"
+                                            >
+                                              <svg
+                                                className="w-5 h-5"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                              >
+                                                <path
+                                                  strokeLinecap="round"
+                                                  strokeLinejoin="round"
+                                                  strokeWidth="2"
+                                                  d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                                                ></path>
+                                              </svg>
+                                              <span className="text-xs">
+                                                View File Attachment
+                                              </span>
+                                            </a>
+                                          )}
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  <button
+                                    onClick={() => setReplyingTo(chat)}
+                                    className="hidden group-hover:flex items-center justify-center p-2 text-[#193C1F] opacity-40 hover:opacity-100 transition-opacity self-center"
+                                    title="Reply"
+                                  >
+                                    <svg
+                                      className="w-5 h-5"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+                                      ></path>
+                                    </svg>
+                                  </button>
+                                </div>
+                                <span className="text-[10px] text-[#193C1F] opacity-40 ml-11">
+                                  {time}
+                                </span>
+                              </div>
+                            );
+                          }
+
+                          return (
+                            <div
+                              key={chat.id}
+                              className="flex flex-col items-end space-y-1 group relative"
+                            >
+                              <div className="flex items-center space-x-2 mr-10 mb-1">
+                                <span className="text-xs font-bold text-[#193C1F] opacity-70">
+                                  {chat.user.name || 'Me'}
+                                  {chat.user.role === 'PSYCHOLOGIST' && (
+                                    <span className="ml-2 text-[9px] bg-[#8EA087] text-white px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider">
+                                      Psychologist
+                                    </span>
+                                  )}
+                                </span>
+                              </div>
+                              <div className="flex items-start flex-row-reverse">
+                                <Image
+                                  alt="Avatar"
+                                  width={32}
+                                  height={32}
+                                  className="w-8 h-8 rounded-full mt-1 ml-3 object-cover border border-[#D0D5CB]"
+                                  src={
+                                    chat.user.image ||
+                                    'https://lh3.googleusercontent.com/aida-public/AB6AXuBEco0p3MDuxX90l9mF4SA0D5WmC84PJazeYS6jFlgGu6Z-L_HxYF4go8gTd7ImSPN8Yg9IYm5nWoKdCW7Azu9bfAq8XhByCCA0h4C3l_yC4OkTfQRzppjGbvuLkHC6-rZVaScgJcjaRYm350CGpQyEHirHU0mOph6TPnQxShR39Kv0qls4iqEaza6VOZncpHcdH6aQXKwLy1R587WGI_FxQ5evlw3n9GBfy59SZ_CAlBuxXdF87MFefAimDan5A6GOVUKeBPYHqA'
+                                  }
+                                  unoptimized
+                                />
+                                <div className="flex flex-col items-end max-w-xl">
+                                  {chat.replyTo && (
+                                    <div className="bg-[#8EA087] bg-opacity-20 border-r-4 border-[#8EA087] p-2 mb-1 rounded-tl-xl text-[11px] text-[#193C1F] opacity-80 line-clamp-2 text-right">
+                                      <span className="font-bold block">
+                                        {chat.replyTo.user.name}
+                                      </span>
+                                      {chat.replyTo.content}
+                                    </div>
+                                  )}
+                                  <div className="bg-[#8EA087] text-white rounded-2xl p-4 text-sm shadow-sm leading-relaxed whitespace-pre-wrap">
+                                    {chat.content}
+                                    {chat.mediaUrl && (
+                                      <div className="mt-2">
+                                        {chat.mediaUrl.match(
+                                          /\.(png|jpe?g)$/i,
+                                        ) ? (
+                                          <a
+                                            href={chat.mediaUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="block relative max-w-full h-auto"
+                                          >
+                                            <Image
+                                              src={chat.mediaUrl}
+                                              alt="Attached Media"
+                                              width={400}
+                                              height={300}
+                                              className="rounded-lg object-contain bg-white"
+                                              unoptimized
+                                            />
+                                          </a>
+                                        ) : (
+                                          <a
+                                            href={chat.mediaUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center space-x-2 text-white hover:underline bg-[#72826c] p-2 rounded-xl"
+                                          >
+                                            <svg
+                                              className="w-5 h-5"
+                                              fill="none"
+                                              stroke="currentColor"
+                                              viewBox="0 0 24 24"
+                                            >
+                                              <path
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                strokeWidth="2"
+                                                d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                                              ></path>
+                                            </svg>
+                                            <span className="text-xs">
+                                              View File Attachment
+                                            </span>
+                                          </a>
+                                        )}
+                                      </div>
                                     )}
                                   </div>
-                                )}
-                              </div>
-                            </div>
-
-                            <button
-                              onClick={() => setReplyingTo(chat)}
-                              className="hidden group-hover:flex items-center justify-center p-2 text-[#193C1F] opacity-40 hover:opacity-100 transition-opacity self-center"
-                              title="Reply"
-                            >
-                              <svg
-                                className="w-5 h-5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth="2"
-                                  d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
-                                ></path>
-                              </svg>
-                            </button>
-                          </div>
-                          <span className="text-[10px] text-[#193C1F] opacity-40 ml-11">
-                            {time}
-                          </span>
-                        </div>
-                      );
-                    }
-
-                    return (
-                      <div
-                        key={chat.id}
-                        className="flex flex-col items-end space-y-1 group relative"
-                      >
-                        <div className="flex items-center space-x-2 mr-10 mb-1">
-                          <span className="text-xs font-bold text-[#193C1F] opacity-70">
-                            {chat.user.name || 'Me'}
-                            {chat.user.role === 'PSYCHOLOGIST' && (
-                              <span className="ml-2 text-[9px] bg-[#8EA087] text-white px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider">
-                                Psychologist
-                              </span>
-                            )}
-                          </span>
-                        </div>
-                        <div className="flex items-start flex-row-reverse">
-                          <Image
-                            alt="Avatar"
-                            width={32}
-                            height={32}
-                            className="w-8 h-8 rounded-full mt-1 ml-3 object-cover border border-[#D0D5CB]"
-                            src={
-                              chat.user.image ||
-                              'https://lh3.googleusercontent.com/aida-public/AB6AXuBEco0p3MDuxX90l9mF4SA0D5WmC84PJazeYS6jFlgGu6Z-L_HxYF4go8gTd7ImSPN8Yg9IYm5nWoKdCW7Azu9bfAq8XhByCCA0h4C3l_yC4OkTfQRzppjGbvuLkHC6-rZVaScgJcjaRYm350CGpQyEHirHU0mOph6TPnQxShR39Kv0qls4iqEaza6VOZncpHcdH6aQXKwLy1R587WGI_FxQ5evlw3n9GBfy59SZ_CAlBuxXdF87MFefAimDan5A6GOVUKeBPYHqA'
-                            }
-                            unoptimized
-                          />
-                          <div className="flex flex-col items-end max-w-xl">
-                            {chat.replyTo && (
-                              <div className="bg-[#8EA087] bg-opacity-20 border-r-4 border-[#8EA087] p-2 mb-1 rounded-tl-xl text-[11px] text-[#193C1F] opacity-80 line-clamp-2 text-right">
-                                <span className="font-bold block">
-                                  {chat.replyTo.user.name}
-                                </span>
-                                {chat.replyTo.content}
-                              </div>
-                            )}
-                            <div className="bg-[#8EA087] text-white rounded-2xl p-4 text-sm shadow-sm leading-relaxed whitespace-pre-wrap">
-                              {chat.content}
-                              {chat.mediaUrl && (
-                                <div className="mt-2">
-                                  {chat.mediaUrl.match(/\.(png|jpe?g)$/i) ? (
-                                    <a
-                                      href={chat.mediaUrl}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="block relative max-w-full h-auto"
-                                    >
-                                      <Image
-                                        src={chat.mediaUrl}
-                                        alt="Attached Media"
-                                        width={400}
-                                        height={300}
-                                        className="rounded-lg object-contain bg-white"
-                                        unoptimized
-                                      />
-                                    </a>
-                                  ) : (
-                                    <a
-                                      href={chat.mediaUrl}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="flex items-center space-x-2 text-white hover:underline bg-[#72826c] p-2 rounded-xl"
-                                    >
-                                      <svg
-                                        className="w-5 h-5"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        viewBox="0 0 24 24"
-                                      >
-                                        <path
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                          strokeWidth="2"
-                                          d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
-                                        ></path>
-                                      </svg>
-                                      <span className="text-xs">
-                                        View File Attachment
-                                      </span>
-                                    </a>
-                                  )}
                                 </div>
-                              )}
-                            </div>
-                          </div>
 
-                          <button
-                            onClick={() => setReplyingTo(chat)}
-                            className="hidden group-hover:flex items-center justify-center p-2 text-[#193C1F] opacity-40 hover:opacity-100 transition-opacity self-center"
-                            title="Reply"
-                          >
-                            <svg
-                              className="w-5 h-5"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
-                              ></path>
-                            </svg>
-                          </button>
-                        </div>
-                        <span className="text-[10px] text-[#193C1F] opacity-40 mr-11">
-                          {time}
-                        </span>
-                      </div>
+                                <button
+                                  onClick={() => setReplyingTo(chat)}
+                                  className="hidden group-hover:flex items-center justify-center p-2 text-[#193C1F] opacity-40 hover:opacity-100 transition-opacity self-center"
+                                  title="Reply"
+                                >
+                                  <svg
+                                    className="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                  >
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+                                    ></path>
+                                  </svg>
+                                </button>
+                              </div>
+                              <span className="text-[10px] text-[#193C1F] opacity-40 mr-11">
+                                {time}
+                              </span>
+                            </div>
+                          );
+                        })()}
+                      </React.Fragment>
                     );
                   },
                 )
