@@ -45,15 +45,6 @@ const MIDTRANS_ENV_KEYS = {
 
 const parseIsProduction = (value?: string) => value?.toLowerCase() === 'true';
 
-const getAppBaseUrl = () => {
-  const rawBaseUrl =
-    process.env.APP_URL ||
-    process.env.NEXT_PUBLIC_APP_URL ||
-    'http://localhost:3000';
-
-  return rawBaseUrl.endsWith('/') ? rawBaseUrl.slice(0, -1) : rawBaseUrl;
-};
-
 const trimForMidtrans = (value: string, maxLength: number) => {
   if (value.length <= maxLength) {
     return value;
@@ -139,43 +130,44 @@ export const getMidtransClientKey = () => {
 export const createMidtransSnapTransaction = async (
   input: CreateMidtransSnapTransactionInput,
 ) => {
-  const snap = getMidtransSnapClient();
-  const appBaseUrl = getAppBaseUrl();
-  const enabledPayments = mapPaymentMethodToMidtrans(input.paymentMethod);
-  const roundedAmount = Math.round(input.grossAmount);
-  const reportDisplayId = formatReportDisplayId(input.report.id);
-  const reportItemName = trimForMidtrans(
-    `Donation for ${reportDisplayId} - ${input.report.title}`,
-    50,
-  );
+  try {
+    const snap = getMidtransSnapClient();
+    const enabledPayments = mapPaymentMethodToMidtrans(input.paymentMethod);
+    const roundedAmount = Math.round(input.grossAmount);
+    const reportDisplayId = formatReportDisplayId(input.report.id);
+    const reportItemName = trimForMidtrans(
+      `Donation for ${reportDisplayId} - ${input.report.title}`,
+      50,
+    );
 
-  return (await snap.createTransaction({
-    transaction_details: {
-      order_id: input.orderId,
-      gross_amount: roundedAmount,
-    },
-    enabled_payments: enabledPayments,
-    item_details: [
-      {
-        id: reportDisplayId.replace('#', ''),
-        name: reportItemName,
-        quantity: 1,
-        price: roundedAmount,
+    const result = await snap.createTransaction({
+      transaction_details: {
+        order_id: input.orderId,
+        gross_amount: roundedAmount,
       },
-    ],
-    customer_details: {
-      first_name: input.customer.name || 'CareConnect User',
-      email: input.customer.email,
-      phone: input.customer.phone,
-    },
-    custom_field1: `report_id:${reportDisplayId}`,
-    custom_field2: trimForMidtrans(input.report.title, 255),
-    callbacks: {
-      finish: `${appBaseUrl}/dashboard/donations?payment=success&orderId=${encodeURIComponent(input.orderId)}`,
-      pending: `${appBaseUrl}/dashboard/donations?payment=pending&orderId=${encodeURIComponent(input.orderId)}`,
-      error: `${appBaseUrl}/dashboard/donations?payment=error&orderId=${encodeURIComponent(input.orderId)}`,
-    },
-  })) as MidtransSnapTransactionResponse;
+      enabled_payments: enabledPayments,
+      item_details: [
+        {
+          id: reportDisplayId.replace('#', ''),
+          name: reportItemName,
+          quantity: 1,
+          price: roundedAmount,
+        },
+      ],
+      customer_details: {
+        first_name: input.customer.name || 'CareConnect User',
+        email: input.customer.email,
+        phone: input.customer.phone,
+      },
+      custom_field1: `report_id:${reportDisplayId}`,
+      custom_field2: trimForMidtrans(input.report.title, 255),
+    });
+
+    return result as MidtransSnapTransactionResponse;
+  } catch (error) {
+    console.error('MIDTRANS CREATE TRANSACTION ERROR:', error);
+    throw error;
+  }
 };
 
 export const verifyMidtransSignature = (payload: {

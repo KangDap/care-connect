@@ -50,7 +50,8 @@ export type CreateDonationResult = {
   payment: {
     orderId: string;
     token: string;
-    redirectUrl: string;
+    redirectUrl?: string;
+    clientKey?: string;
   };
 };
 

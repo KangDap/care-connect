@@ -2,6 +2,7 @@ import { PaymentStatus } from '@/generated/prisma/enums';
 import { ApiError, Errors } from '@/lib/error';
 import {
   createMidtransSnapTransaction,
+  getMidtransClientKey,
   getMidtransConfig,
   getMidtransTransactionStatus,
   verifyMidtransSignature,
@@ -196,7 +197,7 @@ export class DonationService {
           payment: {
             orderId,
             token: transaction.token,
-            redirectUrl: transaction.redirect_url,
+            clientKey: getMidtransClientKey(),
           },
         };
       } catch (error) {
