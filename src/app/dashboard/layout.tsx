@@ -7,7 +7,9 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
-// --- ICONS SIDEBAR ---
+// ==========================================
+// --- ICONS SIDEBAR (Dikelompokkan di sini) ---
+// ==========================================
 const DashboardIcon = () => (
   <svg
     width="20"
@@ -75,13 +77,7 @@ const DonationsIcon = () => (
   </svg>
 );
 const LogoCareConnect = () => (
-  <svg
-    width="32"
-    height="32"
-    viewBox="0 0 32 32"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
+  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
     <rect width="32" height="32" rx="6" fill="#193C1F" />
     <path
       d="M13.5 15.9998L15.1667 17.6665L18.5 14.3331M23.1817 10.9865C20.5468 11.1264 17.9639 10.2153 16 8.45312C14.0361 10.2153 11.4533 11.1264 8.81834 10.9865C8.60628 11.8074 8.49931 12.6519 8.5 13.4998C8.5 18.159 11.6867 22.0748 16 23.1848C20.3133 22.0748 23.5 18.1598 23.5 13.4998C23.5 12.6315 23.3892 11.7898 23.1817 10.9865L13.5 15.9998"
@@ -93,6 +89,9 @@ const LogoCareConnect = () => (
   </svg>
 );
 
+// ==========================================
+// --- SUB-KOMPONEN SIDEBAR ITEM ---
+// ==========================================
 type SidebarItemProps = {
   icon: React.ComponentType;
   label: string;
@@ -115,6 +114,9 @@ const SidebarItem = ({ icon: Icon, label, href, active }: SidebarItemProps) => (
   </Link>
 );
 
+// ==========================================
+// --- MAIN LAYOUT ---
+// ==========================================
 export default function DashboardLayout({
   children,
 }: {
@@ -125,6 +127,9 @@ export default function DashboardLayout({
   const [isLogoutAlertOpen, setIsLogoutAlertOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
+  // LOGIKA DETEKSI HALAMAN (Berdasarkan Folder)
+  const isAtPsikologPage = pathname.startsWith('/dashboard/psikolog');
+
   const handleLogout = async () => {
     setIsLoggingOut(true);
     await authClient.signOut();
@@ -133,9 +138,8 @@ export default function DashboardLayout({
   };
 
   return (
-    /* 1. LAYER UTAMA: Fixed, top-0, left-0, w-full, h-full untuk bunuh gap browser */
     <div className="fixed inset-0 w-full h-full flex bg-[#F7F3ED] overflow-hidden m-0 p-0 z-0">
-      {/* 2. SIDEBAR: Stay di kiri */}
+      {/* SIDEBAR */}
       <aside className="w-[280px] bg-[#F2EDE4] border-r border-[#D0D5CB] flex flex-col shrink-0 h-full">
         <div className="p-10 flex flex-col gap-1 shrink-0">
           <Link
@@ -150,52 +154,77 @@ export default function DashboardLayout({
         </div>
 
         <nav className="flex-1 mt-6 flex flex-col gap-1 overflow-y-auto">
+          {/* Dashboard Home (Dinamis) */}
           <SidebarItem
             icon={DashboardIcon}
             label="Dashboard"
-            href="/dashboard"
-            active={pathname === '/dashboard'}
+            href={isAtPsikologPage ? '/dashboard/psikolog' : '/dashboard'}
+            active={
+              pathname === '/dashboard' || pathname === '/dashboard/psikolog'
+            }
           />
-          <SidebarItem
-            icon={ConsultationIcon}
-            label="My Consultations"
-            href="/dashboard/consultations"
-            active={pathname.startsWith('/dashboard/consultations')}
-          />
-          <SidebarItem
-            icon={ReportsIcon}
-            label="My Reports"
-            href="/dashboard/reports"
-            active={pathname.startsWith('/dashboard/reports')}
-          />
-          <SidebarItem
-            icon={DonationsIcon}
-            label="Donation History"
-            href="/dashboard/donations"
-            active={pathname.startsWith('/dashboard/donations')}
-          />
+
+          {isAtPsikologPage ? (
+            /* --- MENU PSIKOLOG --- */
+            <>
+              <SidebarItem
+                icon={ConsultationIcon}
+                label="All Consultations"
+                href="/dashboard/psikolog/consultations"
+                active={pathname.startsWith(
+                  '/dashboard/psikolog/consultations',
+                )}
+              />
+              <SidebarItem
+                icon={DonationsIcon}
+                label="Donation History"
+                href="/dashboard/psikolog/donations"
+                active={pathname.startsWith('/dashboard/psikolog/donations')}
+              />
+            </>
+          ) : (
+            /* --- MENU USER --- */
+            <>
+              <SidebarItem
+                icon={ConsultationIcon}
+                label="My Consultations"
+                href="/dashboard/consultations"
+                active={
+                  pathname.startsWith('/dashboard/consultations') &&
+                  !isAtPsikologPage
+                }
+              />
+              <SidebarItem
+                icon={ReportsIcon}
+                label="My Reports"
+                href="/dashboard/reports"
+                active={pathname.startsWith('/dashboard/reports')}
+              />
+              <SidebarItem
+                icon={DonationsIcon}
+                label="Donation History"
+                href="/dashboard/donations"
+                active={
+                  pathname.startsWith('/dashboard/donations') &&
+                  !isAtPsikologPage
+                }
+              />
+            </>
+          )}
         </nav>
       </aside>
 
-      {/* 3. MAIN AREA: Header + Content Area */}
+      {/* MAIN CONTENT AREA */}
       <main className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
-        {/* HEADER: Stay di atas (Jangan ada margin m-0) */}
         <div className="shrink-0 w-full">
-          <Header
-            withSearch={true}
-            withLogo={false}
-            onLogoutClick={() => setIsLogoutAlertOpen(true)}
-          />
+          <Header onLogoutClick={() => setIsLogoutAlertOpen(true)} />
         </div>
 
-        {/* AREA CONTENT: Satu-satunya yang boleh scroll */}
         <div className="flex-1 overflow-y-auto w-full bg-[#F7F3ED]">
-          {/* p-10 ini padding ke dalam, bukan gap ke luar */}
           <div className="p-10 w-full min-h-full box-border">{children}</div>
         </div>
       </main>
 
-      {/* MODAL LOGOUT */}
       <Alert
         isOpen={isLogoutAlertOpen}
         onClose={() => setIsLogoutAlertOpen(false)}

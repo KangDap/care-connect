@@ -23,7 +23,8 @@ const SearchIcon = () => (
   </svg>
 );
 
-const BellIcon = () => (
+{
+  /*const BellIcon = () => (
   <svg
     width="20"
     height="20"
@@ -37,7 +38,8 @@ const BellIcon = () => (
     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
     <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
   </svg>
-);
+);*/
+}
 
 const UserIcon = () => (
   <svg
@@ -72,6 +74,14 @@ const LogoutIcon = () => (
   </svg>
 );
 
+{
+  /*const ChevronLeftIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M15 18l-6-6 6-6" />
+  </svg>
+);*/
+}
+
 const SILHOUETTE_AVATAR = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23e5e7eb'/%3E%3Ccircle cx='100' cy='70' r='35' fill='%239ca3af'/%3E%3Cpath d='M40 140c0-30 27-50 60-50s60 20 60 50v50H40z' fill='%239ca3af'/%3E%3C/svg%3E`;
 
 // 1. Tambahkan Interface Props
@@ -90,7 +100,6 @@ export const Header = ({
   onLogoutClick,
   showBackButton = false,
 }: HeaderProps) => {
-  // 2. Gunakan interface di sini
   const router = useRouter();
   const pathname = usePathname();
   const { data: session } = authClient.useSession();
@@ -170,7 +179,7 @@ export const Header = ({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Type to search..."
-                className="w-full h-[52px] bg-[#EBE6DE] border border-transparent focus:border-[#8EA087] focus:bg-white rounded-2xl pl-14 pr-6 outline-none text-[15px] text-[#193C1F] shadow-sm transition-all"
+                className="w-[250px] h-[52px] bg-[#EBE6DE] border border-transparent focus:border-[#8EA087] focus:bg-white rounded-2xl pl-14 pr-6 outline-none text-[15px] text-[#193C1F] shadow-sm transition-all"
               />
             </div>
           ) : (
@@ -179,10 +188,10 @@ export const Header = ({
         </div>
 
         <div className="flex items-center gap-6 ml-10">
-          <button className="relative w-12 h-12 flex items-center justify-center rounded-2xl bg-white border border-[#D0D5CB] hover:bg-[#EBE6DE] transition-all shadow-sm">
+          {/*<button className="relative w-12 h-12 flex items-center justify-center rounded-2xl bg-white border border-[#D0D5CB] hover:bg-[#EBE6DE] transition-all shadow-sm">
             <BellIcon />
             <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-[#D1B698] rounded-full border-2 border-white animate-pulse"></span>
-          </button>
+          </button>*/}
 
           <div className="relative" ref={dropdownRef}>
             <div

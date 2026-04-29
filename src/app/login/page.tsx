@@ -190,11 +190,25 @@ export default function LoginPage() {
         const { error: signInError } = await authClient.signIn.email({
           email,
           password,
-          callbackURL: '/dashboard',
         });
         if (signInError) throw new Error(signInError.message);
+
+        const { data: session } = await authClient.getSession();
+
+        if (session?.user) {
+          // @ts-expect-error: Better Auth user type doesn't include role by default
+          const userRole = session.user.role;
+
+          if (userRole === 'PSYCHOLOGIST') {
+            router.push('/dashboard/psikolog');
+          } else {
+            router.push('/dashboard');
+          }
+        } else {
+          // Fallback jika session tidak langsung terbaca
+          router.push('/dashboard');
+        }
       }
-      router.push('/dashboard');
     } catch (err) {
       if (err instanceof Error) {
         if (err.message === 'Email not verified') {
