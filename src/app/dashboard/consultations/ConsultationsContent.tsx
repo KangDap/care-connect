@@ -176,7 +176,7 @@ export default function ConsultationsContent({
                   <td className="px-8 py-6 text-right">
                     <div className="flex justify-end items-center gap-3">
                       <Link
-                        href={`/consultation-chat`}
+                        href={`/consultation-chat/${row.id}`}
                         title={
                           row.status === 'ONGOING'
                             ? 'Join Chat'

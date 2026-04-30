@@ -59,11 +59,49 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    // Sort in memory: newest chat first. If no chat, use consultation updated/created date.
+    interface ConsultationWithChat {
+      status: string;
+      date: Date;
+      time: Date;
+      createdAt: Date;
+      chats: { timestamp: Date; content: string }[];
+    }
+
+    // Helper to get the most relevant timestamp for sorting
+    const getEffectiveTime = (c: ConsultationWithChat) => {
+      // 1. Prioritize latest chat
+      if (c.chats?.[0]?.timestamp) {
+        return new Date(c.chats[0].timestamp).getTime();
+      }
+
+      // 2. Fallback to scheduled consultation time
+      if (c.date && c.time) {
+        const consultDate = new Date(c.date);
+        const consultTime = new Date(c.time);
+        consultDate.setHours(
+          consultTime.getHours(),
+          consultTime.getMinutes(),
+          consultTime.getSeconds(),
+        );
+        return consultDate.getTime();
+      }
+
+      // 3. Last fallback
+      return new Date(c.createdAt).getTime();
+    };
+
+    // Sort in memory: Active rooms first, then by effective time
     const sortedConsultations = consultations.sort((a, b) => {
-      const timeA = a.chats[0]?.timestamp.getTime() ?? a.updatedAt.getTime();
-      const timeB = b.chats[0]?.timestamp.getTime() ?? b.updatedAt.getTime();
-      return timeB - timeA; // Descending
+      const isClosedA = a.status === 'COMPLETED' || a.status === 'CANCELLED';
+      const isClosedB = b.status === 'COMPLETED' || b.status === 'CANCELLED';
+
+      // Status priority (Active first)
+      if (isClosedA !== isClosedB) {
+        return isClosedA ? 1 : -1;
+      }
+
+      // Time sorting (Newest first)
+      return getEffectiveTime(b) - getEffectiveTime(a);
     });
 
     // Map the result to include the latest chat preview
