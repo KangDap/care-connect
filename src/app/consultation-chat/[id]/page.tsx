@@ -6,19 +6,21 @@ import { authClient } from '@/lib/auth/auth-client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
 
 export default function ConsultationChatContent() {
   const router = useRouter();
+  const params = useParams();
+  const idParam = params?.id ? Number(params.id) : null;
+
   const [isLogoutAlertOpen, setIsLogoutAlertOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { data: session, isPending } = authClient.useSession();
   const queryClient = useQueryClient();
 
-  const [selectedConsultationId, setSelectedConsultationId] = useState<
-    number | null
-  >(null);
+  // Use idParam directly throughout the component
+  const selectedConsultationId = idParam;
   const [messageInput, setMessageInput] = useState('');
   const [mediaFile, setMediaFile] = useState<File | null>(null);
   const [replyingTo, setReplyingTo] = useState<null | {
@@ -127,6 +129,10 @@ export default function ConsultationChatContent() {
     );
   }
 
+  const handleRoomClick = (consultationId: number) => {
+    router.push(`/consultation-chat/${consultationId}`);
+  };
+
   return (
     <div className="h-screen flex flex-col bg-[#F7F3ED] text-[#193C1F] font-sans">
       <style
@@ -200,7 +206,7 @@ export default function ConsultationChatContent() {
                   return (
                     <div
                       key={consultation.id}
-                      onClick={() => setSelectedConsultationId(consultation.id)}
+                      onClick={() => handleRoomClick(consultation.id)}
                       className={`rounded-xl p-3 flex items-start space-x-3 cursor-pointer transition ${
                         selectedConsultationId === consultation.id
                           ? 'bg-[#D0D5CB]'
