@@ -16,6 +16,12 @@ export default function ConsultationChatContent() {
 
   const [isLogoutAlertOpen, setIsLogoutAlertOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  type AuthUser = {
+    id: string;
+    name: string;
+    image?: string | null;
+    role: string;
+  };
   const { data: session, isPending } = authClient.useSession();
   const queryClient = useQueryClient();
 
@@ -23,11 +29,37 @@ export default function ConsultationChatContent() {
   const selectedConsultationId = idParam;
   const [messageInput, setMessageInput] = useState('');
   const [mediaFile, setMediaFile] = useState<File | null>(null);
-  const [replyingTo, setReplyingTo] = useState<null | {
+  type ChatUser = {
+    id: string;
+    name: string;
+    role: string;
+    image?: string | null;
+  };
+  type ChatMessage = {
     id: number;
+    user: ChatUser;
+    isAnonymous: boolean;
     content: string;
-    user: { name: string };
-  }>(null);
+    timestamp: string;
+    replyTo?: {
+      content: string;
+      user: ChatUser;
+      isAnonymous: boolean;
+    } | null;
+    mediaUrl?: string | null;
+  };
+  type Consultation = {
+    id: number;
+    userId: string;
+    isAnonymous: boolean;
+    date?: string;
+    createdAt: string;
+    psychologist: { name: string; image: string | null };
+    user: { name: string; image: string | null };
+    latestChat: { timestamp: string; content: string } | null;
+  };
+
+  const [replyingTo, setReplyingTo] = useState<null | ChatMessage>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -101,9 +133,16 @@ export default function ConsultationChatContent() {
     if (!selectedConsultationId) return;
     if (!messageInput.trim() && !mediaFile) return;
 
+    const currentConsultation = activeConsultations.find(
+      (c: Consultation) => c.id === selectedConsultationId,
+    );
+
     const formData = new FormData();
     formData.append('consultationId', selectedConsultationId.toString());
     formData.append('content', messageInput);
+    if (currentConsultation?.isAnonymous) {
+      formData.append('isAnonymous', 'true');
+    }
     if (mediaFile) {
       formData.append('media', mediaFile);
     }
@@ -131,6 +170,31 @@ export default function ConsultationChatContent() {
 
   const handleRoomClick = (consultationId: number) => {
     router.push(`/consultation-chat/${consultationId}`);
+  };
+
+  const currentConsultation = activeConsultations.find(
+    (c: Consultation) => c.id === selectedConsultationId,
+  );
+
+  const getReplyDisplayName = (
+    reply: ChatMessage | NonNullable<ChatMessage['replyTo']>,
+  ) => {
+    if (!reply) return 'Unknown';
+    const isReplyMe = reply.user.id === session?.user?.id;
+    const isReplySenderPatient =
+      reply.user.id === currentConsultation?.userId ||
+      reply.user.role === 'USER';
+    const isConsultationAnonymous = currentConsultation?.isAnonymous;
+
+    const shouldMaskReply =
+      reply.isAnonymous ||
+      (!isReplyMe && isReplySenderPatient && isConsultationAnonymous);
+
+    return shouldMaskReply
+      ? 'Anonymous'
+      : isReplyMe
+        ? 'Me'
+        : reply.user.name || 'Unknown';
   };
 
   return (
@@ -172,75 +236,74 @@ export default function ConsultationChatContent() {
                 No active consultations.
               </p>
             ) : (
-              activeConsultations.map(
-                (consultation: {
-                  id: number;
-                  userId: string;
-                  date: string;
-                  createdAt: string;
-                  psychologist: { name: string; image: string | null };
-                  user: { name: string; image: string | null };
-                  latestChat: { timestamp: string; content: string } | null;
-                }) => {
-                  // Determine the other user
-                  const isUserClient = consultation.userId === session.user.id;
-                  const otherPerson = isUserClient
-                    ? consultation.psychologist
-                    : consultation.user;
+              activeConsultations.map((consultation: Consultation) => {
+                // Determine the other user
+                const isUserClient = consultation.userId === session.user.id;
+                const isAnonymous = consultation.isAnonymous;
+                const otherPerson = isUserClient
+                  ? consultation.psychologist
+                  : consultation.user;
 
-                  const previewDateRaw =
-                    consultation.latestChat?.timestamp ??
-                    consultation.date ??
-                    consultation.createdAt;
-                  const previewDate = previewDateRaw
-                    ? new Date(previewDateRaw).toLocaleDateString([], {
-                        month: 'short',
-                        day: 'numeric',
-                      })
-                    : '';
+                // Mask user name if anonymous and viewer is not the user itself
+                const displayName =
+                  !isUserClient && isAnonymous
+                    ? 'Anonymous'
+                    : otherPerson?.name || 'Unknown User';
 
-                  const previewText =
-                    consultation.latestChat?.content ||
-                    'Start a conversation...';
+                const displayImage =
+                  !isUserClient && isAnonymous
+                    ? 'https://static.vecteezy.com/system/resources/previews/009/292/244/original/default-avatar-icon-of-social-media-user-vector.jpg'
+                    : otherPerson?.image ||
+                      'https://lh3.googleusercontent.com/aida-public/AB6AXuBEco0p3MDuxX90l9mF4SA0D5WmC84PJazeYS6jFlgGu6Z-L_HxYF4go8gTd7ImSPN8Yg9IYm5nWoKdCW7Azu9bfAq8XhByCCA0h4C3l_yC4OkTfQRzppjGbvuLkHC6-rZVaScgJcjaRYm350CGpQyEHirHU0mOph6TPnQxShR39Kv0qls4iqEaza6VOZncpHcdH6aQXKwLy1R587WGI_FxQ5evlw3n9GBfy59SZ_CAlBuxXdF87MFefAimDan5A6GOVUKeBPYHqA';
 
-                  return (
-                    <div
-                      key={consultation.id}
-                      onClick={() => handleRoomClick(consultation.id)}
-                      className={`rounded-xl p-3 flex items-start space-x-3 cursor-pointer transition ${
-                        selectedConsultationId === consultation.id
-                          ? 'bg-[#D0D5CB]'
-                          : 'hover:bg-[#EDE4D8]'
-                      }`}
-                    >
-                      <Image
-                        alt={otherPerson?.name || 'Participant'}
-                        width={40}
-                        height={40}
-                        className="w-10 h-10 rounded-full object-cover bg-white shrink-0"
-                        src={
-                          otherPerson?.image ||
-                          'https://lh3.googleusercontent.com/aida-public/AB6AXuBEco0p3MDuxX90l9mF4SA0D5WmC84PJazeYS6jFlgGu6Z-L_HxYF4go8gTd7ImSPN8Yg9IYm5nWoKdCW7Azu9bfAq8XhByCCA0h4C3l_yC4OkTfQRzppjGbvuLkHC6-rZVaScgJcjaRYm350CGpQyEHirHU0mOph6TPnQxShR39Kv0qls4iqEaza6VOZncpHcdH6aQXKwLy1R587WGI_FxQ5evlw3n9GBfy59SZ_CAlBuxXdF87MFefAimDan5A6GOVUKeBPYHqA'
-                        }
-                        unoptimized
-                      />
-                      <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-baseline">
-                          <h3 className="text-sm font-semibold text-[#193C1F] truncate pr-2">
-                            {otherPerson?.name || 'Unknown User'}
-                          </h3>
-                          <span className="text-[10px] text-[#193C1F] opacity-50 shrink-0">
-                            {previewDate}
-                          </span>
-                        </div>
-                        <p className="text-xs text-[#193C1F] opacity-70 truncate mt-1">
-                          {previewText}
-                        </p>
+                const previewDateRaw =
+                  consultation.latestChat?.timestamp ??
+                  consultation.date ??
+                  consultation.createdAt;
+                const previewDate = previewDateRaw
+                  ? new Date(previewDateRaw).toLocaleDateString([], {
+                      month: 'short',
+                      day: 'numeric',
+                    })
+                  : '';
+
+                const previewText =
+                  consultation.latestChat?.content || 'Start a conversation...';
+
+                return (
+                  <div
+                    key={consultation.id}
+                    onClick={() => handleRoomClick(consultation.id)}
+                    className={`rounded-xl p-3 flex items-start space-x-3 cursor-pointer transition ${
+                      selectedConsultationId === consultation.id
+                        ? 'bg-[#D0D5CB]'
+                        : 'hover:bg-[#EDE4D8]'
+                    }`}
+                  >
+                    <Image
+                      alt={displayName}
+                      width={40}
+                      height={40}
+                      className="w-10 h-10 rounded-full object-cover bg-white shrink-0"
+                      src={displayImage}
+                      unoptimized
+                    />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex justify-between items-baseline">
+                        <h3 className="text-sm font-semibold text-[#193C1F] truncate pr-2">
+                          {displayName}
+                        </h3>
+                        <span className="text-[10px] text-[#193C1F] opacity-50 shrink-0">
+                          {previewDate}
+                        </span>
                       </div>
+                      <p className="text-xs text-[#193C1F] opacity-70 truncate mt-1">
+                        {previewText}
+                      </p>
                     </div>
-                  );
-                },
-              )
+                  </div>
+                );
+              })
             )}
           </div>
 
@@ -265,15 +328,7 @@ export default function ConsultationChatContent() {
               ) : chatMessages.length === 0 ? (
                 (() => {
                   const currentConsultation = activeConsultations.find(
-                    (c: {
-                      id: number;
-                      userId: string;
-                      date: string;
-                      createdAt: string;
-                      psychologist: { name: string; image: string | null };
-                      user: { name: string; image: string | null };
-                      latestChat: { timestamp: string; content: string } | null;
-                    }) => c.id === selectedConsultationId,
+                    (c: Consultation) => c.id === selectedConsultationId,
                   );
                   const roomDateRaw =
                     currentConsultation?.date ?? currentConsultation?.createdAt;
@@ -299,194 +354,83 @@ export default function ConsultationChatContent() {
                   );
                 })()
               ) : (
-                chatMessages.map(
-                  (
-                    chat: {
-                      id: number;
-                      user: {
-                        id: string;
-                        name: string;
-                        role: string;
-                        image?: string;
-                      };
-                      timestamp: string;
-                      replyTo?: {
-                        content: string;
-                        user: { name: string };
-                      } | null;
-                      content: string;
-                      mediaUrl?: string | null;
-                    },
-                    index: number,
-                  ) => {
-                    const isMe = chat.user.id === session.user.id;
+                chatMessages.map((chat: ChatMessage, index: number) => {
+                  const isMe = chat.user.id === session.user.id;
+                  const isPsychologist =
+                    (session.user as unknown as AuthUser).role ===
+                    'PSYCHOLOGIST';
+                  const isSenderPatient =
+                    chat.user.id === currentConsultation?.userId ||
+                    chat.user.role === 'USER';
+                  const isConsultationAnonymous =
+                    currentConsultation?.isAnonymous;
 
-                    const currentChatDate = new Date(
-                      chat.timestamp,
+                  // Mask name if:
+                  // 1. Message is explicitly marked anonymous
+                  // 2. OR I am a psychologist and the sender is the patient in an anonymous consultation
+                  const shouldMask =
+                    chat.isAnonymous ||
+                    (isPsychologist &&
+                      isSenderPatient &&
+                      isConsultationAnonymous);
+
+                  const displayName = shouldMask
+                    ? 'Anonymous'
+                    : isMe
+                      ? 'Me'
+                      : chat.user.name || 'Unknown';
+
+                  const currentChatDate = new Date(
+                    chat.timestamp,
+                  ).toLocaleDateString([], {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  });
+
+                  let showDatePill = false;
+                  if (index === 0) {
+                    showDatePill = true;
+                  } else {
+                    const prevChatDate = new Date(
+                      chatMessages[index - 1].timestamp,
                     ).toLocaleDateString([], {
                       weekday: 'long',
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',
                     });
-
-                    let showDatePill = false;
-                    if (index === 0) {
+                    if (currentChatDate !== prevChatDate) {
                       showDatePill = true;
-                    } else {
-                      const prevChatDate = new Date(
-                        chatMessages[index - 1].timestamp,
-                      ).toLocaleDateString([], {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric',
-                      });
-                      if (currentChatDate !== prevChatDate) {
-                        showDatePill = true;
-                      }
                     }
+                  }
 
-                    // Format time
-                    const time = new Date(chat.timestamp).toLocaleTimeString(
-                      [],
-                      { hour: '2-digit', minute: '2-digit' },
-                    );
+                  // Format time
+                  const time = new Date(chat.timestamp).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  });
 
-                    return (
-                      <React.Fragment key={chat.id}>
-                        {showDatePill && (
-                          <div className="flex justify-center my-4">
-                            <span className="bg-[#D0D5CB] bg-opacity-30 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full text-[#193C1F] opacity-60">
-                              {currentChatDate}
-                            </span>
-                          </div>
-                        )}
-                        {(() => {
-                          if (!isMe) {
-                            return (
-                              <div
-                                key={chat.id}
-                                className="flex flex-col space-y-1 group relative"
-                              >
-                                <div className="flex items-center space-x-2 ml-10 mb-1">
-                                  <span className="text-xs font-bold text-[#193C1F] opacity-70">
-                                    {chat.user.name || 'Unknown'}
-                                    {chat.user.role === 'PSYCHOLOGIST' && (
-                                      <span className="ml-2 text-[9px] bg-[#8EA087] text-white px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider">
-                                        Psychologist
-                                      </span>
-                                    )}
-                                  </span>
-                                </div>
-                                <div className="flex items-start space-x-3">
-                                  <Image
-                                    alt="Avatar"
-                                    width={32}
-                                    height={32}
-                                    className="w-8 h-8 rounded-full mt-1 object-cover"
-                                    src={
-                                      chat.user.image ||
-                                      'https://lh3.googleusercontent.com/aida-public/AB6AXuBEco0p3MDuxX90l9mF4SA0D5WmC84PJazeYS6jFlgGu6Z-L_HxYF4go8gTd7ImSPN8Yg9IYm5nWoKdCW7Azu9bfAq8XhByCCA0h4C3l_yC4OkTfQRzppjGbvuLkHC6-rZVaScgJcjaRYm350CGpQyEHirHU0mOph6TPnQxShR39Kv0qls4iqEaza6VOZncpHcdH6aQXKwLy1R587WGI_FxQ5evlw3n9GBfy59SZ_CAlBuxXdF87MFefAimDan5A6GOVUKeBPYHqA'
-                                    }
-                                    unoptimized
-                                  />
-                                  <div className="flex flex-col max-w-xl">
-                                    {chat.replyTo && (
-                                      <div className="bg-[#EDE4D8] bg-opacity-50 border-l-4 border-[#8EA087] p-2 mb-1 rounded-tr-xl text-[11px] text-[#193C1F] opacity-80 line-clamp-2">
-                                        <span className="font-bold block">
-                                          {chat.replyTo.user.name}
-                                        </span>
-                                        {chat.replyTo.content}
-                                      </div>
-                                    )}
-                                    <div className="bg-[#EDE4D8] text-[#193C1F] rounded-2xl p-4 text-sm shadow-sm leading-relaxed whitespace-pre-wrap relative overflow-hidden">
-                                      {chat.content}
-                                      {chat.mediaUrl && (
-                                        <div className="mt-2">
-                                          {chat.mediaUrl.match(
-                                            /\.(png|jpe?g)$/i,
-                                          ) ? (
-                                            <a
-                                              href={chat.mediaUrl}
-                                              target="_blank"
-                                              rel="noopener noreferrer"
-                                              className="block relative max-w-full h-auto"
-                                            >
-                                              <Image
-                                                src={chat.mediaUrl}
-                                                alt="Attached Media"
-                                                width={400}
-                                                height={300}
-                                                className="rounded-lg object-contain bg-white"
-                                                unoptimized
-                                              />
-                                            </a>
-                                          ) : (
-                                            <a
-                                              href={chat.mediaUrl}
-                                              target="_blank"
-                                              rel="noopener noreferrer"
-                                              className="flex items-center space-x-2 text-[#8EA087] hover:underline bg-white p-2 border border-[#D0D5CB] rounded-xl"
-                                            >
-                                              <svg
-                                                className="w-5 h-5"
-                                                fill="none"
-                                                stroke="currentColor"
-                                                viewBox="0 0 24 24"
-                                              >
-                                                <path
-                                                  strokeLinecap="round"
-                                                  strokeLinejoin="round"
-                                                  strokeWidth="2"
-                                                  d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
-                                                ></path>
-                                              </svg>
-                                              <span className="text-xs">
-                                                View File Attachment
-                                              </span>
-                                            </a>
-                                          )}
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-
-                                  <button
-                                    onClick={() => setReplyingTo(chat)}
-                                    className="hidden group-hover:flex items-center justify-center p-2 text-[#193C1F] opacity-40 hover:opacity-100 transition-opacity self-center"
-                                    title="Reply"
-                                  >
-                                    <svg
-                                      className="w-5 h-5"
-                                      fill="none"
-                                      stroke="currentColor"
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
-                                      ></path>
-                                    </svg>
-                                  </button>
-                                </div>
-                                <span className="text-[10px] text-[#193C1F] opacity-40 ml-11">
-                                  {time}
-                                </span>
-                              </div>
-                            );
-                          }
-
+                  return (
+                    <React.Fragment key={chat.id}>
+                      {showDatePill && (
+                        <div className="flex justify-center my-4">
+                          <span className="bg-[#D0D5CB] bg-opacity-30 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full text-[#193C1F] opacity-60">
+                            {currentChatDate}
+                          </span>
+                        </div>
+                      )}
+                      {(() => {
+                        if (!isMe) {
                           return (
                             <div
                               key={chat.id}
-                              className="flex flex-col items-end space-y-1 group relative"
+                              className="flex flex-col space-y-1 group relative"
                             >
-                              <div className="flex items-center space-x-2 mr-10 mb-1">
+                              <div className="flex items-center space-x-2 ml-10 mb-1">
                                 <span className="text-xs font-bold text-[#193C1F] opacity-70">
-                                  {chat.user.name || 'Me'}
+                                  {displayName}
                                   {chat.user.role === 'PSYCHOLOGIST' && (
                                     <span className="ml-2 text-[9px] bg-[#8EA087] text-white px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider">
                                       Psychologist
@@ -494,28 +438,30 @@ export default function ConsultationChatContent() {
                                   )}
                                 </span>
                               </div>
-                              <div className="flex items-start flex-row-reverse">
+                              <div className="flex items-start space-x-3">
                                 <Image
                                   alt="Avatar"
                                   width={32}
                                   height={32}
-                                  className="w-8 h-8 rounded-full mt-1 ml-3 object-cover border border-[#D0D5CB]"
+                                  className="w-8 h-8 rounded-full mt-1 object-cover"
                                   src={
-                                    chat.user.image ||
-                                    'https://lh3.googleusercontent.com/aida-public/AB6AXuBEco0p3MDuxX90l9mF4SA0D5WmC84PJazeYS6jFlgGu6Z-L_HxYF4go8gTd7ImSPN8Yg9IYm5nWoKdCW7Azu9bfAq8XhByCCA0h4C3l_yC4OkTfQRzppjGbvuLkHC6-rZVaScgJcjaRYm350CGpQyEHirHU0mOph6TPnQxShR39Kv0qls4iqEaza6VOZncpHcdH6aQXKwLy1R587WGI_FxQ5evlw3n9GBfy59SZ_CAlBuxXdF87MFefAimDan5A6GOVUKeBPYHqA'
+                                    shouldMask
+                                      ? 'https://static.vecteezy.com/system/resources/previews/009/292/244/original/default-avatar-icon-of-social-media-user-vector.jpg'
+                                      : chat.user.image ||
+                                        'https://lh3.googleusercontent.com/aida-public/AB6AXuBEco0p3MDuxX90l9mF4SA0D5WmC84PJazeYS6jFlgGu6Z-L_HxYF4go8gTd7ImSPN8Yg9IYm5nWoKdCW7Azu9bfAq8XhByCCA0h4C3l_yC4OkTfQRzppjGbvuLkHC6-rZVaScgJcjaRYm350CGpQyEHirHU0mOph6TPnQxShR39Kv0qls4iqEaza6VOZncpHcdH6aQXKwLy1R587WGI_FxQ5evlw3n9GBfy59SZ_CAlBuxXdF87MFefAimDan5A6GOVUKeBPYHqA'
                                   }
                                   unoptimized
                                 />
-                                <div className="flex flex-col items-end max-w-xl">
+                                <div className="flex flex-col max-w-xl">
                                   {chat.replyTo && (
-                                    <div className="bg-[#8EA087] bg-opacity-20 border-r-4 border-[#8EA087] p-2 mb-1 rounded-tl-xl text-[11px] text-[#193C1F] opacity-80 line-clamp-2 text-right">
+                                    <div className="bg-[#EDE4D8] bg-opacity-50 border-l-4 border-[#8EA087] p-2 mb-1 rounded-tr-xl text-[11px] text-[#193C1F] opacity-80 line-clamp-2">
                                       <span className="font-bold block">
-                                        {chat.replyTo.user.name}
+                                        {getReplyDisplayName(chat.replyTo)}
                                       </span>
                                       {chat.replyTo.content}
                                     </div>
                                   )}
-                                  <div className="bg-[#8EA087] text-white rounded-2xl p-4 text-sm shadow-sm leading-relaxed whitespace-pre-wrap">
+                                  <div className="bg-[#EDE4D8] text-[#193C1F] rounded-2xl p-4 text-sm shadow-sm leading-relaxed whitespace-pre-wrap relative overflow-hidden">
                                     {chat.content}
                                     {chat.mediaUrl && (
                                       <div className="mt-2">
@@ -542,7 +488,7 @@ export default function ConsultationChatContent() {
                                             href={chat.mediaUrl}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="flex items-center space-x-2 text-white hover:underline bg-[#72826c] p-2 rounded-xl"
+                                            className="flex items-center space-x-2 text-[#8EA087] hover:underline bg-white p-2 border border-[#D0D5CB] rounded-xl"
                                           >
                                             <svg
                                               className="w-5 h-5"
@@ -587,16 +533,136 @@ export default function ConsultationChatContent() {
                                   </svg>
                                 </button>
                               </div>
-                              <span className="text-[10px] text-[#193C1F] opacity-40 mr-11">
+                              <span className="text-[10px] text-[#193C1F] opacity-40 ml-11">
                                 {time}
                               </span>
                             </div>
                           );
-                        })()}
-                      </React.Fragment>
-                    );
-                  },
-                )
+                        }
+
+                        return (
+                          <div
+                            key={chat.id}
+                            className="flex flex-col items-end space-y-1 group relative"
+                          >
+                            <div className="flex items-center space-x-2 mr-10 mb-1">
+                              <span className="text-xs font-bold text-[#193C1F] opacity-70">
+                                {isMe
+                                  ? shouldMask
+                                    ? 'Anonymous (Me)'
+                                    : 'Me'
+                                  : displayName}
+                                {chat.user.role === 'PSYCHOLOGIST' && (
+                                  <span className="ml-2 text-[9px] bg-[#8EA087] text-white px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider">
+                                    Psychologist
+                                  </span>
+                                )}
+                              </span>
+                            </div>
+                            <div className="flex items-start flex-row-reverse">
+                              <Image
+                                alt="Avatar"
+                                width={32}
+                                height={32}
+                                className="w-8 h-8 rounded-full mt-1 ml-3 object-cover border border-[#D0D5CB]"
+                                src={
+                                  shouldMask
+                                    ? 'https://static.vecteezy.com/system/resources/previews/009/292/244/original/default-avatar-icon-of-social-media-user-vector.jpg'
+                                    : chat.user.image ||
+                                      'https://lh3.googleusercontent.com/aida-public/AB6AXuBEco0p3MDuxX90l9mF4SA0D5WmC84PJazeYS6jFlgGu6Z-L_HxYF4go8gTd7ImSPN8Yg9IYm5nWoKdCW7Azu9bfAq8XhByCCA0h4C3l_yC4OkTfQRzppjGbvuLkHC6-rZVaScgJcjaRYm350CGpQyEHirHU0mOph6TPnQxShR39Kv0qls4iqEaza6VOZncpHcdH6aQXKwLy1R587WGI_FxQ5evlw3n9GBfy59SZ_CAlBuxXdF87MFefAimDan5A6GOVUKeBPYHqA'
+                                }
+                                unoptimized
+                              />
+                              <div className="flex flex-col items-end max-w-xl">
+                                {chat.replyTo && (
+                                  <div className="bg-[#8EA087] bg-opacity-20 border-r-4 border-[#8EA087] p-2 mb-1 rounded-tl-xl text-[11px] text-[#193C1F] opacity-80 line-clamp-2 text-right">
+                                    <span className="font-bold block">
+                                      {getReplyDisplayName(chat.replyTo)}
+                                    </span>
+                                    {chat.replyTo.content}
+                                  </div>
+                                )}
+                                <div className="bg-[#8EA087] text-white rounded-2xl p-4 text-sm shadow-sm leading-relaxed whitespace-pre-wrap">
+                                  {chat.content}
+                                  {chat.mediaUrl && (
+                                    <div className="mt-2">
+                                      {chat.mediaUrl.match(
+                                        /\.(png|jpe?g)$/i,
+                                      ) ? (
+                                        <a
+                                          href={chat.mediaUrl}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="block relative max-w-full h-auto"
+                                        >
+                                          <Image
+                                            src={chat.mediaUrl}
+                                            alt="Attached Media"
+                                            width={400}
+                                            height={300}
+                                            className="rounded-lg object-contain bg-white"
+                                            unoptimized
+                                          />
+                                        </a>
+                                      ) : (
+                                        <a
+                                          href={chat.mediaUrl}
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="flex items-center space-x-2 text-white hover:underline bg-[#72826c] p-2 rounded-xl"
+                                        >
+                                          <svg
+                                            className="w-5 h-5"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                          >
+                                            <path
+                                              strokeLinecap="round"
+                                              strokeLinejoin="round"
+                                              strokeWidth="2"
+                                              d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
+                                            ></path>
+                                          </svg>
+                                          <span className="text-xs">
+                                            View File Attachment
+                                          </span>
+                                        </a>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              <button
+                                onClick={() => setReplyingTo(chat)}
+                                className="hidden group-hover:flex items-center justify-center p-2 text-[#193C1F] opacity-40 hover:opacity-100 transition-opacity self-center"
+                                title="Reply"
+                              >
+                                <svg
+                                  className="w-5 h-5"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+                                  ></path>
+                                </svg>
+                              </button>
+                            </div>
+                            <span className="text-[10px] text-[#193C1F] opacity-40 mr-11">
+                              {time}
+                            </span>
+                          </div>
+                        );
+                      })()}
+                    </React.Fragment>
+                  );
+                })
               )}
               <div ref={messagesEndRef} />
             </section>
@@ -606,7 +672,7 @@ export default function ConsultationChatContent() {
                 <div className="flex items-center justify-between bg-[#F7F3ED] border-l-4 border-[#8EA087] px-4 py-2 rounded-xl mb-1 shadow-sm animate-in slide-in-from-bottom-2">
                   <div className="overflow-hidden">
                     <span className="text-[10px] font-bold text-[#8EA087] block uppercase tracking-wider">
-                      Replying to {replyingTo.user.name}
+                      Replying to {getReplyDisplayName(replyingTo)}
                     </span>
                     <p className="text-xs text-[#193C1F] truncate opacity-70">
                       {replyingTo.content}
