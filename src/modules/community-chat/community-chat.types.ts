@@ -43,6 +43,7 @@ export interface CreateChannelDTO {
   name: string;
   description?: string;
   coverUrl?: string;
+  coverImage?: File | null;
   type?: 'PUBLIC' | 'PRIVATE';
 }
 

@@ -186,7 +186,36 @@ export const CommunityChatService = {
     if (userRole !== 'ADMIN')
       throw Errors.forbidden('Only admins can create channels');
 
-    const channel = await CommunityChatRepository.createChannel(data);
+    let finalCoverUrl = data.coverUrl || null;
+    const supabase = getSupabaseClient();
+
+    if (data.coverImage && supabase) {
+      const fileExt = data.coverImage.name.split('.').pop();
+      const fileName = `channel-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      const fileData = await data.coverImage.arrayBuffer();
+
+      const { error } = await supabase.storage
+        .from('community-chat-profile')
+        .upload(fileName, fileData, {
+          contentType: data.coverImage.type,
+        });
+
+      if (error) {
+        console.error('Community channel profile upload error:', error);
+        throw Errors.storage('Failed to upload cover image');
+      }
+
+      const { data: publicUrl } = supabase.storage
+        .from('community-chat-profile')
+        .getPublicUrl(fileName);
+
+      finalCoverUrl = publicUrl.publicUrl;
+    }
+
+    const channel = await CommunityChatRepository.createChannel({
+      ...data,
+      coverUrl: finalCoverUrl || undefined,
+    });
 
     // Admin becomes the OWNER of the created channel
     await CommunityChatRepository.addMember(adminId, channel.id, 'OWNER');
