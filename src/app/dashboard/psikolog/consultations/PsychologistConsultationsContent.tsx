@@ -81,7 +81,34 @@ export default function PsychologistConsultationsContent({
       };
       const statusA = String(a.status);
       const statusB = String(b.status);
-      return (priority[statusA] ?? 99) - (priority[statusB] ?? 99);
+      const priorityDiff =
+        (priority[statusA] ?? 99) - (priority[statusB] ?? 99);
+
+      if (priorityDiff !== 0) return priorityDiff;
+
+      // If priority is same, sort by date and time (newest first)
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      const timeA = new Date(a.time);
+      const timeB = new Date(b.time);
+
+      const combinedA = new Date(
+        dateA.getUTCFullYear(),
+        dateA.getUTCMonth(),
+        dateA.getUTCDate(),
+        timeA.getUTCHours(),
+        timeA.getUTCMinutes(),
+      ).getTime();
+
+      const combinedB = new Date(
+        dateB.getUTCFullYear(),
+        dateB.getUTCMonth(),
+        dateB.getUTCDate(),
+        timeB.getUTCHours(),
+        timeB.getUTCMinutes(),
+      ).getTime();
+
+      return combinedB - combinedA;
     });
   }, [consultations, query]);
 

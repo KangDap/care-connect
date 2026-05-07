@@ -81,13 +81,52 @@ export default function ConsultationsContent({
 
   // Memfilter data berdasarkan query pencarian
   const filteredData = useMemo(() => {
-    return consultations.filter(
+    const filtered = consultations.filter(
       (item) =>
         (item.psychologist?.name ?? '').toLowerCase().includes(query) ||
         item.title.toLowerCase().includes(query) ||
         item.category.toLowerCase().includes(query) ||
         item.status.toLowerCase().includes(query),
     );
+
+    return [...filtered].sort((a, b) => {
+      const priority: Record<string, number> = {
+        ONGOING: 0,
+        SCHEDULED: 1,
+        COMPLETED: 2,
+        CANCELLED: 3,
+      };
+      const statusA = String(a.status);
+      const statusB = String(b.status);
+      const priorityDiff =
+        (priority[statusA] ?? 99) - (priority[statusB] ?? 99);
+
+      if (priorityDiff !== 0) return priorityDiff;
+
+      // If priority is same, sort by date and time (newest first)
+      const dateA = new Date(a.date);
+      const dateB = new Date(b.date);
+      const timeA = new Date(a.time);
+      const timeB = new Date(b.time);
+
+      const combinedA = new Date(
+        dateA.getUTCFullYear(),
+        dateA.getUTCMonth(),
+        dateA.getUTCDate(),
+        timeA.getUTCHours(),
+        timeA.getUTCMinutes(),
+      ).getTime();
+
+      const combinedB = new Date(
+        dateB.getUTCFullYear(),
+        dateB.getUTCMonth(),
+        dateB.getUTCDate(),
+        timeB.getUTCHours(),
+        timeB.getUTCMinutes(),
+      ).getTime();
+
+      return combinedB - combinedA;
+    });
   }, [consultations, query]);
 
   useEffect(() => {
