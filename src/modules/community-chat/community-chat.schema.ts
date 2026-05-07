@@ -4,6 +4,7 @@ export const createChannelSchema = z.object({
   name: z.string().min(3).max(100),
   description: z.string().max(500).optional(),
   coverUrl: z.string().url().optional().or(z.literal('')),
+  coverImage: z.any().optional().nullable(),
   type: z.enum(['PUBLIC', 'PRIVATE']).optional().default('PUBLIC'),
 });
 

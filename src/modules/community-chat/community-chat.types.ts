@@ -5,13 +5,21 @@ export interface Channel {
   coverUrl?: string | null;
   type: 'PUBLIC' | 'PRIVATE';
   createdAt: Date;
+  unreadCount?: number;
+  chats: { timestamp: Date; content: string }[];
+  members?: ChannelMember[];
+  _count?: {
+    members: number;
+    chats?: number;
+  };
 }
 
 export interface ChannelMember {
   channelId: number;
   userId: string;
-  role: 'OWNER' | 'MODERATOR' | 'MEMBER';
+  role: 'OWNER' | 'MODERATOR' | 'MEMBER' | 'BANNED';
   joinedAt: Date;
+  lastViewedAt: Date;
 }
 
 export interface ChatMessage {
@@ -21,6 +29,7 @@ export interface ChatMessage {
   content: string;
   mediaUrl?: string | null;
   isAnonymous: boolean;
+  isSystem: boolean;
   replyToId?: number | null;
   timestamp: Date;
   editedAt?: Date | null;
@@ -43,6 +52,7 @@ export interface CreateChannelDTO {
   name: string;
   description?: string;
   coverUrl?: string;
+  coverImage?: File | null;
   type?: 'PUBLIC' | 'PRIVATE';
 }
 
@@ -52,11 +62,12 @@ export interface SendMessageDTO {
   media?: File | null;
   mediaUrl?: string | null;
   isAnonymous?: boolean;
+  isSystem?: boolean;
   replyToId?: number | null;
 }
 
 export interface UpdateMemberRoleDTO {
   userId: string;
   channelId: number;
-  role: 'OWNER' | 'MODERATOR' | 'MEMBER';
+  role: 'OWNER' | 'MODERATOR' | 'MEMBER' | 'BANNED';
 }
