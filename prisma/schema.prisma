@@ -180,12 +180,13 @@ model Channel {
 }
 
 model ChannelMember {
-  channelId Int         @map("channel_id")
-  userId    String      @map("user_id")
-  role      ChannelRole @default(MEMBER)
-  joinedAt  DateTime    @default(now()) @map("joined_at")
-  channel   Channel     @relation(fields: [channelId], references: [id])
-  user      User        @relation(fields: [userId], references: [id])
+  channelId    Int         @map("channel_id")
+  userId       String      @map("user_id")
+  role         ChannelRole @default(MEMBER)
+  joinedAt     DateTime    @default(now()) @map("joined_at")
+  lastViewedAt DateTime    @default(now()) @map("last_viewed_at")
+  channel      Channel     @relation(fields: [channelId], references: [id])
+  user         User        @relation(fields: [userId], references: [id])
 
   @@id([channelId, userId])
   @@map("channel_members")
@@ -198,6 +199,7 @@ model Chat {
   content     String
   mediaUrl    String?   @map("media_url")
   isAnonymous Boolean   @default(false) @map("is_anonymous")
+  isSystem    Boolean   @default(false) @map("is_system")
   replyToId   Int?      @map("reply_to_id")
   timestamp   DateTime  @default(now())
   editedAt    DateTime? @map("edited_at")
@@ -302,4 +304,5 @@ enum ChannelRole {
   OWNER
   MODERATOR
   MEMBER
+  BANNED
 }

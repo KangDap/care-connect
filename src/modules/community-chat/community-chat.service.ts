@@ -9,7 +9,7 @@ export const CommunityChatService = {
     if (!userId || all) {
       const channels = await CommunityChatRepository.getAllChannels();
 
-      // Sort by latest activity (last message timestamp)
+      // Sort by latest activity
       const sortedChannels = channels.sort((a, b) => {
         const timeA = a.chats[0]?.timestamp.getTime() ?? a.createdAt.getTime();
         const timeB = b.chats[0]?.timestamp.getTime() ?? b.createdAt.getTime();
@@ -18,17 +18,26 @@ export const CommunityChatService = {
 
       if (!userId) return sortedChannels;
 
-      // If userId provided but all=true, check if user is member of each channel
       const channelsWithMembership = await Promise.all(
         sortedChannels.map(async (channel) => {
           const membership = await CommunityChatRepository.checkMembership(
             userId,
             channel.id,
           );
+
+          let unreadCount = 0;
+          if (membership && membership.role !== 'BANNED') {
+            unreadCount = await CommunityChatRepository.getUnreadCount(
+              channel.id,
+              membership.lastViewedAt,
+            );
+          }
+
           return {
             ...channel,
-            isMember: !!membership,
+            isMember: !!membership && membership.role !== 'BANNED',
             myRole: membership?.role || null,
+            unreadCount,
           };
         }),
       );
@@ -36,23 +45,34 @@ export const CommunityChatService = {
       return channelsWithMembership;
     }
 
-    // Default: Return only joined channels if userId is provided and all=false
+    // Default: Return only joined channels
     const joinedChannels =
       await CommunityChatRepository.getJoinedChannels(userId);
 
-    const sortedJoined = joinedChannels
-      .map((channel) => ({
-        ...channel,
-        isMember: true,
-        myRole: channel.members?.[0]?.role || null,
-      }))
-      .sort((a, b) => {
-        const timeA = a.chats[0]?.timestamp.getTime() ?? a.createdAt.getTime();
-        const timeB = b.chats[0]?.timestamp.getTime() ?? b.createdAt.getTime();
-        return timeB - timeA;
-      });
+    const sortedJoined = await Promise.all(
+      joinedChannels.map(async (channel) => {
+        const membership = channel.members?.[0];
+        const lastViewed = membership?.lastViewedAt || new Date(0);
 
-    return sortedJoined;
+        const unreadCount = await CommunityChatRepository.getUnreadCount(
+          channel.id,
+          lastViewed,
+        );
+
+        return {
+          ...channel,
+          isMember: true,
+          myRole: membership?.role || null,
+          unreadCount,
+        };
+      }),
+    );
+
+    return sortedJoined.sort((a, b) => {
+      const timeA = a.chats[0]?.timestamp.getTime() ?? a.createdAt.getTime();
+      const timeB = b.chats[0]?.timestamp.getTime() ?? b.createdAt.getTime();
+      return timeB - timeA;
+    });
   },
 
   async getChannelDetails(channelId: number, userId: string) {
@@ -63,12 +83,18 @@ export const CommunityChatService = {
       userId,
       channelId,
     );
+
+    // Update last viewed when opening channel
+    if (membership && membership.role !== 'BANNED') {
+      await CommunityChatRepository.updateLastViewed(userId, channelId);
+    }
+
     const messages =
       await CommunityChatRepository.getChannelMessages(channelId);
 
     return {
       ...channel,
-      isMember: !!membership,
+      isMember: !!membership && membership.role !== 'BANNED',
       myRole: membership?.role || null,
       messages,
     };
@@ -82,12 +108,29 @@ export const CommunityChatService = {
       userId,
       channelId,
     );
+
     if (existingMembership) {
+      if (existingMembership.role === 'BANNED') {
+        throw Errors.forbidden('You have been banned from this channel');
+      }
       throw Errors.badRequest('You are already a member of this channel');
     }
 
-    // Users always join as MEMBER
-    return CommunityChatRepository.addMember(userId, channelId, 'MEMBER');
+    const member = await CommunityChatRepository.addMember(
+      userId,
+      channelId,
+      'MEMBER',
+    );
+
+    // Record system message for JOIN
+    const user = await CommunityChatRepository.getUserById(userId);
+    await CommunityChatRepository.sendMessage(userId, {
+      channelId,
+      content: `${user?.name || 'A user'} joined the channel`,
+      isSystem: true,
+    });
+
+    return member;
   },
 
   async leaveChannel(userId: string, channelId: number) {
@@ -95,8 +138,16 @@ export const CommunityChatService = {
       userId,
       channelId,
     );
-    if (!membership)
+    if (!membership || membership.role === 'BANNED')
       throw Errors.badRequest('You are not a member of this channel');
+
+    // Record system message for LEAVE
+    const user = await CommunityChatRepository.getUserById(userId);
+    await CommunityChatRepository.sendMessage(userId, {
+      channelId,
+      content: `${user?.name || 'A user'} left the channel`,
+      isSystem: true,
+    });
 
     return CommunityChatRepository.removeMember(userId, channelId);
   },
@@ -106,7 +157,7 @@ export const CommunityChatService = {
       userId,
       data.channelId,
     );
-    if (!membership)
+    if (!membership || membership.role === 'BANNED')
       throw Errors.forbidden('You must join the channel to send messages');
 
     // Handle file upload if present
@@ -136,6 +187,9 @@ export const CommunityChatService = {
       finalMediaUrl = publicUrl.publicUrl;
     }
 
+    // Update last viewed on send
+    await CommunityChatRepository.updateLastViewed(userId, data.channelId);
+
     return CommunityChatRepository.sendMessage(userId, {
       ...data,
       mediaUrl: finalMediaUrl,
@@ -147,7 +201,7 @@ export const CommunityChatService = {
     adminRole: string,
     targetUserId: string,
     channelId: number,
-    newRole: 'OWNER' | 'MODERATOR' | 'MEMBER',
+    newRole: 'OWNER' | 'MODERATOR' | 'MEMBER' | 'BANNED',
   ) {
     const callerMembership = await CommunityChatRepository.checkMembership(
       adminId,
@@ -242,7 +296,7 @@ export const CommunityChatService = {
       channelId,
     );
 
-    if (!targetMembership) {
+    if (!targetMembership || targetMembership.role === 'BANNED') {
       throw Errors.notFound('User is not a member of this channel');
     }
 
@@ -250,32 +304,37 @@ export const CommunityChatService = {
     const isOwner = callerMembership?.role === 'OWNER';
     const isModerator = callerMembership?.role === 'MODERATOR';
 
-    // Global Admin can kick anyone (except maybe other global admins, but let's keep it simple)
-    if (isGlobalAdmin) {
-      return CommunityChatRepository.removeMember(targetUserId, channelId);
-    }
+    // Global Admin can kick anyone
+    let canKick = isGlobalAdmin;
 
     // Owner can kick Moderator and Member
-    if (isOwner) {
-      if (targetMembership.role === 'OWNER') {
-        throw Errors.forbidden('Cannot kick another owner');
-      }
-      return CommunityChatRepository.removeMember(targetUserId, channelId);
+    if (isOwner && targetMembership.role !== 'OWNER') {
+      canKick = true;
     }
 
     // Moderator can kick Member
-    if (isModerator) {
-      if (
-        targetMembership.role === 'OWNER' ||
-        targetMembership.role === 'MODERATOR'
-      ) {
-        throw Errors.forbidden('Moderators can only kick regular members');
-      }
-      return CommunityChatRepository.removeMember(targetUserId, channelId);
+    if (isModerator && targetMembership.role === 'MEMBER') {
+      canKick = true;
     }
 
-    throw Errors.forbidden(
-      'You do not have permission to kick users from this channel',
+    if (!canKick) {
+      throw Errors.forbidden('You do not have permission to kick this user');
+    }
+
+    // Record system message for KICK
+    const admin = await CommunityChatRepository.getUserById(adminId);
+    const target = await CommunityChatRepository.getUserById(targetUserId);
+    await CommunityChatRepository.sendMessage(adminId, {
+      channelId,
+      content: `${target?.name || 'A user'} was kicked by ${admin?.name || 'Admin'}`,
+      isSystem: true,
+    });
+
+    // Move to BANNED role instead of deleting to prevent rejoin
+    return CommunityChatRepository.updateMemberRole(
+      targetUserId,
+      channelId,
+      'BANNED',
     );
   },
 };
