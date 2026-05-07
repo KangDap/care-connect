@@ -14,6 +14,7 @@ export type PsychologistDashboardStats = {
   pendingConsultationCount: number;
   totalConsultationCount: number;
   completedConsultationCount: number;
+  monthlyEarnings: number;
   recentConsultations: DashboardConsultation[];
   completedConsultations: DashboardConsultation[];
 };
