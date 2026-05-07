@@ -37,6 +37,9 @@ export default async function PsychologistDashboardPage() {
     totalConsCount,
     pendingConsCount,
     completedConsCount,
+    monthlyPlatformDonations,
+    totalMonthlyCons,
+    myMonthlyCons,
   ] = await Promise.all([
     // Ambil daftar konsultasi upcoming (SCHEDULED, ONGOING)
     prisma.consultation.findMany({
@@ -104,7 +107,49 @@ export default async function PsychologistDashboardPage() {
         status: { in: ['COMPLETED', 'CANCELLED'] },
       },
     }),
+
+    // --- LOGIKA EARNINGS BARU ---
+    // 1. Total Platform Donations (PAID) bulan ini
+    prisma.donation.aggregate({
+      _sum: { amount: true },
+      where: {
+        donationType: 'PLATFORM',
+        paymentStatus: 'PAID',
+        timestamp: {
+          gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+        },
+      },
+    }),
+
+    // 2. Total Semua Konsultasi COMPLETED bulan ini (semua psikolog)
+    prisma.consultation.count({
+      where: {
+        status: 'COMPLETED',
+        date: {
+          gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+        },
+      },
+    }),
+
+    // 3. Total Konsultasi COMPLETED psikolog ini bulan ini
+    prisma.consultation.count({
+      where: {
+        psychologistId: session.user.id,
+        status: 'COMPLETED',
+        date: {
+          gte: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+        },
+      },
+    }),
   ]);
+
+  // Kalkulasi Earnings
+  const totalPlatformAmount = Number(monthlyPlatformDonations._sum.amount || 0);
+  const psychologistPool = totalPlatformAmount * 0.9;
+  const monthlyEarnings =
+    totalMonthlyCons > 0
+      ? (psychologistPool / totalMonthlyCons) * myMonthlyCons
+      : 0;
 
   const displayName = currentUser?.name || session.user.name || 'Psychologist';
 
@@ -121,6 +166,7 @@ export default async function PsychologistDashboardPage() {
         totalConsultationsCount={totalConsCount}
         pendingConsultationsCount={pendingConsCount}
         completedConsultationsCount={completedConsCount}
+        monthlyEarnings={monthlyEarnings}
       />
     </React.Suspense>
   );

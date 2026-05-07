@@ -54,6 +54,22 @@ const CompletedIcon = () => (
   </svg>
 );
 
+const EarningsIcon = () => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="#193C1F"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+  </svg>
+);
+
 const formatDateLabel = (value: Date | string) => {
   if (!value) return '-';
   return new Intl.DateTimeFormat('id-ID', {
@@ -81,6 +97,7 @@ type PsychologistDashboardProps = {
   totalConsultationsCount: number;
   pendingConsultationsCount: number;
   completedConsultationsCount: number;
+  monthlyEarnings: number;
 };
 
 export default function PsychologistDashboardContent({
@@ -90,6 +107,7 @@ export default function PsychologistDashboardContent({
   totalConsultationsCount,
   pendingConsultationsCount,
   completedConsultationsCount,
+  monthlyEarnings = 0,
 }: PsychologistDashboardProps) {
   const searchParams = useSearchParams();
   const searchBarQuery = searchParams.get('search')?.toLowerCase() || '';
@@ -118,6 +136,12 @@ export default function PsychologistDashboardContent({
     );
   });
 
+  const formattedEarnings = new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    maximumFractionDigits: 0,
+  }).format(monthlyEarnings);
+
   return (
     <div className="space-y-10 animate-fade-in">
       <div className="flex justify-between items-end">
@@ -133,7 +157,7 @@ export default function PsychologistDashboardContent({
         </div>
       </div>
 
-      <div className="flex gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {[
           {
             label: 'Total Consultations',
@@ -150,19 +174,46 @@ export default function PsychologistDashboardContent({
             val: String(completedConsultationsCount),
             icon: <CompletedIcon />,
           },
+          {
+            label: 'Monthly Earnings (Est.)',
+            val: formattedEarnings,
+            icon: <EarningsIcon />,
+            highlight: true,
+          },
         ].map((item, index) => (
           <div
             key={index}
-            className="bg-[#F7F3ED] p-8 rounded-[28px] border border-[#D0D5CB] flex items-center gap-6 flex-1 shadow-sm transition-all hover:shadow-md"
+            className={`p-8 rounded-[28px] border flex items-center gap-6 shadow-sm transition-all hover:shadow-md ${
+              item.highlight
+                ? 'bg-[#193C1F] border-[#193C1F] text-white'
+                : 'bg-[#F7F3ED] border-[#D0D5CB] text-[#193C1F]'
+            }`}
           >
-            <div className="w-14 h-14 bg-[#EBE6DE] rounded-2xl flex items-center justify-center shrink-0">
-              {item.icon}
+            <div
+              className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${
+                item.highlight ? 'bg-white/10' : 'bg-[#EBE6DE]'
+              }`}
+            >
+              {React.cloneElement(
+                item.icon as React.ReactElement<{ stroke?: string }>,
+                {
+                  stroke: item.highlight ? '#FFFFFF' : '#193C1F',
+                },
+              )}
             </div>
             <div>
-              <p className="text-[10px] uppercase font-black text-[#8EA087] tracking-widest mb-1">
+              <p
+                className={`text-[10px] uppercase font-black tracking-widest mb-1 ${
+                  item.highlight ? 'text-white/60' : 'text-[#8EA087]'
+                }`}
+              >
                 {item.label}
               </p>
-              <p className="text-[32px] font-bold text-[#193C1F] leading-none">
+              <p
+                className={`text-[24px] font-bold leading-none ${
+                  item.highlight ? 'text-white' : 'text-[#193C1F]'
+                }`}
+              >
                 {item.val}
               </p>
             </div>

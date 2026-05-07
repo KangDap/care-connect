@@ -44,10 +44,52 @@ export const getPsychologistDashboardStats = async (
     take: 5,
   });
 
+  // 6. Monthly Earnings Calculation
+  const now = new Date();
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  // Total Platform Donations (PAID) this month
+  const monthlyPlatformDonations = await prisma.donation.aggregate({
+    _sum: { amount: true },
+    where: {
+      donationType: 'PLATFORM',
+      paymentStatus: 'PAID',
+      timestamp: { gte: startOfMonth },
+    },
+  });
+
+  const totalPlatformAmount = Number(monthlyPlatformDonations._sum.amount || 0);
+  const psychologistPool = totalPlatformAmount * 0.9;
+
+  // Total Completed Consultations this month (All psychologists)
+  const totalMonthlyConsultations = await prisma.consultation.count({
+    where: {
+      status: 'COMPLETED',
+      date: { gte: startOfMonth },
+    },
+  });
+
+  // This psychologist's Completed Consultations this month
+  const psychologistMonthlyConsultations = await prisma.consultation.count({
+    where: {
+      psychologistId,
+      status: 'COMPLETED',
+      date: { gte: startOfMonth },
+    },
+  });
+
+  // Share = (Pool / Total Consultations) * My Consultations
+  const monthlyEarnings =
+    totalMonthlyConsultations > 0
+      ? (psychologistPool / totalMonthlyConsultations) *
+        psychologistMonthlyConsultations
+      : 0;
+
   return {
     pendingConsultationCount,
     totalConsultationCount,
     completedConsultationCount,
+    monthlyEarnings,
     recentConsultations,
     completedConsultations,
   };
