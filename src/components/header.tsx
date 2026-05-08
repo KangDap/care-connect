@@ -108,7 +108,7 @@ export const Header = ({
   const [searchQuery, setSearchQuery] = useState('');
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const profileName = session?.user?.name || 'User';
+  const profileUsername = session?.user?.username || 'User';
   const profileId = session?.user?.id
     ? `#${session.user.id.slice(-5).toUpperCase()}`
     : '-';
@@ -200,7 +200,7 @@ export const Header = ({
             >
               <div className="text-right hidden md:block">
                 <p className="text-[15px] font-bold text-[#193C1F] leading-tight">
-                  {profileName}
+                  {profileUsername}
                 </p>
                 <p className="text-[11px] text-[#8EA087] font-bold uppercase mt-0.5">
                   ID: {profileId}

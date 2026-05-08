@@ -160,6 +160,7 @@ export default function LoginPage() {
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [googleLoading, setGoogleLoading] = useState(false);
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
@@ -175,6 +176,7 @@ export default function LoginPage() {
         const { error: signUpError } = await authClient.signUp.email({
           name,
           email,
+          username,
           password,
           callbackURL: '/login?verified=1',
         });
@@ -403,9 +405,9 @@ export default function LoginPage() {
                       label="Username"
                       placeholder="Enter your username"
                       icon={<UserIcon />}
-                      value={name}
+                      value={username}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setName(e.target.value)
+                        setUsername(e.target.value)
                       }
                       required
                     />

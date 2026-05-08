@@ -5,7 +5,7 @@ import {
 import { prisma } from '@/lib/prisma';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { admin, openAPI } from 'better-auth/plugins';
+import { admin, openAPI, username } from 'better-auth/plugins';
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -64,13 +64,14 @@ export const auth = betterAuth({
         const email = profile.email ?? '';
         const emailPrefix = email.split('@')[0] || 'user';
         return {
-          name: emailPrefix,
+          username: emailPrefix,
+          displayUsername: profile.name,
           image: profile.picture,
         };
       },
     },
   },
-  plugins: [admin(), openAPI()],
+  plugins: [admin(), openAPI(), username()],
 });
 
 export type Session = typeof auth.$Infer.Session;
