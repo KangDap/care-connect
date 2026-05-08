@@ -263,7 +263,7 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
         for (let i = 0; i < maxAttempts; i++) {
           if (cancelled) return;
           try {
-            const res = await fetch('/api/donation/sync', {
+            const res = await fetch('/api/webhook/midtrans/sync', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ orderId }),
@@ -327,7 +327,7 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
       onSuccess: async () => {
         if (row.midtransOrderId) {
           try {
-            await fetch('/api/donation/sync', {
+            await fetch('/api/webhook/midtrans/sync', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ orderId: row.midtransOrderId }),

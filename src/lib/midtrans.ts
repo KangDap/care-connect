@@ -11,6 +11,7 @@ type CreateMidtransSnapTransactionInput = {
   orderId: string;
   grossAmount: number;
   paymentMethod: 'BANK_TRANSFER' | 'CREDIT_CARD' | 'EWALLET' | 'QRIS';
+  finishUrl?: string;
   report?: {
     id: number;
     title: string;
@@ -147,7 +148,7 @@ export const createMidtransSnapTransaction = async (
         )
       : 'Donation for CareConnect Platform';
 
-    const result = await snap.createTransaction({
+    const payload: Record<string, unknown> = {
       transaction_details: {
         order_id: input.orderId,
         gross_amount: roundedAmount,
@@ -172,7 +173,13 @@ export const createMidtransSnapTransaction = async (
       custom_field2: input.report
         ? trimForMidtrans(input.report.title, 255)
         : 'Platform Donation',
-    });
+    };
+
+    if (input.finishUrl) {
+      payload.callbacks = { finish: input.finishUrl };
+    }
+
+    const result = await snap.createTransaction(payload);
 
     return result as MidtransSnapTransactionResponse;
   } catch (error) {

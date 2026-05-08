@@ -39,6 +39,14 @@ export const handleDonationRequest = async (
       options.donationType,
     );
 
+    const headerList = await headers();
+    const forwardedProto = headerList.get('x-forwarded-proto');
+    const forwardedHost =
+      headerList.get('x-forwarded-host') || headerList.get('host');
+    const protocol = forwardedProto || 'http';
+    const origin = forwardedHost ? `${protocol}://${forwardedHost}` : undefined;
+    const finishUrl = origin ? `${origin}/dashboard/donations` : undefined;
+
     const donation = await DonationService.createDonation(
       {
         id: session.user.id,
@@ -47,6 +55,7 @@ export const handleDonationRequest = async (
         phoneNumber: session.user.phoneNumber || undefined,
       },
       validatedData,
+      { finishUrl },
     );
 
     return created({
