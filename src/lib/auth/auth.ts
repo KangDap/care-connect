@@ -64,7 +64,8 @@ export const auth = betterAuth({
         const email = profile.email ?? '';
         const emailPrefix = email.split('@')[0] || 'user';
         return {
-          name: emailPrefix,
+          username: emailPrefix,
+          displayUsername: profile.name,
           image: profile.picture,
         };
       },
