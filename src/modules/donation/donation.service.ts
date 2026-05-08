@@ -28,6 +28,10 @@ import type {
   SyncDonationStatusResult,
 } from './donation.types';
 
+type CreateDonationOptions = {
+  finishUrl?: string;
+};
+
 const mapMidtransStatusToDonationStatus = (
   transactionStatus: string,
   fraudStatus?: string,
@@ -162,6 +166,7 @@ export class DonationService {
   static async createDonation(
     user: DonationUserContext,
     input: CreateDonationInput,
+    options: CreateDonationOptions = {},
   ): Promise<CreateDonationResult> {
     try {
       getMidtransConfig();
@@ -194,6 +199,7 @@ export class DonationService {
           orderId,
           grossAmount: input.amount,
           paymentMethod: input.paymentMethod,
+          finishUrl: options.finishUrl,
           report: report
             ? {
                 id: report.id,
