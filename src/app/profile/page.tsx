@@ -15,7 +15,7 @@ const SILHOUETTE_AVATAR = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/20
 interface CustomUser {
   id: string;
   email: string;
-  name: string;
+  username: string;
   image?: string;
   bio?: string;
   dateOfBirth?: string | Date;
@@ -46,7 +46,7 @@ export default function ProfileManagement() {
 
   const [formData, setFormData] = useState({
     email: '',
-    displayName: '',
+    userName: '',
     bio: '',
     birthDate: '',
     gender: 'PREFER_NOT_TO_SAY',
@@ -60,7 +60,7 @@ export default function ProfileManagement() {
       const u = session.user as CustomUser;
       setFormData({
         email: u.email ?? '',
-        displayName: u.name ?? '',
+        userName: u.username ?? '',
         bio: u.bio ?? '',
         birthDate: u.dateOfBirth
           ? new Date(u.dateOfBirth).toISOString().slice(0, 10)
@@ -75,8 +75,37 @@ export default function ProfileManagement() {
   const handleSaveProfile = async () => {
     setLoading(true);
     try {
+      const normalizedUsername = formData.userName.trim();
+      if (!normalizedUsername) {
+        setToast({
+          show: true,
+          msg: 'Username is required.',
+          type: 'error',
+        });
+        return;
+      }
+
+      const currentUsername = session?.user?.username ?? '';
+      const isUsernameChanged = normalizedUsername !== currentUsername;
+      if (isUsernameChanged) {
+        const { data: response, error: availabilityError } =
+          await authClient.isUsernameAvailable({
+            username: normalizedUsername,
+          });
+        if (availabilityError) throw availabilityError;
+
+        if (!response?.available) {
+          setToast({
+            show: true,
+            msg: 'Username is already taken. Please try another.',
+            type: 'error',
+          });
+          return;
+        }
+      }
+
       const { error } = await authClient.updateUser({
-        name: formData.displayName,
+        username: normalizedUsername,
         image: formData.avatarUrl,
         // @ts-expect-error: bio and other fields are custom extensions
         bio: formData.bio,
@@ -85,6 +114,16 @@ export default function ProfileManagement() {
         gender: formData.gender,
       });
       if (error) throw error;
+
+      const { data: response } = await authClient.isUsernameAvailable({
+        username: formData.userName,
+      });
+
+      if (response?.available) {
+        console.log('Username is available');
+      } else {
+        console.log('Username is not available');
+      }
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
       setToast({
@@ -221,9 +260,11 @@ export default function ProfileManagement() {
               </div>
               <div className="mt-8">
                 <h2 className="text-xl font-black">
-                  {formData.displayName || 'User'}
+                  {session?.user.username || 'User'}
                 </h2>
-                <p className="text-[#8EA087] text-sm mt-1">{formData.email}</p>
+                <p className="text-[#8EA087] text-sm mt-1">
+                  {session?.user.email}
+                </p>
               </div>
             </div>
           </div>
@@ -236,9 +277,9 @@ export default function ProfileManagement() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="md:col-span-2">
                   <Input
-                    label="Display Name"
-                    name="displayName"
-                    value={formData.displayName}
+                    label="Username"
+                    name="userName"
+                    value={formData.userName}
                     onChange={handleInputChange}
                   />
                 </div>
