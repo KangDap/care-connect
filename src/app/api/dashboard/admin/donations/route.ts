@@ -89,6 +89,66 @@ export async function GET(req: Request) {
     totalCount,
     page,
     perPage,
-    totalPages: Math.ceil(totalCount / perPage),
   });
+}
+
+export async function PATCH(req: Request) {
+  const { response } = await requireAdminSession();
+  if (response) return response;
+
+  try {
+    const { id, paymentStatus } = await req.json();
+
+    if (!id || !paymentStatus) {
+      return new Response(
+        JSON.stringify({ error: 'Missing required fields' }),
+        {
+          status: 400,
+        },
+      );
+    }
+
+    const updated = await prisma.donation.update({
+      where: { id },
+      data: { paymentStatus },
+    });
+
+    return ok(updated);
+  } catch {
+    return new Response(
+      JSON.stringify({ error: 'Failed to update donation' }),
+      {
+        status: 500,
+      },
+    );
+  }
+}
+
+export async function DELETE(req: Request) {
+  const { response } = await requireAdminSession();
+  if (response) return response;
+
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = Number(searchParams.get('id'));
+
+    if (!id) {
+      return new Response(JSON.stringify({ error: 'Missing id' }), {
+        status: 400,
+      });
+    }
+
+    await prisma.donation.delete({
+      where: { id },
+    });
+
+    return ok({ success: true });
+  } catch {
+    return new Response(
+      JSON.stringify({ error: 'Failed to delete donation' }),
+      {
+        status: 500,
+      },
+    );
+  }
 }

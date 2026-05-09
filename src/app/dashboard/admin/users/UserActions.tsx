@@ -35,7 +35,7 @@ export function UserActions({ id, role, banned, name }: UserProps) {
       if (!res.ok) throw new Error('Failed to update role');
       setIsModalOpen(false);
       router.refresh();
-    } catch (error) {
+    } catch {
       alert('Error updating role');
     } finally {
       setIsUpdating(false);
