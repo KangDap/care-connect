@@ -438,15 +438,14 @@ export default function CommunityChatContent() {
                     const targetRoleInChannel = chat.roleInChannel || 'MEMBER';
                     const targetIsBanned = targetRoleInChannel === 'BANNED';
 
-                    // Can kick: not me, target not banned (already removed), caller is owner or moderator kicking a plain member
+                    // Can kick: not me, caller is owner or moderator kicking a plain member
                     const canKick =
                       !isMe &&
-                      !targetIsBanned &&
                       (isOwner ||
                         (isModerator && targetRoleInChannel === 'MEMBER'));
 
-                    // Can manage role: owner only, not me, not banned target
-                    const canManageRole = isOwner && !isMe && !targetIsBanned;
+                    // Can manage role: owner only, not me
+                    const canManageRole = isOwner && !isMe;
 
                     // Determine if we need an unread divider
                     let showUnreadDivider = false;
@@ -542,7 +541,7 @@ export default function CommunityChatContent() {
                                   unoptimized
                                   src={
                                     chat.user.image ||
-                                    'https://lh3.googleusercontent.com/a/default-user'
+                                    'https://static.vecteezy.com/system/resources/previews/009/292/244/original/default-avatar-icon-of-social-media-user-vector.jpg'
                                   }
                                 />
                               )}
@@ -597,7 +596,7 @@ export default function CommunityChatContent() {
 
                               {/* Message Actions (Reply & Moderation) */}
                               <div
-                                className={`absolute top-0 ${isMe ? '-left-20' : '-right-20'} opacity-0 group-hover:opacity-100 transition-opacity z-50 flex items-center h-full space-x-1`}
+                                className={`absolute top-0 ${isMe ? 'right-full mr-2' : 'left-full ml-2'} opacity-0 group-hover:opacity-100 transition-opacity z-50 flex items-center h-full space-x-1`}
                               >
                                 <button
                                   onClick={() => setReplyingTo(chat)}
@@ -619,63 +618,72 @@ export default function CommunityChatContent() {
                                   </svg>
                                 </button>
 
-                                {/* Only show moderation menu if user is not banned and caller has permissions */}
-                                {targetRoleInChannel !== 'BANNED' &&
-                                  (canKick || canManageRole) && (
-                                    <div className="relative">
-                                      <button
-                                        onClick={() =>
-                                          setActiveMenuId(
-                                            activeMenuId === chat.id
-                                              ? null
-                                              : chat.id,
-                                          )
-                                        }
-                                        className="w-8 h-8 flex items-center justify-center hover:bg-gray-200 rounded-full transition-colors shrink-0"
+                                {/* Only show moderation menu if caller has permissions */}
+                                {(canKick || canManageRole) && (
+                                  <div className="relative">
+                                    <button
+                                      onClick={() =>
+                                        setActiveMenuId(
+                                          activeMenuId === chat.id
+                                            ? null
+                                            : chat.id,
+                                        )
+                                      }
+                                      className="w-8 h-8 flex items-center justify-center hover:bg-gray-200 rounded-full transition-colors shrink-0"
+                                    >
+                                      <MoreVertical size={16} />
+                                    </button>
+                                    {activeMenuId === chat.id && (
+                                      <div
+                                        className={`absolute z-[100] mt-1 w-40 bg-white border border-[#D0D5CB] shadow-2xl rounded-xl overflow-hidden py-1 ${isMe ? 'left-0' : 'right-0'}`}
                                       >
-                                        <MoreVertical size={16} />
-                                      </button>
-                                      {activeMenuId === chat.id && (
-                                        <div
-                                          className={`absolute z-[100] mt-1 w-40 bg-white border border-[#D0D5CB] shadow-2xl rounded-xl overflow-hidden py-1 ${isMe ? 'left-0' : 'right-0'}`}
-                                        >
-                                          {canKick && (
-                                            <button
-                                              onClick={() =>
-                                                kickMutation.mutate(
-                                                  chat.user.id,
-                                                )
-                                              }
-                                              className="w-full text-left px-4 py-2.5 text-[11px] font-bold text-red-600 hover:bg-red-50 flex items-center gap-2 uppercase tracking-tight border-b border-gray-50"
-                                            >
-                                              <UserMinus size={14} /> Kick User
-                                            </button>
-                                          )}
-                                          {canManageRole && (
-                                            <button
-                                              onClick={() =>
-                                                changeRoleMutation.mutate({
-                                                  userId: chat.user.id,
-                                                  role:
-                                                    targetRoleInChannel ===
-                                                    'MODERATOR'
-                                                      ? 'MEMBER'
-                                                      : 'MODERATOR',
-                                                })
-                                              }
-                                              className="w-full text-left px-4 py-2.5 text-[11px] font-bold text-[#193C1F] hover:bg-gray-50 flex items-center gap-2 uppercase tracking-tight"
-                                            >
-                                              <ShieldCheck size={14} />{' '}
-                                              {targetRoleInChannel ===
-                                              'MODERATOR'
-                                                ? 'Demote to Member'
-                                                : 'Make Moderator'}
-                                            </button>
-                                          )}
-                                        </div>
-                                      )}
-                                    </div>
-                                  )}
+                                        {targetIsBanned ? (
+                                          <div className="px-4 py-3 text-[10px] font-black text-gray-400 flex items-center gap-2 uppercase tracking-tight italic">
+                                            <ShieldCheck size={14} /> Member
+                                            Removed
+                                          </div>
+                                        ) : (
+                                          <>
+                                            {canKick && (
+                                              <button
+                                                onClick={() =>
+                                                  kickMutation.mutate(
+                                                    chat.user.id,
+                                                  )
+                                                }
+                                                className="w-full text-left px-4 py-2.5 text-[11px] font-bold text-red-600 hover:bg-red-50 flex items-center gap-2 uppercase tracking-tight border-b border-gray-50"
+                                              >
+                                                <UserMinus size={14} /> Kick
+                                                User
+                                              </button>
+                                            )}
+                                            {canManageRole && (
+                                              <button
+                                                onClick={() =>
+                                                  changeRoleMutation.mutate({
+                                                    userId: chat.user.id,
+                                                    role:
+                                                      targetRoleInChannel ===
+                                                      'MODERATOR'
+                                                        ? 'MEMBER'
+                                                        : 'MODERATOR',
+                                                  })
+                                                }
+                                                className="w-full text-left px-4 py-2.5 text-[11px] font-bold text-[#193C1F] hover:bg-gray-50 flex items-center gap-2 uppercase tracking-tight"
+                                              >
+                                                <ShieldCheck size={14} />{' '}
+                                                {targetRoleInChannel ===
+                                                'MODERATOR'
+                                                  ? 'Demote to Member'
+                                                  : 'Make Moderator'}
+                                              </button>
+                                            )}
+                                          </>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
                               </div>
                             </div>
                           </div>
@@ -716,13 +724,18 @@ export default function CommunityChatContent() {
             )}
 
             {ChannelRole === 'BANNED' ? (
-              <footer className="p-6 bg-[#F7F3ED] border-t border-[#D0D5CB] shrink-0 flex justify-center">
-                <div className="bg-red-50 border border-red-200 text-red-600 px-6 py-4 rounded-2xl flex items-center space-x-3 text-sm font-bold shadow-sm">
-                  <ShieldCheck size={20} />
-                  <span>
+              <footer className="px-6 py-4 bg-white border-t border-[#D0D5CB] shrink-0">
+                <div className="bg-[#F7F3ED] border border-red-200 rounded-2xl px-6 py-3 flex flex-col items-center justify-center text-center space-y-1 shadow-sm">
+                  <div className="flex items-center space-x-2 text-red-600">
+                    <ShieldCheck size={20} />
+                    <span className="font-bold text-sm uppercase tracking-wider">
+                      Access Denied
+                    </span>
+                  </div>
+                  <p className="text-xs text-[#193C1F] opacity-60">
                     You have been removed from this community and can no longer
-                    participate.
-                  </span>
+                    participate in this discussion.
+                  </p>
                 </div>
               </footer>
             ) : (

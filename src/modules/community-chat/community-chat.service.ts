@@ -92,11 +92,22 @@ export const CommunityChatService = {
     const messages =
       await CommunityChatRepository.getChannelMessages(channelId);
 
+    const members = await CommunityChatRepository.getChannelMembers(channelId);
+    const memberRoleMap = new Map();
+    for (const m of members) {
+      memberRoleMap.set(m.userId, m.role);
+    }
+
+    const enrichedMessages = messages.map((msg) => ({
+      ...msg,
+      roleInChannel: memberRoleMap.get(msg.user.id) || 'MEMBER',
+    }));
+
     return {
       ...channel,
       isMember: !!membership && membership.role !== 'BANNED',
       myRole: membership?.role || null,
-      messages,
+      messages: enrichedMessages,
     };
   },
 
@@ -243,7 +254,7 @@ export const CommunityChatService = {
     const target = await CommunityChatRepository.getUserById(targetUserId);
     await CommunityChatRepository.sendMessage(adminId, {
       channelId,
-      content: `Role ${target?.name || 'Seorang pengguna'} diubah menjadi ${newRole} oleh ${admin?.name || 'Admin'}`,
+      content: `Role ${target?.name || 'A user'} was changed to ${newRole} by ${admin?.name || 'Admin'}`,
       isSystem: true,
     });
 
@@ -344,7 +355,7 @@ export const CommunityChatService = {
     const target = await CommunityChatRepository.getUserById(targetUserId);
     await CommunityChatRepository.sendMessage(adminId, {
       channelId,
-      content: `${target?.name || 'A user'} was kicked by ${admin?.name || 'Admin'}`,
+      content: `${target?.name || 'Seorang pengguna'} telah dikeluarkan dari forum oleh ${admin?.name || 'Admin'}`,
       isSystem: true,
     });
 

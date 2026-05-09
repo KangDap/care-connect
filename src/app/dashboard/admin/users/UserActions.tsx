@@ -73,6 +73,7 @@ export function UserActions({ id, role, banned, name }: UserProps) {
   return (
     <div className="flex items-center justify-end gap-4">
       <button
+        suppressHydrationWarning
         onClick={() => {
           setNewRole(role);
           setIsModalOpen(true);
@@ -83,6 +84,7 @@ export function UserActions({ id, role, banned, name }: UserProps) {
       </button>
 
       <button
+        suppressHydrationWarning
         onClick={handleBanToggle}
         disabled={isUpdating}
         className={`text-sm font-bold transition disabled:opacity-50 ${
