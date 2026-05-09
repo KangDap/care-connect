@@ -40,7 +40,7 @@ export function ConsultationActions({
       setIsEditModalOpen(false);
       onSuccess('Status berhasil diperbarui!');
       router.refresh();
-    } catch (error) {
+    } catch {
       onError('Gagal memperbarui status');
     } finally {
       setIsUpdating(false);
@@ -58,8 +58,8 @@ export function ConsultationActions({
       setIsDeleteModalOpen(false);
       onSuccess('Konsultasi berhasil dihapus!');
       router.refresh();
-    } catch (error) {
-      onError('Gagal menghapus konsultasi');
+    } catch {
+      onError('Gagal menghapus data konsultasi');
     } finally {
       setIsUpdating(false);
     }
