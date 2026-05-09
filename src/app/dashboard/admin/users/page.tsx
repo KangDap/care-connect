@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/prisma';
 
+import { UserActions } from './UserActions';
+
 export default async function AdminUsersPage() {
   const users = await prisma.user.findMany({
     orderBy: { createdAt: 'desc' },
@@ -63,14 +65,16 @@ export default async function AdminUsersPage() {
                     {user.name}
                   </td>
                   <td className="px-6 py-4 text-gray-600">{user.email}</td>
-                  <td className="px-6 py-4 text-gray-600">{user.role}</td>
+                  <td className="px-6 py-4 text-gray-600 font-bold">
+                    {user.role}
+                  </td>
                   <td className="px-6 py-4 text-gray-600">
                     {fmtDate(user.createdAt)}
                   </td>
                   <td className="px-6 py-4">
                     {user.banned ? (
                       <span className="px-2 py-1 text-xs font-bold rounded-full bg-red-100 text-red-700 border border-red-200">
-                        BANNED
+                        NON-ACTIVE
                       </span>
                     ) : (
                       <span className="px-2 py-1 text-xs font-bold rounded-full bg-green-100 text-green-700 border border-green-200">
@@ -78,10 +82,13 @@ export default async function AdminUsersPage() {
                       </span>
                     )}
                   </td>
-                  <td className="px-6 py-4 text-right">
-                    <button className="text-sm font-bold text-red-600 hover:text-red-700 transition">
-                      {user.banned ? 'Unban' : 'Ban'}
-                    </button>
+                  <td className="px-6 py-4">
+                    <UserActions
+                      id={user.id}
+                      role={user.role}
+                      banned={user.banned}
+                      name={user.name}
+                    />
                   </td>
                 </tr>
               ))
