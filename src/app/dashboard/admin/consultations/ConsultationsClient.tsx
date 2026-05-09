@@ -85,7 +85,7 @@ export function ConsultationsClient({
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           {
             label: 'Scheduled',
@@ -118,7 +118,7 @@ export function ConsultationsClient({
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-3">
+      <div className="flex gap-3 flex-wrap">
         <Link
           href="/dashboard/admin/consultations?tab=all"
           className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${
@@ -158,88 +158,90 @@ export function ConsultationsClient({
 
       {/* Table */}
       <div className="bg-white border border-[#D0D5CB] rounded-2xl overflow-hidden shadow-sm">
-        <table className="w-full text-left">
-          <thead className="bg-[#F7F3ED] text-[11px] text-[#8EA087] font-black uppercase tracking-widest">
-            <tr>
-              <th className="px-6 py-4">Consultation</th>
-              <th className="px-6 py-4">User</th>
-              <th className="px-6 py-4">Psychologist</th>
-              <th className="px-6 py-4">Status</th>
-              <th className="px-6 py-4">Date</th>
-              <th className="px-6 py-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[#F7F3ED] text-sm">
-            {consultations.length === 0 ? (
+        <div className="overflow-x-auto">
+          <table className="w-full text-left min-w-[1000px]">
+            <thead className="bg-[#F7F3ED] text-[11px] text-[#8EA087] font-black uppercase tracking-widest">
               <tr>
-                <td
-                  colSpan={6}
-                  className="px-6 py-12 text-center text-[#8EA087] font-medium"
-                >
-                  No consultations found.
-                </td>
+                <th className="px-6 py-4">Consultation</th>
+                <th className="px-6 py-4">User</th>
+                <th className="px-6 py-4">Psychologist</th>
+                <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4">Date</th>
+                <th className="px-6 py-4 text-right">Actions</th>
               </tr>
-            ) : (
-              consultations.map((c) => (
-                <tr
-                  key={c.id}
-                  className="hover:bg-[#F7F3ED]/50 transition-colors"
-                >
-                  <td className="px-6 py-4">
-                    <p className="font-bold text-[#193C1F] line-clamp-1">
-                      {c.title}
-                    </p>
-                    <p className="text-[11px] text-[#8EA087] mt-0.5">
-                      {c.category}
-                    </p>
-                  </td>
-                  <td className="px-6 py-4">
-                    {c.isAnonymous ? (
-                      <span className="text-[#8EA087] italic text-xs">
-                        Anonymous
-                      </span>
-                    ) : (
-                      <>
-                        <p className="font-medium text-[#193C1F]">
-                          {c.user.name}
-                        </p>
-                        <p className="text-[11px] text-[#8EA087]">
-                          {c.user.email}
-                        </p>
-                      </>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 text-[#193C1F]">
-                    {c.psychologist?.name ?? (
-                      <span className="text-[#8EA087] italic text-xs">
-                        Unassigned
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full border ${STATUS_BADGE[c.status] || 'bg-gray-100 text-gray-600'}`}
-                    >
-                      {c.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-[#8EA087] text-xs">
-                    {fmtDate(c.date)}
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <ConsultationActions
-                      id={c.id}
-                      status={c.status}
-                      title={c.title}
-                      onSuccess={(msg) => showToast(msg, 'success')}
-                      onError={(msg) => showToast(msg, 'error')}
-                    />
+            </thead>
+            <tbody className="divide-y divide-[#F7F3ED] text-sm">
+              {consultations.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="px-6 py-12 text-center text-[#8EA087] font-medium"
+                  >
+                    No consultations found.
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                consultations.map((c) => (
+                  <tr
+                    key={c.id}
+                    className="hover:bg-[#F7F3ED]/50 transition-colors"
+                  >
+                    <td className="px-6 py-4">
+                      <p className="font-bold text-[#193C1F] line-clamp-1">
+                        {c.title}
+                      </p>
+                      <p className="text-[11px] text-[#8EA087] mt-0.5">
+                        {c.category}
+                      </p>
+                    </td>
+                    <td className="px-6 py-4">
+                      {c.isAnonymous ? (
+                        <span className="text-[#8EA087] italic text-xs">
+                          Anonymous
+                        </span>
+                      ) : (
+                        <>
+                          <p className="font-medium text-[#193C1F]">
+                            {c.user.name}
+                          </p>
+                          <p className="text-[11px] text-[#8EA087]">
+                            {c.user.email}
+                          </p>
+                        </>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-[#193C1F]">
+                      {c.psychologist?.name ?? (
+                        <span className="text-[#8EA087] italic text-xs">
+                          Unassigned
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full border ${STATUS_BADGE[c.status] || 'bg-gray-100 text-gray-600'}`}
+                      >
+                        {c.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 text-[#8EA087] text-xs">
+                      {fmtDate(c.date)}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <ConsultationActions
+                        id={c.id}
+                        status={c.status}
+                        title={c.title}
+                        onSuccess={(msg) => showToast(msg, 'success')}
+                        onError={(msg) => showToast(msg, 'error')}
+                      />
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
         {totalPages > 1 && (
           <div className="px-6 py-4 bg-[#F7F3ED]/50 border-t border-[#D0D5CB] flex justify-between items-center">
             <span className="text-[#8EA087] text-xs font-semibold">

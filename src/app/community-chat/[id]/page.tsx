@@ -3,6 +3,7 @@
 import { Alert } from '@/components/alert';
 import { Header } from '@/components/header';
 import { authClient } from '@/lib/auth/auth-client';
+import type { ChatMessage } from '@/modules/community-chat/community-chat.types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Loader2,
@@ -17,6 +18,19 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
+
+interface ChannelDetails {
+  id: number;
+  name: string;
+  title?: string;
+  description?: string;
+  coverUrl?: string;
+  type?: string;
+  myRole: string | null;
+  lastViewedAt?: string | null;
+  _count: { members: number };
+  messages: ChatMessage[];
+}
 
 export default function CommunityChatContent() {
   const router = useRouter();
@@ -76,13 +90,15 @@ export default function CommunityChatContent() {
   // Query: Channel Details & Messages
   const {
     data: chatData = {
+      id: 0,
       messages: [],
       name: '',
       _count: { members: 0 },
       myRole: null,
-    },
+      lastViewedAt: null,
+    } as ChannelDetails,
     isLoading: isLoadingMessages,
-  } = useQuery({
+  } = useQuery<ChannelDetails>({
     queryKey: ['community-messages', selectedChannelId],
     queryFn: async () => {
       const res = await fetch(`/api/community-chat/${selectedChannelId}`);
@@ -325,6 +341,7 @@ export default function CommunityChatContent() {
                     isMember?: boolean;
                     unreadCount?: number;
                     _count?: { members: number };
+                    coverUrl?: string;
                   }) => (
                     <div
                       key={channel.id}
@@ -333,8 +350,18 @@ export default function CommunityChatContent() {
                       }
                       className={`rounded-xl p-3 flex items-start space-x-3 cursor-pointer transition ${selectedChannelId === channel.id ? 'bg-[#D0D5CB]' : 'hover:bg-[#EDE4D8]'}`}
                     >
-                      <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shrink-0 border border-[#D0D5CB] text-[#8EA087]">
-                        <Users size={20} />
+                      <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shrink-0 border border-[#D0D5CB] text-[#8EA087] overflow-hidden relative">
+                        {channel.coverUrl ? (
+                          <Image
+                            src={channel.coverUrl}
+                            alt={channel.title || channel.name || 'Forum'}
+                            fill
+                            className="object-cover"
+                            unoptimized
+                          />
+                        ) : (
+                          <Users size={20} />
+                        )}
                       </div>
                       <div className="flex-1 min-w-0 flex items-center justify-between">
                         <div className="flex-1 min-w-0">
@@ -373,6 +400,19 @@ export default function CommunityChatContent() {
           <main className="flex-1 flex flex-col bg-white min-w-0">
             <header className="px-6 py-3 border-b border-[#D0D5CB] flex items-center justify-between bg-white shrink-0">
               <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 rounded-lg overflow-hidden bg-[#F7F3ED] flex items-center justify-center border border-[#D0D5CB] shrink-0 relative">
+                  {chatData.coverUrl ? (
+                    <Image
+                      src={chatData.coverUrl}
+                      alt={chatData.name || chatData.title || 'Forum'}
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    <Users size={16} className="text-[#8EA087]" />
+                  )}
+                </div>
                 <h3 className="font-bold text-[#193C1F]">
                   {chatData.name || chatData.title || 'Forum'}
                 </h3>

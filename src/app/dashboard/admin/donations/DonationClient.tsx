@@ -80,12 +80,14 @@ export function DonationClient({
   const handleTimeChange = (month: number, year: number) => {
     router.push(
       `/dashboard/admin/donations?month=${month}&year=${year}&status=${currentStatus}`,
+      { scroll: false },
     );
   };
 
   const handleStatusChange = (status: string) => {
     router.push(
       `/dashboard/admin/donations?month=${currentMonth}&year=${currentYear}&status=${status}`,
+      { scroll: false },
     );
   };
 
@@ -140,7 +142,7 @@ export function DonationClient({
       </div>
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
         {/* Card 1: Revenue */}
         <div className="bg-[#193C1F] p-8 rounded-[40px] text-white shadow-2xl relative overflow-hidden group border-4 border-[#193C1F] flex flex-col h-full">
           <div className="relative z-10 flex flex-col h-full">
@@ -403,7 +405,7 @@ export function DonationClient({
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
+          <table className="w-full text-left min-w-[600px]">
             <thead className="text-[11px] font-black text-[#8EA087] uppercase tracking-widest">
               <tr>
                 <th className="pb-6 px-4">Psychologist Name</th>
@@ -493,7 +495,7 @@ export function DonationClient({
 
         <div className="bg-white border-4 border-[#F7F3ED] rounded-[48px] overflow-hidden shadow-xl">
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
+            <table className="w-full text-left min-w-[800px]">
               <thead className="bg-[#F7F3ED]/30 text-[11px] font-black text-[#8EA087] uppercase tracking-widest">
                 <tr>
                   <th className="px-8 py-5">Donor & Amount</th>

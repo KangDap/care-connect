@@ -1,9 +1,11 @@
 'use client';
 
+import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Modal } from '@/components/modal';
 import { Toast } from '@/components/toast';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -12,6 +14,7 @@ type Channel = {
   name: string;
   description: string | null;
   type: 'PUBLIC' | 'PRIVATE';
+  coverUrl: string | null;
   createdAt: Date;
   chats?: { id: number; timestamp: Date }[];
 };
@@ -26,23 +29,38 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
     type: 'success' | 'error';
   }>({ show: false, msg: '', type: 'success' });
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    description: string;
+    type: string;
+    coverImage: File | null;
+  }>({
     name: '',
     description: '',
     type: 'PUBLIC',
+    coverImage: null,
   });
 
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [updateId, setUpdateId] = useState<number | null>(null);
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+  const [channelToDelete, setChannelToDelete] = useState<number | null>(null);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await fetch('/api/dashboard/admin/community-chat', {
+      const data = new FormData();
+      data.append('name', formData.name);
+      data.append('description', formData.description);
+      data.append('type', formData.type);
+      if (formData.coverImage) {
+        data.append('coverImage', formData.coverImage);
+      }
+
+      const res = await fetch('/api/community-chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: data,
       });
 
       if (!res.ok) throw new Error('Failed to create channel');
@@ -52,7 +70,12 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
         type: 'success',
       });
       setIsCreateModalOpen(false);
-      setFormData({ name: '', description: '', type: 'PUBLIC' });
+      setFormData({
+        name: '',
+        description: '',
+        type: 'PUBLIC',
+        coverImage: null,
+      });
       router.refresh();
     } catch (err) {
       setToastState({
@@ -71,6 +94,7 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
       name: ch.name,
       description: ch.description || '',
       type: ch.type,
+      coverImage: null,
     });
     setIsUpdateModalOpen(true);
   };
@@ -83,7 +107,12 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
       const res = await fetch('/api/dashboard/admin/community-chat', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: updateId, ...formData }),
+        body: JSON.stringify({
+          id: updateId,
+          name: formData.name,
+          description: formData.description,
+          type: formData.type,
+        }),
       });
 
       if (!res.ok) throw new Error('Failed to update channel');
@@ -93,7 +122,12 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
         type: 'success',
       });
       setIsUpdateModalOpen(false);
-      setFormData({ name: '', description: '', type: 'PUBLIC' });
+      setFormData({
+        name: '',
+        description: '',
+        type: 'PUBLIC',
+        coverImage: null,
+      });
       setUpdateId(null);
       router.refresh();
     } catch (err) {
@@ -107,23 +141,23 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (
-      !confirm(
-        'Are you sure you want to delete this channel? ALL messages will be deleted forever.',
-      )
-    )
-      return;
+  const handleDelete = async () => {
+    if (!channelToDelete) return;
     try {
-      const res = await fetch(`/api/dashboard/admin/community-chat?id=${id}`, {
-        method: 'DELETE',
-      });
+      const res = await fetch(
+        `/api/dashboard/admin/community-chat?id=${channelToDelete}`,
+        {
+          method: 'DELETE',
+        },
+      );
       if (!res.ok) throw new Error('Failed to delete channel');
       setToastState({
         show: true,
         msg: 'Channel deleted successfully!',
         type: 'success',
       });
+      setIsDeleteAlertOpen(false);
+      setChannelToDelete(null);
       router.refresh();
     } catch (err) {
       setToastState({
@@ -148,6 +182,15 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
         msg={toastState.msg}
         type={toastState.type}
         onClose={() => setToastState({ ...toastState, show: false })}
+      />
+      <Alert
+        isOpen={isDeleteAlertOpen}
+        onClose={() => setIsDeleteAlertOpen(false)}
+        onConfirm={handleDelete}
+        title="Delete Channel?"
+        description="Are you sure you want to delete this channel? ALL messages will be deleted forever. This action cannot be undone."
+        type="danger"
+        confirmText="Delete Channel"
       />
       <div className="flex justify-between items-center">
         <div>
@@ -190,9 +233,30 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
                   className="hover:bg-[#F7F3ED]/50 transition-colors"
                 >
                   <td className="px-6 py-4">
-                    <div className="font-bold text-[#193C1F]">#{ch.name}</div>
-                    <div className="text-xs text-gray-500">
-                      {ch.description}
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl overflow-hidden bg-[#F7F3ED] flex items-center justify-center border border-[#D0D5CB] shrink-0 relative">
+                        {ch.coverUrl ? (
+                          <Image
+                            src={ch.coverUrl}
+                            alt={ch.name}
+                            fill
+                            className="object-cover"
+                            unoptimized
+                          />
+                        ) : (
+                          <span className="text-[#8EA087] font-black text-xs">
+                            #{ch.name.charAt(0)}
+                          </span>
+                        )}
+                      </div>
+                      <div>
+                        <div className="font-bold text-[#193C1F]">
+                          #{ch.name}
+                        </div>
+                        <div className="text-xs text-gray-500 line-clamp-1 max-w-[200px]">
+                          {ch.description}
+                        </div>
+                      </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 font-medium text-gray-600">
@@ -209,7 +273,10 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(ch.id)}
+                      onClick={() => {
+                        setChannelToDelete(ch.id);
+                        setIsDeleteAlertOpen(true);
+                      }}
                       className="text-sm font-bold text-red-600 hover:text-red-700 ml-4 transition"
                     >
                       Delete
@@ -235,6 +302,22 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
             required
             placeholder="e.g. stress-relief"
           />
+          <div>
+            <label className="text-sm font-bold text-[#193C1F] mb-1.5 block">
+              Profile Picture
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#F7F3ED] file:text-[#193C1F] hover:file:bg-[#EDE4D8] transition"
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  coverImage: e.target.files?.[0] || null,
+                })
+              }
+            />
+          </div>
           <div>
             <label className="text-sm font-bold text-[#193C1F] mb-1.5 block">
               Description

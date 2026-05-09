@@ -1,5 +1,6 @@
 'use client';
 
+import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Modal } from '@/components/modal';
 import { Toast } from '@/components/toast';
@@ -65,6 +66,8 @@ export function ReportClient({
   const [loading, setLoading] = useState(false);
   const [selectedReport, setSelectedReport] = useState<ReportType | null>(null);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+  const [reportToDelete, setReportToDelete] = useState<number | null>(null);
   const [newStatus, setNewStatus] = useState<string>('PENDING');
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -117,23 +120,23 @@ export function ReportClient({
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (
-      !confirm(
-        'Are you sure you want to delete this report? This cannot be undone.',
-      )
-    )
-      return;
+  const handleDelete = async () => {
+    if (!reportToDelete) return;
+    setLoading(true);
     try {
-      const res = await fetch(`/api/dashboard/admin/reports?id=${id}`, {
-        method: 'DELETE',
-      });
+      const res = await fetch(
+        `/api/dashboard/admin/reports?id=${reportToDelete}`,
+        {
+          method: 'DELETE',
+        },
+      );
       if (!res.ok) throw new Error('Failed to delete report');
       setToastState({
         show: true,
         msg: 'Report deleted successfully!',
         type: 'success',
       });
+      setIsDeleteAlertOpen(false);
       router.refresh();
     } catch (err) {
       setToastState({
@@ -141,6 +144,8 @@ export function ReportClient({
         msg: err instanceof Error ? err.message : 'Error',
         type: 'error',
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -162,7 +167,7 @@ export function ReportClient({
         </p>
       </div>
 
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-2 flex-wrap items-center">
         {tabs.map((tab) => (
           <Link
             key={tab.value}
@@ -184,103 +189,108 @@ export function ReportClient({
       </div>
 
       <div className="bg-white border border-[#D0D5CB] rounded-2xl overflow-hidden shadow-sm">
-        <table className="w-full text-left table-fixed">
-          <thead className="bg-[#F7F3ED] text-[11px] text-[#8EA087] font-black uppercase tracking-widest">
-            <tr>
-              <th className="px-6 py-4 w-[320px]">Report</th>
-              <th className="px-6 py-4 w-[220px]">Reporter</th>
-              <th className="px-6 py-4 w-[140px]">Category</th>
-              <th className="px-6 py-4 w-[120px]">Status</th>
-              <th className="px-6 py-4 w-[140px]">Donations</th>
-              <th className="px-6 py-4 w-[140px] text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[#F7F3ED] text-sm">
-            {reports.length === 0 ? (
+        <div className="overflow-x-auto">
+          <table className="w-full text-left table-fixed min-w-[1000px]">
+            <thead className="bg-[#F7F3ED] text-[11px] text-[#8EA087] font-black uppercase tracking-widest">
               <tr>
-                <td
-                  colSpan={6}
-                  className="px-6 py-12 text-center text-[#8EA087] font-medium"
-                >
-                  No reports found.
-                </td>
+                <th className="px-6 py-4 w-[320px]">Report</th>
+                <th className="px-6 py-4 w-[220px]">Reporter</th>
+                <th className="px-6 py-4 w-[140px]">Category</th>
+                <th className="px-6 py-4 w-[120px]">Status</th>
+                <th className="px-6 py-4 w-[140px]">Donations</th>
+                <th className="px-6 py-4 w-[140px] text-right">Actions</th>
               </tr>
-            ) : (
-              reports.map((r) => (
-                <tr
-                  key={r.id}
-                  className="hover:bg-[#F7F3ED]/50 transition-colors"
-                >
-                  <td className="px-6 py-4 align-top">
-                    <Link
-                      href={`/publicreports/${r.id}`}
-                      className="hover:underline"
-                    >
-                      <p className="font-bold text-[#193C1F] line-clamp-2 max-w-[300px]">
-                        {r.title}
-                      </p>
-                    </Link>
-                    <p className="text-[11px] text-[#8EA087] mt-0.5 truncate max-w-[300px]">
-                      {r.city}, {r.province} •{' '}
-                      {r.hasEvidence ? '📎 Has evidence' : 'No evidence'}
-                    </p>
-                  </td>
-                  <td className="px-6 py-4">
-                    {r.isAnonymous ? (
-                      <span className="text-[#8EA087] italic text-xs">
-                        Anonymous
-                      </span>
-                    ) : (
-                      <>
-                        <p className="font-medium text-[#193C1F]">
-                          {r.user.name}
-                        </p>
-                        <p className="text-[11px] text-[#8EA087]">
-                          {r.user.email}
-                        </p>
-                      </>
-                    )}
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-xs font-bold text-[#193C1F] bg-[#F7F3ED] border border-[#D0D5CB] px-2 py-1 rounded-full">
-                      {CATEGORY_LABEL[r.category] || r.category}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span
-                      className={`text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full border ${STATUS_BADGE[r.status] || 'bg-gray-100 text-gray-600'}`}
-                    >
-                      {r.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    {r.donationTotal > 0 ? (
-                      <span className="text-green-700 font-bold text-xs">
-                        {fmt(r.donationTotal)}
-                      </span>
-                    ) : (
-                      <span className="text-[#8EA087] text-xs">—</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <button
-                      onClick={() => openUpdateModal(r)}
-                      className="text-sm font-bold text-blue-600 hover:text-blue-700 transition"
-                    >
-                      Update
-                    </button>
-                    <button
-                      onClick={() => handleDelete(r.id)}
-                      className="text-sm font-bold text-red-600 hover:text-red-700 ml-4 transition"
-                    >
-                      Delete
-                    </button>
+            </thead>
+            <tbody className="divide-y divide-[#F7F3ED] text-sm">
+              {reports.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="px-6 py-12 text-center text-[#8EA087] font-medium"
+                  >
+                    No reports found.
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              ) : (
+                reports.map((r) => (
+                  <tr
+                    key={r.id}
+                    className="hover:bg-[#F7F3ED]/50 transition-colors"
+                  >
+                    <td className="px-6 py-4 align-top">
+                      <Link
+                        href={`/publicreports/${r.id}`}
+                        className="hover:underline"
+                      >
+                        <p className="font-bold text-[#193C1F] line-clamp-2 max-w-[300px]">
+                          {r.title}
+                        </p>
+                      </Link>
+                      <p className="text-[11px] text-[#8EA087] mt-0.5 truncate max-w-[300px]">
+                        {r.city}, {r.province} •{' '}
+                        {r.hasEvidence ? '📎 Has evidence' : 'No evidence'}
+                      </p>
+                    </td>
+                    <td className="px-6 py-4">
+                      {r.isAnonymous ? (
+                        <span className="text-[#8EA087] italic text-xs">
+                          Anonymous
+                        </span>
+                      ) : (
+                        <>
+                          <p className="font-medium text-[#193C1F]">
+                            {r.user.name}
+                          </p>
+                          <p className="text-[11px] text-[#8EA087]">
+                            {r.user.email}
+                          </p>
+                        </>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <span className="text-xs font-bold text-[#193C1F] bg-[#F7F3ED] border border-[#D0D5CB] px-2 py-1 rounded-full">
+                        {CATEGORY_LABEL[r.category] || r.category}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      <span
+                        className={`text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full border ${STATUS_BADGE[r.status] || 'bg-gray-100 text-gray-600'}`}
+                      >
+                        {r.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4">
+                      {r.donationTotal > 0 ? (
+                        <span className="text-green-700 font-bold text-xs">
+                          {fmt(r.donationTotal)}
+                        </span>
+                      ) : (
+                        <span className="text-[#8EA087] text-xs">—</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <button
+                        onClick={() => openUpdateModal(r)}
+                        className="text-sm font-bold text-blue-600 hover:text-blue-700 transition"
+                      >
+                        Update
+                      </button>
+                      <button
+                        onClick={() => {
+                          setReportToDelete(r.id);
+                          setIsDeleteAlertOpen(true);
+                        }}
+                        className="text-sm font-bold text-red-600 hover:text-red-700 ml-4 transition"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
 
         {totalPages > 1 && (
           <div className="px-6 py-4 bg-[#F7F3ED]/50 border-t border-[#D0D5CB] flex justify-between items-center">
@@ -349,6 +359,17 @@ export function ReportClient({
           </div>
         </form>
       </Modal>
+
+      <Alert
+        isOpen={isDeleteAlertOpen}
+        onClose={() => setIsDeleteAlertOpen(false)}
+        onConfirm={handleDelete}
+        type="danger"
+        title="Delete Report?"
+        description="Are you sure you want to delete this report? This action cannot be undone."
+        confirmText={loading ? 'Deleting...' : 'Yes, Delete'}
+        cancelText="Cancel"
+      />
     </div>
   );
 }

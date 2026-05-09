@@ -1,5 +1,7 @@
 'use client';
 
+import { Button } from '@/components/button';
+import { Modal } from '@/components/modal';
 import { PublicHeader } from '@/components/public-header';
 import { authClient } from '@/lib/auth/auth-client';
 import { useQuery } from '@tanstack/react-query';
@@ -27,6 +29,15 @@ const SupportForumsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [joiningId, setJoiningId] = useState<number | null>(null);
   const [bannedNotice, setBannedNotice] = useState<string | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    category: '',
+    type: 'PUBLIC',
+  });
+  const [coverImage, setCoverImage] = useState<File | null>(null);
 
   // 1. Ambil session untuk cek Role Admin
   const { data: session } = authClient.useSession();
@@ -102,6 +113,49 @@ const SupportForumsPage = () => {
       console.error('Error joining room:', error);
     } finally {
       setJoiningId(null);
+    }
+  };
+
+  const handleCreateForum = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setIsCreating(true);
+      const data = new FormData();
+      data.append('name', formData.name);
+      data.append('description', formData.description);
+      data.append('type', formData.type);
+      data.append('category', formData.category);
+      if (coverImage) {
+        data.append('coverImage', coverImage);
+      }
+
+      const response = await fetch('/api/community-chat', {
+        method: 'POST',
+        body: data,
+      });
+
+      if (response.ok) {
+        setIsCreateModalOpen(false);
+        setFormData({
+          name: '',
+          description: '',
+          category: '',
+          type: 'PUBLIC',
+        });
+        setCoverImage(null);
+        router.refresh();
+        // Reload rooms manually since we use local state
+        const updatedRooms = await fetch('/api/community-chat?all=true').then(
+          (res) => res.json(),
+        );
+        setRooms(
+          Array.isArray(updatedRooms) ? updatedRooms : updatedRooms.data,
+        );
+      }
+    } catch (error) {
+      console.error('Error creating forum:', error);
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -264,7 +318,10 @@ const SupportForumsPage = () => {
           )}
 
           {isAdmin && (
-            <div className="border-2 border-dashed border-[#D0D5CB] rounded-[40px] flex flex-col items-center justify-center p-12 text-center space-y-6 group cursor-pointer hover:bg-white/50 transition-all duration-500 h-full min-h-[400px]">
+            <div
+              onClick={() => setIsCreateModalOpen(true)}
+              className="border-2 border-dashed border-[#D0D5CB] rounded-[40px] flex flex-col items-center justify-center p-12 text-center space-y-6 group cursor-pointer hover:bg-white/50 transition-all duration-500 h-full min-h-[400px]"
+            >
               <div className="w-16 h-16 bg-[#EBE6DE] rounded-full flex items-center justify-center text-[#8EA087] group-hover:bg-[#193C1F] group-hover:text-white transition-all duration-500 shadow-sm">
                 <Plus size={32} strokeWidth={3} />
               </div>
@@ -280,6 +337,110 @@ const SupportForumsPage = () => {
           )}
         </div>
       </main>
+
+      <Modal
+        title="Create New Forum"
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      >
+        <form onSubmit={handleCreateForum} className="space-y-4 text-left">
+          <p className="text-sm text-[#8EA087] font-medium">
+            Fill in the details to create a new community support forum.
+          </p>
+
+          <div className="space-y-4 mt-4">
+            <div>
+              <label className="text-xs font-black uppercase tracking-widest text-[#193C1F] mb-2 block">
+                Forum Name
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+                placeholder="e.g., Mental Health Support"
+                className="w-full h-[48px] bg-[#F7F3ED] border border-[#D0D5CB] rounded-xl px-4 text-sm focus:border-[#8EA087] outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-black uppercase tracking-widest text-[#193C1F] mb-2 block">
+                Category
+              </label>
+              <input
+                type="text"
+                required
+                value={formData.category}
+                onChange={(e) =>
+                  setFormData({ ...formData, category: e.target.value })
+                }
+                placeholder="e.g., Depression, Anxiety, etc."
+                className="w-full h-[48px] bg-[#F7F3ED] border border-[#D0D5CB] rounded-xl px-4 text-sm focus:border-[#8EA087] outline-none"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-black uppercase tracking-widest text-[#193C1F] mb-2 block">
+                Privacy Type
+              </label>
+              <select
+                value={formData.type}
+                onChange={(e) =>
+                  setFormData({ ...formData, type: e.target.value })
+                }
+                className="w-full h-[48px] bg-[#F7F3ED] border border-[#D0D5CB] rounded-xl px-4 text-sm focus:border-[#8EA087] outline-none appearance-none"
+              >
+                <option value="PUBLIC">Public (Visible to everyone)</option>
+                <option value="PRIVATE">Private (Invite only)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="text-xs font-black uppercase tracking-widest text-[#193C1F] mb-2 block">
+                Description
+              </label>
+              <textarea
+                required
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                placeholder="Describe what this forum is about..."
+                className="w-full h-[100px] bg-[#F7F3ED] border border-[#D0D5CB] rounded-xl p-4 text-sm focus:border-[#8EA087] outline-none resize-none"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-black uppercase tracking-widest text-[#193C1F] mb-2 block">
+                Group Profile Picture
+              </label>
+              <div className="flex items-center gap-4">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => setCoverImage(e.target.files?.[0] || null)}
+                  className="text-xs text-[#8EA087] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-black file:bg-[#EBE6DE] file:text-[#193C1F] hover:file:bg-[#D0D5CB] transition-all"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-6 border-t border-[#F7F3ED] mt-6">
+            <button
+              type="button"
+              onClick={() => setIsCreateModalOpen(false)}
+              className="text-[11px] font-black uppercase tracking-widest text-[#193C1F]/40 hover:text-[#193C1F] transition-colors px-4"
+            >
+              Cancel
+            </button>
+            <Button loading={isCreating} type="submit" className="px-8">
+              Create Forum
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 };
