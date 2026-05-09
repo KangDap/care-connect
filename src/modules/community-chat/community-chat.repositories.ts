@@ -38,6 +38,13 @@ export const CommunityChatRepository = {
     return channel as unknown as Channel;
   },
 
+  async getChannelMembers(channelId: number): Promise<ChannelMember[]> {
+    const members = await prisma.channelMember.findMany({
+      where: { channelId },
+    });
+    return members as unknown as ChannelMember[];
+  },
+
   async getChannelMessages(channelId: number): Promise<ChatMessage[]> {
     const messages = await prisma.chat.findMany({
       where: { channelId },

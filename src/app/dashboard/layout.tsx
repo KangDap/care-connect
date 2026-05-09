@@ -206,6 +206,12 @@ export default function DashboardLayout({
                 href="/dashboard/admin/community-chat"
                 active={pathname.startsWith('/dashboard/admin/community-chat')}
               />
+              <SidebarItem
+                icon={ConsultationIcon}
+                label="Psikolog Schedules"
+                href="/dashboard/admin/schedules"
+                active={pathname.startsWith('/dashboard/admin/schedules')}
+              />
             </>
           ) : isAtPsikologPage ? (
             /* --- MENU PSIKOLOG --- */
@@ -223,6 +229,12 @@ export default function DashboardLayout({
                 label="Donation History"
                 href="/dashboard/psikolog/donations"
                 active={pathname.startsWith('/dashboard/psikolog/donations')}
+              />
+              <SidebarItem
+                icon={ConsultationIcon}
+                label="My Schedule"
+                href="/dashboard/psikolog/schedule"
+                active={pathname.startsWith('/dashboard/psikolog/schedule')}
               />
             </>
           ) : (
