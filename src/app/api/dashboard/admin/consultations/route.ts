@@ -65,3 +65,48 @@ export async function GET(req: Request) {
     statusCounts: statusCountMap,
   });
 }
+
+export async function PATCH(req: Request) {
+  const { response } = await requireAdminSession();
+  if (response) return response;
+
+  try {
+    const { id, status } = await req.json();
+    if (!id || !status) {
+      return Response.json({ error: 'Missing id or status' }, { status: 400 });
+    }
+
+    const updated = await prisma.consultation.update({
+      where: { id: Number(id) },
+      data: { status },
+    });
+
+    return ok(updated);
+  } catch (error) {
+    console.error('Update consultation status error:', error);
+    return Response.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}
+
+export async function DELETE(req: Request) {
+  const { response } = await requireAdminSession();
+  if (response) return response;
+
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return Response.json({ error: 'Missing id' }, { status: 400 });
+    }
+
+    await prisma.consultation.delete({
+      where: { id: Number(id) },
+    });
+
+    return ok({ success: true });
+  } catch (error) {
+    console.error('Delete consultation error:', error);
+    return Response.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
+}
