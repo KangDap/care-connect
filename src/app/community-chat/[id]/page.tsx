@@ -42,9 +42,18 @@ export default function CommunityChatContent() {
     user?: { name?: string; image?: string };
     content: string;
   }>(null);
+  const [inlineToast, setInlineToast] = useState<{
+    message: string;
+    type: 'info' | 'error';
+  } | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const showToast = (message: string, type: 'info' | 'error' = 'info') => {
+    setInlineToast({ message, type });
+    setTimeout(() => setInlineToast(null), 4000);
+  };
 
   // Sync session
   useEffect(() => {
@@ -84,7 +93,24 @@ export default function CommunityChatContent() {
     refetchInterval: 3000,
   });
 
-  // Role Logic per Channel (Sesuai saran: Ambil dari data channel)
+  // Debug API Response
+  useEffect(() => {
+    if (chatData) {
+      console.log('[DEBUG] chatData:', chatData);
+      const sampleMsg = chatData.messages?.[0];
+      if (sampleMsg) {
+        console.log('[DEBUG] Message sample:', {
+          id: sampleMsg.id,
+          userId: sampleMsg.user?.id,
+          globalRole: sampleMsg.user?.role,
+          roleInChannel: (sampleMsg as { roleInChannel?: string })
+            .roleInChannel,
+        });
+      }
+    }
+  }, [chatData]);
+
+  // Role Logic per Channel
   const ChannelRole = chatData.myRole || 'MEMBER';
   const isOwner = ChannelRole === 'OWNER';
   const isModerator = ChannelRole === 'MODERATOR';
@@ -104,14 +130,28 @@ export default function CommunityChatContent() {
       return res.json();
     },
     onSuccess: () => {
-      alert('User successfully kicked!');
       queryClient.invalidateQueries({
         queryKey: ['community-messages', selectedChannelId],
       });
       setActiveMenuId(null);
     },
     onError: (error: Error) => {
-      alert(`Kick failed: ${error.message}`);
+      const msg = error.message.toLowerCase();
+      if (
+        msg.includes('not a member') ||
+        msg.includes('already') ||
+        msg.includes('not found') ||
+        msg.includes('tidak') ||
+        msg.includes('diblokir')
+      ) {
+        showToast(
+          'This member has already been removed from the forum.',
+          'info',
+        );
+      } else {
+        showToast(`Could not remove member: ${error.message}`, 'error');
+      }
+      setActiveMenuId(null);
     },
   });
 
@@ -130,14 +170,28 @@ export default function CommunityChatContent() {
       return res.json();
     },
     onSuccess: () => {
-      alert('Role successfully updated!');
       queryClient.invalidateQueries({
         queryKey: ['community-messages', selectedChannelId],
       });
       setActiveMenuId(null);
     },
     onError: (error: Error) => {
-      alert(`Role update failed: ${error.message}`);
+      const msg = error.message.toLowerCase();
+      if (
+        msg.includes('not a member') ||
+        msg.includes('banned') ||
+        msg.includes('not found') ||
+        msg.includes('diblokir') ||
+        msg.includes('tidak dapat')
+      ) {
+        showToast(
+          'This member has been removed from the forum and cannot be assigned a role.',
+          'info',
+        );
+      } else {
+        showToast(`Could not update role: ${error.message}`, 'error');
+      }
+      setActiveMenuId(null);
     },
   });
 
@@ -161,8 +215,18 @@ export default function CommunityChatContent() {
       setMediaFile(null);
       setReplyingTo(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
     },
   });
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [chatData.messages]);
 
   const handleSendMessage = () => {
     if (!selectedChannelId || isPending) return;
@@ -249,6 +313,7 @@ export default function CommunityChatContent() {
                     title?: string;
                     name?: string;
                     isMember?: boolean;
+                    unreadCount?: number;
                     _count?: { members: number };
                   }) => c.isMember || c._count?.members !== undefined,
                 )
@@ -258,6 +323,7 @@ export default function CommunityChatContent() {
                     title?: string;
                     name?: string;
                     isMember?: boolean;
+                    unreadCount?: number;
                     _count?: { members: number };
                   }) => (
                     <div
@@ -270,13 +336,22 @@ export default function CommunityChatContent() {
                       <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shrink-0 border border-[#D0D5CB] text-[#8EA087]">
                         <Users size={20} />
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-sm font-semibold text-[#193C1F] truncate">
-                          {channel.title || channel.name}
-                        </h3>
-                        <p className="text-[10px] text-[#8EA087] font-bold uppercase tracking-wider mt-1">
-                          {channel._count?.members || 0} Members
-                        </p>
+                      <div className="flex-1 min-w-0 flex items-center justify-between">
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-sm font-semibold text-[#193C1F] truncate">
+                            {channel.title || channel.name}
+                          </h3>
+                          <p className="text-[10px] text-[#8EA087] font-bold uppercase tracking-wider mt-1">
+                            {channel._count?.members || 0} Members
+                          </p>
+                        </div>
+                        {!!channel.unreadCount && channel.unreadCount > 0 && (
+                          <div className="bg-red-500 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full shrink-0 ml-2">
+                            {channel.unreadCount > 99
+                              ? '99+'
+                              : channel.unreadCount}
+                          </div>
+                        )}
                       </div>
                     </div>
                   ),
@@ -343,6 +418,7 @@ export default function CommunityChatContent() {
                     user: { id: string; name?: string; image?: string };
                     content: string;
                     isAnonymous: boolean;
+                    isSystem?: boolean;
                     timestamp: string | Date;
                     roleInChannel?: string;
                     replyTo?: {
@@ -360,188 +436,256 @@ export default function CommunityChatContent() {
                       minute: '2-digit',
                     });
                     const targetRoleInChannel = chat.roleInChannel || 'MEMBER';
+                    const targetIsBanned = targetRoleInChannel === 'BANNED';
 
+                    // Can kick: not me, target not banned (already removed), caller is owner or moderator kicking a plain member
                     const canKick =
                       !isMe &&
+                      !targetIsBanned &&
                       (isOwner ||
                         (isModerator && targetRoleInChannel === 'MEMBER'));
-                    const canManageRole = isOwner && !isMe;
+
+                    // Can manage role: owner only, not me, not banned target
+                    const canManageRole = isOwner && !isMe && !targetIsBanned;
+
+                    // Determine if we need an unread divider
+                    let showUnreadDivider = false;
+                    const lastViewedAtStr = chatData.lastViewedAt || null;
+                    if (lastViewedAtStr && !isMe) {
+                      const chatTime = new Date(chat.timestamp).getTime();
+                      const lastViewedTime = new Date(
+                        lastViewedAtStr,
+                      ).getTime();
+
+                      if (chatTime > lastViewedTime) {
+                        // Check if this is the FIRST unread message
+                        const index = chatData.messages.findIndex(
+                          (m: { timestamp: string; user: { id: string } }) =>
+                            new Date(m.timestamp).getTime() > lastViewedTime &&
+                            m.user.id !== session?.user?.id,
+                        );
+                        if (chatData.messages[index]?.id === chat.id) {
+                          showUnreadDivider = true;
+                        }
+                      }
+                    }
+
+                    if (chat.isSystem) {
+                      return (
+                        <React.Fragment key={chat.id}>
+                          {showUnreadDivider && (
+                            <div className="flex items-center justify-center my-6">
+                              <div className="h-px bg-red-300 flex-1"></div>
+                              <span className="bg-red-50 text-red-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest mx-3 border border-red-200">
+                                Unread Messages
+                              </span>
+                              <div className="h-px bg-red-300 flex-1"></div>
+                            </div>
+                          )}
+                          <div className="flex justify-center my-4">
+                            <span className="bg-[#EBE6DE] text-[#193C1F] opacity-70 text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest text-center">
+                              {chat.content}
+                            </span>
+                          </div>
+                        </React.Fragment>
+                      );
+                    }
 
                     return (
-                      <div
-                        key={chat.id}
-                        className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} group relative`}
-                      >
+                      <React.Fragment key={chat.id}>
+                        {showUnreadDivider && (
+                          <div className="flex items-center justify-center my-6">
+                            <div className="h-px bg-red-300 flex-1"></div>
+                            <span className="bg-red-50 text-red-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest mx-3 border border-red-200">
+                              Unread Messages
+                            </span>
+                            <div className="h-px bg-red-300 flex-1"></div>
+                          </div>
+                        )}
                         <div
-                          className={`flex items-center space-x-2 ${isMe ? 'mr-10' : 'ml-10'} mb-1`}
+                          className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} group relative`}
                         >
-                          <span className="text-xs font-bold text-[#193C1F] opacity-70">
-                            {chat.isAnonymous
-                              ? 'Anonymous'
-                              : chat.user.name || 'User'}
-                            {targetRoleInChannel === 'OWNER' && (
-                              <span className="ml-2 text-[9px] bg-[#193C1F] text-white px-1.5 py-0.5 rounded font-bold uppercase tracking-widest">
-                                Owner
-                              </span>
-                            )}
-                            {targetRoleInChannel === 'MODERATOR' && (
-                              <span className="ml-2 text-[9px] bg-[#8EA087] text-white px-1.5 py-0.5 rounded font-bold uppercase tracking-widest">
-                                Moderator
-                              </span>
-                            )}
-                          </span>
-                        </div>
-
-                        <div
-                          className={`flex items-start ${isMe ? 'flex-row-reverse' : 'space-x-3'}`}
-                        >
-                          <div className="w-8 h-8 rounded-full mt-1 flex items-center justify-center border border-[#D0D5CB] shrink-0 overflow-hidden">
-                            {chat.isAnonymous ? (
-                              <div className="bg-[#D0D5CB] w-full h-full flex items-center justify-center text-white text-[10px]">
-                                ?
-                              </div>
-                            ) : (
-                              <Image
-                                alt="Avatar"
-                                width={32}
-                                height={32}
-                                className="object-cover w-full h-full"
-                                unoptimized
-                                src={
-                                  chat.user.image ||
-                                  'https://lh3.googleusercontent.com/a/default-user'
-                                }
-                              />
-                            )}
+                          <div
+                            className={`flex items-center space-x-2 ${isMe ? 'mr-10' : 'ml-10'} mb-1`}
+                          >
+                            <span className="text-xs font-bold text-[#193C1F] opacity-70">
+                              {chat.isAnonymous
+                                ? 'Anonymous'
+                                : chat.user.name || 'User'}
+                              {targetRoleInChannel === 'OWNER' && (
+                                <span className="ml-2 text-[9px] bg-[#193C1F] text-white px-1.5 py-0.5 rounded font-bold uppercase tracking-widest">
+                                  Owner
+                                </span>
+                              )}
+                              {targetRoleInChannel === 'MODERATOR' && (
+                                <span className="ml-2 text-[9px] bg-[#8EA087] text-white px-1.5 py-0.5 rounded font-bold uppercase tracking-widest">
+                                  Moderator
+                                </span>
+                              )}
+                            </span>
                           </div>
 
-                          <div className="flex flex-col max-w-xl relative">
-                            {chat.replyTo && (
-                              <div
-                                className={`${isMe ? 'bg-[#8EA087] bg-opacity-20 border-r-4 text-right rounded-tl-xl' : 'bg-[#EDE4D8] bg-opacity-50 border-l-4 rounded-tr-xl'} border-[#8EA087] p-2 mb-1 text-[11px] text-[#193C1F] opacity-80 line-clamp-2`}
-                              >
-                                <span className="font-bold block">
-                                  {chat.replyTo.isAnonymous
-                                    ? 'Anonymous'
-                                    : chat.replyTo.user?.name || 'User'}
-                                </span>
-                                {chat.replyTo.content}
-                              </div>
-                            )}
-                            <div
-                              className={`rounded-2xl p-4 text-sm shadow-sm border flex flex-col gap-2 ${isMe ? 'bg-[#8EA087] text-white rounded-tr-none border-transparent' : 'bg-[#EDE4D8] text-[#193C1F] rounded-tl-none border-transparent'}`}
-                            >
-                              {chat.mediaUrl && (
-                                <div className="overflow-hidden rounded-xl bg-black/5">
-                                  {chat.mediaUrl.match(
-                                    /\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i,
-                                  ) ? (
-                                    <Image
-                                      width={300}
-                                      height={300}
-                                      unoptimized
-                                      src={chat.mediaUrl}
-                                      alt="Attached media"
-                                      className="max-w-full h-auto max-h-64 object-contain"
-                                    />
-                                  ) : (
-                                    <a
-                                      href={chat.mediaUrl}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="flex items-center space-x-2 p-3 hover:bg-black/10 transition"
-                                    >
-                                      <Paperclip size={18} />
-                                      <span className="text-xs font-bold underline truncate">
-                                        View Attachment
-                                      </span>
-                                    </a>
-                                  )}
+                          <div
+                            className={`flex items-start ${isMe ? 'flex-row-reverse' : 'space-x-3'}`}
+                          >
+                            <div className="w-8 h-8 rounded-full mt-1 flex items-center justify-center border border-[#D0D5CB] shrink-0 overflow-hidden">
+                              {chat.isAnonymous ? (
+                                <div className="bg-[#D0D5CB] w-full h-full flex items-center justify-center text-white text-[10px]">
+                                  ?
                                 </div>
+                              ) : (
+                                <Image
+                                  alt="Avatar"
+                                  width={32}
+                                  height={32}
+                                  className="object-cover w-full h-full"
+                                  unoptimized
+                                  src={
+                                    chat.user.image ||
+                                    'https://lh3.googleusercontent.com/a/default-user'
+                                  }
+                                />
                               )}
-                              {chat.content && <span>{chat.content}</span>}
                             </div>
 
-                            {!chat.isAnonymous &&
-                              (canKick || canManageRole) && (
+                            <div className="flex flex-col max-w-xl relative">
+                              {chat.replyTo && (
                                 <div
-                                  className={`absolute top-0 ${isMe ? '-left-10' : '-right-10'} opacity-0 group-hover:opacity-100 transition-opacity`}
+                                  className={`${isMe ? 'bg-[#8EA087] bg-opacity-20 border-r-4 text-right rounded-tl-xl' : 'bg-[#EDE4D8] bg-opacity-50 border-l-4 rounded-tr-xl'} border-[#8EA087] p-2 mb-1 text-[11px] text-[#193C1F] opacity-80 line-clamp-2`}
                                 >
-                                  <button
-                                    onClick={() =>
-                                      setActiveMenuId(
-                                        activeMenuId === chat.id
-                                          ? null
-                                          : chat.id,
-                                      )
-                                    }
-                                    className="p-1 hover:bg-gray-100 rounded-full"
+                                  <span className="font-bold block">
+                                    {chat.replyTo.isAnonymous
+                                      ? 'Anonymous'
+                                      : chat.replyTo.user?.name || 'User'}
+                                  </span>
+                                  {chat.replyTo.content}
+                                </div>
+                              )}
+                              <div
+                                className={`rounded-2xl p-4 text-sm shadow-sm border flex flex-col gap-2 ${isMe ? 'bg-[#8EA087] text-white rounded-tr-none border-transparent' : 'bg-[#EDE4D8] text-[#193C1F] rounded-tl-none border-transparent'}`}
+                              >
+                                {chat.mediaUrl && (
+                                  <div className="overflow-hidden rounded-xl bg-black/5">
+                                    {chat.mediaUrl.match(
+                                      /\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i,
+                                    ) ? (
+                                      <Image
+                                        width={300}
+                                        height={300}
+                                        unoptimized
+                                        src={chat.mediaUrl}
+                                        alt="Attached media"
+                                        className="max-w-full h-auto max-h-64 object-contain"
+                                      />
+                                    ) : (
+                                      <a
+                                        href={chat.mediaUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center space-x-2 p-3 hover:bg-black/10 transition"
+                                      >
+                                        <Paperclip size={18} />
+                                        <span className="text-xs font-bold underline truncate">
+                                          View Attachment
+                                        </span>
+                                      </a>
+                                    )}
+                                  </div>
+                                )}
+                                {chat.content && <span>{chat.content}</span>}
+                              </div>
+
+                              {/* Message Actions (Reply & Moderation) */}
+                              <div
+                                className={`absolute top-0 ${isMe ? '-left-20' : '-right-20'} opacity-0 group-hover:opacity-100 transition-opacity z-50 flex items-center h-full space-x-1`}
+                              >
+                                <button
+                                  onClick={() => setReplyingTo(chat)}
+                                  className="w-8 h-8 flex items-center justify-center text-[#193C1F] opacity-40 hover:opacity-100 hover:bg-gray-200 rounded-full transition-all shrink-0"
+                                  title="Reply"
+                                >
+                                  <svg
+                                    className="w-5 h-5"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
                                   >
-                                    <MoreVertical size={16} />
-                                  </button>
-                                  {activeMenuId === chat.id && (
-                                    <div className="absolute z-50 mt-1 w-32 bg-white border border-[#D0D5CB] shadow-xl rounded-xl overflow-hidden py-1">
-                                      {canKick && (
-                                        <button
-                                          onClick={() =>
-                                            kickMutation.mutate(chat.user.id)
-                                          }
-                                          className="w-full text-left px-3 py-2 text-[10px] font-bold text-red-600 hover:bg-red-50 flex items-center gap-2 uppercase tracking-tight"
+                                    <path
+                                      strokeLinecap="round"
+                                      strokeLinejoin="round"
+                                      strokeWidth="2"
+                                      d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+                                    />
+                                  </svg>
+                                </button>
+
+                                {/* Only show moderation menu if user is not banned and caller has permissions */}
+                                {targetRoleInChannel !== 'BANNED' &&
+                                  (canKick || canManageRole) && (
+                                    <div className="relative">
+                                      <button
+                                        onClick={() =>
+                                          setActiveMenuId(
+                                            activeMenuId === chat.id
+                                              ? null
+                                              : chat.id,
+                                          )
+                                        }
+                                        className="w-8 h-8 flex items-center justify-center hover:bg-gray-200 rounded-full transition-colors shrink-0"
+                                      >
+                                        <MoreVertical size={16} />
+                                      </button>
+                                      {activeMenuId === chat.id && (
+                                        <div
+                                          className={`absolute z-[100] mt-1 w-40 bg-white border border-[#D0D5CB] shadow-2xl rounded-xl overflow-hidden py-1 ${isMe ? 'left-0' : 'right-0'}`}
                                         >
-                                          <UserMinus size={14} /> Kick User
-                                        </button>
-                                      )}
-                                      {canManageRole && (
-                                        <button
-                                          onClick={() =>
-                                            changeRoleMutation.mutate({
-                                              userId: chat.user.id,
-                                              role:
-                                                targetRoleInChannel ===
-                                                'MODERATOR'
-                                                  ? 'MEMBER'
-                                                  : 'MODERATOR',
-                                            })
-                                          }
-                                          className="w-full text-left px-3 py-2 text-[10px] font-bold text-[#193C1F] hover:bg-gray-50 flex items-center gap-2 uppercase tracking-tight"
-                                        >
-                                          <ShieldCheck size={14} />{' '}
-                                          {targetRoleInChannel === 'MODERATOR'
-                                            ? 'Demote Member'
-                                            : 'Make Moderator'}
-                                        </button>
+                                          {canKick && (
+                                            <button
+                                              onClick={() =>
+                                                kickMutation.mutate(
+                                                  chat.user.id,
+                                                )
+                                              }
+                                              className="w-full text-left px-4 py-2.5 text-[11px] font-bold text-red-600 hover:bg-red-50 flex items-center gap-2 uppercase tracking-tight border-b border-gray-50"
+                                            >
+                                              <UserMinus size={14} /> Kick User
+                                            </button>
+                                          )}
+                                          {canManageRole && (
+                                            <button
+                                              onClick={() =>
+                                                changeRoleMutation.mutate({
+                                                  userId: chat.user.id,
+                                                  role:
+                                                    targetRoleInChannel ===
+                                                    'MODERATOR'
+                                                      ? 'MEMBER'
+                                                      : 'MODERATOR',
+                                                })
+                                              }
+                                              className="w-full text-left px-4 py-2.5 text-[11px] font-bold text-[#193C1F] hover:bg-gray-50 flex items-center gap-2 uppercase tracking-tight"
+                                            >
+                                              <ShieldCheck size={14} />{' '}
+                                              {targetRoleInChannel ===
+                                              'MODERATOR'
+                                                ? 'Demote to Member'
+                                                : 'Make Moderator'}
+                                            </button>
+                                          )}
+                                        </div>
                                       )}
                                     </div>
                                   )}
-                                </div>
-                              )}
+                              </div>
+                            </div>
                           </div>
-
-                          <button
-                            onClick={() => setReplyingTo(chat)}
-                            className="hidden group-hover:flex p-2 text-[#193C1F] opacity-40 hover:opacity-100 self-center"
+                          <span
+                            className={`text-[10px] text-[#193C1F] opacity-40 ${isMe ? 'mr-11' : 'ml-11'} mt-1`}
                           >
-                            <svg
-                              className="w-5 h-5"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
-                              />
-                            </svg>
-                          </button>
+                            {time}
+                          </span>
                         </div>
-                        <span
-                          className={`text-[10px] text-[#193C1F] opacity-40 ${isMe ? 'mr-11' : 'ml-11'} mt-1`}
-                        >
-                          {time}
-                        </span>
-                      </div>
+                      </React.Fragment>
                     );
                   },
                 )
@@ -549,110 +693,144 @@ export default function CommunityChatContent() {
               <div ref={messagesEndRef} />
             </section>
 
-            <footer className="p-6 bg-white border-t border-[#D0D5CB] shrink-0 flex flex-col space-y-3">
-              {replyingTo && (
-                <div className="flex items-center justify-between bg-[#F7F3ED] border-l-4 border-[#8EA087] px-4 py-2 rounded-xl">
-                  <div className="overflow-hidden">
-                    <span className="text-[10px] font-bold text-[#8EA087] block uppercase">
-                      Replying to{' '}
-                      {replyingTo.isAnonymous
-                        ? 'Anonymous'
-                        : replyingTo.user?.name || 'User'}
-                    </span>
-                    <p className="text-xs text-[#193C1F] truncate opacity-70">
-                      {replyingTo.content}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => setReplyingTo(null)}
-                    className="opacity-40 hover:opacity-100"
-                  >
-                    <X size={16} />
-                  </button>
-                </div>
-              )}
-
-              {mediaFile && (
-                <div className="flex items-center justify-between bg-[#F7F3ED] border border-[#8EA087] rounded-xl px-4 py-2 w-max shadow-sm">
-                  <span className="text-xs text-[#193C1F] font-semibold">
-                    {mediaFile.name} ({(mediaFile.size / 1024).toFixed(1)}KB)
-                  </span>
-                  <button
-                    onClick={() => setMediaFile(null)}
-                    className="ml-4 text-red-500 bg-red-100 p-1 rounded-full"
-                  >
-                    <X size={12} />
-                  </button>
-                </div>
-              )}
-
-              <div className="flex items-center space-x-4">
-                <div className="flex-1 relative flex flex-col bg-[#F7F3ED] border border-[#D0D5CB] rounded-2xl p-1 focus-within:border-[#8EA087]">
-                  <div className="flex items-center px-3 py-1 border-b border-[#D0D5CB] mb-1 justify-between">
-                    <button
-                      onClick={() => setIsAnonymous(!isAnonymous)}
-                      className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded ${isAnonymous ? 'bg-[#193C1F] text-white' : 'text-[#8EA087]'}`}
-                    >
-                      {isAnonymous ? 'Anonymous ON' : 'Public Mode'}
-                    </button>
-                    <span className="text-[8px] font-bold opacity-40 uppercase tracking-tighter">
-                      Posting as:{' '}
-                      {ChannelRole === 'OWNER'
-                        ? 'Owner'
-                        : ChannelRole === 'MODERATOR'
-                          ? 'Moderator'
-                          : 'Member'}
-                    </span>
-                  </div>
-                  <div className="flex items-center px-3 py-2">
-                    <input
-                      type="file"
-                      ref={fileInputRef}
-                      onChange={(e) =>
-                        setMediaFile(e.target.files?.[0] || null)
-                      }
-                      className="hidden"
-                    />
-                    <button
-                      onClick={() => fileInputRef.current?.click()}
-                      className="text-[#193C1F] opacity-40 hover:opacity-70 mr-3"
-                    >
-                      <Paperclip size={20} />
-                    </button>
-                    <input
-                      className="bg-transparent border-none focus:ring-0 text-sm text-[#193C1F] w-full outline-none"
-                      placeholder="Share your thoughts..."
-                      type="text"
-                      value={messageInput}
-                      onChange={(e) => setMessageInput(e.target.value)}
-                      onKeyDown={(e) =>
-                        e.key === 'Enter' && handleSendMessage()
-                      }
-                    />
-                  </div>
-                </div>
+            {/* Inline Toast Notification */}
+            {inlineToast && (
+              <div
+                className={`mx-6 mt-2 mb-0 px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-3 border shadow-sm animate-in slide-in-from-bottom-2 duration-200 ${
+                  inlineToast.type === 'info'
+                    ? 'bg-blue-50 border-blue-200 text-blue-700'
+                    : 'bg-red-50 border-red-200 text-red-700'
+                }`}
+              >
+                <span className="text-base">
+                  {inlineToast.type === 'info' ? 'ℹ️' : '⚠️'}
+                </span>
+                <span className="flex-1">{inlineToast.message}</span>
                 <button
-                  onClick={handleSendMessage}
-                  disabled={
-                    sendMessageMutation.isPending ||
-                    (!messageInput.trim() && !mediaFile)
-                  }
-                  className="w-12 h-12 bg-[#8EA087] text-white rounded-2xl flex items-center justify-center shadow-sm hover:brightness-110 disabled:opacity-50"
+                  onClick={() => setInlineToast(null)}
+                  className="opacity-50 hover:opacity-100"
                 >
-                  {sendMessageMutation.isPending ? (
-                    <Loader2 className="animate-spin" />
-                  ) : (
-                    <svg
-                      className="w-6 h-6 transform rotate-90"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-                    </svg>
-                  )}
+                  <X size={14} />
                 </button>
               </div>
-            </footer>
+            )}
+
+            {ChannelRole === 'BANNED' ? (
+              <footer className="p-6 bg-[#F7F3ED] border-t border-[#D0D5CB] shrink-0 flex justify-center">
+                <div className="bg-red-50 border border-red-200 text-red-600 px-6 py-4 rounded-2xl flex items-center space-x-3 text-sm font-bold shadow-sm">
+                  <ShieldCheck size={20} />
+                  <span>
+                    You have been removed from this community and can no longer
+                    participate.
+                  </span>
+                </div>
+              </footer>
+            ) : (
+              <footer className="p-6 bg-white border-t border-[#D0D5CB] shrink-0 flex flex-col space-y-3">
+                {replyingTo && (
+                  <div className="flex items-center justify-between bg-[#F7F3ED] border-l-4 border-[#8EA087] px-4 py-2 rounded-xl">
+                    <div className="overflow-hidden">
+                      <span className="text-[10px] font-bold text-[#8EA087] block uppercase">
+                        Replying to{' '}
+                        {replyingTo.isAnonymous
+                          ? 'Anonymous'
+                          : replyingTo.user?.name || 'User'}
+                      </span>
+                      <p className="text-xs text-[#193C1F] truncate opacity-70">
+                        {replyingTo.content}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => setReplyingTo(null)}
+                      className="opacity-40 hover:opacity-100"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                )}
+
+                {mediaFile && (
+                  <div className="flex items-center justify-between bg-[#F7F3ED] border border-[#8EA087] rounded-xl px-4 py-2 w-max shadow-sm">
+                    <span className="text-xs text-[#193C1F] font-semibold">
+                      {mediaFile.name} ({(mediaFile.size / 1024).toFixed(1)}KB)
+                    </span>
+                    <button
+                      onClick={() => setMediaFile(null)}
+                      className="ml-4 text-red-500 bg-red-100 p-1 rounded-full"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                )}
+
+                <div className="flex items-center space-x-4">
+                  <div className="flex-1 relative flex flex-col bg-[#F7F3ED] border border-[#D0D5CB] rounded-2xl p-1 focus-within:border-[#8EA087]">
+                    <div className="flex items-center px-3 py-1 border-b border-[#D0D5CB] mb-1 justify-between">
+                      <button
+                        onClick={() => setIsAnonymous(!isAnonymous)}
+                        className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded ${isAnonymous ? 'bg-[#193C1F] text-white' : 'text-[#8EA087]'}`}
+                      >
+                        {isAnonymous ? 'Anonymous ON' : 'Public Mode'}
+                      </button>
+                      <span className="text-[8px] font-bold opacity-40 uppercase tracking-tighter">
+                        Posting as:{' '}
+                        {ChannelRole === 'OWNER'
+                          ? 'Owner'
+                          : ChannelRole === 'MODERATOR'
+                            ? 'Moderator'
+                            : 'Member'}
+                      </span>
+                    </div>
+                    <div className="flex items-center px-3 py-2">
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={(e) =>
+                          setMediaFile(e.target.files?.[0] || null)
+                        }
+                        className="hidden"
+                      />
+                      <button
+                        onClick={() => fileInputRef.current?.click()}
+                        className="text-[#193C1F] opacity-40 hover:opacity-70 mr-3"
+                      >
+                        <Paperclip size={20} />
+                      </button>
+                      <input
+                        className="bg-transparent border-none focus:ring-0 text-sm text-[#193C1F] w-full outline-none"
+                        placeholder="Share your thoughts..."
+                        type="text"
+                        value={messageInput}
+                        onChange={(e) => setMessageInput(e.target.value)}
+                        onKeyDown={(e) =>
+                          e.key === 'Enter' && handleSendMessage()
+                        }
+                      />
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleSendMessage}
+                    disabled={
+                      sendMessageMutation.isPending ||
+                      (!messageInput.trim() && !mediaFile)
+                    }
+                    className="w-12 h-12 bg-[#8EA087] text-white rounded-2xl flex items-center justify-center shadow-sm hover:brightness-110 disabled:opacity-50"
+                  >
+                    {sendMessageMutation.isPending ? (
+                      <Loader2 className="animate-spin" />
+                    ) : (
+                      <svg
+                        className="w-6 h-6 transform rotate-90"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                      >
+                        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+              </footer>
+            )}
           </main>
         ) : (
           <main className="flex-1 flex flex-col bg-white items-center justify-center">
