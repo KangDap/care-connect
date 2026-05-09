@@ -273,6 +273,11 @@ export default function ReportForm({
                   type="date"
                   value={formData.date}
                   onChange={handleInputChange}
+                  max={
+                    !isConsultation
+                      ? new Date().toISOString().split('T')[0]
+                      : undefined
+                  }
                 />
               </div>
 
