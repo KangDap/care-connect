@@ -225,11 +225,29 @@ export const CommunityChatService = {
       throw Errors.notFound('User is not a member of this channel');
     }
 
-    return CommunityChatRepository.updateMemberRole(
+    // Pastikan user yang sudah di-ban tidak bisa diubah role-nya oleh siapapun kecuali Global Admin
+    if (targetMembership.role === 'BANNED' && !isGlobalAdmin) {
+      throw Errors.forbidden(
+        'Tidak dapat mengubah role pengguna yang sedang diblokir. Hanya Admin Global yang dapat melakukannya.',
+      );
+    }
+
+    const member = await CommunityChatRepository.updateMemberRole(
       targetUserId,
       channelId,
       newRole,
     );
+
+    // Kirim pesan sistem tentang perubahan role
+    const admin = await CommunityChatRepository.getUserById(adminId);
+    const target = await CommunityChatRepository.getUserById(targetUserId);
+    await CommunityChatRepository.sendMessage(adminId, {
+      channelId,
+      content: `Role ${target?.name || 'Seorang pengguna'} diubah menjadi ${newRole} oleh ${admin?.name || 'Admin'}`,
+      isSystem: true,
+    });
+
+    return member;
   },
 
   async createNewChannel(
@@ -321,7 +339,7 @@ export const CommunityChatService = {
       throw Errors.forbidden('You do not have permission to kick this user');
     }
 
-    // Record system message for KICK
+    // Kirim pesan sistem untuk KICK
     const admin = await CommunityChatRepository.getUserById(adminId);
     const target = await CommunityChatRepository.getUserById(targetUserId);
     await CommunityChatRepository.sendMessage(adminId, {
