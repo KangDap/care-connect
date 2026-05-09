@@ -261,17 +261,23 @@ const PublicReportsPage = () => {
               </div>
 
               {/* Date Filter */}
-              <div className="space-y-4">
+              <div className="space-y-3">
                 <p className="text-[11px] font-black text-[#8EA087] uppercase tracking-widest">
                   Date Range
                 </p>
-                <div className="space-y-3">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-bold text-[#8EA087] uppercase px-2">
+                    Start Date
+                  </label>
                   <input
                     type="date"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
                     className="w-full bg-[#F7F3ED] rounded-xl px-4 py-3 text-xs font-bold outline-none"
                   />
+                  <label className="text-[10px] font-bold text-[#8EA087] uppercase px-2">
+                    End Date
+                  </label>
                   <input
                     type="date"
                     value={endDate}
