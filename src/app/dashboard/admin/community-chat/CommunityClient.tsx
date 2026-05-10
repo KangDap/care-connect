@@ -1,10 +1,10 @@
 'use client';
 
+import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Modal } from '@/components/modal';
 import { Toast } from '@/components/toast';
-import { Alert } from '@/components/alert';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -118,9 +118,12 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
   const executeDelete = async () => {
     if (!deleteId) return;
     try {
-      const res = await fetch(`/api/dashboard/admin/community-chat?id=${deleteId}`, {
-        method: 'DELETE',
-      });
+      const res = await fetch(
+        `/api/dashboard/admin/community-chat?id=${deleteId}`,
+        {
+          method: 'DELETE',
+        },
+      );
       if (!res.ok) throw new Error('Failed to delete channel');
       setToastState({
         show: true,

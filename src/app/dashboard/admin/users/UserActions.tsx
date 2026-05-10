@@ -1,8 +1,8 @@
 'use client';
 
+import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Modal } from '@/components/modal';
-import { Alert } from '@/components/alert';
 import { Toast } from '@/components/toast';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -19,7 +19,7 @@ export function UserActions({ id, role, banned, name }: UserProps) {
   const [isUpdating, setIsUpdating] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newRole, setNewRole] = useState(role);
-  
+
   const [isBanModalOpen, setIsBanModalOpen] = useState(false);
   const [banReason, setBanReason] = useState('');
   const [isUnbanAlertOpen, setIsUnbanAlertOpen] = useState(false);
@@ -45,7 +45,11 @@ export function UserActions({ id, role, banned, name }: UserProps) {
       });
 
       if (!res.ok) throw new Error('Failed to update role');
-      setToastState({ show: true, msg: 'Role updated successfully', type: 'success' });
+      setToastState({
+        show: true,
+        msg: 'Role updated successfully',
+        type: 'success',
+      });
       setIsModalOpen(false);
       router.refresh();
     } catch {
@@ -77,13 +81,21 @@ export function UserActions({ id, role, banned, name }: UserProps) {
       });
 
       if (!res.ok) throw new Error('Failed to update ban status');
-      setToastState({ show: true, msg: `User ${banned ? 'unbanned' : 'banned'} successfully`, type: 'success' });
+      setToastState({
+        show: true,
+        msg: `User ${banned ? 'unbanned' : 'banned'} successfully`,
+        type: 'success',
+      });
       setIsBanModalOpen(false);
       setIsUnbanAlertOpen(false);
       setBanReason('');
       router.refresh();
     } catch (_error) {
-      setToastState({ show: true, msg: 'Error updating ban status', type: 'error' });
+      setToastState({
+        show: true,
+        msg: 'Error updating ban status',
+        type: 'error',
+      });
     } finally {
       setIsUpdating(false);
     }

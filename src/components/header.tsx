@@ -1,8 +1,8 @@
 'use client';
 
 import { Logo } from '@/components/logo';
-import { authClient } from '@/lib/auth/auth-client';
 import { useTranslation } from '@/components/providers/i18n-provider';
+import { authClient } from '@/lib/auth/auth-client';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
@@ -197,13 +197,25 @@ export const Header = ({
             >
               {language === 'en' ? 'ID' : 'EN'}
             </button>
-            
+
             <button
               type="button"
               className="w-9 h-9 rounded-full flex items-center justify-center border border-[#d0d5cb] text-[#193c1f] hover:bg-[#d0d5cb]/50 transition-colors"
               title="Dark Mode (Coming Soon)"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                />
+              </svg>
             </button>
           </div>
 

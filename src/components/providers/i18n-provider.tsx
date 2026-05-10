@@ -1,8 +1,8 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { en } from '@/i18n/en';
 import { id } from '@/i18n/id';
+import React, { ReactNode, createContext, useContext, useState } from 'react';
 
 type Language = 'en' | 'id';
 
@@ -28,11 +28,21 @@ export const I18nProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('care-connect-lang', lang);
   };
 
-  const getNestedValue = (obj: Record<string, unknown>, path: string): string => {
-    return (path.split('.').reduce((acc: unknown, part: string) =>
-      acc && typeof acc === 'object' ? (acc as Record<string, unknown>)[part] : undefined,
-      obj
-    ) as string) || path;
+  const getNestedValue = (
+    obj: Record<string, unknown>,
+    path: string,
+  ): string => {
+    return (
+      (path
+        .split('.')
+        .reduce(
+          (acc: unknown, part: string) =>
+            acc && typeof acc === 'object'
+              ? (acc as Record<string, unknown>)[part]
+              : undefined,
+          obj,
+        ) as string) || path
+    );
   };
 
   const t = (key: string): string => {

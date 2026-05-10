@@ -14,7 +14,8 @@ export const id: Dictionary = {
   },
   home: {
     heroTitle: 'Angkat Bicara & Bawa Perubahan Bersama Care Connect',
-    heroSubtitle: 'Laporkan insiden dengan aman, dukung korban melalui donasi, dan hubungi profesional untuk kesehatan mental yang lebih baik.',
+    heroSubtitle:
+      'Laporkan insiden dengan aman, dukung korban melalui donasi, dan hubungi profesional untuk kesehatan mental yang lebih baik.',
     reportNow: 'Lapor Sekarang',
     exploreCases: 'Jelajahi Kasus',
     stats: {
@@ -24,14 +25,18 @@ export const id: Dictionary = {
     },
     features: {
       report: 'Pelaporan Aman',
-      reportDesc: 'Kirim laporan insiden secara anonim dan aman. Kami menjaga privasi Anda.',
+      reportDesc:
+        'Kirim laporan insiden secara anonim dan aman. Kami menjaga privasi Anda.',
       donate: 'Donasi Langsung',
-      donateDesc: 'Dukung korban secara langsung melalui saluran donasi yang transparan dan terverifikasi.',
+      donateDesc:
+        'Dukung korban secara langsung melalui saluran donasi yang transparan dan terverifikasi.',
       consult: 'Konsultasi Ahli',
-      consultDesc: 'Terhubung dengan psikolog bersertifikat untuk dukungan kesehatan mental profesional.',
+      consultDesc:
+        'Terhubung dengan psikolog bersertifikat untuk dukungan kesehatan mental profesional.',
       community: 'Komunitas Suportif',
-      communityDesc: 'Bergabung dengan forum dan ruang obrolan untuk berbagi pengalaman dan saling mendukung.',
-    }
+      communityDesc:
+        'Bergabung dengan forum dan ruang obrolan untuk berbagi pengalaman dan saling mendukung.',
+    },
   },
   common: {
     back: 'Kembali',
@@ -44,5 +49,5 @@ export const id: Dictionary = {
     update: 'Perbarui',
     success: 'Berhasil',
     error: 'Kesalahan',
-  }
+  },
 };

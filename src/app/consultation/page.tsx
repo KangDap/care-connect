@@ -65,7 +65,10 @@ export default function ConsultationPage() {
     }
 
     if (!allowedTypes.includes(selected.type)) {
-      setMessage({ type: 'error', text: 'Only PDF, JPG, and PNG files are allowed' });
+      setMessage({
+        type: 'error',
+        text: 'Only PDF, JPG, and PNG files are allowed',
+      });
       return;
     }
 

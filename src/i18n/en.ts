@@ -12,7 +12,8 @@ export const en = {
   },
   home: {
     heroTitle: 'Speak Up & Make an Impact with Care Connect',
-    heroSubtitle: 'Report incidents safely, support victims through donations, and connect with professionals for better mental health.',
+    heroSubtitle:
+      'Report incidents safely, support victims through donations, and connect with professionals for better mental health.',
     reportNow: 'Report Now',
     exploreCases: 'Explore Cases',
     stats: {
@@ -22,14 +23,18 @@ export const en = {
     },
     features: {
       report: 'Secure Reporting',
-      reportDesc: 'Submit incident reports anonymously and securely. We ensure your privacy.',
+      reportDesc:
+        'Submit incident reports anonymously and securely. We ensure your privacy.',
       donate: 'Direct Donations',
-      donateDesc: 'Support victims directly through transparent and verified donation channels.',
+      donateDesc:
+        'Support victims directly through transparent and verified donation channels.',
       consult: 'Expert Consultation',
-      consultDesc: 'Connect with certified psychologists for professional mental health support.',
+      consultDesc:
+        'Connect with certified psychologists for professional mental health support.',
       community: 'Supportive Community',
-      communityDesc: 'Join forums and chat rooms to share experiences and find mutual support.',
-    }
+      communityDesc:
+        'Join forums and chat rooms to share experiences and find mutual support.',
+    },
   },
   common: {
     back: 'Back',
@@ -42,7 +47,7 @@ export const en = {
     update: 'Update',
     success: 'Success',
     error: 'Error',
-  }
+  },
 };
 
 export type Dictionary = typeof en;
