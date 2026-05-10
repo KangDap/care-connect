@@ -53,8 +53,8 @@ export default function Carousel() {
             onClick={() => setCurrentIndex(index)}
             className={`w-3 h-3 rounded-full transition-all duration-300 ${
               index === currentIndex
-                ? 'bg-[#F7F3ED] scale-125'
-                : 'bg-[#D0D5CB]/80 hover:bg-[#F7F3ED]'
+                ? 'bg-[#f7f3ed] scale-125'
+                : 'bg-[#d0d5cb]/80 hover:bg-[#f7f3ed]'
             }`}
             aria-label={`Go to slide ${index + 1}`}
           />

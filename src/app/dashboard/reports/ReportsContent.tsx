@@ -45,7 +45,7 @@ const getStatusLabel = (value: string) =>
 const getStatusBadgeClass = (status: string) => {
   switch (status) {
     case 'PENDING':
-      return 'bg-[#D1B698]/30 text-[#D1B698]';
+      return 'bg-[#d1b698]/30 text-[#d1b698]';
     case 'REVIEWED':
       return 'bg-blue-100 text-blue-700';
     case 'RESOLVED':
@@ -53,7 +53,7 @@ const getStatusBadgeClass = (status: string) => {
     case 'REJECTED':
       return 'bg-red-100 text-red-600';
     default:
-      return 'bg-[#EBE6DE] text-[#193C1F]';
+      return 'bg-[#EBE6DE] text-[#193c1f]';
   }
 };
 
@@ -119,8 +119,8 @@ export default function ReportsContent({ reports }: ReportsContentProps) {
     <div className="space-y-8 animate-fade-in">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-[32px] font-black text-[#193C1F]">My Reports</h2>
-          <p className="text-[#8EA087] font-medium">
+          <h2 className="text-[32px] font-black text-[#193c1f]">My Reports</h2>
+          <p className="text-[#8ea087] font-medium">
             {query
               ? `Showing results for "${query}"`
               : 'Track the status of your submitted reports.'}
@@ -128,15 +128,15 @@ export default function ReportsContent({ reports }: ReportsContentProps) {
         </div>
         <button
           onClick={() => router.push('/report?from=dashboard')}
-          className="px-7 py-3.5 bg-[#8EA087] hover:bg-[#193C1F] text-white rounded-2xl font-bold text-[14px] transition-all shadow-lg whitespace-nowrap"
+          className="px-7 py-3.5 bg-[#8ea087] hover:bg-[#193c1f] text-white rounded-2xl font-bold text-[14px] transition-all shadow-lg whitespace-nowrap"
         >
           + New Report
         </button>
       </div>
 
-      <div className="bg-white border border-[#D0D5CB] rounded-[32px] overflow-hidden shadow-sm">
+      <div className="bg-white border border-[#d0d5cb] rounded-[32px] overflow-hidden shadow-sm">
         <table className="w-full text-left border-collapse">
-          <thead className="bg-[#F7F3ED] text-[11px] text-[#8EA087] font-black uppercase tracking-widest">
+          <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
             <tr>
               <th className="px-8 py-5">Report ID</th>
               <th className="px-8 py-5">Type</th>
@@ -150,20 +150,20 @@ export default function ReportsContent({ reports }: ReportsContentProps) {
                 key={row.id}
                 onMouseEnter={() => setHoveredRowId(row.id)}
                 onMouseLeave={() => setHoveredRowId(null)}
-                className="group border-b border-[#F7F3ED] last:border-0"
+                className="group border-b border-[#f7f3ed] last:border-0"
               >
                 <tr
                   className={`transition-colors cursor-default ${
                     hoveredRowId === row.id ? 'bg-[#FDFCFB]' : ''
                   }`}
                 >
-                  <td className="px-8 py-6 font-bold text-[#193C1F]">
+                  <td className="px-8 py-6 font-bold text-[#193c1f]">
                     #REP-{String(row.id).padStart(4, '0')}
                   </td>
-                  <td className="px-8 py-6 font-medium text-[#193C1F]/80">
+                  <td className="px-8 py-6 font-medium text-[#193c1f]/80">
                     {row.title}
                   </td>
-                  <td className="px-8 py-6 text-[#193C1F]/60">
+                  <td className="px-8 py-6 text-[#193c1f]/60">
                     {formatDateLabel(row.createdAt)}
                   </td>
                   <td className="px-8 py-6">
@@ -183,44 +183,44 @@ export default function ReportsContent({ reports }: ReportsContentProps) {
                       }`}
                     >
                       <div className="px-8 pb-8 pt-2">
-                        <div className="p-7 bg-white border border-[#D0D5CB]/40 rounded-[24px] shadow-sm">
+                        <div className="p-7 bg-white border border-[#d0d5cb]/40 rounded-[24px] shadow-sm">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                             {/* Left Side: Summary Fields */}
                             <div className="space-y-6">
                               <div>
-                                <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8EA087] mb-4">
+                                <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087] mb-4">
                                   Report Details (Form Summary)
                                 </h4>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                   <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8EA087] font-bold uppercase tracking-tight">
+                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
                                       Category
                                     </p>
-                                    <p className="text-[14px] font-bold text-[#193C1F]">
+                                    <p className="text-[14px] font-bold text-[#193c1f]">
                                       {row.category}
                                     </p>
                                   </div>
                                   <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8EA087] font-bold uppercase tracking-tight">
+                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
                                       Incident Date
                                     </p>
-                                    <p className="text-[14px] font-bold text-[#193C1F]">
+                                    <p className="text-[14px] font-bold text-[#193c1f]">
                                       {formatDateLabel(row.incidentDate)}
                                     </p>
                                   </div>
                                   <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8EA087] font-bold uppercase tracking-tight">
+                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
                                       Location
                                     </p>
-                                    <p className="text-[14px] font-bold text-[#193C1F]">
+                                    <p className="text-[14px] font-bold text-[#193c1f]">
                                       {row.district}, {row.city}, {row.province}
                                     </p>
                                   </div>
                                   <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8EA087] font-bold uppercase tracking-tight">
+                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
                                       Anonymity
                                     </p>
-                                    <p className="text-[14px] font-bold text-[#193C1F]">
+                                    <p className="text-[14px] font-bold text-[#193c1f]">
                                       {row.isAnonymous ? 'Anonymous' : 'Public'}
                                     </p>
                                   </div>
@@ -228,19 +228,19 @@ export default function ReportsContent({ reports }: ReportsContentProps) {
                               </div>
                             </div>
                             {/* Right Side: Description & Evidences */}
-                            <div className="flex flex-col border-l border-[#F7F3ED] pl-10">
-                              <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8EA087] mb-4">
+                            <div className="flex flex-col border-l border-[#f7f3ed] pl-10">
+                              <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087] mb-4">
                                 Description & Evidences
                               </h4>
-                              <div className="bg-[#F7F3ED]/30 p-5 rounded-2xl border border-[#F7F3ED] max-h-[200px] overflow-y-auto custom-scrollbar">
-                                <p className="text-[14px] leading-relaxed text-[#193C1F]/80 whitespace-pre-wrap">
+                              <div className="bg-[#f7f3ed]/30 p-5 rounded-2xl border border-[#f7f3ed] max-h-[200px] overflow-y-auto custom-scrollbar">
+                                <p className="text-[14px] leading-relaxed text-[#193c1f]/80 whitespace-pre-wrap">
                                   {row.description ||
                                     'No description provided.'}
                                 </p>
                               </div>
                               {row.evidences.length > 0 && (
                                 <div className="mt-6 space-y-3">
-                                  <p className="text-[10px] text-[#8EA087] font-bold uppercase tracking-tight">
+                                  <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
                                     Attached Evidences ({row.evidences.length})
                                   </p>
                                   <div className="grid grid-cols-1 gap-2">
@@ -249,17 +249,17 @@ export default function ReportsContent({ reports }: ReportsContentProps) {
                                         key={file.id}
                                         href={file.fileUrl}
                                         target="_blank"
-                                        className="flex items-center justify-between p-3 bg-[#F7F3ED] rounded-xl border border-[#D0D5CB]/30 hover:bg-[#EBE6DE] transition-colors group/file"
+                                        className="flex items-center justify-between p-3 bg-[#f7f3ed] rounded-xl border border-[#d0d5cb]/30 hover:bg-[#EBE6DE] transition-colors group/file"
                                       >
                                         <div className="flex items-center gap-3">
-                                          <div className="text-[#8EA087] group-hover/file:text-[#193C1F]">
+                                          <div className="text-[#8ea087] group-hover/file:text-[#193c1f]">
                                             <FileIcon />
                                           </div>
-                                          <span className="text-[12px] font-bold text-[#193C1F] truncate max-w-[150px]">
+                                          <span className="text-[12px] font-bold text-[#193c1f] truncate max-w-[150px]">
                                             {file.fileName}
                                           </span>
                                         </div>
-                                        <span className="text-[10px] font-black text-[#8EA087] uppercase tracking-widest">
+                                        <span className="text-[10px] font-black text-[#8ea087] uppercase tracking-widest">
                                           View
                                         </span>
                                       </Link>
@@ -277,11 +277,11 @@ export default function ReportsContent({ reports }: ReportsContentProps) {
               </tbody>
             ))
           ) : (
-            <tbody className="text-[14px] text-[#193C1F]">
+            <tbody className="text-[14px] text-[#193c1f]">
               <tr>
                 <td
                   colSpan={4}
-                  className="p-20 text-center text-[#8EA087] font-bold"
+                  className="p-20 text-center text-[#8ea087] font-bold"
                 >
                   No reports found.
                 </td>

@@ -102,10 +102,10 @@ type SidebarItemProps = {
 const SidebarItem = ({ icon: Icon, label, href, active }: SidebarItemProps) => (
   <Link href={href} className="no-underline">
     <div
-      className={`flex items-center gap-3 px-8 py-4 cursor-pointer transition-all duration-200 group ${active ? 'bg-[#EBE6DE] text-[#193C1F] font-bold border-r-4 border-[#193C1F]' : 'text-[#193C1F] opacity-60 hover:opacity-100 hover:bg-[#EBE6DE]/50'}`}
+      className={`flex items-center gap-3 px-8 py-4 cursor-pointer transition-all duration-200 group ${active ? 'bg-[#EBE6DE] text-[#193c1f] font-bold border-r-4 border-[#193c1f]' : 'text-[#193c1f] opacity-60 hover:opacity-100 hover:bg-[#EBE6DE]/50'}`}
     >
       <div
-        className={`${active ? 'text-[#193C1F]' : 'group-hover:scale-110 transition-transform'}`}
+        className={`${active ? 'text-[#193c1f]' : 'group-hover:scale-110 transition-transform'}`}
       >
         <Icon />
       </div>
@@ -139,16 +139,16 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="fixed inset-0 w-full h-full flex bg-[#F7F3ED] overflow-hidden m-0 p-0 z-0">
+    <div className="fixed inset-0 w-full h-full flex bg-[#f7f3ed] overflow-hidden m-0 p-0 z-0">
       {/* SIDEBAR */}
-      <aside className="w-[280px] bg-[#F2EDE4] border-r border-[#D0D5CB] flex flex-col shrink-0 h-full">
+      <aside className="w-[280px] bg-[#F2EDE4] border-r border-[#d0d5cb] flex flex-col shrink-0 h-full">
         <div className="p-10 flex flex-col gap-1 shrink-0">
           <Link
             href="/"
             className="flex items-center gap-3 no-underline hover:opacity-80 transition-opacity"
           >
             <LogoCareConnect />
-            <h1 className="text-[20px] font-black text-[#193C1F] tracking-tight">
+            <h1 className="text-[20px] font-black text-[#193c1f] tracking-tight">
               CareConnect
             </h1>
           </Link>
@@ -275,7 +275,7 @@ export default function DashboardLayout({
           <Header onLogoutClick={() => setIsLogoutAlertOpen(true)} />
         </div>
 
-        <div className="flex-1 overflow-y-auto w-full bg-[#F7F3ED]">
+        <div className="flex-1 overflow-y-auto w-full bg-[#f7f3ed]">
           <div className="p-10 w-full min-h-full box-border">{children}</div>
         </div>
       </main>

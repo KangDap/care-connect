@@ -31,7 +31,7 @@ export const Alert = ({
   const typeStyles = {
     danger: 'bg-red-50 text-red-500',
     warning: 'bg-amber-50 text-amber-500',
-    primary: 'bg-[#F7F3ED] text-[#8EA087]',
+    primary: 'bg-[#f7f3ed] text-[#8ea087]',
   };
 
   const buttonStyles = {
@@ -44,7 +44,7 @@ export const Alert = ({
     <div className="fixed inset-0 z-[999] flex items-center justify-center p-6">
       {/* Overlay */}
       <div
-        className="absolute inset-0 bg-[#193C1F]/60 backdrop-blur-sm animate-in fade-in duration-300"
+        className="absolute inset-0 bg-[#193c1f]/60 backdrop-blur-sm animate-in fade-in duration-300"
         onClick={onClose}
       />
 
@@ -57,11 +57,11 @@ export const Alert = ({
           {type === 'danger' ? '⚠️' : type === 'warning' ? '🔔' : '✨'}
         </div>
 
-        <h3 className="text-2xl font-black text-[#193C1F] mb-3 italic tracking-tight">
+        <h3 className="text-2xl font-black text-[#193c1f] mb-3 italic tracking-tight">
           {title}
         </h3>
 
-        <p className="text-sm text-[#193C1F]/50 font-medium leading-relaxed mb-10">
+        <p className="text-sm text-[#193c1f]/50 font-medium leading-relaxed mb-10">
           {description}
         </p>
 
@@ -75,7 +75,7 @@ export const Alert = ({
 
           <button
             onClick={onClose}
-            className="text-[11px] font-black text-[#193C1F]/30 uppercase tracking-[0.2em] hover:text-[#193C1F] py-2 transition-colors"
+            className="text-[11px] font-black text-[#193c1f]/30 uppercase tracking-[0.2em] hover:text-[#193c1f] py-2 transition-colors"
           >
             {cancelText}
           </button>

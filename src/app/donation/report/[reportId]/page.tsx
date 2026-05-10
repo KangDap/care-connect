@@ -54,10 +54,10 @@ export default function DonationReportPage({ params }: Props) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F7F3ED]">
+      <div className="min-h-screen flex items-center justify-center bg-[#f7f3ed]">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-10 w-10 border-b-2 border-[#193C1F] mb-4" />
-          <p className="text-[#8EA087] font-medium">
+          <div className="inline-block animate-spin rounded-full h-10 w-10 border-b-2 border-[#193c1f] mb-4" />
+          <p className="text-[#8ea087] font-medium">
             Loading report details...
           </p>
         </div>
@@ -67,14 +67,14 @@ export default function DonationReportPage({ params }: Props) {
 
   if (error || !report) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F7F3ED]">
+      <div className="min-h-screen flex items-center justify-center bg-[#f7f3ed]">
         <div className="text-center">
           <p className="text-red-600 font-bold mb-4">
             Failed to load report details.
           </p>
           <Link
             href="/donation/report"
-            className="text-[#8EA087] font-bold hover:underline"
+            className="text-[#8ea087] font-bold hover:underline"
           >
             ← Back to Report List
           </Link>

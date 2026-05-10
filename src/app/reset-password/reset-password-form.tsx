@@ -104,23 +104,23 @@ export function ResetPasswordForm() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F3ED] flex flex-col">
-      <header className="h-[80px] bg-[#F7F3ED] border-b border-[#D0D5CB] flex items-center justify-between px-6 lg:px-12">
+    <div className="min-h-screen bg-[#f7f3ed] flex flex-col">
+      <header className="h-[80px] bg-[#f7f3ed] border-b border-[#d0d5cb] flex items-center justify-between px-6 lg:px-12">
         <Logo />
         <Link
           href="/login"
-          className="text-sm font-bold text-[#193C1F] hover:underline"
+          className="text-sm font-bold text-[#193c1f] hover:underline"
         >
           Back to login
         </Link>
       </header>
 
       <main className="flex-1 flex items-center justify-center px-6 py-10">
-        <div className="w-full max-w-[460px] rounded-[24px] bg-white border border-[#D0D5CB] p-8 lg:p-10 shadow-sm">
-          <h1 className="text-2xl font-bold text-[#193C1F] mb-2">
+        <div className="w-full max-w-[460px] rounded-[24px] bg-white border border-[#d0d5cb] p-8 lg:p-10 shadow-sm">
+          <h1 className="text-2xl font-bold text-[#193c1f] mb-2">
             Set New Password
           </h1>
-          <p className="text-sm text-[#193C1F]/70 mb-8">
+          <p className="text-sm text-[#193c1f]/70 mb-8">
             Enter your new password to finish resetting your account access.
           </p>
 
@@ -184,7 +184,7 @@ export function ResetPasswordForm() {
             {!isTokenValid && (
               <Link
                 href="/login"
-                className="block text-center text-sm font-bold text-[#8EA087] hover:text-[#193C1F] transition-colors"
+                className="block text-center text-sm font-bold text-[#8ea087] hover:text-[#193c1f] transition-colors"
               >
                 Request new reset link from login page
               </Link>

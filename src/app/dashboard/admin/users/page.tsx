@@ -25,17 +25,17 @@ export default async function AdminUsersPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-[32px] font-black text-[#193C1F]">
+        <h1 className="text-[32px] font-black text-[#193c1f]">
           Users Moderation
         </h1>
-        <p className="text-[#8EA087] font-medium">
+        <p className="text-[#8ea087] font-medium">
           Manage and moderate user accounts in the platform.
         </p>
       </div>
 
-      <div className="bg-white border border-[#D0D5CB] rounded-2xl overflow-hidden shadow-sm">
+      <div className="bg-white border border-[#d0d5cb] rounded-2xl overflow-hidden shadow-sm">
         <table className="w-full text-left">
-          <thead className="bg-[#F7F3ED] text-[11px] text-[#8EA087] font-black uppercase tracking-widest">
+          <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
             <tr>
               <th className="px-6 py-4">Name</th>
               <th className="px-6 py-4">Email</th>
@@ -45,12 +45,12 @@ export default async function AdminUsersPage() {
               <th className="px-6 py-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#F7F3ED] text-sm">
+          <tbody className="divide-y divide-[#f7f3ed] text-sm">
             {users.length === 0 ? (
               <tr>
                 <td
                   colSpan={6}
-                  className="px-6 py-12 text-center text-[#8EA087] font-medium"
+                  className="px-6 py-12 text-center text-[#8ea087] font-medium"
                 >
                   No users found.
                 </td>
@@ -59,9 +59,9 @@ export default async function AdminUsersPage() {
               users.map((user) => (
                 <tr
                   key={user.id}
-                  className="hover:bg-[#F7F3ED]/50 transition-colors"
+                  className="hover:bg-[#f7f3ed]/50 transition-colors"
                 >
-                  <td className="px-6 py-4 font-medium text-[#193C1F]">
+                  <td className="px-6 py-4 font-medium text-[#193c1f]">
                     {user.name}
                   </td>
                   <td className="px-6 py-4 text-gray-600">{user.email}</td>

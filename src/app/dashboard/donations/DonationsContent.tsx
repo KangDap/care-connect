@@ -406,10 +406,10 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-[32px] font-black text-[#193C1F]">
+          <h2 className="text-[32px] font-black text-[#193c1f]">
             Donation History
           </h2>
-          <p className="text-[#8EA087] font-medium">
+          <p className="text-[#8ea087] font-medium">
             {query
               ? `Showing results for "${query}"`
               : 'Your contributions to the community.'}
@@ -417,16 +417,16 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
         </div>
         <button
           onClick={() => router.push('/donation')}
-          className="px-7 py-3.5 bg-[#8EA087] hover:bg-[#193C1F] text-white rounded-2xl font-bold text-[14px] transition-all shadow-lg whitespace-nowrap"
+          className="px-7 py-3.5 bg-[#8ea087] hover:bg-[#193c1f] text-white rounded-2xl font-bold text-[14px] transition-all shadow-lg whitespace-nowrap"
         >
           + New Donation
         </button>
       </div>
 
       {/* Table */}
-      <div className="bg-white border border-[#D0D5CB] rounded-[32px] overflow-hidden shadow-sm">
+      <div className="bg-white border border-[#d0d5cb] rounded-[32px] overflow-hidden shadow-sm">
         <table className="w-full text-left">
-          <thead className="bg-[#F7F3ED] text-[11px] text-[#8EA087] font-black uppercase tracking-widest">
+          <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
             <tr>
               <th className="px-8 py-5">Source / Donor</th>
               <th className="px-8 py-5">Date</th>
@@ -450,7 +450,7 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
                   key={row.id}
                   onMouseEnter={() => setHoveredRowId(row.id)}
                   onMouseLeave={() => setHoveredRowId(null)}
-                  className="group border-b border-[#F7F3ED] last:border-0"
+                  className="group border-b border-[#f7f3ed] last:border-0"
                 >
                   {/* Main Row */}
                   <tr
@@ -464,10 +464,10 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-2">
                         <div>
-                          <p className="font-bold text-[#193C1F]">
+                          <p className="font-bold text-[#193c1f]">
                             {row.report?.title || 'CareConnect Platform'}
                           </p>
-                          <p className="text-[12px] text-[#8EA087] font-medium opacity-60">
+                          <p className="text-[12px] text-[#8ea087] font-medium opacity-60">
                             Donation #{row.id}
                           </p>
                         </div>
@@ -481,7 +481,7 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
                     <td className="px-8 py-6 font-medium">
                       {formatDateLabel(row.timestamp)}
                     </td>
-                    <td className="px-8 py-6 font-medium italic text-[#8EA087]">
+                    <td className="px-8 py-6 font-medium italic text-[#8ea087]">
                       {formatPaymentMethod(row.paymentMethod)}
                     </td>
                     <td className="px-8 py-6">
@@ -505,32 +505,32 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
                         }`}
                       >
                         <div className="px-8 pb-8 pt-2">
-                          <div className="p-7 bg-white border border-[#D0D5CB]/40 rounded-[24px] shadow-sm">
+                          <div className="p-7 bg-white border border-[#d0d5cb]/40 rounded-[24px] shadow-sm">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                               {/* Left: Donation Summary */}
                               <div className="space-y-6">
-                                <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8EA087]">
+                                <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087]">
                                   Donation Summary
                                 </h4>
                                 <div className="grid grid-cols-2 gap-6">
                                   <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8EA087] font-bold uppercase tracking-tight">
+                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
                                       Amount
                                     </p>
-                                    <p className="text-[20px] font-black text-[#D1B698]">
+                                    <p className="text-[20px] font-black text-[#d1b698]">
                                       {formatRupiah(row.amount)}
                                     </p>
                                   </div>
                                   <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8EA087] font-bold uppercase tracking-tight">
+                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
                                       Payment Method
                                     </p>
-                                    <p className="text-[14px] font-bold text-[#193C1F]">
+                                    <p className="text-[14px] font-bold text-[#193c1f]">
                                       {formatPaymentMethod(row.paymentMethod)}
                                     </p>
                                   </div>
                                   <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8EA087] font-bold uppercase tracking-tight">
+                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
                                       Status
                                     </p>
                                     <span
@@ -540,10 +540,10 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
                                     </span>
                                   </div>
                                   <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8EA087] font-bold uppercase tracking-tight">
+                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
                                       Date
                                     </p>
-                                    <p className="text-[14px] font-bold text-[#193C1F]">
+                                    <p className="text-[14px] font-bold text-[#193c1f]">
                                       {formatDateLabel(row.timestamp)}
                                     </p>
                                   </div>
@@ -566,7 +566,7 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
                                         handleCompletePayment(row);
                                       }}
                                       disabled={isProcessing || isCanceling}
-                                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#193C1F] text-white rounded-xl font-bold text-[13px] hover:bg-[#8EA087] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#193c1f] text-white rounded-xl font-bold text-[13px] hover:bg-[#8ea087] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                       {isProcessing ? (
                                         <>
@@ -618,7 +618,7 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
                                         void handleChangePaymentMethod(row);
                                       }}
                                       disabled={isProcessing || isCanceling}
-                                      className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-[#D0D5CB] text-[#193C1F] rounded-xl font-bold text-[13px] hover:bg-[#F7F3ED] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                      className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-[#d0d5cb] text-[#193c1f] rounded-xl font-bold text-[13px] hover:bg-[#f7f3ed] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                       {isCanceling ? (
                                         <>
@@ -667,37 +667,37 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
                               </div>
 
                               {/* Right: Target Report */}
-                              <div className="border-l border-[#F7F3ED] pl-10 space-y-6">
-                                <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8EA087]">
+                              <div className="border-l border-[#f7f3ed] pl-10 space-y-6">
+                                <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087]">
                                   Target Report
                                 </h4>
                                 <div className="space-y-4">
                                   <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8EA087] font-bold uppercase tracking-tight">
+                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
                                       Case Title
                                     </p>
-                                    <p className="text-[16px] font-bold text-[#193C1F]">
+                                    <p className="text-[16px] font-bold text-[#193c1f]">
                                       {row.report?.title ||
                                         'CareConnect Platform'}
                                     </p>
                                   </div>
                                   {row.report?.description ? (
                                     <div className="pt-2">
-                                      <p className="text-[10px] text-[#8EA087] font-bold uppercase tracking-tight mb-1">
+                                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight mb-1">
                                         Description
                                       </p>
-                                      <div className="bg-[#F7F3ED]/30 p-4 rounded-xl border border-[#F7F3ED] max-h-[150px] overflow-y-auto custom-scrollbar">
-                                        <p className="text-[13px] leading-relaxed text-[#193C1F]/80 whitespace-pre-wrap font-medium italic">
+                                      <div className="bg-[#f7f3ed]/30 p-4 rounded-xl border border-[#f7f3ed] max-h-[150px] overflow-y-auto custom-scrollbar">
+                                        <p className="text-[13px] leading-relaxed text-[#193c1f]/80 whitespace-pre-wrap font-medium italic">
                                           &quot;{row.report.description}&quot;
                                         </p>
                                       </div>
                                     </div>
                                   ) : (
                                     <div className="pt-2">
-                                      <p className="text-[10px] text-[#8EA087] font-bold uppercase tracking-tight mb-1">
+                                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight mb-1">
                                         Description
                                       </p>
-                                      <p className="text-[13px] text-[#193C1F]/60 italic">
+                                      <p className="text-[13px] text-[#193c1f]/60 italic">
                                         Donation to support the platform
                                         infrastructure and operations.
                                       </p>
@@ -715,11 +715,11 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
               );
             })
           ) : (
-            <tbody className="text-[14px] text-[#193C1F]">
+            <tbody className="text-[14px] text-[#193c1f]">
               <tr>
                 <td
                   colSpan={5}
-                  className="p-20 text-center text-[#8EA087] font-bold"
+                  className="p-20 text-center text-[#8ea087] font-bold"
                 >
                   No donations found.
                 </td>

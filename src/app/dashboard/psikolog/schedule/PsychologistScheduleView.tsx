@@ -83,62 +83,62 @@ export default function PsychologistScheduleView() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h2 className="text-2xl font-black text-[#193C1F] tracking-tight">
+          <h2 className="text-2xl font-black text-[#193c1f] tracking-tight">
             My Consultation Schedule
           </h2>
-          <p className="text-sm text-[#8EA087] mt-1 font-medium">
+          <p className="text-sm text-[#8ea087] mt-1 font-medium">
             Your availability as configured by the admin.
           </p>
         </div>
         <div className="text-right">
-          <p className="text-[10px] font-black uppercase tracking-widest text-[#8EA087]">
+          <p className="text-[10px] font-black uppercase tracking-widest text-[#8ea087]">
             Today
           </p>
-          <p className="text-sm font-bold text-[#193C1F]">{today}</p>
+          <p className="text-sm font-bold text-[#193c1f]">{today}</p>
         </div>
       </div>
 
       {/* Summary Pills */}
       <div className="flex gap-4 flex-wrap">
-        <div className="bg-white border border-[#D0D5CB] rounded-2xl px-5 py-3 flex items-center gap-3 shadow-sm">
-          <Calendar size={18} className="text-[#8EA087]" />
+        <div className="bg-white border border-[#d0d5cb] rounded-2xl px-5 py-3 flex items-center gap-3 shadow-sm">
+          <Calendar size={18} className="text-[#8ea087]" />
           <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-[#8EA087]">
+            <p className="text-[10px] font-black uppercase tracking-widest text-[#8ea087]">
               Active Days
             </p>
-            <p className="text-lg font-black text-[#193C1F]">
+            <p className="text-lg font-black text-[#193c1f]">
               {schedule.length}
             </p>
           </div>
         </div>
-        <div className="bg-white border border-[#D0D5CB] rounded-2xl px-5 py-3 flex items-center gap-3 shadow-sm">
-          <Clock size={18} className="text-[#8EA087]" />
+        <div className="bg-white border border-[#d0d5cb] rounded-2xl px-5 py-3 flex items-center gap-3 shadow-sm">
+          <Clock size={18} className="text-[#8ea087]" />
           <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-[#8EA087]">
+            <p className="text-[10px] font-black uppercase tracking-widest text-[#8ea087]">
               Total Slots
             </p>
-            <p className="text-lg font-black text-[#193C1F]">{totalSlots}</p>
+            <p className="text-lg font-black text-[#193c1f]">{totalSlots}</p>
           </div>
         </div>
-        <div className="bg-white border border-[#D0D5CB] rounded-2xl px-5 py-3 flex items-center gap-3 shadow-sm">
-          <Clock size={18} className="text-[#8EA087]" />
+        <div className="bg-white border border-[#d0d5cb] rounded-2xl px-5 py-3 flex items-center gap-3 shadow-sm">
+          <Clock size={18} className="text-[#8ea087]" />
           <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-[#8EA087]">
+            <p className="text-[10px] font-black uppercase tracking-widest text-[#8ea087]">
               Hours/Week
             </p>
-            <p className="text-lg font-black text-[#193C1F]">{totalHours}h</p>
+            <p className="text-lg font-black text-[#193c1f]">{totalHours}h</p>
           </div>
         </div>
       </div>
 
       {/* Schedule Cards */}
       {schedule.length === 0 ? (
-        <div className="bg-white rounded-3xl border-2 border-dashed border-[#D0D5CB] p-12 text-center">
-          <Calendar size={40} className="text-[#D0D5CB] mx-auto mb-4" />
-          <p className="font-bold text-[#193C1F] opacity-40">
+        <div className="bg-white rounded-3xl border-2 border-dashed border-[#d0d5cb] p-12 text-center">
+          <Calendar size={40} className="text-[#d0d5cb] mx-auto mb-4" />
+          <p className="font-bold text-[#193c1f] opacity-40">
             No schedule has been set yet
           </p>
-          <p className="text-xs text-[#8EA087] mt-1">
+          <p className="text-xs text-[#8ea087] mt-1">
             The admin will configure your availability. Check back later.
           </p>
         </div>
@@ -151,15 +151,15 @@ export default function PsychologistScheduleView() {
                 key={daySchedule.day}
                 className={`rounded-3xl border p-6 shadow-sm transition-all ${
                   isToday
-                    ? 'bg-[#193C1F] border-[#193C1F] text-white'
-                    : 'bg-white border-[#D0D5CB]'
+                    ? 'bg-[#193c1f] border-[#193c1f] text-white'
+                    : 'bg-white border-[#d0d5cb]'
                 }`}
               >
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-3">
                     <div
                       className={`w-8 h-8 rounded-xl flex items-center justify-center ${
-                        isToday ? 'bg-white/20' : 'bg-[#193C1F]'
+                        isToday ? 'bg-white/20' : 'bg-[#193c1f]'
                       }`}
                     >
                       <Calendar
@@ -168,7 +168,7 @@ export default function PsychologistScheduleView() {
                       />
                     </div>
                     <h3
-                      className={`font-black text-base ${isToday ? 'text-white' : 'text-[#193C1F]'}`}
+                      className={`font-black text-base ${isToday ? 'text-white' : 'text-[#193c1f]'}`}
                     >
                       {daySchedule.day}
                     </h3>
@@ -179,7 +179,7 @@ export default function PsychologistScheduleView() {
                     </span>
                   )}
                   {!isToday && (
-                    <span className="text-[9px] font-black uppercase tracking-widest bg-[#F7F3ED] text-[#8EA087] px-3 py-1 rounded-full">
+                    <span className="text-[9px] font-black uppercase tracking-widest bg-[#f7f3ed] text-[#8ea087] px-3 py-1 rounded-full">
                       {daySchedule.slots.length} slot
                       {daySchedule.slots.length !== 1 ? 's' : ''}
                     </span>
@@ -191,15 +191,15 @@ export default function PsychologistScheduleView() {
                     <div
                       key={slot.id}
                       className={`flex items-center gap-3 rounded-2xl px-4 py-3 ${
-                        isToday ? 'bg-white/10' : 'bg-[#F7F3ED]'
+                        isToday ? 'bg-white/10' : 'bg-[#f7f3ed]'
                       }`}
                     >
                       <Clock
                         size={14}
-                        className={isToday ? 'text-white/70' : 'text-[#8EA087]'}
+                        className={isToday ? 'text-white/70' : 'text-[#8ea087]'}
                       />
                       <span
-                        className={`text-sm font-bold ${isToday ? 'text-white' : 'text-[#193C1F]'}`}
+                        className={`text-sm font-bold ${isToday ? 'text-white' : 'text-[#193c1f]'}`}
                       >
                         {formatTime(slot.start)} – {formatTime(slot.end)}
                       </span>

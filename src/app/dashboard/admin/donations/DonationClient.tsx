@@ -131,10 +131,10 @@ export function DonationClient({
 
       {/* Header */}
       <div>
-        <h1 className="text-[40px] font-black text-[#193C1F] tracking-tight leading-none">
+        <h1 className="text-[40px] font-black text-[#193c1f] tracking-tight leading-none">
           Donation & Payouts
         </h1>
-        <p className="text-[#8EA087] font-medium mt-2">
+        <p className="text-[#8ea087] font-medium mt-2">
           Monitor platform revenue and calculate psychologist shares.
         </p>
       </div>
@@ -142,7 +142,7 @@ export function DonationClient({
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
         {/* Card 1: Revenue */}
-        <div className="bg-[#193C1F] p-8 rounded-[40px] text-white shadow-2xl relative overflow-hidden group border-4 border-[#193C1F] flex flex-col h-full">
+        <div className="bg-[#193c1f] p-8 rounded-[40px] text-white shadow-2xl relative overflow-hidden group border-4 border-[#193c1f] flex flex-col h-full">
           <div className="relative z-10 flex flex-col h-full">
             <div className="flex items-center gap-2 mb-6">
               <div className="p-2 bg-white/10 rounded-lg">
@@ -216,10 +216,10 @@ export function DonationClient({
         </div>
 
         {/* Card 2: Sessions */}
-        <div className="bg-white p-8 rounded-[40px] border-4 border-[#F7F3ED] shadow-xl relative overflow-hidden group flex flex-col h-full">
+        <div className="bg-white p-8 rounded-[40px] border-4 border-[#f7f3ed] shadow-xl relative overflow-hidden group flex flex-col h-full">
           <div className="relative z-10 flex flex-col h-full">
             <div className="flex items-center gap-2 mb-6">
-              <div className="p-2 bg-[#F7F3ED] rounded-lg text-[#193C1F]">
+              <div className="p-2 bg-[#f7f3ed] rounded-lg text-[#193c1f]">
                 <svg
                   width="20"
                   height="20"
@@ -236,27 +236,27 @@ export function DonationClient({
                   <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                 </svg>
               </div>
-              <p className="text-[10px] font-black text-[#8EA087] uppercase tracking-[0.2em]">
+              <p className="text-[10px] font-black text-[#8ea087] uppercase tracking-[0.2em]">
                 Monthly Sessions
               </p>
             </div>
 
             <div className="flex items-baseline gap-2 mb-6">
-              <h3 className="text-4xl font-black text-[#193C1F] tracking-tighter">
+              <h3 className="text-4xl font-black text-[#193c1f] tracking-tighter">
                 {summary.totalSessions}
               </h3>
-              <span className="text-xs font-bold text-[#8EA087] uppercase">
+              <span className="text-xs font-bold text-[#8ea087] uppercase">
                 Completed
               </span>
             </div>
 
             {/* Session Stats */}
-            <div className="grid grid-cols-2 gap-4 mb-8 py-5 border-y border-[#F7F3ED]">
+            <div className="grid grid-cols-2 gap-4 mb-8 py-5 border-y border-[#f7f3ed]">
               <div>
-                <p className="text-[8px] font-black text-[#8EA087] uppercase tracking-widest mb-1">
+                <p className="text-[8px] font-black text-[#8ea087] uppercase tracking-widest mb-1">
                   Avg. Sessions
                 </p>
-                <p className="font-bold text-sm text-[#193C1F]">
+                <p className="font-bold text-sm text-[#193c1f]">
                   {psychologistBreakdown.length > 0
                     ? (
                         summary.totalSessions / psychologistBreakdown.length
@@ -265,10 +265,10 @@ export function DonationClient({
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-[8px] font-black text-[#8EA087] uppercase tracking-widest mb-1">
+                <p className="text-[8px] font-black text-[#8ea087] uppercase tracking-widest mb-1">
                   Active Psych
                 </p>
-                <p className="font-black text-sm text-[#193C1F]">
+                <p className="font-black text-sm text-[#193c1f]">
                   {psychologistBreakdown.length}
                 </p>
               </div>
@@ -276,14 +276,14 @@ export function DonationClient({
 
             <div className="mt-auto flex justify-between items-end">
               <div className="flex flex-col">
-                <span className="text-[8px] font-bold text-[#8EA087] uppercase tracking-widest mb-1">
+                <span className="text-[8px] font-bold text-[#8ea087] uppercase tracking-widest mb-1">
                   Total (All Time)
                 </span>
-                <span className="font-bold text-xs text-[#193C1F]">
+                <span className="font-bold text-xs text-[#193c1f]">
                   {summary.allTimeSessions} sesi
                 </span>
               </div>
-              <div className="text-[10px] font-black text-[#193C1F] bg-[#F7F3ED] px-3 py-2 rounded-xl">
+              <div className="text-[10px] font-black text-[#193c1f] bg-[#f7f3ed] px-3 py-2 rounded-xl">
                 {months[currentMonth - 1].slice(0, 3)}
               </div>
             </div>
@@ -291,10 +291,10 @@ export function DonationClient({
         </div>
 
         {/* Card 3: Top Payout */}
-        <div className="bg-[#F1B166] p-8 rounded-[40px] text-[#193C1F] shadow-2xl relative overflow-hidden group border-4 border-[#F1B166] flex flex-col h-full">
+        <div className="bg-[#F1B166] p-8 rounded-[40px] text-[#193c1f] shadow-2xl relative overflow-hidden group border-4 border-[#F1B166] flex flex-col h-full">
           <div className="relative z-10 flex flex-col h-full">
             <div className="flex items-center gap-2 mb-6">
-              <div className="p-2 bg-[#193C1F] rounded-lg text-[#F1B166]">
+              <div className="p-2 bg-[#193c1f] rounded-lg text-[#F1B166]">
                 <svg
                   width="20"
                   height="20"
@@ -358,13 +358,13 @@ export function DonationClient({
       </div>
 
       {/* Psychologist Breakdown Section */}
-      <div className="bg-white border-4 border-[#F7F3ED] rounded-[48px] p-10 shadow-xl">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-8 border-b-2 border-[#F7F3ED]">
+      <div className="bg-white border-4 border-[#f7f3ed] rounded-[48px] p-10 shadow-xl">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-8 border-b-2 border-[#f7f3ed]">
           <div>
-            <h2 className="text-2xl font-black text-[#193C1F] tracking-tight">
+            <h2 className="text-2xl font-black text-[#193c1f] tracking-tight">
               Psychologist Payout Breakdown
             </h2>
-            <p className="text-sm text-[#8EA087] font-medium mt-1">
+            <p className="text-sm text-[#8ea087] font-medium mt-1">
               Data sesi dan bagi hasil untuk periode{' '}
               <strong>
                 {months[currentMonth - 1]} {currentYear}
@@ -372,13 +372,13 @@ export function DonationClient({
             </p>
           </div>
 
-          <div className="flex gap-2 bg-[#F7F3ED] p-2 rounded-[24px]">
+          <div className="flex gap-2 bg-[#f7f3ed] p-2 rounded-[24px]">
             <select
               value={currentMonth}
               onChange={(e) =>
                 handleTimeChange(Number(e.target.value), currentYear)
               }
-              className="bg-white text-[#193C1F] font-black text-xs px-5 py-3 rounded-2xl focus:outline-none cursor-pointer hover:bg-[#F1B166] transition-colors appearance-none"
+              className="bg-white text-[#193c1f] font-black text-xs px-5 py-3 rounded-2xl focus:outline-none cursor-pointer hover:bg-[#F1B166] transition-colors appearance-none"
             >
               {months.map((m, i) => (
                 <option key={m} value={i + 1}>
@@ -391,7 +391,7 @@ export function DonationClient({
               onChange={(e) =>
                 handleTimeChange(currentMonth, Number(e.target.value))
               }
-              className="bg-white text-[#193C1F] font-black text-xs px-5 py-3 rounded-2xl focus:outline-none cursor-pointer hover:bg-[#F1B166] transition-colors appearance-none"
+              className="bg-white text-[#193c1f] font-black text-xs px-5 py-3 rounded-2xl focus:outline-none cursor-pointer hover:bg-[#F1B166] transition-colors appearance-none"
             >
               {years.map((y) => (
                 <option key={y} value={y}>
@@ -404,37 +404,37 @@ export function DonationClient({
 
         <div className="overflow-x-auto">
           <table className="w-full text-left">
-            <thead className="text-[11px] font-black text-[#8EA087] uppercase tracking-widest">
+            <thead className="text-[11px] font-black text-[#8ea087] uppercase tracking-widest">
               <tr>
                 <th className="pb-6 px-4">Psychologist Name</th>
                 <th className="pb-6 px-4">Consultation Sessions</th>
                 <th className="pb-6 px-4 text-right">Estimated Share</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-[#F7F3ED]">
+            <tbody className="divide-y divide-[#f7f3ed]">
               {psychologistBreakdown.map((p) => (
                 <tr
                   key={p.id}
-                  className="group hover:bg-[#F7F3ED]/30 transition-all duration-300"
+                  className="group hover:bg-[#f7f3ed]/30 transition-all duration-300"
                 >
                   <td className="py-6 px-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-[#F7F3ED] flex items-center justify-center text-[#193C1F] font-black text-xs">
+                      <div className="w-10 h-10 rounded-full bg-[#f7f3ed] flex items-center justify-center text-[#193c1f] font-black text-xs">
                         {p.name.charAt(0)}
                       </div>
-                      <span className="font-bold text-[#193C1F] text-lg">
+                      <span className="font-bold text-[#193c1f] text-lg">
                         {p.name}
                       </span>
                     </div>
                   </td>
-                  <td className="py-6 px-4 text-[#193C1F]">
+                  <td className="py-6 px-4 text-[#193c1f]">
                     <span className="font-black text-xl">{p.sessions}</span>
-                    <span className="text-xs font-bold text-[#8EA087] ml-2 uppercase tracking-widest">
+                    <span className="text-xs font-bold text-[#8ea087] ml-2 uppercase tracking-widest">
                       Sesi
                     </span>
                   </td>
                   <td className="py-6 px-4 text-right">
-                    <span className="font-black text-xl text-[#193C1F]">
+                    <span className="font-black text-xl text-[#193c1f]">
                       {fmt(p.earnings)}
                     </span>
                   </td>
@@ -449,10 +449,10 @@ export function DonationClient({
       <div className="space-y-8">
         <div className="flex flex-col gap-6">
           <div>
-            <h2 className="text-3xl font-black text-[#193C1F] tracking-tight">
+            <h2 className="text-3xl font-black text-[#193c1f] tracking-tight">
               Donation History
             </h2>
-            <p className="text-sm text-[#8EA087] font-medium mt-1">
+            <p className="text-sm text-[#8ea087] font-medium mt-1">
               Manage and track all incoming donations.
             </p>
           </div>
@@ -472,8 +472,8 @@ export function DonationClient({
                 onClick={() => handleStatusChange(s.label)}
                 className={`px-6 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 border-2 ${
                   currentStatus === s.label
-                    ? 'bg-[#193C1F] text-white border-[#193C1F] shadow-lg'
-                    : 'bg-white text-[#193C1F] border-[#F7F3ED] hover:border-[#193C1F]'
+                    ? 'bg-[#193c1f] text-white border-[#193c1f] shadow-lg'
+                    : 'bg-white text-[#193c1f] border-[#f7f3ed] hover:border-[#193c1f]'
                 }`}
               >
                 <span>{s.label}</span>
@@ -481,7 +481,7 @@ export function DonationClient({
                   className={`text-[10px] font-black px-2 py-0.5 rounded-lg ${
                     currentStatus === s.label
                       ? 'bg-white/20 text-white'
-                      : 'bg-[#F7F3ED] text-[#8EA087]'
+                      : 'bg-[#f7f3ed] text-[#8ea087]'
                   }`}
                 >
                   {s.count}
@@ -491,10 +491,10 @@ export function DonationClient({
           </div>
         </div>
 
-        <div className="bg-white border-4 border-[#F7F3ED] rounded-[48px] overflow-hidden shadow-xl">
+        <div className="bg-white border-4 border-[#f7f3ed] rounded-[48px] overflow-hidden shadow-xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
-              <thead className="bg-[#F7F3ED]/30 text-[11px] font-black text-[#8EA087] uppercase tracking-widest">
+              <thead className="bg-[#f7f3ed]/30 text-[11px] font-black text-[#8ea087] uppercase tracking-widest">
                 <tr>
                   <th className="px-8 py-5">Donor & Amount</th>
                   <th className="px-8 py-5">For Report / Platform</th>
@@ -503,12 +503,12 @@ export function DonationClient({
                   <th className="px-8 py-5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-[#F7F3ED] text-sm">
+              <tbody className="divide-y divide-[#f7f3ed] text-sm">
                 {donations.length === 0 ? (
                   <tr>
                     <td
                       colSpan={5}
-                      className="px-8 py-12 text-center text-[#8EA087] font-medium italic"
+                      className="px-8 py-12 text-center text-[#8ea087] font-medium italic"
                     >
                       No donations found.
                     </td>
@@ -517,21 +517,21 @@ export function DonationClient({
                   donations.map((d) => (
                     <tr
                       key={d.id}
-                      className="hover:bg-[#F7F3ED]/20 transition-colors"
+                      className="hover:bg-[#f7f3ed]/20 transition-colors"
                     >
                       <td className="px-8 py-6">
-                        <p className="font-black text-[#193C1F] text-lg leading-tight">
+                        <p className="font-black text-[#193c1f] text-lg leading-tight">
                           {fmt(d.amount)}
                         </p>
-                        <p className="text-xs font-bold text-[#8EA087] mt-1 uppercase tracking-wider">
+                        <p className="text-xs font-bold text-[#8ea087] mt-1 uppercase tracking-wider">
                           {d.userName}
                         </p>
                       </td>
                       <td className="px-8 py-6">
-                        <p className="font-bold text-[#193C1F] line-clamp-1 max-w-[250px]">
+                        <p className="font-bold text-[#193c1f] line-clamp-1 max-w-[250px]">
                           {d.report.title}
                         </p>
-                        <p className="text-[10px] font-black text-[#8EA087] uppercase tracking-widest mt-1">
+                        <p className="text-[10px] font-black text-[#8ea087] uppercase tracking-widest mt-1">
                           {d.report.title === 'Platform Donation'
                             ? 'PLATFORM'
                             : 'REPORT'}
@@ -544,7 +544,7 @@ export function DonationClient({
                           {d.paymentStatus}
                         </Badge>
                       </td>
-                      <td className="px-8 py-6 text-[#8EA087] text-xs font-bold">
+                      <td className="px-8 py-6 text-[#8ea087] text-xs font-bold">
                         {fmtDate(d.createdAt)}
                       </td>
                       <td className="px-8 py-6 text-right">

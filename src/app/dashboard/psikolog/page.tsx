@@ -156,7 +156,7 @@ export default async function PsychologistDashboardPage() {
   return (
     <React.Suspense
       fallback={
-        <div className="p-12 text-[#8EA087]">Loading psychologist panel...</div>
+        <div className="p-12 text-[#8ea087]">Loading psychologist panel...</div>
       }
     >
       <PsychologistDashboardContent

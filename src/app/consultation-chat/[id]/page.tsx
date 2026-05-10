@@ -160,8 +160,8 @@ export default function ConsultationChatContent() {
 
   if (isPending || !session?.user) {
     return (
-      <div className="h-screen flex items-center justify-center bg-[#F7F3ED]">
-        <p className="text-[#193C1F] font-semibold text-lg animate-pulse">
+      <div className="h-screen flex items-center justify-center bg-[#f7f3ed]">
+        <p className="text-[#193c1f] font-semibold text-lg animate-pulse">
           Loading chat...
         </p>
       </div>
@@ -198,7 +198,7 @@ export default function ConsultationChatContent() {
   };
 
   return (
-    <div className="h-screen flex flex-col bg-[#F7F3ED] text-[#193C1F] font-sans">
+    <div className="h-screen flex flex-col bg-[#f7f3ed] text-[#193c1f] font-sans">
       <style
         dangerouslySetInnerHTML={{
           __html: `
@@ -217,22 +217,22 @@ export default function ConsultationChatContent() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <aside className="w-80 flex flex-col border-r border-[#D0D5CB] bg-[#F7F3ED] shrink-0">
+        <aside className="w-80 flex flex-col border-r border-[#d0d5cb] bg-[#f7f3ed] shrink-0">
           <div className="p-4 shrink-0">
-            <h2 className="text-lg font-bold text-[#193C1F]">
+            <h2 className="text-lg font-bold text-[#193c1f]">
               Active Consultations
             </h2>
-            <p className="text-xs text-[#193C1F] opacity-60">
+            <p className="text-xs text-[#193c1f] opacity-60">
               {activeConsultations.length} ongoing sessions
             </p>
           </div>
           <div className="flex-1 overflow-y-auto px-2 space-y-1">
             {isLoadingConsultations ? (
-              <p className="text-center text-[#193C1F] text-xs opacity-50 py-4">
+              <p className="text-center text-[#193c1f] text-xs opacity-50 py-4">
                 Loading...
               </p>
             ) : activeConsultations.length === 0 ? (
-              <p className="text-center text-[#193C1F] text-xs opacity-50 py-4">
+              <p className="text-center text-[#193c1f] text-xs opacity-50 py-4">
                 No active consultations.
               </p>
             ) : (
@@ -276,8 +276,8 @@ export default function ConsultationChatContent() {
                     onClick={() => handleRoomClick(consultation.id)}
                     className={`rounded-xl p-3 flex items-start space-x-3 cursor-pointer transition ${
                       selectedConsultationId === consultation.id
-                        ? 'bg-[#D0D5CB]'
-                        : 'hover:bg-[#EDE4D8]'
+                        ? 'bg-[#d0d5cb]'
+                        : 'hover:bg-[#ede4d8]'
                     }`}
                   >
                     <Image
@@ -290,14 +290,14 @@ export default function ConsultationChatContent() {
                     />
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-baseline">
-                        <h3 className="text-sm font-semibold text-[#193C1F] truncate pr-2">
+                        <h3 className="text-sm font-semibold text-[#193c1f] truncate pr-2">
                           {displayName}
                         </h3>
-                        <span className="text-[10px] text-[#193C1F] opacity-50 shrink-0">
+                        <span className="text-[10px] text-[#193c1f] opacity-50 shrink-0">
                           {previewDate}
                         </span>
                       </div>
-                      <p className="text-xs text-[#193C1F] opacity-70 truncate mt-1">
+                      <p className="text-xs text-[#193c1f] opacity-70 truncate mt-1">
                         {previewText}
                       </p>
                     </div>
@@ -307,10 +307,10 @@ export default function ConsultationChatContent() {
             )}
           </div>
 
-          <div className="p-4 border-t border-[#D0D5CB] shrink-0">
+          <div className="p-4 border-t border-[#d0d5cb] shrink-0">
             <Link
               href="/dashboard/consultations"
-              className="w-full py-2.5 bg-[#8EA087] text-white font-semibold rounded-xl flex items-center justify-center space-x-2 transition hover:brightness-110 shadow-sm"
+              className="w-full py-2.5 bg-[#8ea087] text-white font-semibold rounded-xl flex items-center justify-center space-x-2 transition hover:brightness-110 shadow-sm"
             >
               <span>View All Schedules</span>
             </Link>
@@ -320,9 +320,9 @@ export default function ConsultationChatContent() {
         {/* Main Chat Area */}
         {selectedConsultationId ? (
           <main className="flex-1 flex flex-col bg-white min-w-0">
-            <section className="flex-1 overflow-y-auto p-6 space-y-8 bg-[#F7F3ED]">
+            <section className="flex-1 overflow-y-auto p-6 space-y-8 bg-[#f7f3ed]">
               {isLoadingMessages ? (
-                <p className="text-center text-[#193C1F] text-xs opacity-50 py-4 animate-pulse">
+                <p className="text-center text-[#193c1f] text-xs opacity-50 py-4 animate-pulse">
                   Loading messages...
                 </p>
               ) : chatMessages.length === 0 ? (
@@ -343,11 +343,11 @@ export default function ConsultationChatContent() {
                   return (
                     <>
                       <div className="flex justify-center my-4">
-                        <span className="bg-[#D0D5CB] bg-opacity-30 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full text-[#193C1F] opacity-60">
+                        <span className="bg-[#d0d5cb] bg-opacity-30 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full text-[#193c1f] opacity-60">
                           {roomDate}
                         </span>
                       </div>
-                      <p className="text-center text-[#193C1F] text-xs opacity-50 py-4">
+                      <p className="text-center text-[#193c1f] text-xs opacity-50 py-4">
                         No messages yet. Say hello!
                       </p>
                     </>
@@ -416,7 +416,7 @@ export default function ConsultationChatContent() {
                     <React.Fragment key={chat.id}>
                       {showDatePill && (
                         <div className="flex justify-center my-4">
-                          <span className="bg-[#D0D5CB] bg-opacity-30 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full text-[#193C1F] opacity-60">
+                          <span className="bg-[#d0d5cb] bg-opacity-30 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full text-[#193c1f] opacity-60">
                             {currentChatDate}
                           </span>
                         </div>
@@ -429,10 +429,10 @@ export default function ConsultationChatContent() {
                               className="flex flex-col space-y-1 group relative"
                             >
                               <div className="flex items-center space-x-2 ml-10 mb-1">
-                                <span className="text-xs font-bold text-[#193C1F] opacity-70">
+                                <span className="text-xs font-bold text-[#193c1f] opacity-70">
                                   {displayName}
                                   {chat.user.role === 'PSYCHOLOGIST' && (
-                                    <span className="ml-2 text-[9px] bg-[#8EA087] text-white px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider">
+                                    <span className="ml-2 text-[9px] bg-[#8ea087] text-white px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider">
                                       Psychologist
                                     </span>
                                   )}
@@ -454,14 +454,14 @@ export default function ConsultationChatContent() {
                                 />
                                 <div className="flex flex-col max-w-xl">
                                   {chat.replyTo && (
-                                    <div className="bg-[#EDE4D8] bg-opacity-50 border-l-4 border-[#8EA087] p-2 mb-1 rounded-tr-xl text-[11px] text-[#193C1F] opacity-80 line-clamp-2">
+                                    <div className="bg-[#ede4d8] bg-opacity-50 border-l-4 border-[#8ea087] p-2 mb-1 rounded-tr-xl text-[11px] text-[#193c1f] opacity-80 line-clamp-2">
                                       <span className="font-bold block">
                                         {getReplyDisplayName(chat.replyTo)}
                                       </span>
                                       {chat.replyTo.content}
                                     </div>
                                   )}
-                                  <div className="bg-[#EDE4D8] text-[#193C1F] rounded-2xl p-4 text-sm shadow-sm leading-relaxed whitespace-pre-wrap relative overflow-hidden">
+                                  <div className="bg-[#ede4d8] text-[#193c1f] rounded-2xl p-4 text-sm shadow-sm leading-relaxed whitespace-pre-wrap relative overflow-hidden">
                                     {chat.content}
                                     {chat.mediaUrl && (
                                       <div className="mt-2">
@@ -488,7 +488,7 @@ export default function ConsultationChatContent() {
                                             href={chat.mediaUrl}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="flex items-center space-x-2 text-[#8EA087] hover:underline bg-white p-2 border border-[#D0D5CB] rounded-xl"
+                                            className="flex items-center space-x-2 text-[#8ea087] hover:underline bg-white p-2 border border-[#d0d5cb] rounded-xl"
                                           >
                                             <svg
                                               className="w-5 h-5"
@@ -515,7 +515,7 @@ export default function ConsultationChatContent() {
 
                                 <button
                                   onClick={() => setReplyingTo(chat)}
-                                  className="hidden group-hover:flex items-center justify-center p-2 text-[#193C1F] opacity-40 hover:opacity-100 transition-opacity self-center"
+                                  className="hidden group-hover:flex items-center justify-center p-2 text-[#193c1f] opacity-40 hover:opacity-100 transition-opacity self-center"
                                   title="Reply"
                                 >
                                   <svg
@@ -533,7 +533,7 @@ export default function ConsultationChatContent() {
                                   </svg>
                                 </button>
                               </div>
-                              <span className="text-[10px] text-[#193C1F] opacity-40 ml-11">
+                              <span className="text-[10px] text-[#193c1f] opacity-40 ml-11">
                                 {time}
                               </span>
                             </div>
@@ -546,14 +546,14 @@ export default function ConsultationChatContent() {
                             className="flex flex-col items-end space-y-1 group relative"
                           >
                             <div className="flex items-center space-x-2 mr-10 mb-1">
-                              <span className="text-xs font-bold text-[#193C1F] opacity-70">
+                              <span className="text-xs font-bold text-[#193c1f] opacity-70">
                                 {isMe
                                   ? shouldMask
                                     ? 'Anonymous (Me)'
                                     : 'Me'
                                   : displayName}
                                 {chat.user.role === 'PSYCHOLOGIST' && (
-                                  <span className="ml-2 text-[9px] bg-[#8EA087] text-white px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider">
+                                  <span className="ml-2 text-[9px] bg-[#8ea087] text-white px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider">
                                     Psychologist
                                   </span>
                                 )}
@@ -564,7 +564,7 @@ export default function ConsultationChatContent() {
                                 alt="Avatar"
                                 width={32}
                                 height={32}
-                                className="w-8 h-8 rounded-full mt-1 ml-3 object-cover border border-[#D0D5CB]"
+                                className="w-8 h-8 rounded-full mt-1 ml-3 object-cover border border-[#d0d5cb]"
                                 src={
                                   shouldMask
                                     ? 'https://static.vecteezy.com/system/resources/previews/009/292/244/original/default-avatar-icon-of-social-media-user-vector.jpg'
@@ -575,14 +575,14 @@ export default function ConsultationChatContent() {
                               />
                               <div className="flex flex-col items-end max-w-xl">
                                 {chat.replyTo && (
-                                  <div className="bg-[#8EA087] bg-opacity-20 border-r-4 border-[#8EA087] p-2 mb-1 rounded-tl-xl text-[11px] text-[#193C1F] opacity-80 line-clamp-2 text-right">
+                                  <div className="bg-[#8ea087] bg-opacity-20 border-r-4 border-[#8ea087] p-2 mb-1 rounded-tl-xl text-[11px] text-[#193c1f] opacity-80 line-clamp-2 text-right">
                                     <span className="font-bold block">
                                       {getReplyDisplayName(chat.replyTo)}
                                     </span>
                                     {chat.replyTo.content}
                                   </div>
                                 )}
-                                <div className="bg-[#8EA087] text-white rounded-2xl p-4 text-sm shadow-sm leading-relaxed whitespace-pre-wrap">
+                                <div className="bg-[#8ea087] text-white rounded-2xl p-4 text-sm shadow-sm leading-relaxed whitespace-pre-wrap">
                                   {chat.content}
                                   {chat.mediaUrl && (
                                     <div className="mt-2">
@@ -636,7 +636,7 @@ export default function ConsultationChatContent() {
 
                               <button
                                 onClick={() => setReplyingTo(chat)}
-                                className="hidden group-hover:flex items-center justify-center p-2 text-[#193C1F] opacity-40 hover:opacity-100 transition-opacity self-center"
+                                className="hidden group-hover:flex items-center justify-center p-2 text-[#193c1f] opacity-40 hover:opacity-100 transition-opacity self-center"
                                 title="Reply"
                               >
                                 <svg
@@ -654,7 +654,7 @@ export default function ConsultationChatContent() {
                                 </svg>
                               </button>
                             </div>
-                            <span className="text-[10px] text-[#193C1F] opacity-40 mr-11">
+                            <span className="text-[10px] text-[#193c1f] opacity-40 mr-11">
                               {time}
                             </span>
                           </div>
@@ -667,20 +667,20 @@ export default function ConsultationChatContent() {
               <div ref={messagesEndRef} />
             </section>
 
-            <footer className="p-6 bg-white border-t border-[#D0D5CB] shrink-0 flex flex-col space-y-3 relative">
+            <footer className="p-6 bg-white border-t border-[#d0d5cb] shrink-0 flex flex-col space-y-3 relative">
               {replyingTo && (
-                <div className="flex items-center justify-between bg-[#F7F3ED] border-l-4 border-[#8EA087] px-4 py-2 rounded-xl mb-1 shadow-sm animate-in slide-in-from-bottom-2">
+                <div className="flex items-center justify-between bg-[#f7f3ed] border-l-4 border-[#8ea087] px-4 py-2 rounded-xl mb-1 shadow-sm animate-in slide-in-from-bottom-2">
                   <div className="overflow-hidden">
-                    <span className="text-[10px] font-bold text-[#8EA087] block uppercase tracking-wider">
+                    <span className="text-[10px] font-bold text-[#8ea087] block uppercase tracking-wider">
                       Replying to {getReplyDisplayName(replyingTo)}
                     </span>
-                    <p className="text-xs text-[#193C1F] truncate opacity-70">
+                    <p className="text-xs text-[#193c1f] truncate opacity-70">
                       {replyingTo.content}
                     </p>
                   </div>
                   <button
                     onClick={() => setReplyingTo(null)}
-                    className="ml-4 text-[#193C1F] opacity-40 hover:opacity-100"
+                    className="ml-4 text-[#193c1f] opacity-40 hover:opacity-100"
                   >
                     <svg
                       className="w-4 h-4"
@@ -699,8 +699,8 @@ export default function ConsultationChatContent() {
                 </div>
               )}
               {mediaFile && (
-                <div className="flex items-center justify-between bg-[#F7F3ED] border border-[#8EA087] rounded-xl px-4 py-2 w-max shadow-sm">
-                  <span className="text-xs text-[#193C1F] font-semibold">
+                <div className="flex items-center justify-between bg-[#f7f3ed] border border-[#8ea087] rounded-xl px-4 py-2 w-max shadow-sm">
+                  <span className="text-xs text-[#193c1f] font-semibold">
                     {mediaFile.name} ({(mediaFile.size / 1024).toFixed(1)}KB)
                   </span>
                   <button
@@ -724,8 +724,8 @@ export default function ConsultationChatContent() {
                 </div>
               )}
               {isExpired ? (
-                <div className="flex-1 bg-[#F7F3ED] border border-[#D0D5CB] rounded-2xl px-6 py-4 flex flex-col items-center justify-center text-center space-y-1">
-                  <div className="flex items-center space-x-2 text-[#8EA087]">
+                <div className="flex-1 bg-[#f7f3ed] border border-[#d0d5cb] rounded-2xl px-6 py-4 flex flex-col items-center justify-center text-center space-y-1">
+                  <div className="flex items-center space-x-2 text-[#8ea087]">
                     <svg
                       className="w-5 h-5"
                       fill="none"
@@ -743,14 +743,14 @@ export default function ConsultationChatContent() {
                       Room Closed
                     </span>
                   </div>
-                  <p className="text-xs text-[#193C1F] opacity-60">
+                  <p className="text-xs text-[#193c1f] opacity-60">
                     Sesi konsultasi telah berakhir. Ruangan chat ini telah
                     ditutup secara otomatis.
                   </p>
                 </div>
               ) : (
                 <div className="flex items-center space-x-4">
-                  <div className="flex-1 relative flex items-center bg-[#F7F3ED] border border-[#D0D5CB] rounded-2xl px-4 py-3 focus-within:border-[#8EA087] focus-within:ring-1 focus-within:ring-[#8EA087] transition-all">
+                  <div className="flex-1 relative flex items-center bg-[#f7f3ed] border border-[#d0d5cb] rounded-2xl px-4 py-3 focus-within:border-[#8ea087] focus-within:ring-1 focus-within:ring-[#8ea087] transition-all">
                     <input
                       type="file"
                       ref={fileInputRef}
@@ -762,7 +762,7 @@ export default function ConsultationChatContent() {
                     />
                     <button
                       onClick={() => fileInputRef.current?.click()}
-                      className="text-[#193C1F] opacity-40 hover:opacity-70 mr-3"
+                      className="text-[#193c1f] opacity-40 hover:opacity-70 mr-3"
                     >
                       <svg
                         className="w-6 h-6"
@@ -779,7 +779,7 @@ export default function ConsultationChatContent() {
                       </svg>
                     </button>
                     <input
-                      className="bg-transparent border-none focus:ring-0 text-sm text-[#193C1F] w-full p-0 outline-none"
+                      className="bg-transparent border-none focus:ring-0 text-sm text-[#193c1f] w-full p-0 outline-none"
                       placeholder="Type your message here..."
                       type="text"
                       value={messageInput}
@@ -795,7 +795,7 @@ export default function ConsultationChatContent() {
                       sendMessageMutation.isPending ||
                       (!messageInput.trim() && !mediaFile)
                     }
-                    className="w-12 h-12 bg-[#8EA087] hover:brightness-110 disabled:opacity-50 disabled:hover:brightness-100 text-white rounded-2xl flex items-center justify-center transition-transform active:scale-95 shadow-sm shrink-0"
+                    className="w-12 h-12 bg-[#8ea087] hover:brightness-110 disabled:opacity-50 disabled:hover:brightness-100 text-white rounded-2xl flex items-center justify-center transition-transform active:scale-95 shadow-sm shrink-0"
                   >
                     {sendMessageMutation.isPending ? (
                       <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
@@ -817,7 +817,7 @@ export default function ConsultationChatContent() {
           <main className="flex-1 flex flex-col bg-white min-w-0 items-center justify-center">
             <div className="text-center opacity-60">
               <svg
-                className="w-16 h-16 mx-auto text-[#8EA087] mb-4"
+                className="w-16 h-16 mx-auto text-[#8ea087] mb-4"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -829,10 +829,10 @@ export default function ConsultationChatContent() {
                   d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
                 ></path>
               </svg>
-              <p className="text-lg font-bold text-[#193C1F]">
+              <p className="text-lg font-bold text-[#193c1f]">
                 Select a consultation
               </p>
-              <p className="text-sm text-[#193C1F]">
+              <p className="text-sm text-[#193c1f]">
                 Choose a conversation from the left to start messaging.
               </p>
             </div>

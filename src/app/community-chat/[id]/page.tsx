@@ -266,13 +266,13 @@ export default function CommunityChatContent() {
 
   if (isPending)
     return (
-      <div className="h-screen flex items-center justify-center bg-[#F7F3ED]">
+      <div className="h-screen flex items-center justify-center bg-[#f7f3ed]">
         Loading...
       </div>
     );
 
   return (
-    <div className="h-screen flex flex-col bg-[#F7F3ED] text-[#193C1F] font-sans">
+    <div className="h-screen flex flex-col bg-[#f7f3ed] text-[#193c1f] font-sans">
       <style
         dangerouslySetInnerHTML={{
           __html: `
@@ -291,18 +291,18 @@ export default function CommunityChatContent() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <aside className="w-80 flex flex-col border-r border-[#D0D5CB] bg-[#F7F3ED] shrink-0">
+        <aside className="w-80 flex flex-col border-r border-[#d0d5cb] bg-[#f7f3ed] shrink-0">
           <div className="p-4 shrink-0">
-            <h2 className="text-lg font-bold text-[#193C1F]">
+            <h2 className="text-lg font-bold text-[#193c1f]">
               Your Communities
             </h2>
-            <p className="text-xs text-[#193C1F] opacity-60">
+            <p className="text-xs text-[#193c1f] opacity-60">
               {channels.length} communities joined
             </p>
           </div>
           <div className="flex-1 overflow-y-auto px-2 space-y-1">
             {isLoadingChannels ? (
-              <p className="text-center text-[#193C1F] text-xs opacity-50 py-4 italic">
+              <p className="text-center text-[#193c1f] text-xs opacity-50 py-4 italic">
                 Fetching...
               </p>
             ) : (
@@ -331,17 +331,17 @@ export default function CommunityChatContent() {
                       onClick={() =>
                         router.push(`/community-chat/${channel.id}`)
                       }
-                      className={`rounded-xl p-3 flex items-start space-x-3 cursor-pointer transition ${selectedChannelId === channel.id ? 'bg-[#D0D5CB]' : 'hover:bg-[#EDE4D8]'}`}
+                      className={`rounded-xl p-3 flex items-start space-x-3 cursor-pointer transition ${selectedChannelId === channel.id ? 'bg-[#d0d5cb]' : 'hover:bg-[#ede4d8]'}`}
                     >
-                      <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shrink-0 border border-[#D0D5CB] text-[#8EA087]">
+                      <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shrink-0 border border-[#d0d5cb] text-[#8ea087]">
                         <Users size={20} />
                       </div>
                       <div className="flex-1 min-w-0 flex items-center justify-between">
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-semibold text-[#193C1F] truncate">
+                          <h3 className="text-sm font-semibold text-[#193c1f] truncate">
                             {channel.title || channel.name}
                           </h3>
-                          <p className="text-[10px] text-[#8EA087] font-bold uppercase tracking-wider mt-1">
+                          <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-wider mt-1">
                             {channel._count?.members || 0} Members
                           </p>
                         </div>
@@ -358,10 +358,10 @@ export default function CommunityChatContent() {
                 )
             )}
           </div>
-          <div className="p-4 border-t border-[#D0D5CB] shrink-0">
+          <div className="p-4 border-t border-[#d0d5cb] shrink-0">
             <Link
               href="/forums"
-              className="w-full py-2.5 bg-[#8EA087] text-white font-semibold rounded-xl flex items-center justify-center space-x-2 transition hover:brightness-110 shadow-sm"
+              className="w-full py-2.5 bg-[#8ea087] text-white font-semibold rounded-xl flex items-center justify-center space-x-2 transition hover:brightness-110 shadow-sm"
             >
               <span>Discover New Forums</span>
             </Link>
@@ -371,13 +371,13 @@ export default function CommunityChatContent() {
         {/* Main Chat Area */}
         {selectedChannelId ? (
           <main className="flex-1 flex flex-col bg-white min-w-0">
-            <header className="px-6 py-3 border-b border-[#D0D5CB] flex items-center justify-between bg-white shrink-0">
+            <header className="px-6 py-3 border-b border-[#d0d5cb] flex items-center justify-between bg-white shrink-0">
               <div className="flex items-center space-x-3">
-                <h3 className="font-bold text-[#193C1F]">
+                <h3 className="font-bold text-[#193c1f]">
                   {chatData.name || chatData.title || 'Forum'}
                 </h3>
                 <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-[10px] font-bold text-[#8EA087] uppercase tracking-widest">
+                <span className="text-[10px] font-bold text-[#8ea087] uppercase tracking-widest">
                   {chatData._count?.members} active
                 </span>
 
@@ -385,10 +385,10 @@ export default function CommunityChatContent() {
                 <span
                   className={`text-[9px] px-1.5 py-0.5 rounded font-bold uppercase ${
                     ChannelRole === 'OWNER'
-                      ? 'bg-[#193C1F] text-white'
+                      ? 'bg-[#193c1f] text-white'
                       : ChannelRole === 'MODERATOR'
-                        ? 'bg-[#8EA087] text-white'
-                        : 'bg-[#D0D5CB] text-[#193C1F]'
+                        ? 'bg-[#8ea087] text-white'
+                        : 'bg-[#d0d5cb] text-[#193c1f]'
                   }`}
                 >
                   {ChannelRole === 'OWNER'
@@ -406,9 +406,9 @@ export default function CommunityChatContent() {
               </button>
             </header>
 
-            <section className="flex-1 overflow-y-auto p-6 space-y-8 bg-[#F7F3ED]">
+            <section className="flex-1 overflow-y-auto p-6 space-y-8 bg-[#f7f3ed]">
               {isLoadingMessages ? (
-                <p className="text-center text-[#193C1F] text-xs opacity-50 py-4 animate-pulse">
+                <p className="text-center text-[#193c1f] text-xs opacity-50 py-4 animate-pulse">
                   Loading discussion...
                 </p>
               ) : (
@@ -482,7 +482,7 @@ export default function CommunityChatContent() {
                             </div>
                           )}
                           <div className="flex justify-center my-4">
-                            <span className="bg-[#EBE6DE] text-[#193C1F] opacity-70 text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest text-center">
+                            <span className="bg-[#EBE6DE] text-[#193c1f] opacity-70 text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest text-center">
                               {chat.content}
                             </span>
                           </div>
@@ -507,17 +507,17 @@ export default function CommunityChatContent() {
                           <div
                             className={`flex items-center space-x-2 ${isMe ? 'mr-10' : 'ml-10'} mb-1`}
                           >
-                            <span className="text-xs font-bold text-[#193C1F] opacity-70">
+                            <span className="text-xs font-bold text-[#193c1f] opacity-70">
                               {chat.isAnonymous
                                 ? 'Anonymous'
                                 : chat.user.name || 'User'}
                               {targetRoleInChannel === 'OWNER' && (
-                                <span className="ml-2 text-[9px] bg-[#193C1F] text-white px-1.5 py-0.5 rounded font-bold uppercase tracking-widest">
+                                <span className="ml-2 text-[9px] bg-[#193c1f] text-white px-1.5 py-0.5 rounded font-bold uppercase tracking-widest">
                                   Owner
                                 </span>
                               )}
                               {targetRoleInChannel === 'MODERATOR' && (
-                                <span className="ml-2 text-[9px] bg-[#8EA087] text-white px-1.5 py-0.5 rounded font-bold uppercase tracking-widest">
+                                <span className="ml-2 text-[9px] bg-[#8ea087] text-white px-1.5 py-0.5 rounded font-bold uppercase tracking-widest">
                                   Moderator
                                 </span>
                               )}
@@ -527,9 +527,9 @@ export default function CommunityChatContent() {
                           <div
                             className={`flex items-start ${isMe ? 'flex-row-reverse' : 'space-x-3'}`}
                           >
-                            <div className="w-8 h-8 rounded-full mt-1 flex items-center justify-center border border-[#D0D5CB] shrink-0 overflow-hidden">
+                            <div className="w-8 h-8 rounded-full mt-1 flex items-center justify-center border border-[#d0d5cb] shrink-0 overflow-hidden">
                               {chat.isAnonymous ? (
-                                <div className="bg-[#D0D5CB] w-full h-full flex items-center justify-center text-white text-[10px]">
+                                <div className="bg-[#d0d5cb] w-full h-full flex items-center justify-center text-white text-[10px]">
                                   ?
                                 </div>
                               ) : (
@@ -550,7 +550,7 @@ export default function CommunityChatContent() {
                             <div className="flex flex-col max-w-xl relative">
                               {chat.replyTo && (
                                 <div
-                                  className={`${isMe ? 'bg-[#8EA087] bg-opacity-20 border-r-4 text-right rounded-tl-xl' : 'bg-[#EDE4D8] bg-opacity-50 border-l-4 rounded-tr-xl'} border-[#8EA087] p-2 mb-1 text-[11px] text-[#193C1F] opacity-80 line-clamp-2`}
+                                  className={`${isMe ? 'bg-[#8ea087] bg-opacity-20 border-r-4 text-right rounded-tl-xl' : 'bg-[#ede4d8] bg-opacity-50 border-l-4 rounded-tr-xl'} border-[#8ea087] p-2 mb-1 text-[11px] text-[#193c1f] opacity-80 line-clamp-2`}
                                 >
                                   <span className="font-bold block">
                                     {chat.replyTo.isAnonymous
@@ -561,7 +561,7 @@ export default function CommunityChatContent() {
                                 </div>
                               )}
                               <div
-                                className={`rounded-2xl p-4 text-sm shadow-sm border flex flex-col gap-2 ${isMe ? 'bg-[#8EA087] text-white rounded-tr-none border-transparent' : 'bg-[#EDE4D8] text-[#193C1F] rounded-tl-none border-transparent'}`}
+                                className={`rounded-2xl p-4 text-sm shadow-sm border flex flex-col gap-2 ${isMe ? 'bg-[#8ea087] text-white rounded-tr-none border-transparent' : 'bg-[#ede4d8] text-[#193c1f] rounded-tl-none border-transparent'}`}
                               >
                                 {chat.mediaUrl && (
                                   <div className="overflow-hidden rounded-xl bg-black/5">
@@ -600,7 +600,7 @@ export default function CommunityChatContent() {
                               >
                                 <button
                                   onClick={() => setReplyingTo(chat)}
-                                  className="w-8 h-8 flex items-center justify-center text-[#193C1F] opacity-40 hover:opacity-100 hover:bg-gray-200 rounded-full transition-all shrink-0"
+                                  className="w-8 h-8 flex items-center justify-center text-[#193c1f] opacity-40 hover:opacity-100 hover:bg-gray-200 rounded-full transition-all shrink-0"
                                   title="Reply"
                                 >
                                   <svg
@@ -635,7 +635,7 @@ export default function CommunityChatContent() {
                                     </button>
                                     {activeMenuId === chat.id && (
                                       <div
-                                        className={`absolute z-[100] mt-1 w-40 bg-white border border-[#D0D5CB] shadow-2xl rounded-xl overflow-hidden py-1 ${isMe ? 'left-0' : 'right-0'}`}
+                                        className={`absolute z-[100] mt-1 w-40 bg-white border border-[#d0d5cb] shadow-2xl rounded-xl overflow-hidden py-1 ${isMe ? 'left-0' : 'right-0'}`}
                                       >
                                         {targetIsBanned ? (
                                           <div className="px-4 py-3 text-[10px] font-black text-gray-400 flex items-center gap-2 uppercase tracking-tight italic">
@@ -669,7 +669,7 @@ export default function CommunityChatContent() {
                                                         : 'MODERATOR',
                                                   })
                                                 }
-                                                className="w-full text-left px-4 py-2.5 text-[11px] font-bold text-[#193C1F] hover:bg-gray-50 flex items-center gap-2 uppercase tracking-tight"
+                                                className="w-full text-left px-4 py-2.5 text-[11px] font-bold text-[#193c1f] hover:bg-gray-50 flex items-center gap-2 uppercase tracking-tight"
                                               >
                                                 <ShieldCheck size={14} />{' '}
                                                 {targetRoleInChannel ===
@@ -688,7 +688,7 @@ export default function CommunityChatContent() {
                             </div>
                           </div>
                           <span
-                            className={`text-[10px] text-[#193C1F] opacity-40 ${isMe ? 'mr-11' : 'ml-11'} mt-1`}
+                            className={`text-[10px] text-[#193c1f] opacity-40 ${isMe ? 'mr-11' : 'ml-11'} mt-1`}
                           >
                             {time}
                           </span>
@@ -724,32 +724,32 @@ export default function CommunityChatContent() {
             )}
 
             {ChannelRole === 'BANNED' ? (
-              <footer className="px-6 py-4 bg-white border-t border-[#D0D5CB] shrink-0">
-                <div className="bg-[#F7F3ED] border border-red-200 rounded-2xl px-6 py-3 flex flex-col items-center justify-center text-center space-y-1 shadow-sm">
+              <footer className="px-6 py-4 bg-white border-t border-[#d0d5cb] shrink-0">
+                <div className="bg-[#f7f3ed] border border-red-200 rounded-2xl px-6 py-3 flex flex-col items-center justify-center text-center space-y-1 shadow-sm">
                   <div className="flex items-center space-x-2 text-red-600">
                     <ShieldCheck size={20} />
                     <span className="font-bold text-sm uppercase tracking-wider">
                       Access Denied
                     </span>
                   </div>
-                  <p className="text-xs text-[#193C1F] opacity-60">
+                  <p className="text-xs text-[#193c1f] opacity-60">
                     You have been removed from this community and can no longer
                     participate in this discussion.
                   </p>
                 </div>
               </footer>
             ) : (
-              <footer className="p-6 bg-white border-t border-[#D0D5CB] shrink-0 flex flex-col space-y-3">
+              <footer className="p-6 bg-white border-t border-[#d0d5cb] shrink-0 flex flex-col space-y-3">
                 {replyingTo && (
-                  <div className="flex items-center justify-between bg-[#F7F3ED] border-l-4 border-[#8EA087] px-4 py-2 rounded-xl">
+                  <div className="flex items-center justify-between bg-[#f7f3ed] border-l-4 border-[#8ea087] px-4 py-2 rounded-xl">
                     <div className="overflow-hidden">
-                      <span className="text-[10px] font-bold text-[#8EA087] block uppercase">
+                      <span className="text-[10px] font-bold text-[#8ea087] block uppercase">
                         Replying to{' '}
                         {replyingTo.isAnonymous
                           ? 'Anonymous'
                           : replyingTo.user?.name || 'User'}
                       </span>
-                      <p className="text-xs text-[#193C1F] truncate opacity-70">
+                      <p className="text-xs text-[#193c1f] truncate opacity-70">
                         {replyingTo.content}
                       </p>
                     </div>
@@ -763,8 +763,8 @@ export default function CommunityChatContent() {
                 )}
 
                 {mediaFile && (
-                  <div className="flex items-center justify-between bg-[#F7F3ED] border border-[#8EA087] rounded-xl px-4 py-2 w-max shadow-sm">
-                    <span className="text-xs text-[#193C1F] font-semibold">
+                  <div className="flex items-center justify-between bg-[#f7f3ed] border border-[#8ea087] rounded-xl px-4 py-2 w-max shadow-sm">
+                    <span className="text-xs text-[#193c1f] font-semibold">
                       {mediaFile.name} ({(mediaFile.size / 1024).toFixed(1)}KB)
                     </span>
                     <button
@@ -777,11 +777,11 @@ export default function CommunityChatContent() {
                 )}
 
                 <div className="flex items-center space-x-4">
-                  <div className="flex-1 relative flex flex-col bg-[#F7F3ED] border border-[#D0D5CB] rounded-2xl p-1 focus-within:border-[#8EA087]">
-                    <div className="flex items-center px-3 py-1 border-b border-[#D0D5CB] mb-1 justify-between">
+                  <div className="flex-1 relative flex flex-col bg-[#f7f3ed] border border-[#d0d5cb] rounded-2xl p-1 focus-within:border-[#8ea087]">
+                    <div className="flex items-center px-3 py-1 border-b border-[#d0d5cb] mb-1 justify-between">
                       <button
                         onClick={() => setIsAnonymous(!isAnonymous)}
-                        className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded ${isAnonymous ? 'bg-[#193C1F] text-white' : 'text-[#8EA087]'}`}
+                        className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded ${isAnonymous ? 'bg-[#193c1f] text-white' : 'text-[#8ea087]'}`}
                       >
                         {isAnonymous ? 'Anonymous ON' : 'Public Mode'}
                       </button>
@@ -805,12 +805,12 @@ export default function CommunityChatContent() {
                       />
                       <button
                         onClick={() => fileInputRef.current?.click()}
-                        className="text-[#193C1F] opacity-40 hover:opacity-70 mr-3"
+                        className="text-[#193c1f] opacity-40 hover:opacity-70 mr-3"
                       >
                         <Paperclip size={20} />
                       </button>
                       <input
-                        className="bg-transparent border-none focus:ring-0 text-sm text-[#193C1F] w-full outline-none"
+                        className="bg-transparent border-none focus:ring-0 text-sm text-[#193c1f] w-full outline-none"
                         placeholder="Share your thoughts..."
                         type="text"
                         value={messageInput}
@@ -827,7 +827,7 @@ export default function CommunityChatContent() {
                       sendMessageMutation.isPending ||
                       (!messageInput.trim() && !mediaFile)
                     }
-                    className="w-12 h-12 bg-[#8EA087] text-white rounded-2xl flex items-center justify-center shadow-sm hover:brightness-110 disabled:opacity-50"
+                    className="w-12 h-12 bg-[#8ea087] text-white rounded-2xl flex items-center justify-center shadow-sm hover:brightness-110 disabled:opacity-50"
                   >
                     {sendMessageMutation.isPending ? (
                       <Loader2 className="animate-spin" />

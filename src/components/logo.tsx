@@ -33,7 +33,7 @@ export const Logo = ({ className = '', size = 32, dark = true }: LogoProps) => {
 
       {/* TULISAN CareConnect */}
       <h1
-        className={`text-[20px] font-black tracking-tight ${dark ? 'text-[#193C1F]' : 'text-[#F7F3ED]'}`}
+        className={`text-[20px] font-black tracking-tight ${dark ? 'text-[#193c1f]' : 'text-[#f7f3ed]'}`}
       >
         CareConnect
       </h1>

@@ -106,7 +106,7 @@ const SupportForumsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F3ED]">
+    <div className="min-h-screen bg-[#f7f3ed]">
       <PublicHeader />
 
       {/* Floating Banned Notice */}
@@ -125,10 +125,10 @@ const SupportForumsPage = () => {
 
       <main className="max-w-7xl mx-auto p-6 md:p-12 text-left">
         <div className="text-center mb-10">
-          <h1 className="text-4xl md:text-5xl font-black uppercase text-[#193C1F] leading-none mb-4 tracking-tight">
+          <h1 className="text-4xl md:text-5xl font-black uppercase text-[#193c1f] leading-none mb-4 tracking-tight">
             Support Forums
           </h1>
-          <p className="text-[#8EA087] text-lg font-medium">
+          <p className="text-[#8ea087] text-lg font-medium">
             Connect with community members and certified professionals.
           </p>
         </div>
@@ -154,15 +154,15 @@ const SupportForumsPage = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search forums..."
-            className="w-full h-[56px] bg-[#EBE6DE] border border-[#D0D5CB] focus:border-[#8EA087] focus:bg-white rounded-2xl pl-14 pr-6 outline-none text-[15px] text-[#193C1F] shadow-sm transition-all"
+            className="w-full h-[56px] bg-[#EBE6DE] border border-[#d0d5cb] focus:border-[#8ea087] focus:bg-white rounded-2xl pl-14 pr-6 outline-none text-[15px] text-[#193c1f] shadow-sm transition-all"
           />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {isLoading ? (
             <div className="col-span-full py-20 text-center">
-              <Loader2 className="inline-block animate-spin h-8 w-8 text-[#193C1F] mb-4" />
-              <p className="text-[#8EA087] font-bold">Fetching Forums...</p>
+              <Loader2 className="inline-block animate-spin h-8 w-8 text-[#193c1f] mb-4" />
+              <p className="text-[#8ea087] font-bold">Fetching Forums...</p>
             </div>
           ) : (
             rooms
@@ -179,16 +179,16 @@ const SupportForumsPage = () => {
                       className={`bg-white rounded-[40px] border overflow-hidden transition-all duration-500 flex flex-col h-full ${
                         banned
                           ? 'border-red-200 opacity-80'
-                          : 'border-[#D0D5CB] hover:shadow-2xl'
+                          : 'border-[#d0d5cb] hover:shadow-2xl'
                       }`}
                     >
-                      <div className="h-44 bg-[#F7F3ED] flex items-center justify-center relative overflow-hidden transition-colors group-hover:bg-[#EBE6DE]">
-                        <div className="absolute inset-0 bg-gradient-to-br from-[#F7F3ED] via-[#E6DED3] to-[#D0D5CB]" />
+                      <div className="h-44 bg-[#f7f3ed] flex items-center justify-center relative overflow-hidden transition-colors group-hover:bg-[#EBE6DE]">
+                        <div className="absolute inset-0 bg-gradient-to-br from-[#f7f3ed] via-[#E6DED3] to-[#d0d5cb]" />
                         <MessageSquare
                           size={48}
-                          className="relative z-10 text-[#8EA087] opacity-40 group-hover:scale-110 transition-transform duration-500"
+                          className="relative z-10 text-[#8ea087] opacity-40 group-hover:scale-110 transition-transform duration-500"
                         />
-                        <span className="absolute bottom-6 left-8 z-10 text-[10px] font-black uppercase tracking-[0.2em] text-[#8EA087] bg-white/80 backdrop-blur-sm px-4 py-2 rounded-xl border border-[#D0D5CB]/50">
+                        <span className="absolute bottom-6 left-8 z-10 text-[10px] font-black uppercase tracking-[0.2em] text-[#8ea087] bg-white/80 backdrop-blur-sm px-4 py-2 rounded-xl border border-[#d0d5cb]/50">
                           ROOM #{room.id}
                         </span>
                         {banned && (
@@ -199,21 +199,21 @@ const SupportForumsPage = () => {
                       </div>
 
                       <div className="p-8 flex flex-col flex-1">
-                        <span className="text-[9px] font-black text-[#D1B698] uppercase tracking-[0.2em] mb-4 inline-block">
+                        <span className="text-[9px] font-black text-[#d1b698] uppercase tracking-[0.2em] mb-4 inline-block">
                           TOPIC: {room.category || 'GENERAL'}
                         </span>
-                        <h3 className="font-black text-xl text-[#193C1F] mb-3 group-hover:text-[#8EA087] transition-colors italic tracking-tight line-clamp-2 leading-tight">
+                        <h3 className="font-black text-xl text-[#193c1f] mb-3 group-hover:text-[#8ea087] transition-colors italic tracking-tight line-clamp-2 leading-tight">
                           {room.title ||
                             (room as { name?: string }).name ||
                             'Untitled Room'}
                         </h3>
-                        <p className="text-sm text-[#193C1F]/60 font-medium leading-relaxed mb-8 flex-1 line-clamp-3">
+                        <p className="text-sm text-[#193c1f]/60 font-medium leading-relaxed mb-8 flex-1 line-clamp-3">
                           {room.description ||
                             'No description available for this room.'}
                         </p>
 
-                        <div className="flex justify-between items-center pt-6 border-t border-[#F7F3ED]">
-                          <span className="text-[10px] font-black text-[#8EA087] uppercase flex items-center gap-2 tracking-widest">
+                        <div className="flex justify-between items-center pt-6 border-t border-[#f7f3ed]">
+                          <span className="text-[10px] font-black text-[#8ea087] uppercase flex items-center gap-2 tracking-widest">
                             <Users size={14} strokeWidth={3} />{' '}
                             {room._count?.members || 0} Members
                           </span>
@@ -230,7 +230,7 @@ const SupportForumsPage = () => {
                               onClick={() =>
                                 router.push(`/community-chat/${room.id}`)
                               }
-                              className="text-[11px] font-black uppercase flex items-center gap-2 text-white bg-[#8EA087] hover:bg-[#193C1F] hover:scale-105 px-4 py-2 rounded-xl transition-all tracking-[0.1em] shadow-sm"
+                              className="text-[11px] font-black uppercase flex items-center gap-2 text-white bg-[#8ea087] hover:bg-[#193c1f] hover:scale-105 px-4 py-2 rounded-xl transition-all tracking-[0.1em] shadow-sm"
                             >
                               Joined{' '}
                               <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
@@ -239,7 +239,7 @@ const SupportForumsPage = () => {
                             <button
                               onClick={() => handleJoinRoom(room.id)}
                               disabled={joiningId === room.id}
-                              className="text-[11px] font-black uppercase flex items-center gap-1 text-[#193C1F] group-hover:gap-3 transition-all tracking-[0.1em] disabled:opacity-50"
+                              className="text-[11px] font-black uppercase flex items-center gap-1 text-[#193c1f] group-hover:gap-3 transition-all tracking-[0.1em] disabled:opacity-50"
                             >
                               {joiningId === room.id
                                 ? 'Joining...'
@@ -264,15 +264,15 @@ const SupportForumsPage = () => {
           )}
 
           {isAdmin && (
-            <div className="border-2 border-dashed border-[#D0D5CB] rounded-[40px] flex flex-col items-center justify-center p-12 text-center space-y-6 group cursor-pointer hover:bg-white/50 transition-all duration-500 h-full min-h-[400px]">
-              <div className="w-16 h-16 bg-[#EBE6DE] rounded-full flex items-center justify-center text-[#8EA087] group-hover:bg-[#193C1F] group-hover:text-white transition-all duration-500 shadow-sm">
+            <div className="border-2 border-dashed border-[#d0d5cb] rounded-[40px] flex flex-col items-center justify-center p-12 text-center space-y-6 group cursor-pointer hover:bg-white/50 transition-all duration-500 h-full min-h-[400px]">
+              <div className="w-16 h-16 bg-[#EBE6DE] rounded-full flex items-center justify-center text-[#8ea087] group-hover:bg-[#193c1f] group-hover:text-white transition-all duration-500 shadow-sm">
                 <Plus size={32} strokeWidth={3} />
               </div>
               <div>
-                <h3 className="font-black text-xl text-[#193C1F] italic tracking-tight">
+                <h3 className="font-black text-xl text-[#193c1f] italic tracking-tight">
                   Create a Room
                 </h3>
-                <p className="text-sm text-[#8EA087] font-medium mt-2">
+                <p className="text-sm text-[#8ea087] font-medium mt-2">
                   Admin only: Add a new topic.
                 </p>
               </div>

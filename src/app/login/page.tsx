@@ -137,9 +137,9 @@ const FeatureCard = ({
   icon: React.ElementType;
   text: string;
 }) => (
-  <div className="flex-1 h-[90px] bg-[#F7F3ED] border border-[#D0D5CB] rounded-[12px] flex flex-col items-center justify-center gap-2 p-4 text-center">
-    <Icon className="text-[#8EA087] text-xl" />
-    <span className="text-[14px] font-bold text-[#193C1F] leading-tight">
+  <div className="flex-1 h-[90px] bg-[#f7f3ed] border border-[#d0d5cb] rounded-[12px] flex flex-col items-center justify-center gap-2 p-4 text-center">
+    <Icon className="text-[#8ea087] text-xl" />
+    <span className="text-[14px] font-bold text-[#193c1f] leading-tight">
       {text}
     </span>
   </div>
@@ -274,7 +274,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      <header className="h-[80px] bg-[#F7F3ED] border-b border-[#D0D5CB] flex items-center justify-between px-[48px] sticky top-0 z-50">
+      <header className="h-[80px] bg-[#f7f3ed] border-b border-[#d0d5cb] flex items-center justify-between px-[48px] sticky top-0 z-50">
         <Logo />
         <Button variant="outline" className="h-[44px]">
           <HelpIcon />
@@ -283,20 +283,20 @@ export default function LoginPage() {
       </header>
 
       <main className="flex-1 flex overflow-hidden">
-        <div className="hidden lg:flex w-1/2 bg-[#EDE4D8] flex flex-col items-center justify-center p-16 relative overflow-hidden">
-          <div className="absolute w-[600px] h-[600px] rounded-full bg-[#F7F3ED] opacity-60 top-[-150px] right-[-100px]" />
-          <div className="absolute w-[500px] h-[500px] rounded-full bg-[#F7F3ED] opacity-40 bottom-[-200px] left-[-150px]" />
+        <div className="hidden lg:flex w-1/2 bg-[#ede4d8] flex flex-col items-center justify-center p-16 relative overflow-hidden">
+          <div className="absolute w-[600px] h-[600px] rounded-full bg-[#f7f3ed] opacity-60 top-[-150px] right-[-100px]" />
+          <div className="absolute w-[500px] h-[500px] rounded-full bg-[#f7f3ed] opacity-40 bottom-[-200px] left-[-150px]" />
 
           <div className="relative z-10 flex flex-col items-center max-w-[450px]">
-            <div className="w-[96px] h-[96px] bg-[#F7F3ED] rounded-full flex items-center justify-center shadow-sm mb-10 text-[#193C1F]">
+            <div className="w-[96px] h-[96px] bg-[#f7f3ed] rounded-full flex items-center justify-center shadow-sm mb-10 text-[#193c1f]">
               <LockIcon className="w-10 h-10" />
             </div>
 
-            <h1 className="text-[40px] font-bold text-[#193C1F] text-center leading-tight mb-6">
+            <h1 className="text-[40px] font-bold text-[#193c1f] text-center leading-tight mb-6">
               Your privacy is our priority
             </h1>
 
-            <p className="text-lg text-[#193C1F] text-center leading-relaxed opacity-80 mb-10">
+            <p className="text-lg text-[#193c1f] text-center leading-relaxed opacity-80 mb-10">
               We provide a safe, encrypted environment for everyone. Choose to
               remain anonymous while receiving the support you need.
             </p>
@@ -311,7 +311,7 @@ export default function LoginPage() {
 
         <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-8 lg:p-16 bg-white animate-fade-in">
           <div className="w-full max-w-[400px]">
-            <div className="flex border-b border-[#D0D5CB] mb-12 relative h-[56px]">
+            <div className="flex border-b border-[#d0d5cb] mb-12 relative h-[56px]">
               {(['login', 'register'] as const).map((tab) => (
                 <button
                   key={tab}
@@ -324,15 +324,15 @@ export default function LoginPage() {
                   className={`flex-1 flex justify-center items-center font-bold text-lg transition-all ${
                     activeTab === tab ||
                     (activeTab === 'forgot_password' && tab === 'login')
-                      ? 'text-[#193C1F]'
-                      : 'text-[#8EA087] opacity-60'
+                      ? 'text-[#193c1f]'
+                      : 'text-[#8ea087] opacity-60'
                   }`}
                 >
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
                 </button>
               ))}
               <div
-                className="absolute bottom-0 h-1 bg-[#8EA087] transition-all duration-300 rounded-t-full w-1/2"
+                className="absolute bottom-0 h-1 bg-[#8ea087] transition-all duration-300 rounded-t-full w-1/2"
                 style={{
                   left:
                     activeTab === 'login' || activeTab === 'forgot_password'
@@ -352,10 +352,10 @@ export default function LoginPage() {
             >
               {activeTab === 'forgot_password' ? (
                 <div className="flex flex-col gap-6 animate-fade-in">
-                  <h2 className="text-xl font-bold text-[#193C1F] mb-4">
+                  <h2 className="text-xl font-bold text-[#193c1f] mb-4">
                     Reset Password
                   </h2>
-                  <p className="text-sm text-[#193C1F] opacity-80 mb-6">
+                  <p className="text-sm text-[#193c1f] opacity-80 mb-6">
                     Enter your email address and we&apos;ll send you a link to
                     reset your password.
                   </p>
@@ -392,7 +392,7 @@ export default function LoginPage() {
                   </Button>
                   <button
                     type="button"
-                    className="text-sm font-bold text-[#8EA087] hover:text-[#193C1F] transition-colors"
+                    className="text-sm font-bold text-[#8ea087] hover:text-[#193c1f] transition-colors"
                     onClick={() => setActiveTab('login')}
                   >
                     Back to login
@@ -446,7 +446,7 @@ export default function LoginPage() {
                       <div className="flex justify-end">
                         <button
                           type="button"
-                          className="text-xs font-bold text-[#8EA087] hover:text-[#193C1F] transition-colors mt-2"
+                          className="text-xs font-bold text-[#8ea087] hover:text-[#193c1f] transition-colors mt-2"
                           onClick={() => setActiveTab('forgot_password')}
                         >
                           Forgot password?
@@ -481,11 +481,11 @@ export default function LoginPage() {
                   </Button>
 
                   <div className="relative flex py-2 items-center">
-                    <div className="flex-grow border-t border-[#D0D5CB]"></div>
-                    <span className="flex-shrink-0 mx-4 text-[#8EA087] text-sm">
+                    <div className="flex-grow border-t border-[#d0d5cb]"></div>
+                    <span className="flex-shrink-0 mx-4 text-[#8ea087] text-sm">
                       or
                     </span>
-                    <div className="flex-grow border-t border-[#D0D5CB]"></div>
+                    <div className="flex-grow border-t border-[#d0d5cb]"></div>
                   </div>
 
                   <Button
@@ -524,19 +524,19 @@ export default function LoginPage() {
                 </div>
               )}
 
-              <p className="text-center text-[12px] text-[#193C1F] opacity-60 leading-relaxed mt-4">
+              <p className="text-center text-[12px] text-[#193c1f] opacity-60 leading-relaxed mt-4">
                 By {activeTab === 'register' ? 'registering' : 'logging in'},
                 you agree to our{' '}
                 <a
                   href="#"
-                  className="text-[#D1B698] underline hover:text-[#c4a685]"
+                  className="text-[#d1b698] underline hover:text-[#c4a685]"
                 >
                   Terms of Service
                 </a>{' '}
                 and{' '}
                 <a
                   href="#"
-                  className="text-[#D1B698] underline hover:text-[#c4a685]"
+                  className="text-[#d1b698] underline hover:text-[#c4a685]"
                 >
                   Privacy Policy
                 </a>
@@ -547,7 +547,7 @@ export default function LoginPage() {
         </div>
       </main>
 
-      <footer className="h-[64px] bg-[#F7F3ED] border-t border-[#D0D5CB] flex items-center justify-between px-[48px] opacity-60 text-[#193C1F] text-[12px]">
+      <footer className="h-[64px] bg-[#f7f3ed] border-t border-[#d0d5cb] flex items-center justify-between px-[48px] opacity-60 text-[#193c1f] text-[12px]">
         <p>© 2026 CareConnect. Supporting resilience and safety.</p>
         <nav className="flex gap-8">
           {['Privacy Guide', 'Community Standards', 'Contact'].map((link) => (
@@ -564,7 +564,7 @@ export default function LoginPage() {
         onClose={() => setIsResetModalOpen(false)}
         title="Check Your Email"
       >
-        <p className="text-[#193C1F] text-base mb-6 opacity-80 leading-relaxed">
+        <p className="text-[#193c1f] text-base mb-6 opacity-80 leading-relaxed">
           A password reset link has been sent to{' '}
           <span className="font-bold">{email || 'your email'}</span>. Please
           check your inbox and spam folder.

@@ -46,7 +46,7 @@ export default async function ReportsPage() {
 
   return (
     <React.Suspense
-      fallback={<div className="p-12 text-[#8EA087]">Loading reports...</div>}
+      fallback={<div className="p-12 text-[#8ea087]">Loading reports...</div>}
     >
       <ReportsContent reports={serializedReports} />
     </React.Suspense>

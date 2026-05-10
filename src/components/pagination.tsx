@@ -27,8 +27,8 @@ export const Pagination = ({
           onClick={() => onPageChange(i)}
           className={`w-10 h-10 rounded-xl text-[13px] font-black transition-all duration-200 ${
             currentPage === i
-              ? 'bg-[#193C1F] text-white shadow-md scale-105'
-              : 'bg-white text-[#8EA087] border border-[#D0D5CB] hover:border-[#193C1F] hover:text-[#193C1F]'
+              ? 'bg-[#193c1f] text-white shadow-md scale-105'
+              : 'bg-white text-[#8ea087] border border-[#d0d5cb] hover:border-[#193c1f] hover:text-[#193c1f]'
           }`}
         >
           {i}
@@ -44,7 +44,7 @@ export const Pagination = ({
       <button
         onClick={() => onPageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="flex items-center justify-center w-10 h-10 rounded-xl border border-[#D0D5CB] bg-white text-[#193C1F] disabled:opacity-20 disabled:cursor-not-allowed hover:bg-[#F7F3ED] transition-all group"
+        className="flex items-center justify-center w-10 h-10 rounded-xl border border-[#d0d5cb] bg-white text-[#193c1f] disabled:opacity-20 disabled:cursor-not-allowed hover:bg-[#f7f3ed] transition-all group"
         title="Previous Page"
       >
         <ChevronLeft
@@ -60,7 +60,7 @@ export const Pagination = ({
       <button
         onClick={() => onPageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="flex items-center justify-center w-10 h-10 rounded-xl border border-[#D0D5CB] bg-white text-[#193C1F] disabled:opacity-20 disabled:cursor-not-allowed hover:bg-[#F7F3ED] transition-all group"
+        className="flex items-center justify-center w-10 h-10 rounded-xl border border-[#d0d5cb] bg-white text-[#193c1f] disabled:opacity-20 disabled:cursor-not-allowed hover:bg-[#f7f3ed] transition-all group"
         title="Next Page"
       >
         <ChevronRight

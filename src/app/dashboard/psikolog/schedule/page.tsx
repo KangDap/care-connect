@@ -11,7 +11,7 @@ export default function PsychologistSchedulePage() {
   return (
     <Suspense
       fallback={
-        <div className="p-10 text-center text-[#8EA087] font-semibold animate-pulse">
+        <div className="p-10 text-center text-[#8ea087] font-semibold animate-pulse">
           Loading schedule...
         </div>
       }

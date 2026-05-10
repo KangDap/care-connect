@@ -112,8 +112,8 @@ export default function AnonymousReportPage() {
   // };
 
   return (
-    <div className="min-h-screen bg-[#F7F3ED] flex flex-col font-sans">
-      <div className="sticky top-0 z-[100] w-full bg-[#F7F3ED]/80 backdrop-blur-md border-b border-[#D0D5CB]/30">
+    <div className="min-h-screen bg-[#f7f3ed] flex flex-col font-sans">
+      <div className="sticky top-0 z-[100] w-full bg-[#f7f3ed]/80 backdrop-blur-md border-b border-[#d0d5cb]/30">
         <PublicHeader />
       </div>
 
@@ -125,7 +125,7 @@ export default function AnonymousReportPage() {
             onSubmit={handleFinalSubmit}
           />
           {isSubmitting ? (
-            <p className="mt-4 text-center text-sm font-semibold text-[#8EA087]">
+            <p className="mt-4 text-center text-sm font-semibold text-[#8ea087]">
               Submitting your report...
             </p>
           ) : null}

@@ -37,7 +37,7 @@ export default async function ConsultationsPage() {
   return (
     <React.Suspense
       fallback={
-        <div className="p-12 text-[#8EA087]">Loading consultations...</div>
+        <div className="p-12 text-[#8ea087]">Loading consultations...</div>
       }
     >
       <ConsultationsContent consultations={consultations} />

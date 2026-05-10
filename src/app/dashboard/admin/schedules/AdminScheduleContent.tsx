@@ -252,10 +252,10 @@ export default function AdminSchedulePage() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-3xl font-black text-[#193C1F] tracking-tight">
+          <h1 className="text-3xl font-black text-[#193c1f] tracking-tight">
             Psychologist Schedules
           </h1>
-          <p className="text-sm text-[#8EA087] mt-1 font-medium">
+          <p className="text-sm text-[#8ea087] mt-1 font-medium">
             Set available consultation days and time slots for each
             psychologist.
           </p>
@@ -265,7 +265,7 @@ export default function AdminSchedulePage() {
           className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-sm font-bold transition-all shadow-sm ${
             saveSuccess
               ? 'bg-green-500 text-white scale-95'
-              : 'bg-[#193C1F] text-white hover:bg-[#2d5c36]'
+              : 'bg-[#193c1f] text-white hover:bg-[#2d5c36]'
           }`}
         >
           {saveSuccess ? (
@@ -281,36 +281,36 @@ export default function AdminSchedulePage() {
       </div>
 
       {/* Psychologist Selector */}
-      <div className="bg-white rounded-3xl border border-[#D0D5CB] p-6 shadow-sm">
-        <p className="text-[10px] font-black uppercase tracking-widest text-[#8EA087] mb-4">
+      <div className="bg-white rounded-3xl border border-[#d0d5cb] p-6 shadow-sm">
+        <p className="text-[10px] font-black uppercase tracking-widest text-[#8ea087] mb-4">
           Select Psychologist
         </p>
         <div className="relative">
           <button
             onClick={() => setDropdownOpen((v) => !v)}
-            className="w-full flex items-center justify-between px-5 py-4 bg-[#F7F3ED] border border-[#D0D5CB] rounded-2xl hover:border-[#8EA087] transition-colors"
+            className="w-full flex items-center justify-between px-5 py-4 bg-[#f7f3ed] border border-[#d0d5cb] rounded-2xl hover:border-[#8ea087] transition-colors"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#D0D5CB] flex items-center justify-center text-[#8EA087] shrink-0">
+              <div className="w-10 h-10 rounded-full bg-[#d0d5cb] flex items-center justify-center text-[#8ea087] shrink-0">
                 <User size={20} />
               </div>
               <div className="text-left">
-                <p className="text-sm font-bold text-[#193C1F]">
+                <p className="text-sm font-bold text-[#193c1f]">
                   {selectedPsy.name}
                 </p>
-                <p className="text-[10px] text-[#8EA087] font-medium">
+                <p className="text-[10px] text-[#8ea087] font-medium">
                   {selectedPsy.specialization}
                 </p>
               </div>
             </div>
             <ChevronDown
               size={18}
-              className={`text-[#8EA087] transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}
+              className={`text-[#8ea087] transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}
             />
           </button>
 
           {dropdownOpen && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-[#D0D5CB] rounded-2xl shadow-xl z-20 overflow-hidden">
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-[#d0d5cb] rounded-2xl shadow-xl z-20 overflow-hidden">
               {DUMMY_PSYCHOLOGISTS.map((psy) => (
                 <button
                   key={psy.id}
@@ -318,23 +318,23 @@ export default function AdminSchedulePage() {
                     setSelectedPsyId(psy.id);
                     setDropdownOpen(false);
                   }}
-                  className={`w-full flex items-center gap-3 px-5 py-4 hover:bg-[#F7F3ED] transition-colors text-left ${
-                    psy.id === selectedPsyId ? 'bg-[#F7F3ED]' : ''
+                  className={`w-full flex items-center gap-3 px-5 py-4 hover:bg-[#f7f3ed] transition-colors text-left ${
+                    psy.id === selectedPsyId ? 'bg-[#f7f3ed]' : ''
                   }`}
                 >
-                  <div className="w-9 h-9 rounded-full bg-[#D0D5CB] flex items-center justify-center text-[#8EA087] shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-[#d0d5cb] flex items-center justify-center text-[#8ea087] shrink-0">
                     <User size={18} />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-[#193C1F]">
+                    <p className="text-sm font-bold text-[#193c1f]">
                       {psy.name}
                     </p>
-                    <p className="text-[10px] text-[#8EA087]">
+                    <p className="text-[10px] text-[#8ea087]">
                       {psy.specialization}
                     </p>
                   </div>
                   {psy.id === selectedPsyId && (
-                    <Check size={16} className="ml-auto text-[#8EA087]" />
+                    <Check size={16} className="ml-auto text-[#8ea087]" />
                   )}
                 </button>
               ))}
@@ -344,8 +344,8 @@ export default function AdminSchedulePage() {
       </div>
 
       {/* Day Picker */}
-      <div className="bg-white rounded-3xl border border-[#D0D5CB] p-6 shadow-sm">
-        <p className="text-[10px] font-black uppercase tracking-widest text-[#8EA087] mb-4">
+      <div className="bg-white rounded-3xl border border-[#d0d5cb] p-6 shadow-sm">
+        <p className="text-[10px] font-black uppercase tracking-widest text-[#8ea087] mb-4">
           Available Days
         </p>
         <div className="flex flex-wrap gap-3">
@@ -357,8 +357,8 @@ export default function AdminSchedulePage() {
                 onClick={() => toggleDay(day)}
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm border-2 transition-all duration-150 ${
                   isActive
-                    ? 'bg-[#193C1F] text-white border-[#193C1F] shadow-sm'
-                    : 'bg-white text-[#193C1F] border-[#D0D5CB] hover:border-[#8EA087]'
+                    ? 'bg-[#193c1f] text-white border-[#193c1f] shadow-sm'
+                    : 'bg-white text-[#193c1f] border-[#d0d5cb] hover:border-[#8ea087]'
                 }`}
               >
                 {isActive ? (
@@ -372,7 +372,7 @@ export default function AdminSchedulePage() {
           })}
         </div>
         {currentActiveDays.size === 0 && (
-          <p className="text-xs text-[#8EA087] mt-4 italic">
+          <p className="text-xs text-[#8ea087] mt-4 italic">
             No days selected. Click a day to add availability.
           </p>
         )}
@@ -385,18 +385,18 @@ export default function AdminSchedulePage() {
         return (
           <div
             key={day}
-            className="bg-white rounded-3xl border border-[#D0D5CB] p-6 shadow-sm"
+            className="bg-white rounded-3xl border border-[#d0d5cb] p-6 shadow-sm"
           >
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-[#193C1F] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-xl bg-[#193c1f] flex items-center justify-center">
                   <Clock size={16} className="text-white" />
                 </div>
-                <h3 className="font-black text-[#193C1F]">{day}</h3>
+                <h3 className="font-black text-[#193c1f]">{day}</h3>
               </div>
               <button
                 onClick={() => addSlot(day)}
-                className="flex items-center gap-1.5 text-[11px] font-bold text-[#8EA087] border border-[#D0D5CB] hover:border-[#8EA087] hover:bg-[#F7F3ED] px-3 py-1.5 rounded-xl transition-all"
+                className="flex items-center gap-1.5 text-[11px] font-bold text-[#8ea087] border border-[#d0d5cb] hover:border-[#8ea087] hover:bg-[#f7f3ed] px-3 py-1.5 rounded-xl transition-all"
               >
                 <Plus size={13} /> Add Slot
               </button>
@@ -404,21 +404,21 @@ export default function AdminSchedulePage() {
 
             <div className="space-y-3">
               {slots.length === 0 ? (
-                <p className="text-xs text-[#8EA087] italic">
+                <p className="text-xs text-[#8ea087] italic">
                   No time slots yet. Click &quot;Add Slot&quot;.
                 </p>
               ) : (
                 slots.map((slot, idx) => (
                   <div
                     key={slot.id}
-                    className="flex items-center gap-4 bg-[#F7F3ED] rounded-2xl px-5 py-3 group"
+                    className="flex items-center gap-4 bg-[#f7f3ed] rounded-2xl px-5 py-3 group"
                   >
-                    <span className="text-[11px] font-black text-[#8EA087] uppercase tracking-wider w-6 shrink-0">
+                    <span className="text-[11px] font-black text-[#8ea087] uppercase tracking-wider w-6 shrink-0">
                       #{idx + 1}
                     </span>
                     <div className="flex items-center gap-3 flex-1">
                       <div className="flex flex-col gap-0.5">
-                        <label className="text-[9px] font-black uppercase tracking-widest text-[#8EA087]">
+                        <label className="text-[9px] font-black uppercase tracking-widest text-[#8ea087]">
                           From
                         </label>
                         <input
@@ -427,12 +427,12 @@ export default function AdminSchedulePage() {
                           onChange={(e) =>
                             updateSlot(day, slot.id, 'start', e.target.value)
                           }
-                          className="bg-white border border-[#D0D5CB] rounded-xl px-3 py-2 text-sm font-bold text-[#193C1F] focus:outline-none focus:border-[#8EA087] transition-colors"
+                          className="bg-white border border-[#d0d5cb] rounded-xl px-3 py-2 text-sm font-bold text-[#193c1f] focus:outline-none focus:border-[#8ea087] transition-colors"
                         />
                       </div>
-                      <span className="text-[#D0D5CB] font-black mt-4">→</span>
+                      <span className="text-[#d0d5cb] font-black mt-4">→</span>
                       <div className="flex flex-col gap-0.5">
-                        <label className="text-[9px] font-black uppercase tracking-widest text-[#8EA087]">
+                        <label className="text-[9px] font-black uppercase tracking-widest text-[#8ea087]">
                           To
                         </label>
                         <input
@@ -441,7 +441,7 @@ export default function AdminSchedulePage() {
                           onChange={(e) =>
                             updateSlot(day, slot.id, 'end', e.target.value)
                           }
-                          className="bg-white border border-[#D0D5CB] rounded-xl px-3 py-2 text-sm font-bold text-[#193C1F] focus:outline-none focus:border-[#8EA087] transition-colors"
+                          className="bg-white border border-[#d0d5cb] rounded-xl px-3 py-2 text-sm font-bold text-[#193c1f] focus:outline-none focus:border-[#8ea087] transition-colors"
                         />
                       </div>
                     </div>
@@ -462,12 +462,12 @@ export default function AdminSchedulePage() {
 
       {/* Empty State */}
       {currentActiveDays.size === 0 && (
-        <div className="bg-white rounded-3xl border-2 border-dashed border-[#D0D5CB] p-12 flex flex-col items-center justify-center text-center">
-          <Calendar size={40} className="text-[#D0D5CB] mb-4" />
-          <p className="font-bold text-[#193C1F] opacity-40">
+        <div className="bg-white rounded-3xl border-2 border-dashed border-[#d0d5cb] p-12 flex flex-col items-center justify-center text-center">
+          <Calendar size={40} className="text-[#d0d5cb] mb-4" />
+          <p className="font-bold text-[#193c1f] opacity-40">
             No schedule configured
           </p>
-          <p className="text-xs text-[#8EA087] mt-1">
+          <p className="text-xs text-[#8ea087] mt-1">
             Select days above to start setting consultation hours.
           </p>
         </div>
