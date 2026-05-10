@@ -306,6 +306,60 @@ export const CommunityChatService = {
     return channel;
   },
 
+  async updateChannel(
+    adminId: string,
+    userRole: string,
+    channelId: number,
+    data: Partial<CreateChannelDTO>,
+  ) {
+    if (userRole !== 'ADMIN') {
+      const membership = await CommunityChatRepository.checkMembership(
+        adminId,
+        channelId,
+      );
+      if (membership?.role !== 'OWNER') {
+        throw Errors.forbidden(
+          'Only admins or channel owners can update channels',
+        );
+      }
+    }
+
+    const existingChannel =
+      await CommunityChatRepository.getChannelById(channelId);
+    if (!existingChannel) throw Errors.notFound('Channel not found');
+
+    let finalCoverUrl = data.coverUrl;
+    const supabase = getSupabaseClient();
+
+    if (data.coverImage && supabase) {
+      const fileExt = data.coverImage.name.split('.').pop();
+      const fileName = `channel-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      const fileData = await data.coverImage.arrayBuffer();
+
+      const { error } = await supabase.storage
+        .from('community-chat-profile')
+        .upload(fileName, fileData, {
+          contentType: data.coverImage.type,
+        });
+
+      if (error) {
+        console.error('Community channel profile upload error:', error);
+        throw Errors.storage('Failed to upload cover image');
+      }
+
+      const { data: publicUrl } = supabase.storage
+        .from('community-chat-profile')
+        .getPublicUrl(fileName);
+
+      finalCoverUrl = publicUrl.publicUrl;
+    }
+
+    return CommunityChatRepository.updateChannel(channelId, {
+      ...data,
+      coverUrl: finalCoverUrl,
+    });
+  },
+
   async kickUserFromChannel(
     adminId: string,
     adminRole: string,

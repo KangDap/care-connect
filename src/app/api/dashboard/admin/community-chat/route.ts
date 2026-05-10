@@ -36,23 +36,35 @@ export async function POST(req: Request) {
   const { session, response } = await requireAdminSession();
   if (response) return response;
 
-  let body: Record<string, unknown>;
-  try {
-    body = await req.json();
-  } catch {
-    return fail('BAD_REQUEST', 'Invalid JSON body', 400);
-  }
+  let validatedData;
+  const contentType = req.headers.get('content-type') || '';
 
-  const parsed = createChannelSchema.safeParse(body);
-  if (!parsed.success) {
-    return fail('BAD_REQUEST', 'Invalid channel payload', 400);
+  try {
+    if (contentType.includes('multipart/form-data')) {
+      const formData = await req.formData();
+      validatedData = createChannelSchema.parse({
+        name: formData.get('name'),
+        description: formData.get('description'),
+        type: formData.get('type'),
+        coverImage: formData.get('coverImage'),
+        coverUrl: formData.get('coverUrl'),
+      });
+    } else {
+      const body = await req.json();
+      validatedData = createChannelSchema.parse(body);
+    }
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return fail('BAD_REQUEST', 'Invalid channel payload', 400, error.issues);
+    }
+    return fail('BAD_REQUEST', 'Invalid request body', 400);
   }
 
   try {
     const channel = await CommunityChatService.createNewChannel(
       session!.user.id,
       'ADMIN',
-      parsed.data,
+      validatedData,
     );
     return ok(channel);
   } catch (error) {
@@ -65,72 +77,58 @@ export async function POST(req: Request) {
 }
 
 export async function PATCH(req: Request) {
-  const { response } = await requireAdminSession();
+  const { session, response } = await requireAdminSession();
   if (response) return response;
 
-  let body: Record<string, unknown>;
+  let id: number | null = null;
+  let validatedData: z.infer<typeof updateChannelSchema>;
+  const contentType = req.headers.get('content-type') || '';
 
   try {
-    body = await req.json();
-  } catch {
-    return fail('BAD_REQUEST', 'Invalid JSON body', 400);
+    if (contentType.includes('multipart/form-data')) {
+      const formData = await req.formData();
+      id = parsePositiveInt(formData.get('id'));
+      validatedData = updateChannelSchema.parse({
+        name: formData.get('name') || undefined,
+        description:
+          formData.get('description') === ''
+            ? null
+            : formData.get('description') || undefined,
+        type: (formData.get('type') as 'PUBLIC' | 'PRIVATE') || undefined,
+        coverImage: formData.get('coverImage') || undefined,
+        coverUrl: (formData.get('coverUrl') as string) || undefined,
+      });
+    } else {
+      const body = await req.json();
+      id = parsePositiveInt(body.id);
+      validatedData = updateChannelSchema.parse(body);
+    }
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return fail('BAD_REQUEST', 'Invalid update payload', 400, error.issues);
+    }
+    return fail('BAD_REQUEST', 'Invalid request body', 400);
   }
-
-  const id = parsePositiveInt(body.id);
 
   if (!id) {
     return fail('BAD_REQUEST', 'id must be a positive integer', 400);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { id: _id, ...payload } = body;
-  const parsed = updateChannelSchema.safeParse(payload);
-
-  if (!parsed.success) {
-    return fail('BAD_REQUEST', 'Invalid channel update payload', 400);
+  try {
+    const updated = await CommunityChatService.updateChannel(
+      session!.user.id,
+      'ADMIN',
+      id,
+      validatedData,
+    );
+    return ok(updated);
+  } catch (error) {
+    if (error instanceof ApiError) {
+      return fail(error.code, error.message, error.status, error.details);
+    }
+    console.error('ADMIN COMMUNITY CHAT PATCH ERROR:', error);
+    return fail('INTERNAL_SERVER_ERROR', 'Failed to update channel', 500);
   }
-
-  const data = parsed.data;
-  const updateData: {
-    name?: string;
-    description?: string | null;
-    coverUrl?: string | null;
-    type?: 'PUBLIC' | 'PRIVATE';
-  } = {};
-
-  if (data.name !== undefined) updateData.name = data.name;
-  if (data.description !== undefined) updateData.description = data.description;
-  if (data.coverUrl !== undefined) {
-    updateData.coverUrl = data.coverUrl === '' ? null : data.coverUrl;
-  }
-  if (data.type !== undefined) updateData.type = data.type;
-
-  if (Object.keys(updateData).length === 0) {
-    return fail('BAD_REQUEST', 'No fields to update', 400);
-  }
-
-  const existing = await prisma.channel.findUnique({
-    where: { id },
-    select: { id: true },
-  });
-
-  if (!existing) {
-    return fail('NOT_FOUND', 'Channel not found', 404);
-  }
-
-  const updated = await prisma.channel.update({
-    where: { id },
-    data: updateData,
-    select: {
-      id: true,
-      name: true,
-      description: true,
-      coverUrl: true,
-      type: true,
-    },
-  });
-
-  return ok(updated);
 }
 
 export async function DELETE(req: Request) {

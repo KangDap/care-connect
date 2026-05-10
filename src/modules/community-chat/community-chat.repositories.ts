@@ -215,4 +215,16 @@ export const CommunityChatRepository = {
       select: { id: true, name: true, image: true, role: true },
     });
   },
+
+  async updateChannel(id: number, data: Partial<CreateChannelDTO>) {
+    return prisma.channel.update({
+      where: { id },
+      data: {
+        name: data.name,
+        description: data.description,
+        coverUrl: data.coverUrl,
+        type: data.type,
+      },
+    });
+  },
 };
