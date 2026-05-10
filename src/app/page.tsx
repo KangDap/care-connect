@@ -34,33 +34,33 @@ export default async function LandingPage() {
   }).format(totalDonationAmount);
 
   return (
-    <div className="font-sans antialiased bg-[#F7F3ED] text-[#193C1F] min-h-screen">
+    <div className="font-sans antialiased bg-[#f7f3ed] text-[#193c1f] min-h-screen">
       <PublicHeader />
 
       {/* Hero Section */}
       <section className="max-w-[1440px] mx-auto py-24 px-12 flex items-center justify-between">
         <div className="w-1/2">
-          <h1 className="text-[88px] leading-[1.1] font-black text-[#193C1F] mb-8 bg-gradient-to-r from-[#193C1F] to-[#D1B698] text-transparent bg-clip-text">
-            You are <span className="text-[#D1B698]">not alone</span>
+          <h1 className="text-[88px] leading-[1.1] font-black text-[#193c1f] mb-8 bg-gradient-to-r from-[#193c1f] to-[#d1b698] text-transparent bg-clip-text">
+            You are <span className="text-[#d1b698]">not alone</span>
           </h1>
-          <p className="text-xl text-[#193C1F] mb-12">
+          <p className="text-xl text-[#193c1f] mb-12">
             Connecting individuals with professional help, reporting resources,
             and a supportive community to ensure safety and well-being. Your
             healing starts with a single step.
           </p>
           <div className="flex gap-4">
             <Link href={isLoggedIn ? '/consultation' : '/login'}>
-              <button className="bg-[#8EA087] text-[#F7F3ED] px-10 py-4 rounded-lg font-bold text-lg shadow-sm hover:bg-[#193C1F] transition-colors h-full">
+              <button className="bg-[#8ea087] text-[#f7f3ed] px-10 py-4 rounded-lg font-bold text-lg shadow-sm hover:bg-[#193c1f] transition-colors h-full">
                 Consult Now
               </button>
             </Link>
             <Link href={isLoggedIn ? '/report' : '/login'}>
-              <button className="bg-[#D0D5CB] text-[#193C1F] px-10 py-4 rounded-lg font-bold text-lg border border-[#8EA087] hover:bg-[#EDE4D8] transition-colors">
+              <button className="bg-[#d0d5cb] text-[#193c1f] px-10 py-4 rounded-lg font-bold text-lg border border-[#8ea087] hover:bg-[#ede4d8] transition-colors">
                 Report Incident
               </button>
             </Link>
             <Link href={isLoggedIn ? '/donation' : '/login'}>
-              <button className="bg-[#F7F3ED] text-[#193C1F] px-10 py-4 rounded-lg font-bold text-lg border border-[#D1B698] hover:bg-[#EDE4D8] transition-colors h-full">
+              <button className="bg-[#f7f3ed] text-[#193c1f] px-10 py-4 rounded-lg font-bold text-lg border border-[#d1b698] hover:bg-[#ede4d8] transition-colors h-full">
                 Donate
               </button>
             </Link>
@@ -71,50 +71,50 @@ export default async function LandingPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="bg-[#EDE4D8] py-20 px-12">
+      <section className="bg-[#ede4d8] py-20 px-12">
         <div className="max-w-[1440px] mx-auto grid grid-cols-3 gap-8">
-          <div className="bg-[#F7F3ED] p-12 rounded-2xl text-center shadow-sm border-b-4 border-[#8EA087]">
-            <p className="text-[#193C1F] font-semibold mb-2 opacity-80">
+          <div className="bg-[#f7f3ed] p-12 rounded-2xl text-center shadow-sm border-b-4 border-[#8ea087]">
+            <p className="text-[#193c1f] font-semibold mb-2 opacity-80">
               Total Reports Handled
             </p>
-            <h2 className="text-6xl font-black text-[#193C1F] mb-4">
+            <h2 className="text-6xl font-black text-[#193c1f] mb-4">
               {totalReports}
             </h2>
-            <div className="w-16 h-1 bg-[#8EA087] mx-auto rounded-full"></div>
+            <div className="w-16 h-1 bg-[#8ea087] mx-auto rounded-full"></div>
           </div>
-          <div className="bg-[#F7F3ED] p-12 rounded-2xl text-center shadow-sm border-b-4 border-[#8EA087]">
-            <p className="text-[#193C1F] font-semibold mb-2 opacity-80">
+          <div className="bg-[#f7f3ed] p-12 rounded-2xl text-center shadow-sm border-b-4 border-[#8ea087]">
+            <p className="text-[#193c1f] font-semibold mb-2 opacity-80">
               Professional Consultations
             </p>
-            <h2 className="text-6xl font-black text-[#193C1F] mb-4">
+            <h2 className="text-6xl font-black text-[#193c1f] mb-4">
               {totalConsultations}
             </h2>
-            <div className="w-16 h-1 bg-[#D1B698] mx-auto rounded-full"></div>
+            <div className="w-16 h-1 bg-[#d1b698] mx-auto rounded-full"></div>
           </div>
-          <div className="bg-[#F7F3ED] p-12 rounded-2xl text-center shadow-sm border-b-4 border-[#8EA087]">
-            <p className="text-[#193C1F] font-semibold mb-2 opacity-80">
+          <div className="bg-[#f7f3ed] p-12 rounded-2xl text-center shadow-sm border-b-4 border-[#8ea087]">
+            <p className="text-[#193c1f] font-semibold mb-2 opacity-80">
               Community Donations
             </p>
-            <h2 className="text-6xl font-black text-[#193C1F] mb-4">
+            <h2 className="text-6xl font-black text-[#193c1f] mb-4">
               {formattedDonations}
             </h2>
-            <div className="w-16 h-1 bg-[#8EA087] mx-auto rounded-full"></div>
+            <div className="w-16 h-1 bg-[#8ea087] mx-auto rounded-full"></div>
           </div>
         </div>
       </section>
 
       {/* Support Methods Section */}
       <section className="max-w-[1440px] mx-auto py-32 px-12 text-center">
-        <h2 className="text-5xl font-black text-[#193C1F] mb-6">
+        <h2 className="text-5xl font-black text-[#193c1f] mb-6">
           How we support you
         </h2>
-        <p className="text-[#193C1F] max-w-2xl mx-auto mb-20 opacity-80">
+        <p className="text-[#193c1f] max-w-2xl mx-auto mb-20 opacity-80">
           Comprehensive tools designed to provide safety, healing, and community
           support in a confidential environment.
         </p>
         <div className="grid grid-cols-4 gap-8">
-          <div className="bg-[#F7F3ED] p-8 rounded-2xl border border-[#D0D5CB] text-left shadow-sm flex flex-col items-start gap-4">
-            <div className="w-12 h-12 bg-[#EDE4D8] rounded-lg flex items-center justify-center text-[#8EA087]">
+          <div className="bg-[#f7f3ed] p-8 rounded-2xl border border-[#d0d5cb] text-left shadow-sm flex flex-col items-start gap-4">
+            <div className="w-12 h-12 bg-[#ede4d8] rounded-lg flex items-center justify-center text-[#8ea087]">
               <svg
                 className="w-6 h-6"
                 fill="none"
@@ -130,13 +130,13 @@ export default async function LandingPage() {
                 ></path>
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-[#193C1F]">Consultation</h3>
-            <p className="text-[#193C1F] opacity-80">
+            <h3 className="text-2xl font-bold text-[#193c1f]">Consultation</h3>
+            <p className="text-[#193c1f] opacity-80">
               One-on-one sessions with certified mental health professionals.
             </p>
           </div>
-          <div className="bg-[#F7F3ED] p-8 rounded-2xl border border-[#D0D5CB] text-left shadow-sm flex flex-col items-start gap-4">
-            <div className="w-12 h-12 bg-[#EDE4D8] rounded-lg flex items-center justify-center text-[#8EA087]">
+          <div className="bg-[#f7f3ed] p-8 rounded-2xl border border-[#d0d5cb] text-left shadow-sm flex flex-col items-start gap-4">
+            <div className="w-12 h-12 bg-[#ede4d8] rounded-lg flex items-center justify-center text-[#8ea087]">
               <svg
                 className="w-6 h-6"
                 fill="none"
@@ -152,13 +152,13 @@ export default async function LandingPage() {
                 ></path>
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-[#193C1F]">Reporting</h3>
-            <p className="text-[#193C1F] opacity-80">
+            <h3 className="text-2xl font-bold text-[#193c1f]">Reporting</h3>
+            <p className="text-[#193c1f] opacity-80">
               Secure and anonymous incident reporting for community safety.
             </p>
           </div>
-          <div className="bg-[#F7F3ED] p-8 rounded-2xl border border-[#D0D5CB] text-left shadow-sm flex flex-col items-start gap-4">
-            <div className="w-12 h-12 bg-[#EDE4D8] rounded-lg flex items-center justify-center text-[#8EA087]">
+          <div className="bg-[#f7f3ed] p-8 rounded-2xl border border-[#d0d5cb] text-left shadow-sm flex flex-col items-start gap-4">
+            <div className="w-12 h-12 bg-[#ede4d8] rounded-lg flex items-center justify-center text-[#8ea087]">
               <svg
                 className="w-6 h-6"
                 fill="none"
@@ -174,13 +174,13 @@ export default async function LandingPage() {
                 ></path>
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-[#193C1F]">Forum</h3>
-            <p className="text-[#193C1F] opacity-80">
+            <h3 className="text-2xl font-bold text-[#193c1f]">Forum</h3>
+            <p className="text-[#193c1f] opacity-80">
               Peer-led discussions and shared experiences in a moderated space.
             </p>
           </div>
-          <div className="bg-[#F7F3ED] p-8 rounded-2xl border border-[#D0D5CB] text-left shadow-sm flex flex-col items-start gap-4">
-            <div className="w-12 h-12 bg-[#EDE4D8] rounded-lg flex items-center justify-center text-[#8EA087]">
+          <div className="bg-[#f7f3ed] p-8 rounded-2xl border border-[#d0d5cb] text-left shadow-sm flex flex-col items-start gap-4">
+            <div className="w-12 h-12 bg-[#ede4d8] rounded-lg flex items-center justify-center text-[#8ea087]">
               <svg
                 className="w-6 h-6"
                 fill="none"
@@ -196,8 +196,8 @@ export default async function LandingPage() {
                 ></path>
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-[#193C1F]">Donation</h3>
-            <p className="text-[#193C1F] opacity-80">
+            <h3 className="text-2xl font-bold text-[#193c1f]">Donation</h3>
+            <p className="text-[#193c1f] opacity-80">
               Fund mental health initiatives and support those in need.
             </p>
           </div>
@@ -207,11 +207,11 @@ export default async function LandingPage() {
       {/* Recent Reports Section */}
       <section className="max-w-[1440px] mx-auto py-32 px-12">
         <div className="flex justify-between items-end mb-12">
-          <h2 className="text-4xl font-black text-[#193C1F]">
+          <h2 className="text-4xl font-black text-[#193c1f]">
             Recent Anonymized Reports
           </h2>
           <Link
-            className="text-[#8EA087] font-bold flex items-center gap-2 hover:text-[#193C1F] transition-colors"
+            className="text-[#8ea087] font-bold flex items-center gap-2 hover:text-[#193c1f] transition-colors"
             href={isLoggedIn ? '/publicreports' : '/login'}
           >
             View Archive
@@ -234,7 +234,7 @@ export default async function LandingPage() {
         <div className="grid grid-cols-3 gap-10">
           {recentReports.map((report) => (
             <div data-purpose="report-card" key={report.id}>
-              <div className="w-full aspect-video bg-[#D0D5CB] rounded-2xl mb-6 flex items-center justify-center text-[#8EA087]">
+              <div className="w-full aspect-video bg-[#d0d5cb] rounded-2xl mb-6 flex items-center justify-center text-[#8ea087]">
                 <svg
                   className="w-12 h-12"
                   fill="none"
@@ -250,17 +250,17 @@ export default async function LandingPage() {
                   ></path>
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-[#193C1F] mb-2">
+              <h3 className="text-2xl font-bold text-[#193c1f] mb-2">
                 Report #{report.id}
               </h3>
-              <p className="text-[#193C1F] opacity-80 mb-6 truncate">
+              <p className="text-[#193c1f] opacity-80 mb-6 truncate">
                 {report.description}
               </p>
               <div className="flex gap-2">
-                <span className="bg-[#EDE4D8] text-[#8EA087] px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
+                <span className="bg-[#ede4d8] text-[#8ea087] px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
                   {report.status}
                 </span>
-                <span className="bg-[#D0D5CB] text-[#193C1F] px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
+                <span className="bg-[#d0d5cb] text-[#193c1f] px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
                   {report.category}
                 </span>
               </div>
@@ -270,11 +270,11 @@ export default async function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#F7F3ED] pt-24 pb-12 px-12 border-t border-[#D0D5CB]">
+      <footer className="bg-[#f7f3ed] pt-24 pb-12 px-12 border-t border-[#d0d5cb]">
         <div className="max-w-[1440px] mx-auto grid grid-cols-12 gap-12 mb-20">
           <div className="col-span-4">
             <div className="flex items-center gap-2 mb-8">
-              <div className="w-8 h-8 bg-[#D0D5CB] rounded flex items-center justify-center text-[#193C1F]">
+              <div className="w-8 h-8 bg-[#d0d5cb] rounded flex items-center justify-center text-[#193c1f]">
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -290,16 +290,16 @@ export default async function LandingPage() {
                   ></path>
                 </svg>
               </div>
-              <span className="text-xl font-bold text-[#193C1F]">
+              <span className="text-xl font-bold text-[#193c1f]">
                 CareConnect
               </span>
             </div>
-            <p className="text-[#193C1F] opacity-80 mb-8 max-w-sm">
+            <p className="text-[#193c1f] opacity-80 mb-8 max-w-sm">
               HealHub&apos;s CareConnect is dedicated to fostering a safe
               digital ecosystem for mental health and incident reporting.
             </p>
             <div className="flex gap-4">
-              <div className="w-10 h-10 rounded-full border border-[#D0D5CB] flex items-center justify-center text-[#193C1F] hover:bg-[#EDE4D8] transition-colors cursor-pointer">
+              <div className="w-10 h-10 rounded-full border border-[#d0d5cb] flex items-center justify-center text-[#193c1f] hover:bg-[#ede4d8] transition-colors cursor-pointer">
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -315,7 +315,7 @@ export default async function LandingPage() {
                   ></path>
                 </svg>
               </div>
-              <div className="w-10 h-10 rounded-full border border-[#D0D5CB] flex items-center justify-center text-[#193C1F] hover:bg-[#EDE4D8] transition-colors cursor-pointer">
+              <div className="w-10 h-10 rounded-full border border-[#d0d5cb] flex items-center justify-center text-[#193c1f] hover:bg-[#ede4d8] transition-colors cursor-pointer">
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -334,33 +334,33 @@ export default async function LandingPage() {
             </div>
           </div>
           <div className="col-span-4">
-            <h4 className="text-xl font-bold text-[#193C1F] mb-8">Resources</h4>
-            <ul className="space-y-4 text-[#193C1F] opacity-80">
+            <h4 className="text-xl font-bold text-[#193c1f] mb-8">Resources</h4>
+            <ul className="space-y-4 text-[#193c1f] opacity-80">
               <li>
-                <a className="hover:text-[#8EA087] transition-colors" href="#">
+                <a className="hover:text-[#8ea087] transition-colors" href="#">
                   Emergency Help
                 </a>
               </li>
               <li>
-                <a className="hover:text-[#8EA087] transition-colors" href="#">
+                <a className="hover:text-[#8ea087] transition-colors" href="#">
                   FAQ
                 </a>
               </li>
               <li>
-                <a className="hover:text-[#8EA087] transition-colors" href="#">
+                <a className="hover:text-[#8ea087] transition-colors" href="#">
                   Privacy Policy
                 </a>
               </li>
               <li>
-                <a className="hover:text-[#8EA087] transition-colors" href="#">
+                <a className="hover:text-[#8ea087] transition-colors" href="#">
                   Terms of Service
                 </a>
               </li>
             </ul>
           </div>
           <div className="col-span-4">
-            <h4 className="text-xl font-bold text-[#193C1F] mb-8">Contact</h4>
-            <ul className="space-y-4 text-[#193C1F] opacity-80">
+            <h4 className="text-xl font-bold text-[#193c1f] mb-8">Contact</h4>
+            <ul className="space-y-4 text-[#193c1f] opacity-80">
               <li className="flex items-center gap-3">
                 <svg
                   className="w-5 h-5"
@@ -420,7 +420,7 @@ export default async function LandingPage() {
             </ul>
           </div>
         </div>
-        <div className="text-center text-[#193C1F] opacity-50 border-t border-[#D0D5CB] pt-12">
+        <div className="text-center text-[#193c1f] opacity-50 border-t border-[#d0d5cb] pt-12">
           © 2024 CareConnect. All rights reserved. A HealHub Initiative.
         </div>
       </footer>

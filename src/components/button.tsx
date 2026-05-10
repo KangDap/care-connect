@@ -18,12 +18,12 @@ export const Button = ({
     'px-7 py-3.5 rounded-2xl font-bold transition-all active:scale-95 shadow-sm flex items-center justify-center gap-2';
   const variants = {
     primary:
-      'bg-[#193C1F] text-[#F7F3ED] hover:bg-[#2d5a35] shadow-[#193C1F]/20',
-    secondary: 'bg-[#8EA087] text-white hover:bg-[#193C1F]',
+      'bg-[#193c1f] text-[#f7f3ed] hover:bg-[#2d5a35] shadow-[#193c1f]/20',
+    secondary: 'bg-[#8ea087] text-white hover:bg-[#193c1f]',
     outline:
-      'bg-white border-2 border-[#D0D5CB] text-[#193C1F] hover:bg-[#F7F3ED]',
+      'bg-white border-2 border-[#d0d5cb] text-[#193c1f] hover:bg-[#f7f3ed]',
     ghost:
-      'text-[#8EA087] font-black uppercase tracking-widest text-[11px] hover:text-[#193C1F]',
+      'text-[#8ea087] font-black uppercase tracking-widest text-[11px] hover:text-[#193c1f]',
   };
 
   return (

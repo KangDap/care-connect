@@ -42,7 +42,7 @@ export default async function DonationsPage() {
 
   return (
     <React.Suspense
-      fallback={<div className="p-12 text-[#8EA087]">Loading donations...</div>}
+      fallback={<div className="p-12 text-[#8ea087]">Loading donations...</div>}
     >
       <DonationsContent donations={serializedDonations} />
     </React.Suspense>

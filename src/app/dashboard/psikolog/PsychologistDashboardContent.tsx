@@ -146,10 +146,10 @@ export default function PsychologistDashboardContent({
     <div className="space-y-10 animate-fade-in">
       <div className="flex justify-between items-end">
         <div>
-          <h2 className="text-[36px] font-black text-[#193C1F] tracking-tight leading-tight">
+          <h2 className="text-[36px] font-black text-[#193c1f] tracking-tight leading-tight">
             Welcome, {displayName}
           </h2>
-          <p className="text-[#8EA087] text-[16px] font-medium mt-1">
+          <p className="text-[#8ea087] text-[16px] font-medium mt-1">
             {searchBarQuery
               ? `Showing results for "${searchBarQuery}"`
               : `You have ${pendingConsultationsCount} upcoming consultations to handle.`}
@@ -185,8 +185,8 @@ export default function PsychologistDashboardContent({
             key={index}
             className={`p-8 rounded-[28px] border flex items-center gap-6 shadow-sm transition-all hover:shadow-md ${
               item.highlight
-                ? 'bg-[#193C1F] border-[#193C1F] text-white'
-                : 'bg-[#F7F3ED] border-[#D0D5CB] text-[#193C1F]'
+                ? 'bg-[#193c1f] border-[#193c1f] text-white'
+                : 'bg-[#f7f3ed] border-[#d0d5cb] text-[#193c1f]'
             }`}
           >
             <div
@@ -204,14 +204,14 @@ export default function PsychologistDashboardContent({
             <div>
               <p
                 className={`text-[10px] uppercase font-black tracking-widest mb-1 ${
-                  item.highlight ? 'text-white/60' : 'text-[#8EA087]'
+                  item.highlight ? 'text-white/60' : 'text-[#8ea087]'
                 }`}
               >
                 {item.label}
               </p>
               <p
                 className={`text-[24px] font-bold leading-none ${
-                  item.highlight ? 'text-white' : 'text-[#193C1F]'
+                  item.highlight ? 'text-white' : 'text-[#193c1f]'
                 }`}
               >
                 {item.val}
@@ -222,31 +222,31 @@ export default function PsychologistDashboardContent({
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
-        <div className="bg-white border border-[#D0D5CB] rounded-[32px] overflow-hidden shadow-sm">
-          <div className="p-8 border-b border-[#F7F3ED] flex justify-between items-center bg-[#FDFCFB]">
-            <h3 className="font-bold text-[18px] text-[#193C1F]">
+        <div className="bg-white border border-[#d0d5cb] rounded-[32px] overflow-hidden shadow-sm">
+          <div className="p-8 border-b border-[#f7f3ed] flex justify-between items-center bg-[#FDFCFB]">
+            <h3 className="font-bold text-[18px] text-[#193c1f]">
               Upcoming Consultations
             </h3>
             <Link
               href="/dashboard/psikolog/consultations"
-              className="text-[11px] font-black text-[#8EA087] tracking-[0.2em] uppercase hover:text-[#193C1F] transition-colors"
+              className="text-[11px] font-black text-[#8ea087] tracking-[0.2em] uppercase hover:text-[#193c1f] transition-colors"
             >
               View All
             </Link>
           </div>
           <table className="w-full text-left">
-            <thead className="bg-[#F7F3ED] text-[11px] text-[#8EA087] font-black uppercase tracking-widest">
+            <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
               <tr>
                 <th className="px-8 py-4">Patient</th>
                 <th className="px-8 py-4">Date</th>
                 <th className="px-8 py-4">Status</th>
               </tr>
             </thead>
-            <tbody className="text-[14px] text-[#193C1F]">
+            <tbody className="text-[14px] text-[#193c1f]">
               {pendingData.slice(0, 3).map((row) => (
                 <tr
                   key={row.id}
-                  className="border-b border-[#F7F3ED] hover:bg-[#FDFCFB]"
+                  className="border-b border-[#f7f3ed] hover:bg-[#FDFCFB]"
                 >
                   <td className="px-8 py-5 font-bold">
                     {row.isAnonymous
@@ -257,7 +257,7 @@ export default function PsychologistDashboardContent({
                     {formatDateLabel(row.date)}
                   </td>
                   <td className="px-8 py-5">
-                    <span className="px-4 py-1.5 rounded-full text-[10px] font-black bg-[#D1B698]/20 text-[#D1B698]">
+                    <span className="px-4 py-1.5 rounded-full text-[10px] font-black bg-[#d1b698]/20 text-[#d1b698]">
                       {String(row.status)}
                     </span>
                   </td>
@@ -266,37 +266,37 @@ export default function PsychologistDashboardContent({
             </tbody>
           </table>
           {pendingData.length === 0 && (
-            <p className="p-10 text-center text-[#8EA087]">
+            <p className="p-10 text-center text-[#8ea087]">
               No upcoming consultations found.
             </p>
           )}
         </div>
 
-        <div className="bg-white border border-[#D0D5CB] rounded-[32px] overflow-hidden shadow-sm">
-          <div className="p-8 border-b border-[#F7F3ED] flex justify-between items-center bg-[#FDFCFB]">
-            <h3 className="font-bold text-[18px] text-[#193C1F]">
+        <div className="bg-white border border-[#d0d5cb] rounded-[32px] overflow-hidden shadow-sm">
+          <div className="p-8 border-b border-[#f7f3ed] flex justify-between items-center bg-[#FDFCFB]">
+            <h3 className="font-bold text-[18px] text-[#193c1f]">
               Completed Sessions
             </h3>
             <Link
               href="/dashboard/psikolog/consultations?filter=completed"
-              className="text-[11px] font-black text-[#8EA087] tracking-[0.2em] uppercase hover:text-[#193C1F] transition-colors"
+              className="text-[11px] font-black text-[#8ea087] tracking-[0.2em] uppercase hover:text-[#193c1f] transition-colors"
             >
               View All
             </Link>
           </div>
           <table className="w-full text-left">
-            <thead className="bg-[#F7F3ED] text-[11px] text-[#8EA087] font-black uppercase tracking-widest">
+            <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
               <tr>
                 <th className="px-8 py-4">Patient</th>
                 <th className="px-8 py-4">Date</th>
                 <th className="px-8 py-4">Status</th>
               </tr>
             </thead>
-            <tbody className="text-[14px] text-[#193C1F]">
+            <tbody className="text-[14px] text-[#193c1f]">
               {completedData.slice(0, 3).map((row) => (
                 <tr
                   key={row.id}
-                  className="border-b border-[#F7F3ED] hover:bg-[#FDFCFB]"
+                  className="border-b border-[#f7f3ed] hover:bg-[#FDFCFB]"
                 >
                   <td className="px-8 py-5 font-bold">
                     {row.isAnonymous
@@ -307,7 +307,7 @@ export default function PsychologistDashboardContent({
                     {formatDateLabel(row.date)}
                   </td>
                   <td className="px-8 py-5">
-                    <span className="px-4 py-1.5 rounded-full text-[10px] font-black bg-[#EBE6DE] text-[#193C1F]">
+                    <span className="px-4 py-1.5 rounded-full text-[10px] font-black bg-[#EBE6DE] text-[#193c1f]">
                       {String(row.status)}
                     </span>
                   </td>
@@ -316,7 +316,7 @@ export default function PsychologistDashboardContent({
             </tbody>
           </table>
           {completedData.length === 0 && (
-            <p className="p-10 text-center text-[#8EA087]">
+            <p className="p-10 text-center text-[#8ea087]">
               No completed sessions yet.
             </p>
           )}

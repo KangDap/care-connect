@@ -193,12 +193,12 @@ export default function ReportForm({
   const getButtonStyles = () => {
     if (currentStep === 1) {
       return isStep1Valid()
-        ? '!bg-[#8EA087] !text-white hover:brightness-110'
+        ? '!bg-[#8ea087] !text-white hover:brightness-110'
         : 'opacity-60 cursor-not-allowed';
     } else {
       return formData.agreement
-        ? '!bg-[#193C1F] !text-white hover:brightness-110'
-        : '!bg-[#D0D5CB] !text-[#8EA087] cursor-not-allowed shadow-none';
+        ? '!bg-[#193c1f] !text-white hover:brightness-110'
+        : '!bg-[#d0d5cb] !text-[#8ea087] cursor-not-allowed shadow-none';
     }
   };
 
@@ -213,12 +213,12 @@ export default function ReportForm({
         onClose={() => setToast({ ...toast, show: false })}
       />
 
-      <div className="bg-white border border-[#D0D5CB] rounded-[40px] shadow-sm p-12 flex flex-col">
-        <div className="mb-10 text-center border-b border-[#D0D5CB] pb-8">
-          <h1 className="text-[32px] font-black text-[#193C1F] leading-tight tracking-tighter mb-2">
+      <div className="bg-white border border-[#d0d5cb] rounded-[40px] shadow-sm p-12 flex flex-col">
+        <div className="mb-10 text-center border-b border-[#d0d5cb] pb-8">
+          <h1 className="text-[32px] font-black text-[#193c1f] leading-tight tracking-tighter mb-2">
             {currentStep === 1 ? formTitle : 'Review Your Report'}
           </h1>
-          <p className="text-[#8EA087] font-bold text-sm mx-auto max-w-md">
+          <p className="text-[#8ea087] font-bold text-sm mx-auto max-w-md">
             {currentStep === 1
               ? formSubtitle
               : 'Please double-check all information before final submission.'}
@@ -229,14 +229,14 @@ export default function ReportForm({
           {currentStep === 1 ? (
             <div className="space-y-8">
               {!isConsultation && (
-                <div className="flex justify-between items-center bg-[#F7F3ED] p-6 rounded-[24px] border border-[#D0D5CB]">
-                  <p className="text-[13px] font-black text-[#193C1F] uppercase tracking-wide">
+                <div className="flex justify-between items-center bg-[#f7f3ed] p-6 rounded-[24px] border border-[#d0d5cb]">
+                  <p className="text-[13px] font-black text-[#193c1f] uppercase tracking-wide">
                     Report Anonymously
                   </p>
                   <button
                     type="button"
                     onClick={() => setIsAnonymous(!isAnonymous)}
-                    className={`w-12 h-6 rounded-full relative transition-all ${isAnonymous ? 'bg-[#193C1F]' : 'bg-[#D0D5CB]'}`}
+                    className={`w-12 h-6 rounded-full relative transition-all ${isAnonymous ? 'bg-[#193c1f]' : 'bg-[#d0d5cb]'}`}
                   >
                     <div
                       className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${isAnonymous ? 'right-1' : 'left-1'}`}
@@ -347,10 +347,10 @@ export default function ReportForm({
               />
 
               <div className="pt-4">
-                <p className="text-[11px] font-black text-[#193C1F] uppercase tracking-widest mb-4">
+                <p className="text-[11px] font-black text-[#193c1f] uppercase tracking-widest mb-4">
                   Evidence (Multiple Allowed)
                 </p>
-                <div className="w-full border-2 border-dashed border-[#D0D5CB] rounded-[24px] p-8 bg-[#F7F3ED]/50 text-center">
+                <div className="w-full border-2 border-dashed border-[#d0d5cb] rounded-[24px] p-8 bg-[#f7f3ed]/50 text-center">
                   <input
                     type="file"
                     ref={fileInputRef}
@@ -367,7 +367,7 @@ export default function ReportForm({
                   <Button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="bg-white !text-[#193C1F] border border-[#193C1F] px-8"
+                    className="bg-white !text-[#193c1f] border border-[#193c1f] px-8"
                   >
                     Upload Files
                   </Button>
@@ -377,7 +377,7 @@ export default function ReportForm({
                       {selectedFiles.map((f, i) => (
                         <div
                           key={i}
-                          className="flex items-center gap-2 bg-white border border-[#D0D5CB] px-3 py-1 rounded-full text-[10px] font-bold"
+                          className="flex items-center gap-2 bg-white border border-[#d0d5cb] px-3 py-1 rounded-full text-[10px] font-bold"
                         >
                           {f.name}{' '}
                           <X
@@ -399,78 +399,78 @@ export default function ReportForm({
           ) : (
             <div className="space-y-6 animate-in slide-in-from-right-4 duration-500">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-5 bg-[#F7F3ED] rounded-[24px] border border-[#D0D5CB]/50">
-                  <p className="text-[10px] text-[#8EA087] font-black uppercase tracking-widest mb-1 flex items-center gap-1">
+                <div className="p-5 bg-[#f7f3ed] rounded-[24px] border border-[#d0d5cb]/50">
+                  <p className="text-[10px] text-[#8ea087] font-black uppercase tracking-widest mb-1 flex items-center gap-1">
                     <User size={10} /> Visibility
                   </p>
-                  <p className="text-sm font-bold text-[#193C1F]">
+                  <p className="text-sm font-bold text-[#193c1f]">
                     {isAnonymous ? 'Anonymous Report' : 'Identified Report'}
                   </p>
                 </div>
-                <div className="p-5 bg-[#F7F3ED] rounded-[24px] border border-[#D0D5CB]/50 md:col-span-2">
-                  <p className="text-[10px] text-[#8EA087] font-black uppercase tracking-widest mb-1">
+                <div className="p-5 bg-[#f7f3ed] rounded-[24px] border border-[#d0d5cb]/50 md:col-span-2">
+                  <p className="text-[10px] text-[#8ea087] font-black uppercase tracking-widest mb-1">
                     Report Title
                   </p>
-                  <p className="text-sm font-bold text-[#193C1F] leading-snug">
+                  <p className="text-sm font-bold text-[#193c1f] leading-snug">
                     {formData.title}
                   </p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="p-5 bg-[#F7F3ED] rounded-[24px] border border-[#D0D5CB]/50 flex items-center gap-4">
-                  <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-[#8EA087] shadow-sm">
+                <div className="p-5 bg-[#f7f3ed] rounded-[24px] border border-[#d0d5cb]/50 flex items-center gap-4">
+                  <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-[#8ea087] shadow-sm">
                     <Tag size={20} />
                   </div>
                   <div>
-                    <p className="text-[10px] text-[#8EA087] font-black uppercase tracking-widest mb-0.5">
+                    <p className="text-[10px] text-[#8ea087] font-black uppercase tracking-widest mb-0.5">
                       Category
                     </p>
-                    <p className="text-sm font-bold text-[#193C1F]">
+                    <p className="text-sm font-bold text-[#193c1f]">
                       {formData.type}
                     </p>
                   </div>
                 </div>
-                <div className="p-5 bg-[#F7F3ED] rounded-[24px] border border-[#D0D5CB]/50 flex items-center gap-4">
-                  <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-[#8EA087] shadow-sm">
+                <div className="p-5 bg-[#f7f3ed] rounded-[24px] border border-[#d0d5cb]/50 flex items-center gap-4">
+                  <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-[#8ea087] shadow-sm">
                     <Calendar size={20} />
                   </div>
                   <div>
-                    <p className="text-[10px] text-[#8EA087] font-black uppercase tracking-widest mb-0.5">
+                    <p className="text-[10px] text-[#8ea087] font-black uppercase tracking-widest mb-0.5">
                       Incident Date
                     </p>
-                    <p className="text-sm font-bold text-[#193C1F]">
+                    <p className="text-sm font-bold text-[#193c1f]">
                       {formData.date}
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="p-6 bg-[#F7F3ED] rounded-[32px] border border-[#D0D5CB]/50">
-                <p className="text-[10px] text-[#8EA087] font-black uppercase tracking-widest mb-3 flex items-center gap-1">
+              <div className="p-6 bg-[#f7f3ed] rounded-[32px] border border-[#d0d5cb]/50">
+                <p className="text-[10px] text-[#8ea087] font-black uppercase tracking-widest mb-3 flex items-center gap-1">
                   <MapPin size={12} /> Incident Location
                 </p>
                 <div className="space-y-1">
-                  <p className="text-sm font-bold text-[#193C1F]">
+                  <p className="text-sm font-bold text-[#193c1f]">
                     {formData.district}, {formData.city}, {formData.province}
                   </p>
-                  <p className="text-xs text-[#193C1F]/60 leading-relaxed italic">
+                  <p className="text-xs text-[#193c1f]/60 leading-relaxed italic">
                     {formData.fullAddress || 'No specific address provided.'}
                   </p>
                 </div>
               </div>
 
-              <div className="p-6 bg-[#F7F3ED] rounded-[32px] border border-[#D0D5CB]/50">
-                <p className="text-[10px] text-[#8EA087] font-black uppercase tracking-widest mb-2 flex items-center gap-1">
+              <div className="p-6 bg-[#f7f3ed] rounded-[32px] border border-[#d0d5cb]/50">
+                <p className="text-[10px] text-[#8ea087] font-black uppercase tracking-widest mb-2 flex items-center gap-1">
                   <AlignLeft size={12} /> Chronology
                 </p>
-                <p className="text-sm font-bold text-[#193C1F] whitespace-pre-wrap break-words leading-relaxed">
+                <p className="text-sm font-bold text-[#193c1f] whitespace-pre-wrap break-words leading-relaxed">
                   {formData.description}
                 </p>
               </div>
 
-              <div className="p-6 bg-[#F7F3ED] rounded-[32px] border border-[#D0D5CB]/50">
-                <p className="text-[10px] text-[#8EA087] font-black uppercase tracking-widest mb-3 flex items-center gap-2">
+              <div className="p-6 bg-[#f7f3ed] rounded-[32px] border border-[#d0d5cb]/50">
+                <p className="text-[10px] text-[#8ea087] font-black uppercase tracking-widest mb-3 flex items-center gap-2">
                   <Paperclip size={12} /> Evidence ({selectedFiles.length}{' '}
                   items)
                 </p>
@@ -479,23 +479,23 @@ export default function ReportForm({
                     {selectedFiles.map((file, idx) => (
                       <div
                         key={idx}
-                        className="flex items-center gap-2 bg-white border border-[#D0D5CB] px-4 py-2 rounded-2xl shadow-sm"
+                        className="flex items-center gap-2 bg-white border border-[#d0d5cb] px-4 py-2 rounded-2xl shadow-sm"
                       >
-                        <FileText size={14} className="text-[#8EA087]" />
-                        <span className="text-[11px] font-bold text-[#193C1F]">
+                        <FileText size={14} className="text-[#8ea087]" />
+                        <span className="text-[11px] font-bold text-[#193c1f]">
                           {file.name}
                         </span>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-xs text-[#193C1F]/40 italic">
+                  <p className="text-xs text-[#193c1f]/40 italic">
                     No files attached.
                   </p>
                 )}
               </div>
 
-              <label className="group flex items-start gap-4 p-6 border border-[#D0D5CB] rounded-[32px] cursor-pointer hover:bg-[#F7F3ED] transition-all duration-300">
+              <label className="group flex items-start gap-4 p-6 border border-[#d0d5cb] rounded-[32px] cursor-pointer hover:bg-[#f7f3ed] transition-all duration-300">
                 <div className="relative flex items-center mt-1">
                   <input
                     type="checkbox"
@@ -506,15 +506,15 @@ export default function ReportForm({
                         agreement: e.target.checked,
                       }))
                     }
-                    className="peer appearance-none w-6 h-6 border-2 border-[#D0D5CB] rounded-lg checked:bg-[#193C1F] checked:border-[#193C1F] transition-all cursor-pointer"
+                    className="peer appearance-none w-6 h-6 border-2 border-[#d0d5cb] rounded-lg checked:bg-[#193c1f] checked:border-[#193c1f] transition-all cursor-pointer"
                   />
                   <Check className="absolute w-4 h-4 text-white left-1 opacity-0 peer-checked:opacity-100 transition-opacity" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-[12px] font-black text-[#193C1F] leading-tight mb-1">
+                  <p className="text-[12px] font-black text-[#193c1f] leading-tight mb-1">
                     Confirmation of Truth
                   </p>
-                  <p className="text-[11px] font-bold text-[#193C1F]/50 leading-relaxed">
+                  <p className="text-[11px] font-bold text-[#193c1f]/50 leading-relaxed">
                     I state that this report is made truthfully and I am
                     responsible for the information provided.
                   </p>
@@ -524,11 +524,11 @@ export default function ReportForm({
           )}
         </div>
 
-        <div className="mt-12 pt-8 border-t border-[#D0D5CB] flex justify-between items-center">
+        <div className="mt-12 pt-8 border-t border-[#d0d5cb] flex justify-between items-center">
           <button
             type="button"
             onClick={() => setCurrentStep(1)}
-            className={`text-[12px] font-black uppercase tracking-[0.2em] transition-all hover:translate-x-[-4px] ${currentStep === 1 ? 'invisible' : 'text-[#8EA087] hover:text-[#193C1F]'}`}
+            className={`text-[12px] font-black uppercase tracking-[0.2em] transition-all hover:translate-x-[-4px] ${currentStep === 1 ? 'invisible' : 'text-[#8ea087] hover:text-[#193c1f]'}`}
           >
             ← Back to Edit
           </button>

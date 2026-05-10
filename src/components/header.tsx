@@ -1,6 +1,7 @@
 'use client';
 
 import { Logo } from '@/components/logo';
+import { useTranslation } from '@/components/providers/i18n-provider';
 import { authClient } from '@/lib/auth/auth-client';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -103,6 +104,7 @@ export const Header = ({
   const router = useRouter();
   const pathname = usePathname();
   const { data: session } = authClient.useSession();
+  const { t, language, setLanguage } = useTranslation();
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -139,12 +141,12 @@ export const Header = ({
 
   return (
     <>
-      <header className="h-[90px] w-full sticky top-0 border-b border-[#D0D5CB] flex items-center justify-between px-12 bg-[#F7F3ED]/80 backdrop-blur-md shrink-0 z-[100]">
+      <header className="h-[90px] w-full sticky top-0 border-b border-[#d0d5cb] flex items-center justify-between px-12 bg-[#f7f3ed]/80 backdrop-blur-md shrink-0 z-[100]">
         <div className="flex items-center gap-8 flex-grow">
           {showBackButton && (
             <button
               onClick={() => router.back()}
-              className="p-2.5 bg-white border border-[#D0D5CB] hover:bg-[#EBE6DE] rounded-2xl transition-all shadow-sm flex items-center justify-center group shrink-0"
+              className="p-2.5 bg-white border border-[#d0d5cb] hover:bg-[#EBE6DE] rounded-2xl transition-all shadow-sm flex items-center justify-center group shrink-0"
             >
               <svg
                 width="20"
@@ -178,8 +180,8 @@ export const Header = ({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Type to search..."
-                className="w-[250px] h-[52px] bg-[#EBE6DE] border border-transparent focus:border-[#8EA087] focus:bg-white rounded-2xl pl-14 pr-6 outline-none text-[15px] text-[#193C1F] shadow-sm transition-all"
+                placeholder={`${t('common.search')}...`}
+                className="w-[250px] h-[52px] bg-[#EBE6DE] border border-transparent focus:border-[#8ea087] focus:bg-white rounded-2xl pl-14 pr-6 outline-none text-[15px] text-[#193c1f] shadow-sm transition-all"
               />
             </div>
           ) : (
@@ -188,26 +190,50 @@ export const Header = ({
         </div>
 
         <div className="flex items-center gap-6 ml-10">
-          {/*<button className="relative w-12 h-12 flex items-center justify-center rounded-2xl bg-white border border-[#D0D5CB] hover:bg-[#EBE6DE] transition-all shadow-sm">
-            <BellIcon />
-            <span className="absolute top-3 right-3 w-2.5 h-2.5 bg-[#D1B698] rounded-full border-2 border-white animate-pulse"></span>
-          </button>*/}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setLanguage(language === 'en' ? 'id' : 'en')}
+              className="text-xs font-bold text-[#193c1f] border border-[#193c1f] rounded-md px-2 py-1 hover:bg-[#193c1f] hover:text-[#f7f3ed] transition-colors"
+            >
+              {language === 'en' ? 'ID' : 'EN'}
+            </button>
+
+            <button
+              type="button"
+              className="w-9 h-9 rounded-full flex items-center justify-center border border-[#d0d5cb] text-[#193c1f] hover:bg-[#d0d5cb]/50 transition-colors"
+              title="Dark Mode (Coming Soon)"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                />
+              </svg>
+            </button>
+          </div>
 
           <div className="relative" ref={dropdownRef}>
             <div
               onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="flex items-center gap-4 pl-6 border-l border-[#D0D5CB] cursor-pointer group select-none"
+              className="flex items-center gap-4 pl-6 border-l border-[#d0d5cb] cursor-pointer group select-none"
             >
               <div className="text-right hidden md:block">
-                <p className="text-[15px] font-bold text-[#193C1F] leading-tight">
+                <p className="text-[15px] font-bold text-[#193c1f] leading-tight">
                   {profileUsername}
                 </p>
-                <p className="text-[11px] text-[#8EA087] font-bold uppercase mt-0.5">
+                <p className="text-[11px] text-[#8ea087] font-bold uppercase mt-0.5">
                   ID: {profileId}
                 </p>
               </div>
               <div
-                className={`w-12 h-12 rounded-2xl overflow-hidden border-2 shadow-md transition-all ${isProfileOpen ? 'border-[#8EA087] ring-4 ring-[#8EA087]/10' : 'border-white group-hover:border-[#8EA087]'}`}
+                className={`w-12 h-12 rounded-2xl overflow-hidden border-2 shadow-md transition-all ${isProfileOpen ? 'border-[#8ea087] ring-4 ring-[#8ea087]/10' : 'border-white group-hover:border-[#8ea087]'}`}
               >
                 <Image
                   src={profileAvatar}
@@ -221,14 +247,14 @@ export const Header = ({
             </div>
 
             {isProfileOpen && (
-              <div className="absolute right-0 mt-4 w-64 bg-white border border-[#D0D5CB] rounded-[24px] shadow-2xl py-3 z-[1001] animate-in fade-in zoom-in duration-200">
+              <div className="absolute right-0 mt-4 w-64 bg-white border border-[#d0d5cb] rounded-[24px] shadow-2xl py-3 z-[1001] animate-in fade-in zoom-in duration-200">
                 <button
                   onClick={handleProfileClick}
-                  className="w-full flex items-center gap-3 px-6 py-3 text-[14px] text-[#193C1F] hover:bg-[#F7F3ED] transition-colors"
+                  className="w-full flex items-center gap-3 px-6 py-3 text-[14px] text-[#193c1f] hover:bg-[#f7f3ed] transition-colors"
                 >
-                  <UserIcon /> My Profile
+                  <UserIcon /> {t('header.profile')}
                 </button>
-                <div className="h-px bg-[#F7F3ED] my-2 mx-4" />
+                <div className="h-px bg-[#f7f3ed] my-2 mx-4" />
                 <button
                   onClick={() => {
                     setIsProfileOpen(false);
@@ -238,7 +264,7 @@ export const Header = ({
                   }}
                   className="w-full flex items-center gap-3 px-6 py-4 text-[14px] text-red-500 font-bold hover:bg-red-50 transition-colors"
                 >
-                  <LogoutIcon /> Log Out
+                  <LogoutIcon /> {t('header.logout')}
                 </button>
               </div>
             )}

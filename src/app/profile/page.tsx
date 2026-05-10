@@ -183,14 +183,14 @@ export default function ProfileManagement() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F7F3ED] text-[#193C1F] p-6 md:p-12">
+    <div className="min-h-screen bg-[#f7f3ed] text-[#193c1f] p-6 md:p-12">
       <Toast {...toast} onClose={() => setToast({ ...toast, show: false })} />
 
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center gap-5 mb-10">
           <Link
             href="/dashboard"
-            className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white border border-[#D0D5CB] hover:bg-[#EBE6DE] transition-all shadow-sm"
+            className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white border border-[#d0d5cb] hover:bg-[#EBE6DE] transition-all shadow-sm"
           >
             <svg
               width="20"
@@ -211,12 +211,12 @@ export default function ProfileManagement() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           <div className="lg:col-span-4">
-            <div className="bg-white p-10 rounded-[40px] border border-[#D0D5CB]/50 shadow-sm flex flex-col items-center text-center">
+            <div className="bg-white p-10 rounded-[40px] border border-[#d0d5cb]/50 shadow-sm flex flex-col items-center text-center">
               <div
                 className="relative group cursor-pointer"
                 onClick={() => fileInputRef.current?.click()}
               >
-                <div className="w-44 h-44 rounded-[48px] overflow-hidden border-8 border-[#F7F3ED] shadow-inner bg-slate-100">
+                <div className="w-44 h-44 rounded-[48px] overflow-hidden border-8 border-[#f7f3ed] shadow-inner bg-slate-100">
                   <Image
                     src={formData.avatarUrl || SILHOUETTE_AVATAR}
                     alt="Avatar"
@@ -226,7 +226,7 @@ export default function ProfileManagement() {
                     className="w-full h-full object-cover transition-transform group-hover:scale-105"
                   />
                 </div>
-                <div className="absolute -bottom-2 -right-2 w-12 h-12 bg-[#193C1F] rounded-2xl flex items-center justify-center border-4 border-white shadow-lg text-white">
+                <div className="absolute -bottom-2 -right-2 w-12 h-12 bg-[#193c1f] rounded-2xl flex items-center justify-center border-4 border-white shadow-lg text-white">
                   <svg
                     width="16"
                     height="16"
@@ -262,7 +262,7 @@ export default function ProfileManagement() {
                 <h2 className="text-xl font-black">
                   {session?.user.username || 'User'}
                 </h2>
-                <p className="text-[#8EA087] text-sm mt-1">
+                <p className="text-[#8ea087] text-sm mt-1">
                   {session?.user.email}
                 </p>
               </div>
@@ -270,8 +270,8 @@ export default function ProfileManagement() {
           </div>
 
           <div className="lg:col-span-8 space-y-6">
-            <section className="bg-white p-8 md:p-10 rounded-[40px] border border-[#D0D5CB]/50 shadow-sm">
-              <h3 className="text-lg font-black mb-8 text-[#193C1F]">
+            <section className="bg-white p-8 md:p-10 rounded-[40px] border border-[#d0d5cb]/50 shadow-sm">
+              <h3 className="text-lg font-black mb-8 text-[#193c1f]">
                 Public Profile
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -295,8 +295,8 @@ export default function ProfileManagement() {
               </div>
             </section>
 
-            <section className="bg-white p-8 md:p-10 rounded-[40px] border border-[#D0D5CB]/50 shadow-sm">
-              <h3 className="text-lg font-black mb-8 text-[#193C1F]">
+            <section className="bg-white p-8 md:p-10 rounded-[40px] border border-[#d0d5cb]/50 shadow-sm">
+              <h3 className="text-lg font-black mb-8 text-[#193c1f]">
                 Personal Details
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -334,9 +334,9 @@ export default function ProfileManagement() {
               </div>
             </section>
 
-            <section className="bg-white p-8 md:p-10 rounded-[40px] border border-[#D0D5CB]/50 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <section className="bg-white p-8 md:p-10 rounded-[40px] border border-[#d0d5cb]/50 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
               <div className="flex items-center gap-5">
-                <div className="w-14 h-14 bg-[#193C1F]/10 rounded-2xl flex items-center justify-center text-[#193C1F]">
+                <div className="w-14 h-14 bg-[#193c1f]/10 rounded-2xl flex items-center justify-center text-[#193c1f]">
                   <svg
                     width="18"
                     height="18"
@@ -349,10 +349,10 @@ export default function ProfileManagement() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-black text-[#193C1F]">
+                  <h3 className="font-black text-[#193c1f]">
                     Account Security
                   </h3>
-                  <p className="text-xs text-[#8EA087] mt-1 font-medium">
+                  <p className="text-xs text-[#8ea087] mt-1 font-medium">
                     Update password to keep account safe.
                   </p>
                 </div>
@@ -368,7 +368,7 @@ export default function ProfileManagement() {
             <div className="pt-4 flex justify-end">
               <Button
                 variant="secondary"
-                className="px-12 h-14 w-full md:w-auto shadow-lg shadow-[#193C1F]/10"
+                className="px-12 h-14 w-full md:w-auto shadow-lg shadow-[#193c1f]/10"
                 onClick={handleSaveProfile}
                 disabled={loading}
               >

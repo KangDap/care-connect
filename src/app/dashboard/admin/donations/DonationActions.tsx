@@ -74,12 +74,13 @@ export function DonationActions({
 
   return (
     <div className="flex items-center justify-end gap-2">
-      <button
+      <Button
+        variant="outline"
         onClick={() => setIsEditModalOpen(true)}
-        className="text-xs font-bold text-blue-600 hover:text-blue-700 transition uppercase tracking-wider"
+        className="text-xs px-4 py-1.5 min-h-0 h-auto"
       >
-        Edit
-      </button>
+        Manage
+      </Button>
 
       {/* Edit/Manage Modal */}
       <Modal
@@ -89,10 +90,10 @@ export function DonationActions({
       >
         <div className="space-y-6 text-left">
           <div>
-            <p className="text-xs font-black text-[#8EA087] uppercase tracking-widest mb-1">
+            <p className="text-xs font-black text-[#8ea087] uppercase tracking-widest mb-1">
               Donor & Amount
             </p>
-            <p className="text-sm font-bold text-[#193C1F]">
+            <p className="text-sm font-bold text-[#193c1f]">
               {donor} — {fmt(amount)}
             </p>
           </div>

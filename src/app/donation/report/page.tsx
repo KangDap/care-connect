@@ -9,7 +9,7 @@ export default function DonationReportPickerPage() {
   const router = useRouter();
 
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-[#F7F3ED]">
+    <div className="min-h-screen flex flex-col font-sans bg-[#f7f3ed]">
       <PublicHeader />
       <main className="flex-grow max-w-4xl mx-auto px-6 py-12 w-full">
         <ReportPicker

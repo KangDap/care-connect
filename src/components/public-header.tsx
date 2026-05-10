@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslation } from '@/components/providers/i18n-provider';
 import { authClient } from '@/lib/auth/auth-client';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -11,6 +12,7 @@ function PublicHeaderContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
+  const { t, language, setLanguage } = useTranslation();
 
   const fromDashboard = searchParams.get('from') === 'dashboard';
 
@@ -21,12 +23,12 @@ function PublicHeaderContent() {
   };
 
   return (
-    <header className="sticky top-0 z-[100] w-full bg-[#F7F3ED]/90 backdrop-blur-md py-6 px-12 flex justify-between items-center border-b border-[#D0D5CB]">
+    <header className="sticky top-0 z-[100] w-full bg-[#f7f3ed]/90 backdrop-blur-md py-6 px-12 flex justify-between items-center border-b border-[#d0d5cb]">
       <Link
         href="/"
         className="flex items-center gap-2 transition-opacity hover:opacity-80"
       >
-        <div className="w-10 h-10 bg-[#193C1F] rounded-lg flex items-center justify-center text-[#F7F3ED]">
+        <div className="w-10 h-10 bg-[#193c1f] rounded-lg flex items-center justify-center text-[#f7f3ed]">
           <svg
             className="w-6 h-6"
             fill="none"
@@ -42,13 +44,13 @@ function PublicHeaderContent() {
             ></path>
           </svg>
         </div>
-        <span className="text-2xl font-bold text-[#193C1F]">CareConnect</span>
+        <span className="text-2xl font-bold text-[#193c1f]">CareConnect</span>
       </Link>
 
       {fromDashboard ? (
         <button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-[#193C1F] font-bold hover:text-[#8EA087] transition-colors"
+          className="flex items-center gap-2 text-[#193c1f] font-bold hover:text-[#8ea087] transition-colors"
         >
           <svg
             width="20"
@@ -66,28 +68,28 @@ function PublicHeaderContent() {
         </button>
       ) : (
         <>
-          <nav className="flex items-center gap-12 text-[#193C1F] font-medium hidden md:flex">
+          <nav className="flex items-center gap-12 text-[#193c1f] font-medium hidden md:flex">
             <Link
               href="/"
-              className={`transition-colors ${isActive('/') ? 'text-[#8EA087] font-bold border-b-2 border-[#8EA087] pb-1' : 'hover:text-[#8EA087]'}`}
+              className={`transition-colors ${isActive('/') ? 'text-[#8ea087] font-bold border-b-2 border-[#8ea087] pb-1' : 'hover:text-[#8ea087]'}`}
             >
-              Home
+              {t('header.home')}
             </Link>
             <Link
               href={isLoggedIn ? '/consultation' : '/login'}
-              className={`transition-colors ${isActive('/consultation') ? 'text-[#8EA087] font-bold border-b-2 border-[#8EA087] pb-1' : 'hover:text-[#8EA087]'}`}
+              className={`transition-colors ${isActive('/consultation') ? 'text-[#8ea087] font-bold border-b-2 border-[#8ea087] pb-1' : 'hover:text-[#8ea087]'}`}
             >
               Consultation
             </Link>
             <Link
               href={isLoggedIn ? '/publicreports' : '/login'}
-              className={`transition-colors ${isActive('/publicreports') ? 'text-[#8EA087] font-bold border-b-2 border-[#8EA087] pb-1' : 'hover:text-[#8EA087]'}`}
+              className={`transition-colors ${isActive('/publicreports') ? 'text-[#8ea087] font-bold border-b-2 border-[#8ea087] pb-1' : 'hover:text-[#8ea087]'}`}
             >
-              Public Reports
+              {t('header.publicReports')}
             </Link>
             <Link
               href={isLoggedIn ? '/report' : '/login'}
-              className={`transition-colors ${isActive('/report') ? 'text-[#8EA087] font-bold border-b-2 border-[#8EA087] pb-1' : 'hover:text-[#8EA087]'}`}
+              className={`transition-colors ${isActive('/report') ? 'text-[#8ea087] font-bold border-b-2 border-[#8ea087] pb-1' : 'hover:text-[#8ea087]'}`}
             >
               Report
             </Link>
@@ -95,8 +97,8 @@ function PublicHeaderContent() {
               href={isLoggedIn ? '/forums' : '/login'}
               className={`transition-colors ${
                 isActive('/forums')
-                  ? 'text-[#8EA087] font-bold border-b-2 border-[#8EA087] pb-1'
-                  : 'hover:text-[#8EA087]'
+                  ? 'text-[#8ea087] font-bold border-b-2 border-[#8ea087] pb-1'
+                  : 'hover:text-[#8ea087]'
               }`}
             >
               Forum
@@ -106,18 +108,48 @@ function PublicHeaderContent() {
               href={isLoggedIn ? '/donation' : '/login'}
               className={`transition-colors ${
                 isActive('/donation')
-                  ? 'text-[#8EA087] font-bold border-b-2 border-[#8EA087] pb-1'
-                  : 'hover:text-[#8EA087]'
+                  ? 'text-[#8ea087] font-bold border-b-2 border-[#8ea087] pb-1'
+                  : 'hover:text-[#8ea087]'
               }`}
             >
-              Donation
+              {t('header.donate')}
             </Link>
           </nav>
-          <Link href={isLoggedIn ? '/dashboard' : '/login'}>
-            <button className="bg-[#8EA087] text-[#F7F3ED] px-8 py-2.5 rounded-lg font-bold hover:bg-[#193C1F] transition-colors">
-              {isLoggedIn ? 'Dashboard' : 'Login/Register'}
+
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setLanguage(language === 'en' ? 'id' : 'en')}
+              className="text-xs font-bold text-[#193c1f] border border-[#193c1f] rounded-md px-2 py-1 hover:bg-[#193c1f] hover:text-[#f7f3ed] transition-colors"
+            >
+              {language === 'en' ? 'ID' : 'EN'}
             </button>
-          </Link>
+
+            <button
+              type="button"
+              className="w-9 h-9 rounded-full flex items-center justify-center border border-[#d0d5cb] text-[#193c1f] hover:bg-[#d0d5cb]/50 transition-colors"
+              title="Dark Mode (Coming Soon)"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
+                />
+              </svg>
+            </button>
+
+            <Link href={isLoggedIn ? '/dashboard' : '/login'}>
+              <button className="bg-[#8ea087] text-[#f7f3ed] px-8 py-2.5 rounded-lg font-bold hover:bg-[#193c1f] transition-colors">
+                {isLoggedIn ? t('header.dashboard') : t('header.login')}
+              </button>
+            </Link>
+          </div>
         </>
       )}
     </header>
@@ -128,7 +160,7 @@ export function PublicHeader() {
   return (
     <Suspense
       fallback={
-        <header className="sticky top-0 z-[100] h-[92px] w-full bg-[#F7F3ED]/90 border-b border-[#D0D5CB]" />
+        <header className="sticky top-0 z-[100] h-[92px] w-full bg-[#f7f3ed]/90 border-b border-[#d0d5cb]" />
       }
     >
       <PublicHeaderContent />

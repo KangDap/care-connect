@@ -121,19 +121,19 @@ export default function PsychologistConsultationsContent({
   return (
     <div className="space-y-8 animate-fade-in">
       <div>
-        <h2 className="text-[32px] font-black text-[#193C1F]">
+        <h2 className="text-[32px] font-black text-[#193c1f]">
           Patient Consultations
         </h2>
-        <p className="text-[#8EA087] font-medium">
+        <p className="text-[#8ea087] font-medium">
           {query
             ? `Showing results for "${query}"`
             : 'Manage your upcoming and history of patient sessions.'}
         </p>
       </div>
 
-      <div className="bg-white border border-[#D0D5CB] rounded-[32px] overflow-hidden shadow-sm">
+      <div className="bg-white border border-[#d0d5cb] rounded-[32px] overflow-hidden shadow-sm">
         <table className="w-full text-left border-collapse">
-          <thead className="bg-[#F7F3ED] text-[11px] text-[#8EA087] font-black uppercase tracking-widest">
+          <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
             <tr>
               <th className="px-8 py-5">Patient & Case</th>
               <th className="px-8 py-5">Date & Time</th>
@@ -151,7 +151,7 @@ export default function PsychologistConsultationsContent({
                   key={row.id}
                   onMouseEnter={() => setHoveredRowId(row.id)}
                   onMouseLeave={() => setHoveredRowId(null)}
-                  className="group border-b border-[#F7F3ED] last:border-0"
+                  className="group border-b border-[#f7f3ed] last:border-0"
                 >
                   <tr
                     className={`transition-colors cursor-default ${hoveredRowId === row.id ? 'bg-[#FDFCFB]' : ''}`}
@@ -164,7 +164,7 @@ export default function PsychologistConsultationsContent({
                             : row.user?.name || 'User'}
                         </p>
                         {row.isAnonymous && (
-                          <span className="px-2 py-0.5 bg-[#EBE6DE] text-[#193C1F]/60 text-[10px] font-bold rounded-md uppercase">
+                          <span className="px-2 py-0.5 bg-[#EBE6DE] text-[#193c1f]/60 text-[10px] font-bold rounded-md uppercase">
                             Anon
                           </span>
                         )}
@@ -173,15 +173,15 @@ export default function PsychologistConsultationsContent({
                         {row.title}
                       </p>
                     </td>
-                    <td className="px-8 py-6 font-bold text-[#193C1F]">
+                    <td className="px-8 py-6 font-bold text-[#193c1f]">
                       {formatDateTimeLabel(row.date, row.time)}
                     </td>
                     <td className="px-8 py-6">
                       <span
                         className={`px-4 py-1.5 rounded-full text-[10px] font-black ${
                           isCompleted
-                            ? 'bg-[#EBE6DE] text-[#193C1F]/40'
-                            : 'bg-[#D1B698]/20 text-[#D1B698]'
+                            ? 'bg-[#EBE6DE] text-[#193c1f]/40'
+                            : 'bg-[#d1b698]/20 text-[#d1b698]'
                         }`}
                       >
                         {statusStr}
@@ -190,7 +190,7 @@ export default function PsychologistConsultationsContent({
                     <td className="px-8 py-6 text-right">
                       <div className="flex justify-end items-center gap-3">
                         {isCompleted ? (
-                          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#EBE6DE] text-[#8EA087] border border-[#D0D5CB] cursor-not-allowed opacity-50">
+                          <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#EBE6DE] text-[#8ea087] border border-[#d0d5cb] cursor-not-allowed opacity-50">
                             <ChatIcon />
                           </div>
                         ) : (
@@ -198,8 +198,8 @@ export default function PsychologistConsultationsContent({
                             href={`/consultation-chat/${row.id}`}
                             className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all shadow-sm border ${
                               statusStr === 'ONGOING'
-                                ? 'bg-[#193C1F] text-white border-[#193C1F] hover:bg-[#122d17]'
-                                : 'bg-white text-[#8EA087] border-[#D0D5CB] hover:bg-[#F7F3ED] hover:text-[#193C1F]'
+                                ? 'bg-[#193c1f] text-white border-[#193c1f] hover:bg-[#122d17]'
+                                : 'bg-white text-[#8ea087] border-[#d0d5cb] hover:bg-[#f7f3ed] hover:text-[#193c1f]'
                             }`}
                           >
                             <ChatIcon />
@@ -216,48 +216,48 @@ export default function PsychologistConsultationsContent({
                         className={`overflow-hidden transition-all duration-500 bg-[#FDFCFB] ${hoveredRowId === row.id ? 'max-h-[800px]' : 'max-h-0'}`}
                       >
                         <div className="px-8 pb-8 pt-2">
-                          <div className="p-7 bg-white border border-[#D0D5CB]/40 rounded-[24px] shadow-sm">
+                          <div className="p-7 bg-white border border-[#d0d5cb]/40 rounded-[24px] shadow-sm">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                               <div className="space-y-6">
-                                <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8EA087] mb-4">
+                                <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087] mb-4">
                                   Case Summary
                                 </h4>
                                 <div className="grid grid-cols-2 gap-6">
                                   <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8EA087] font-bold uppercase">
+                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase">
                                       Patient Name
                                     </p>
-                                    <p className="text-[14px] font-bold text-[#193C1F]">
+                                    <p className="text-[14px] font-bold text-[#193c1f]">
                                       {row.isAnonymous
                                         ? 'Anonymous Patient'
                                         : row.user?.name || 'Anonymous'}
                                     </p>
                                   </div>
                                   <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8EA087] font-bold uppercase">
+                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase">
                                       Category
                                     </p>
-                                    <p className="text-[14px] font-bold text-[#193C1F]">
+                                    <p className="text-[14px] font-bold text-[#193c1f]">
                                       {row.category}
                                     </p>
                                   </div>
                                   <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8EA087] font-bold uppercase">
+                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase">
                                       Identity
                                     </p>
-                                    <p className="text-[14px] font-bold text-[#193C1F]">
+                                    <p className="text-[14px] font-bold text-[#193c1f]">
                                       {row.isAnonymous ? 'Anonymous' : 'Public'}
                                     </p>
                                   </div>
                                 </div>
                               </div>
 
-                              <div className="flex flex-col border-l border-[#F7F3ED] pl-10">
-                                <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8EA087] mb-4">
+                              <div className="flex flex-col border-l border-[#f7f3ed] pl-10">
+                                <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087] mb-4">
                                   Description & Documents
                                 </h4>
-                                <div className="bg-[#F7F3ED]/30 p-5 rounded-2xl border border-[#F7F3ED] max-h-[200px] overflow-y-auto font-medium mb-4">
-                                  <p className="text-[13px] leading-relaxed text-[#193C1F]/80 italic">
+                                <div className="bg-[#f7f3ed]/30 p-5 rounded-2xl border border-[#f7f3ed] max-h-[200px] overflow-y-auto font-medium mb-4">
+                                  <p className="text-[13px] leading-relaxed text-[#193c1f]/80 italic">
                                     &quot;
                                     {row.description ||
                                       'No description provided.'}
@@ -265,14 +265,14 @@ export default function PsychologistConsultationsContent({
                                   </p>
                                 </div>
                                 {row.attachmentUrl && (
-                                  <div className="flex items-center justify-between p-3 bg-[#F7F3ED] rounded-xl border border-[#D0D5CB]/30">
-                                    <span className="text-[12px] font-bold text-[#193C1F]">
+                                  <div className="flex items-center justify-between p-3 bg-[#f7f3ed] rounded-xl border border-[#d0d5cb]/30">
+                                    <span className="text-[12px] font-bold text-[#193c1f]">
                                       Attached Document
                                     </span>
                                     <Link
                                       href={row.attachmentUrl}
                                       target="_blank"
-                                      className="text-[10px] font-black text-[#8EA087] uppercase hover:text-[#193C1F]"
+                                      className="text-[10px] font-black text-[#8ea087] uppercase hover:text-[#193c1f]"
                                     >
                                       View
                                     </Link>
@@ -293,7 +293,7 @@ export default function PsychologistConsultationsContent({
               <tr>
                 <td
                   colSpan={4}
-                  className="p-20 text-center text-[#8EA087] font-bold"
+                  className="p-20 text-center text-[#8ea087] font-bold"
                 >
                   No consultations found.
                 </td>

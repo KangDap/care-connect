@@ -90,10 +90,10 @@ export default function PsychologistDonationsContent({
   return (
     <div className="space-y-10 animate-fade-in">
       <div>
-        <h2 className="text-[32px] font-black text-[#193C1F] tracking-tight">
+        <h2 className="text-[32px] font-black text-[#193c1f] tracking-tight">
           Donation Transparency
         </h2>
-        <p className="text-[#8EA087] font-medium">
+        <p className="text-[#8ea087] font-medium">
           Track how community donations are distributed based on your clinical
           contributions.
         </p>
@@ -120,16 +120,16 @@ export default function PsychologistDonationsContent({
         ].map((item, index) => (
           <div
             key={index}
-            className="bg-[#F7F3ED] p-8 rounded-[28px] border border-[#D0D5CB] flex items-center gap-6 flex-1 shadow-sm transition-all hover:shadow-md"
+            className="bg-[#f7f3ed] p-8 rounded-[28px] border border-[#d0d5cb] flex items-center gap-6 flex-1 shadow-sm transition-all hover:shadow-md"
           >
             <div className="w-14 h-14 bg-[#EBE6DE] rounded-2xl flex items-center justify-center shrink-0">
               {item.icon}
             </div>
             <div>
-              <p className="text-[10px] uppercase font-black text-[#8EA087] tracking-widest mb-1">
+              <p className="text-[10px] uppercase font-black text-[#8ea087] tracking-widest mb-1">
                 {item.label}
               </p>
-              <p className="text-[24px] font-bold text-[#193C1F] leading-none">
+              <p className="text-[24px] font-bold text-[#193c1f] leading-none">
                 {item.val}
               </p>
             </div>
@@ -138,33 +138,33 @@ export default function PsychologistDonationsContent({
       </div>
 
       {/* FORMULA INFO */}
-      <div className="bg-white p-7 rounded-[24px] border border-[#D0D5CB]/50 flex gap-6 items-center shadow-sm">
-        <div className="w-12 h-12 bg-[#F7F3ED] rounded-full flex items-center justify-center shrink-0 font-black text-[#193C1F]">
+      <div className="bg-white p-7 rounded-[24px] border border-[#d0d5cb]/50 flex gap-6 items-center shadow-sm">
+        <div className="w-12 h-12 bg-[#f7f3ed] rounded-full flex items-center justify-center shrink-0 font-black text-[#193c1f]">
           i
         </div>
-        <p className="text-[13px] text-[#193C1F]/70 leading-relaxed font-medium">
+        <p className="text-[13px] text-[#193c1f]/70 leading-relaxed font-medium">
           Incentives are calculated from{' '}
-          <span className="font-bold text-[#193C1F]">
+          <span className="font-bold text-[#193c1f]">
             {stats.allocationPercentage * 100}%
           </span>{' '}
           of the total monthly pool, pro-rated by your{' '}
-          <span className="font-bold text-[#193C1F]">contribution ratio</span> (
+          <span className="font-bold text-[#193c1f]">contribution ratio</span> (
           {stats.yourSessions}/{stats.totalPlatformSessions} sessions).
         </p>
       </div>
 
       {/* TABLE */}
-      <div className="bg-white border border-[#D0D5CB] rounded-[32px] overflow-hidden shadow-sm">
-        <div className="p-8 border-b border-[#F7F3ED] bg-[#FDFCFB] flex justify-between items-center">
-          <h3 className="font-bold text-[18px] text-[#193C1F]">
+      <div className="bg-white border border-[#d0d5cb] rounded-[32px] overflow-hidden shadow-sm">
+        <div className="p-8 border-b border-[#f7f3ed] bg-[#FDFCFB] flex justify-between items-center">
+          <h3 className="font-bold text-[18px] text-[#193c1f]">
             Distribution History
           </h3>
-          <span className="text-[11px] font-black text-[#8EA087] uppercase tracking-widest bg-[#F7F3ED] px-4 py-1 rounded-full">
+          <span className="text-[11px] font-black text-[#8ea087] uppercase tracking-widest bg-[#f7f3ed] px-4 py-1 rounded-full">
             Archive 2026
           </span>
         </div>
         <table className="w-full text-left border-collapse">
-          <thead className="bg-[#F7F3ED] text-[11px] text-[#8EA087] font-black uppercase tracking-widest">
+          <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
             <tr>
               <th className="px-8 py-5">Period</th>
               <th className="px-8 py-5">Activity</th>
@@ -172,18 +172,18 @@ export default function PsychologistDonationsContent({
               <th className="px-8 py-5">Incentive Received</th>
             </tr>
           </thead>
-          <tbody className="text-[14px] text-[#193C1F]">
+          <tbody className="text-[14px] text-[#193c1f]">
             {history.map((item) => (
               <tr
                 key={item.id}
-                className="border-b border-[#F7F3ED] last:border-0 hover:bg-[#FDFCFB] transition-colors"
+                className="border-b border-[#f7f3ed] last:border-0 hover:bg-[#FDFCFB] transition-colors"
               >
                 <td className="px-8 py-6 font-bold">{item.period}</td>
                 <td className="px-8 py-6">{item.sessions} Sessions</td>
                 <td className="px-8 py-6 opacity-60">
                   {formatRupiah(item.platformPool)}
                 </td>
-                <td className="px-8 py-6 font-bold text-[#193C1F]">
+                <td className="px-8 py-6 font-bold text-[#193c1f]">
                   {formatRupiah(item.incentive)}
                 </td>
               </tr>

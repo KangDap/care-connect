@@ -66,22 +66,24 @@ export function ConsultationActions({
   };
 
   return (
-    <div className="flex items-center justify-end gap-3">
-      <button
+    <div className="flex items-center justify-end gap-2">
+      <Button
+        variant="outline"
         onClick={() => {
           setNewStatus(status);
           setIsEditModalOpen(true);
         }}
-        className="text-xs font-bold text-blue-600 hover:text-blue-700 transition uppercase tracking-wider"
+        className="text-xs px-4 py-1.5 min-h-0 h-auto"
       >
         Edit
-      </button>
-      <button
+      </Button>
+      <Button
+        variant="outline"
         onClick={() => setIsDeleteModalOpen(true)}
-        className="text-xs font-bold text-red-600 hover:text-red-700 transition uppercase tracking-wider"
+        className="text-xs px-4 py-1.5 min-h-0 h-auto text-red-600 border-red-600 hover:bg-red-50"
       >
         Delete
-      </button>
+      </Button>
 
       {/* Edit Status Modal */}
       <Modal
@@ -94,11 +96,11 @@ export function ConsultationActions({
             Ubah status untuk konsultasi <strong>{title}</strong>.
           </p>
           <div>
-            <label className="text-sm font-bold text-[#193C1F] mb-1.5 block uppercase tracking-widest">
+            <label className="text-sm font-bold text-[#193c1f] mb-1.5 block uppercase tracking-widest">
               Status
             </label>
             <select
-              className="w-full bg-[#f9faf7] border border-[#d0d5cb] rounded-xl px-4 py-3 text-sm text-[#193c1f] focus:outline-none focus:border-[#8ea087] focus:ring-1 focus:ring-[#8ea087] font-bold"
+              className="w-full bg-[#ede4d8] border border-[#d0d5cb] rounded-xl px-4 py-3 text-sm text-[#193c1f] focus:outline-none focus:border-[#8ea087] focus:ring-1 focus:ring-[#8ea087] font-bold"
               value={newStatus}
               onChange={(e) => setNewStatus(e.target.value)}
             >

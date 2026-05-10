@@ -1,3 +1,4 @@
+import { I18nProvider } from '@/components/providers/i18n-provider';
 import QueryProvider from '@/components/providers/query-provider';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
@@ -26,8 +27,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body className="antialiased bg-[#F7F3ED] text-[#193C1F]">
-        <QueryProvider>{children}</QueryProvider>
+      <body className="antialiased bg-[#f7f3ed] text-[#193c1f]">
+        <I18nProvider>
+          <QueryProvider>{children}</QueryProvider>
+        </I18nProvider>
       </body>
     </html>
   );

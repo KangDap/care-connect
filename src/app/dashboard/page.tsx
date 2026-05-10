@@ -93,7 +93,7 @@ export default async function DashboardPage() {
 
   return (
     <React.Suspense
-      fallback={<div className="p-12 text-[#8EA087]">Loading dashboard...</div>}
+      fallback={<div className="p-12 text-[#8ea087]">Loading dashboard...</div>}
     >
       <DashboardContent
         consultations={consultations}

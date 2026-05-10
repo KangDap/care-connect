@@ -56,7 +56,7 @@ export default async function AllConsultationsPage() {
   return (
     <React.Suspense
       fallback={
-        <div className="p-12 text-[#8EA087] animate-pulse">
+        <div className="p-12 text-[#8ea087] animate-pulse">
           Loading all consultations...
         </div>
       }

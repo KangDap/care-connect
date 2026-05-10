@@ -1,5 +1,6 @@
 'use client';
 
+import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Modal } from '@/components/modal';
@@ -34,6 +35,8 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
 
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [updateId, setUpdateId] = useState<number | null>(null);
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -107,23 +110,28 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
     }
   };
 
-  const handleDelete = async (id: number) => {
-    if (
-      !confirm(
-        'Are you sure you want to delete this channel? ALL messages will be deleted forever.',
-      )
-    )
-      return;
+  const confirmDelete = (id: number) => {
+    setDeleteId(id);
+    setIsDeleteAlertOpen(true);
+  };
+
+  const executeDelete = async () => {
+    if (!deleteId) return;
     try {
-      const res = await fetch(`/api/dashboard/admin/community-chat?id=${id}`, {
-        method: 'DELETE',
-      });
+      const res = await fetch(
+        `/api/dashboard/admin/community-chat?id=${deleteId}`,
+        {
+          method: 'DELETE',
+        },
+      );
       if (!res.ok) throw new Error('Failed to delete channel');
       setToastState({
         show: true,
         msg: 'Channel deleted successfully!',
         type: 'success',
       });
+      setIsDeleteAlertOpen(false);
+      setDeleteId(null);
       router.refresh();
     } catch (err) {
       setToastState({
@@ -151,10 +159,10 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
       />
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-[32px] font-black text-[#193C1F]">
+          <h1 className="text-[32px] font-black text-[#193c1f]">
             Community Channels
           </h1>
-          <p className="text-[#8EA087] font-medium">
+          <p className="text-[#8ea087] font-medium">
             Manage community channel topics.
           </p>
         </div>
@@ -163,9 +171,9 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
         </Button>
       </div>
 
-      <div className="bg-white border border-[#D0D5CB] rounded-2xl overflow-hidden shadow-sm">
+      <div className="bg-white border border-[#d0d5cb] rounded-2xl overflow-hidden shadow-sm">
         <table className="w-full text-left">
-          <thead className="bg-[#F7F3ED] text-[11px] text-[#8EA087] font-black uppercase tracking-widest">
+          <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
             <tr>
               <th className="px-6 py-4">Channel Name</th>
               <th className="px-6 py-4">Type</th>
@@ -173,12 +181,12 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
               <th className="px-6 py-4 text-right">Actions</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-[#F7F3ED] text-sm">
+          <tbody className="divide-y divide-[#f7f3ed] text-sm">
             {channels.length === 0 ? (
               <tr>
                 <td
                   colSpan={4}
-                  className="px-6 py-12 text-center text-[#8EA087] font-medium"
+                  className="px-6 py-12 text-center text-[#8ea087] font-medium"
                 >
                   No channels found.
                 </td>
@@ -187,10 +195,10 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
               channels.map((ch) => (
                 <tr
                   key={ch.id}
-                  className="hover:bg-[#F7F3ED]/50 transition-colors"
+                  className="hover:bg-[#f7f3ed]/50 transition-colors"
                 >
                   <td className="px-6 py-4">
-                    <div className="font-bold text-[#193C1F]">#{ch.name}</div>
+                    <div className="font-bold text-[#193c1f]">#{ch.name}</div>
                     <div className="text-xs text-gray-500">
                       {ch.description}
                     </div>
@@ -202,18 +210,22 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
                     {fmtDate(ch.createdAt)}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button
-                      onClick={() => openUpdateModal(ch)}
-                      className="text-sm font-bold text-blue-600 hover:text-blue-700 transition"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(ch.id)}
-                      className="text-sm font-bold text-red-600 hover:text-red-700 ml-4 transition"
-                    >
-                      Delete
-                    </button>
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => openUpdateModal(ch)}
+                        className="text-xs px-4 py-1.5 min-h-0 h-auto"
+                      >
+                        Edit
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => confirmDelete(ch.id)}
+                        className="text-xs px-4 py-1.5 min-h-0 h-auto text-red-600 border-red-600 hover:bg-red-50"
+                      >
+                        Delete
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -236,11 +248,11 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
             placeholder="e.g. stress-relief"
           />
           <div>
-            <label className="text-sm font-bold text-[#193C1F] mb-1.5 block">
+            <label className="text-sm font-bold text-[#193c1f] mb-1.5 block">
               Description
             </label>
             <textarea
-              className="w-full bg-[#f9faf7] border border-[#d0d5cb] rounded-xl px-4 py-3 text-sm text-[#193c1f] focus:outline-none focus:border-[#8ea087] focus:ring-1 focus:ring-[#8ea087] transition-shadow resize-none"
+              className="w-full bg-[#ede4d8] border border-[#d0d5cb] rounded-xl px-4 py-3 text-sm text-[#193c1f] focus:outline-none focus:border-[#8ea087] focus:ring-1 focus:ring-[#8ea087] transition-shadow resize-none"
               rows={3}
               value={formData.description}
               onChange={(e) =>
@@ -249,11 +261,11 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
             />
           </div>
           <div>
-            <label className="text-sm font-bold text-[#193C1F] mb-1.5 block">
+            <label className="text-sm font-bold text-[#193c1f] mb-1.5 block">
               Type
             </label>
             <select
-              className="w-full bg-[#f9faf7] border border-[#d0d5cb] rounded-xl px-4 py-3 text-sm text-[#193c1f] focus:outline-none focus:border-[#8ea087] focus:ring-1 focus:ring-[#8ea087]"
+              className="w-full bg-[#ede4d8] border border-[#d0d5cb] rounded-xl px-4 py-3 text-sm text-[#193c1f] focus:outline-none focus:border-[#8ea087] focus:ring-1 focus:ring-[#8ea087]"
               value={formData.type}
               onChange={(e) =>
                 setFormData({ ...formData, type: e.target.value })
@@ -291,11 +303,11 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
             placeholder="e.g. stress-relief"
           />
           <div>
-            <label className="text-sm font-bold text-[#193C1F] mb-1.5 block">
+            <label className="text-sm font-bold text-[#193c1f] mb-1.5 block">
               Description
             </label>
             <textarea
-              className="w-full bg-[#f9faf7] border border-[#d0d5cb] rounded-xl px-4 py-3 text-sm text-[#193c1f] focus:outline-none focus:border-[#8ea087] focus:ring-1 focus:ring-[#8ea087] transition-shadow resize-none"
+              className="w-full bg-[#ede4d8] border border-[#d0d5cb] rounded-xl px-4 py-3 text-sm text-[#193c1f] focus:outline-none focus:border-[#8ea087] focus:ring-1 focus:ring-[#8ea087] transition-shadow resize-none"
               rows={3}
               value={formData.description}
               onChange={(e) =>
@@ -304,11 +316,11 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
             />
           </div>
           <div>
-            <label className="text-sm font-bold text-[#193C1F] mb-1.5 block">
+            <label className="text-sm font-bold text-[#193c1f] mb-1.5 block">
               Type
             </label>
             <select
-              className="w-full bg-[#f9faf7] border border-[#d0d5cb] rounded-xl px-4 py-3 text-sm text-[#193c1f] focus:outline-none focus:border-[#8ea087] focus:ring-1 focus:ring-[#8ea087]"
+              className="w-full bg-[#ede4d8] border border-[#d0d5cb] rounded-xl px-4 py-3 text-sm text-[#193c1f] focus:outline-none focus:border-[#8ea087] focus:ring-1 focus:ring-[#8ea087]"
               value={formData.type}
               onChange={(e) =>
                 setFormData({ ...formData, type: e.target.value })
@@ -332,6 +344,16 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
           </div>
         </form>
       </Modal>
+
+      <Alert
+        isOpen={isDeleteAlertOpen}
+        onClose={() => setIsDeleteAlertOpen(false)}
+        onConfirm={executeDelete}
+        title="Delete Channel"
+        description="Are you sure you want to delete this channel? ALL messages will be deleted forever."
+        confirmText="Delete"
+        type="danger"
+      />
     </div>
   );
 }

@@ -163,10 +163,10 @@ export default function DashboardContent({
     <div className="space-y-10 animate-fade-in">
       <div className="flex justify-between items-end">
         <div>
-          <h2 className="text-[36px] font-black text-[#193C1F] tracking-tight leading-tight">
+          <h2 className="text-[36px] font-black text-[#193c1f] tracking-tight leading-tight">
             Welcome back, {displayName}
           </h2>
-          <p className="text-[#8EA087] text-[16px] font-medium mt-1">
+          <p className="text-[#8ea087] text-[16px] font-medium mt-1">
             {searchBarQuery
               ? `Showing results for \"${searchBarQuery}\"`
               : pendingReportsCount > 0
@@ -178,21 +178,21 @@ export default function DashboardContent({
           <button
             suppressHydrationWarning
             onClick={() => router.push('/consultation?from=dashboard')}
-            className="px-7 py-3.5 bg-[#8EA087] hover:bg-[#193C1F] text-white rounded-2xl font-bold text-[14px] transition-all shadow-lg"
+            className="px-7 py-3.5 bg-[#8ea087] hover:bg-[#193c1f] text-white rounded-2xl font-bold text-[14px] transition-all shadow-lg"
           >
             + New Consultation
           </button>
           <button
             suppressHydrationWarning
             onClick={() => router.push('/report?from=dashboard')}
-            className="px-7 py-3.5 bg-white border-2 border-[#D0D5CB] text-[#193C1F] rounded-2xl font-bold text-[14px] transition-all shadow-lg hover:bg-[#EBE6DE]"
+            className="px-7 py-3.5 bg-white border-2 border-[#d0d5cb] text-[#193c1f] rounded-2xl font-bold text-[14px] transition-all shadow-lg hover:bg-[#EBE6DE]"
           >
             + New Report
           </button>
           <button
             suppressHydrationWarning
             onClick={() => router.push('/donation?from=dashboard')}
-            className="px-7 py-3.5 bg-white border-2 border-[#D0D5CB] text-[#193C1F] rounded-2xl font-bold text-[14px] transition-all shadow-lg hover:bg-[#EBE6DE]"
+            className="px-7 py-3.5 bg-white border-2 border-[#d0d5cb] text-[#193c1f] rounded-2xl font-bold text-[14px] transition-all shadow-lg hover:bg-[#EBE6DE]"
           >
             + New Donation
           </button>
@@ -221,17 +221,17 @@ export default function DashboardContent({
         ].map((item, index) => (
           <div
             key={index}
-            className="bg-[#F7F3ED] p-8 rounded-[28px] border border-[#D0D5CB] flex items-center gap-6 flex-1 shadow-sm"
+            className="bg-[#f7f3ed] p-8 rounded-[28px] border border-[#d0d5cb] flex items-center gap-6 flex-1 shadow-sm"
           >
             <div className="w-14 h-14 bg-[#EBE6DE] rounded-2xl flex items-center justify-center">
               {item.icon}
             </div>
             <div>
-              <p className="text-[10px] uppercase font-black text-[#8EA087] tracking-widest">
+              <p className="text-[10px] uppercase font-black text-[#8ea087] tracking-widest">
                 {item.label}
               </p>
               <p
-                className={`${item.label === 'Donations Received' ? 'text-[24px]' : 'text-[32px]'} font-bold text-[#193C1F] leading-none`}
+                className={`${item.label === 'Donations Received' ? 'text-[24px]' : 'text-[32px]'} font-bold text-[#193c1f] leading-none`}
               >
                 {item.val}
               </p>
@@ -241,36 +241,36 @@ export default function DashboardContent({
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
-        <div className="bg-white border border-[#D0D5CB] rounded-[32px] overflow-hidden shadow-sm">
-          <div className="p-8 border-b border-[#F7F3ED] flex justify-between items-center bg-[#FDFCFB]">
-            <h3 className="font-bold text-[18px] text-[#193C1F]">
+        <div className="bg-white border border-[#d0d5cb] rounded-[32px] overflow-hidden shadow-sm">
+          <div className="p-8 border-b border-[#f7f3ed] flex justify-between items-center bg-[#FDFCFB]">
+            <h3 className="font-bold text-[18px] text-[#193c1f]">
               Recent Consultations
             </h3>
             <Link href="/dashboard/consultations">
-              <button className="text-[11px] font-black text-[#8EA087] tracking-[0.2em] uppercase">
+              <button className="text-[11px] font-black text-[#8ea087] tracking-[0.2em] uppercase">
                 View All
               </button>
             </Link>
           </div>
           <table className="w-full text-left">
-            <thead className="bg-[#F7F3ED] text-[11px] text-[#8EA087] font-black uppercase tracking-widest">
+            <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
               <tr>
                 <th className="px-8 py-4">Doctor</th>
                 <th className="px-8 py-4">Date</th>
                 <th className="px-8 py-4">Status</th>
               </tr>
             </thead>
-            <tbody className="text-[14px] text-[#193C1F]">
+            <tbody className="text-[14px] text-[#193c1f]">
               {recentConsultations.slice(0, 3).map((row) => (
                 <tr
                   key={row.id}
-                  className="border-b border-[#F7F3ED] hover:bg-[#FDFCFB]"
+                  className="border-b border-[#f7f3ed] hover:bg-[#FDFCFB]"
                 >
                   <td className="px-8 py-5 font-bold">{row.doctor}</td>
                   <td className="px-8 py-5 opacity-70">{row.dateLabel}</td>
                   <td className="px-8 py-5">
                     <span
-                      className={`px-4 py-1.5 rounded-full text-[10px] font-black ${row.status === 'SCHEDULED' ? 'bg-[#D1B698]/20 text-[#D1B698]' : 'bg-[#EBE6DE] text-[#193C1F]'}`}
+                      className={`px-4 py-1.5 rounded-full text-[10px] font-black ${row.status === 'SCHEDULED' ? 'bg-[#d1b698]/20 text-[#d1b698]' : 'bg-[#EBE6DE] text-[#193c1f]'}`}
                     >
                       {row.status}
                     </span>
@@ -280,42 +280,42 @@ export default function DashboardContent({
             </tbody>
           </table>
           {recentConsultations.length === 0 && (
-            <p className="p-10 text-center text-[#8EA087]">
+            <p className="p-10 text-center text-[#8ea087]">
               No consultations found.
             </p>
           )}
         </div>
 
-        <div className="bg-white border border-[#D0D5CB] rounded-[32px] overflow-hidden shadow-sm">
-          <div className="p-8 border-b border-[#F7F3ED] flex justify-between items-center bg-[#FDFCFB]">
-            <h3 className="font-bold text-[18px] text-[#193C1F]">
+        <div className="bg-white border border-[#d0d5cb] rounded-[32px] overflow-hidden shadow-sm">
+          <div className="p-8 border-b border-[#f7f3ed] flex justify-between items-center bg-[#FDFCFB]">
+            <h3 className="font-bold text-[18px] text-[#193c1f]">
               Report Status
             </h3>
             <Link href="/dashboard/reports">
-              <button className="text-[11px] font-black text-[#8EA087] tracking-[0.2em] uppercase">
+              <button className="text-[11px] font-black text-[#8ea087] tracking-[0.2em] uppercase">
                 View All
               </button>
             </Link>
           </div>
           <table className="w-full text-left">
-            <thead className="bg-[#F7F3ED] text-[11px] text-[#8EA087] font-black uppercase tracking-widest">
+            <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
               <tr>
                 <th className="px-8 py-4">Report ID</th>
                 <th className="px-1 py-4">Type</th>
                 <th className="px-8 py-4">Status</th>
               </tr>
             </thead>
-            <tbody className="text-[14px] text-[#193C1F]">
+            <tbody className="text-[14px] text-[#193c1f]">
               {filteredReports.slice(0, 3).map((row) => (
                 <tr
                   key={row.id}
-                  className="border-b border-[#F7F3ED] hover:bg-[#FDFCFB]"
+                  className="border-b border-[#f7f3ed] hover:bg-[#FDFCFB]"
                 >
                   <td className="px-8 py-5 font-bold">{row.id}</td>
                   <td className="px-1 py-5 opacity-70">{row.type}</td>
                   <td className="px-8 py-5">
                     <span
-                      className={`px-4 py-1.5 rounded-full text-[10px] font-black ${row.status === 'PENDING' ? 'bg-[#D1B698]/30 text-[#D1B698]' : 'bg-[#EBE6DE] text-[#193C1F]'}`}
+                      className={`px-4 py-1.5 rounded-full text-[10px] font-black ${row.status === 'PENDING' ? 'bg-[#d1b698]/30 text-[#d1b698]' : 'bg-[#EBE6DE] text-[#193c1f]'}`}
                     >
                       {row.status}
                     </span>
@@ -325,7 +325,7 @@ export default function DashboardContent({
             </tbody>
           </table>
           {filteredReports.length === 0 && (
-            <p className="p-10 text-center text-[#8EA087]">No reports found.</p>
+            <p className="p-10 text-center text-[#8ea087]">No reports found.</p>
           )}
         </div>
       </div>

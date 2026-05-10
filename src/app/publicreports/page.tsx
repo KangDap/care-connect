@@ -134,22 +134,22 @@ const PublicReportsPage = () => {
   ]);
 
   return (
-    <div className="min-h-screen bg-[#F7F3ED]">
+    <div className="min-h-screen bg-[#f7f3ed]">
       <PublicHeader />
 
       <main className="max-w-7xl mx-auto p-6 md:p-12">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-6 text-left">
           <div>
-            <h1 className="text-5xl md:text-6xl font-black uppercase text-[#193C1F] tracking-tighter leading-none mb-4">
+            <h1 className="text-5xl md:text-6xl font-black uppercase text-[#193c1f] tracking-tighter leading-none mb-4">
               Public Reports
             </h1>
-            <p className="text-[#8EA087] text-lg font-medium">
+            <p className="text-[#8ea087] text-lg font-medium">
               Community safety and insights.
             </p>
           </div>
           <Link href="/report">
-            <Button className="bg-[#193C1F] hover:bg-[#8EA087] text-white rounded-2xl px-8 py-4 font-bold shadow-lg uppercase tracking-widest text-sm">
+            <Button className="bg-[#193c1f] hover:bg-[#8ea087] text-white rounded-2xl px-8 py-4 font-bold shadow-lg uppercase tracking-widest text-sm">
               Create Report
             </Button>
           </Link>
@@ -160,7 +160,7 @@ const PublicReportsPage = () => {
           <span className="absolute left-6 top-1/2 -translate-y-1/2">
             <Search
               size={22}
-              className="text-[#8EA087] group-focus-within:text-[#193C1F]"
+              className="text-[#8ea087] group-focus-within:text-[#193c1f]"
             />
           </span>
           <input
@@ -168,21 +168,21 @@ const PublicReportsPage = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search reports..."
-            className="w-full h-[64px] bg-white border border-[#D0D5CB] focus:border-[#193C1F] rounded-[24px] pl-16 pr-8 outline-none text-[#193C1F] shadow-sm transition-all"
+            className="w-full h-[64px] bg-white border border-[#d0d5cb] focus:border-[#193c1f] rounded-[24px] pl-16 pr-8 outline-none text-[#193c1f] shadow-sm transition-all"
           />
         </div>
 
         <div className="flex flex-col lg:flex-row gap-12 mt-10">
           {/* Sidebar Filters */}
           <aside className="w-full lg:w-80 space-y-6">
-            <div className="bg-white p-8 rounded-[40px] border border-[#D0D5CB] shadow-sm sticky top-8 text-left">
+            <div className="bg-white p-8 rounded-[40px] border border-[#d0d5cb] shadow-sm sticky top-8 text-left">
               <div className="flex justify-between items-center mb-10">
-                <h2 className="font-black uppercase text-sm tracking-widest flex items-center gap-2 text-[#193C1F]">
+                <h2 className="font-black uppercase text-sm tracking-widest flex items-center gap-2 text-[#193c1f]">
                   <Filter size={18} /> Filters
                 </h2>
                 <button
                   onClick={resetFilters}
-                  className="text-[10px] text-[#8EA087] font-black uppercase flex items-center gap-1 hover:text-red-500"
+                  className="text-[10px] text-[#8ea087] font-black uppercase flex items-center gap-1 hover:text-red-500"
                 >
                   <RotateCcw size={12} /> Reset
                 </button>
@@ -190,13 +190,13 @@ const PublicReportsPage = () => {
 
               {/* Sort By */}
               <div className="mb-10">
-                <p className="text-[11px] font-black text-[#8EA087] uppercase tracking-widest mb-4">
+                <p className="text-[11px] font-black text-[#8ea087] uppercase tracking-widest mb-4">
                   Sort By
                 </p>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full bg-[#F7F3ED] rounded-xl px-4 py-3 text-sm font-bold text-[#193C1F] outline-none cursor-pointer"
+                  className="w-full bg-[#f7f3ed] rounded-xl px-4 py-3 text-sm font-bold text-[#193c1f] outline-none cursor-pointer"
                 >
                   <option value="newest">Most Recent</option>
                   <option value="oldest">Oldest</option>
@@ -205,7 +205,7 @@ const PublicReportsPage = () => {
 
               {/* VISUAL CHECKBOXES CATEGORY */}
               <div className="space-y-4 mb-10">
-                <p className="text-[11px] font-black text-[#8EA087] uppercase tracking-widest">
+                <p className="text-[11px] font-black text-[#8ea087] uppercase tracking-widest">
                   Category
                 </p>
                 <div className="flex flex-col gap-3">
@@ -221,8 +221,8 @@ const PublicReportsPage = () => {
                         w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-200
                         ${
                           selectedCategories.includes(cat)
-                            ? 'bg-[#193C1F] border-[#193C1F]'
-                            : 'bg-transparent border-[#D0D5CB] group-hover:border-[#8EA087]'
+                            ? 'bg-[#193c1f] border-[#193c1f]'
+                            : 'bg-transparent border-[#d0d5cb] group-hover:border-[#8ea087]'
                         }
                       `}
                       >
@@ -232,7 +232,7 @@ const PublicReportsPage = () => {
                       </div>
 
                       <span
-                        className={`text-sm font-bold transition-colors ${selectedCategories.includes(cat) ? 'text-[#193C1F]' : 'text-[#193C1F]/60 group-hover:text-[#8EA087]'}`}
+                        className={`text-sm font-bold transition-colors ${selectedCategories.includes(cat) ? 'text-[#193c1f]' : 'text-[#193c1f]/60 group-hover:text-[#8ea087]'}`}
                       >
                         {cat}
                       </span>
@@ -243,46 +243,46 @@ const PublicReportsPage = () => {
 
               {/* Location Filter */}
               <div className="mb-10">
-                <p className="text-[11px] font-black text-[#8EA087] uppercase tracking-widest mb-4">
+                <p className="text-[11px] font-black text-[#8ea087] uppercase tracking-widest mb-4">
                   Location
                 </p>
                 <div className="relative">
                   <MapPin
                     size={16}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8EA087]"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8ea087]"
                   />
                   <input
                     placeholder="City or province..."
                     value={locationFilter}
                     onChange={(e) => setLocationFilter(e.target.value)}
-                    className="w-full bg-[#F7F3ED] rounded-xl pl-10 pr-4 py-3 text-sm font-bold outline-none border-transparent focus:border-[#8EA087]"
+                    className="w-full bg-[#f7f3ed] rounded-xl pl-10 pr-4 py-3 text-sm font-bold outline-none border-transparent focus:border-[#8ea087]"
                   />
                 </div>
               </div>
 
               {/* Date Filter */}
               <div className="space-y-3">
-                <p className="text-[11px] font-black text-[#8EA087] uppercase tracking-widest">
+                <p className="text-[11px] font-black text-[#8ea087] uppercase tracking-widest">
                   Date Range
                 </p>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-[#8EA087] uppercase px-2">
+                  <label className="text-[10px] font-bold text-[#8ea087] uppercase px-2">
                     Start Date
                   </label>
                   <input
                     type="date"
                     value={startDate}
                     onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full bg-[#F7F3ED] rounded-xl px-4 py-3 text-xs font-bold outline-none"
+                    className="w-full bg-[#f7f3ed] rounded-xl px-4 py-3 text-xs font-bold outline-none"
                   />
-                  <label className="text-[10px] font-bold text-[#8EA087] uppercase px-2">
+                  <label className="text-[10px] font-bold text-[#8ea087] uppercase px-2">
                     End Date
                   </label>
                   <input
                     type="date"
                     value={endDate}
                     onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full bg-[#F7F3ED] rounded-xl px-4 py-3 text-xs font-bold outline-none"
+                    className="w-full bg-[#f7f3ed] rounded-xl px-4 py-3 text-xs font-bold outline-none"
                   />
                 </div>
               </div>
@@ -292,20 +292,20 @@ const PublicReportsPage = () => {
           {/* Grid Content */}
           <div className="flex-1">
             <div className="mb-6 px-4 text-left">
-              <p className="text-sm font-bold text-[#193C1F]">
+              <p className="text-sm font-bold text-[#193c1f]">
                 Showing{' '}
-                <span className="text-[#8EA087]">{filteredReports.length}</span>{' '}
+                <span className="text-[#8ea087]">{filteredReports.length}</span>{' '}
                 Results
               </p>
             </div>
 
             {isLoading ? (
-              <div className="py-20 text-center bg-white rounded-[40px] border border-[#D0D5CB]">
-                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#193C1F]"></div>
+              <div className="py-20 text-center bg-white rounded-[40px] border border-[#d0d5cb]">
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#193c1f]"></div>
               </div>
             ) : filteredReports.length === 0 ? (
-              <div className="py-20 text-center bg-white rounded-[40px] border border-dashed border-[#D0D5CB]">
-                <p className="text-[#8EA087] italic">No reports found.</p>
+              <div className="py-20 text-center bg-white rounded-[40px] border border-dashed border-[#d0d5cb]">
+                <p className="text-[#8ea087] italic">No reports found.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
@@ -315,7 +315,7 @@ const PublicReportsPage = () => {
                     href={`/publicreports/${report.id}`}
                     className="group"
                   >
-                    <div className="bg-white rounded-[48px] border border-[#D0D5CB] overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col h-full text-left">
+                    <div className="bg-white rounded-[48px] border border-[#d0d5cb] overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col h-full text-left">
                       <div className="h-56 relative overflow-hidden bg-[#EBE6DE]">
                         {report.coverImageUrl && (
                           <Image
@@ -326,29 +326,29 @@ const PublicReportsPage = () => {
                           />
                         )}
                         <div className="absolute top-6 left-6 z-10">
-                          <span className="text-[10px] font-black uppercase text-[#193C1F] bg-white/90 px-4 py-2 rounded-full shadow-sm">
+                          <span className="text-[10px] font-black uppercase text-[#193c1f] bg-white/90 px-4 py-2 rounded-full shadow-sm">
                             CASE #{report.id.toString().slice(-5).toUpperCase()}
                           </span>
                         </div>
                       </div>
 
                       <div className="p-10 flex flex-col flex-1">
-                        <span className="text-[10px] font-black text-[#8EA087] uppercase tracking-widest mb-4">
+                        <span className="text-[10px] font-black text-[#8ea087] uppercase tracking-widest mb-4">
                           {report.category}
                         </span>
-                        <h3 className="font-black text-2xl text-[#193C1F] mb-4 group-hover:text-[#8EA087] transition-colors leading-tight italic">
+                        <h3 className="font-black text-2xl text-[#193c1f] mb-4 group-hover:text-[#8ea087] transition-colors leading-tight italic">
                           {report.title}
                         </h3>
-                        <p className="text-sm text-[#193C1F]/60 font-medium leading-relaxed mb-10 line-clamp-3">
+                        <p className="text-sm text-[#193c1f]/60 font-medium leading-relaxed mb-10 line-clamp-3">
                           {report.description}
                         </p>
 
-                        <div className="flex justify-between items-center pt-8 border-t border-[#F7F3ED] mt-auto">
-                          <span className="text-[10px] font-black text-[#193C1F] uppercase flex items-center gap-2">
-                            <MapPin size={14} className="text-[#8EA087]" />{' '}
+                        <div className="flex justify-between items-center pt-8 border-t border-[#f7f3ed] mt-auto">
+                          <span className="text-[10px] font-black text-[#193c1f] uppercase flex items-center gap-2">
+                            <MapPin size={14} className="text-[#8ea087]" />{' '}
                             {report.city}
                           </span>
-                          <div className="flex items-center gap-2 text-[11px] font-black uppercase text-[#193C1F] group-hover:translate-x-2 transition-transform">
+                          <div className="flex items-center gap-2 text-[11px] font-black uppercase text-[#193c1f] group-hover:translate-x-2 transition-transform">
                             View Details <ArrowRight size={18} />
                           </div>
                         </div>

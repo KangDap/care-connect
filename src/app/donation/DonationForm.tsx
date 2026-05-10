@@ -185,15 +185,15 @@ export function DonationForm({
   };
 
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-[#F7F3ED] text-[#193C1F] relative">
+    <div className="min-h-screen flex flex-col font-sans bg-[#f7f3ed] text-[#193c1f] relative">
       {/* Loading / Success Overlay */}
       {(isSubmitting || message.type === 'success') && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 backdrop-blur-sm">
           {message.type === 'success' ? (
             <div className="bg-white p-10 rounded-2xl shadow-xl flex flex-col items-center gap-4 text-center max-w-sm w-full mx-4">
-              <div className="w-20 h-20 bg-[#8EA087]/10 rounded-full flex items-center justify-center">
+              <div className="w-20 h-20 bg-[#8ea087]/10 rounded-full flex items-center justify-center">
                 <svg
-                  className="h-10 w-10 text-[#8EA087]"
+                  className="h-10 w-10 text-[#8ea087]"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -206,13 +206,13 @@ export function DonationForm({
                   />
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-[#193C1F]">Thank You!</h3>
-              <p className="text-[#193C1F]/70">{message.text}</p>
+              <h3 className="text-2xl font-bold text-[#193c1f]">Thank You!</h3>
+              <p className="text-[#193c1f]/70">{message.text}</p>
             </div>
           ) : (
             <div className="bg-white p-10 rounded-2xl shadow-xl flex flex-col items-center gap-6 text-center max-w-sm w-full mx-4">
               <svg
-                className="animate-spin h-12 w-12 text-[#8EA087]"
+                className="animate-spin h-12 w-12 text-[#8ea087]"
                 viewBox="0 0 24 24"
               >
                 <circle
@@ -231,10 +231,10 @@ export function DonationForm({
                 />
               </svg>
               <div>
-                <h3 className="text-xl font-bold text-[#193C1F] mb-1">
+                <h3 className="text-xl font-bold text-[#193c1f] mb-1">
                   Processing Payment...
                 </h3>
-                <p className="text-sm text-[#193C1F]/60">
+                <p className="text-sm text-[#193c1f]/60">
                   Securely completing your transaction.
                 </p>
               </div>
@@ -251,7 +251,7 @@ export function DonationForm({
           {/* Back button */}
           <button
             onClick={() => router.push(backHref)}
-            className="flex items-center gap-2 text-[#8EA087] hover:text-[#193C1F] font-bold text-sm transition-colors w-fit"
+            className="flex items-center gap-2 text-[#8ea087] hover:text-[#193c1f] font-bold text-sm transition-colors w-fit"
           >
             <svg
               className="w-4 h-4"
@@ -270,10 +270,10 @@ export function DonationForm({
           </button>
 
           <section>
-            <h1 className="text-4xl font-extrabold text-[#193C1F] mb-2">
+            <h1 className="text-4xl font-extrabold text-[#193c1f] mb-2">
               Make a Difference
             </h1>
-            <p className="text-[#8EA087] text-lg">
+            <p className="text-[#8ea087] text-lg">
               {donationType === 'PLATFORM'
                 ? 'Your support keeps CareConnect running at 0% transaction fees.'
                 : 'Your support directly impacts victims of the selected case.'}
@@ -282,8 +282,8 @@ export function DonationForm({
 
           {/* Report info card */}
           {donationType === 'REPORT' && report && (
-            <section className="bg-white border border-[#D0D5CB] rounded-xl p-8 shadow-sm">
-              <div className="flex items-center gap-2 mb-6 text-[#D1B698]">
+            <section className="bg-white border border-[#d0d5cb] rounded-xl p-8 shadow-sm">
+              <div className="flex items-center gap-2 mb-6 text-[#d1b698]">
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -297,29 +297,29 @@ export function DonationForm({
                     strokeWidth="2"
                   />
                 </svg>
-                <h2 className="text-[#193C1F] font-bold text-lg">
+                <h2 className="text-[#193c1f] font-bold text-lg">
                   Report Target
                 </h2>
               </div>
-              <div className="rounded-xl border border-[#D0D5CB] bg-[#F7F3ED] p-6 space-y-4">
+              <div className="rounded-xl border border-[#d0d5cb] bg-[#f7f3ed] p-6 space-y-4">
                 <div className="flex flex-wrap items-center gap-3">
-                  <span className="rounded-full bg-[#193C1F] px-3 py-1 text-xs font-bold text-[#F7F3ED]">
+                  <span className="rounded-full bg-[#193c1f] px-3 py-1 text-xs font-bold text-[#f7f3ed]">
                     #{String(report.id).padStart(4, '0')}
                   </span>
-                  <span className="rounded-full border border-[#D1B698] px-3 py-1 text-xs font-bold text-[#193C1F]">
+                  <span className="rounded-full border border-[#d1b698] px-3 py-1 text-xs font-bold text-[#193c1f]">
                     {report.category}
                   </span>
                 </div>
-                <h3 className="text-xl font-extrabold text-[#193C1F]">
+                <h3 className="text-xl font-extrabold text-[#193c1f]">
                   {report.title}
                 </h3>
-                <p className="text-sm text-[#193C1F]/70 leading-relaxed line-clamp-3">
+                <p className="text-sm text-[#193c1f]/70 leading-relaxed line-clamp-3">
                   {report.description}
                 </p>
                 <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div className="rounded-lg bg-white border border-[#D0D5CB] p-3">
-                    <p className="text-[#8EA087] text-xs mb-1">Location</p>
-                    <p className="font-bold text-[#193C1F]">
+                  <div className="rounded-lg bg-white border border-[#d0d5cb] p-3">
+                    <p className="text-[#8ea087] text-xs mb-1">Location</p>
+                    <p className="font-bold text-[#193c1f]">
                       {report.city}, {report.province}
                     </p>
                   </div>
@@ -330,11 +330,11 @@ export function DonationForm({
 
           {/* Platform info card */}
           {donationType === 'PLATFORM' && (
-            <section className="bg-white border border-[#D0D5CB] rounded-xl p-8 shadow-sm">
+            <section className="bg-white border border-[#d0d5cb] rounded-xl p-8 shadow-sm">
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-[#8EA087]/10 rounded-xl flex items-center justify-center shrink-0">
+                <div className="w-12 h-12 bg-[#8ea087]/10 rounded-xl flex items-center justify-center shrink-0">
                   <svg
-                    className="w-6 h-6 text-[#8EA087]"
+                    className="w-6 h-6 text-[#8ea087]"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -348,10 +348,10 @@ export function DonationForm({
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-bold text-[#193C1F] text-lg">
+                  <h3 className="font-bold text-[#193c1f] text-lg">
                     CareConnect Platform
                   </h3>
-                  <p className="text-sm text-[#193C1F]/70">
+                  <p className="text-sm text-[#193c1f]/70">
                     100% of platform donations go to keeping our service free
                     for those in need.
                   </p>
@@ -361,8 +361,8 @@ export function DonationForm({
           )}
 
           {/* Amount */}
-          <section className="bg-white border border-[#D0D5CB] rounded-xl p-8 shadow-sm">
-            <div className="flex items-center gap-2 mb-6 text-[#D1B698]">
+          <section className="bg-white border border-[#d0d5cb] rounded-xl p-8 shadow-sm">
+            <div className="flex items-center gap-2 mb-6 text-[#d1b698]">
               <svg
                 className="w-5 h-5"
                 fill="none"
@@ -376,7 +376,7 @@ export function DonationForm({
                   d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
                 />
               </svg>
-              <h2 className="text-[#193C1F] font-bold text-lg">
+              <h2 className="text-[#193c1f] font-bold text-lg">
                 Choose Amount
               </h2>
             </div>
@@ -385,18 +385,18 @@ export function DonationForm({
                 <button
                   key={val}
                   onClick={() => setAmount(val)}
-                  className={`py-4 rounded-lg font-bold transition-colors ${amount === val ? 'bg-[#D0D5CB] border-2 border-[#193C1F]' : 'bg-[#EDE4D8] border border-[#D0D5CB]'} text-[#193C1F]`}
+                  className={`py-4 rounded-lg font-bold transition-colors ${amount === val ? 'bg-[#d0d5cb] border-2 border-[#193c1f]' : 'bg-[#ede4d8] border border-[#d0d5cb]'} text-[#193c1f]`}
                 >
                   {fmt(val)}
                 </button>
               ))}
             </div>
             <div className="relative mt-2">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8EA087]">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8ea087]">
                 Rp
               </span>
               <input
-                className="w-full pl-12 py-3 rounded-lg border border-[#D0D5CB] bg-white outline-none focus:border-[#8EA087]"
+                className="w-full pl-12 py-3 rounded-lg border border-[#d0d5cb] bg-white outline-none focus:border-[#8ea087]"
                 placeholder="Enter custom amount"
                 type="number"
                 value={amount || ''}
@@ -406,8 +406,8 @@ export function DonationForm({
           </section>
 
           {/* Payment Method */}
-          <section className="bg-white border border-[#D0D5CB] rounded-xl p-8 shadow-sm">
-            <div className="flex items-center gap-2 mb-6 text-[#D1B698]">
+          <section className="bg-white border border-[#d0d5cb] rounded-xl p-8 shadow-sm">
+            <div className="flex items-center gap-2 mb-6 text-[#d1b698]">
               <svg
                 className="w-5 h-5"
                 fill="none"
@@ -421,7 +421,7 @@ export function DonationForm({
                   d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
                 />
               </svg>
-              <h2 className="text-[#193C1F] font-bold text-lg">
+              <h2 className="text-[#193c1f] font-bold text-lg">
                 Payment Method
               </h2>
             </div>
@@ -430,12 +430,12 @@ export function DonationForm({
                 <div
                   key={m.id}
                   onClick={() => setPaymentMethod(m.id)}
-                  className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${paymentMethod === m.id ? 'border-[#193C1F] bg-[#F7F3ED]' : 'border-[#D0D5CB] bg-white'}`}
+                  className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${paymentMethod === m.id ? 'border-[#193c1f] bg-[#f7f3ed]' : 'border-[#d0d5cb] bg-white'}`}
                 >
                   <div
-                    className={`w-5 h-5 rounded-full border-4 ${paymentMethod === m.id ? 'border-[#193C1F] bg-white' : 'border-[#D0D5CB]'}`}
+                    className={`w-5 h-5 rounded-full border-4 ${paymentMethod === m.id ? 'border-[#193c1f] bg-white' : 'border-[#d0d5cb]'}`}
                   />
-                  <span className="text-[#193C1F] font-medium">{m.label}</span>
+                  <span className="text-[#193c1f] font-medium">{m.label}</span>
                 </div>
               ))}
             </div>
@@ -449,39 +449,39 @@ export function DonationForm({
 
         {/* Right Column: Summary */}
         <aside className="md:col-span-4 flex flex-col gap-6">
-          <section className="bg-[#F7F3ED] border border-[#D0D5CB] rounded-xl p-8 shadow-md sticky top-8">
-            <h2 className="text-[#193C1F] font-bold text-xl mb-6">
+          <section className="bg-[#f7f3ed] border border-[#d0d5cb] rounded-xl p-8 shadow-md sticky top-8">
+            <h2 className="text-[#193c1f] font-bold text-xl mb-6">
               Donation Summary
             </h2>
             <div className="space-y-4 mb-8">
               <div className="flex justify-between items-center">
-                <span className="text-[#8EA087]">Type</span>
-                <span className="text-[#193C1F] font-bold">
+                <span className="text-[#8ea087]">Type</span>
+                <span className="text-[#193c1f] font-bold">
                   {donationType === 'PLATFORM' ? 'Platform' : 'Report'}
                 </span>
               </div>
               {donationType === 'REPORT' && report && (
                 <div className="flex justify-between items-start gap-2">
-                  <span className="text-[#8EA087] shrink-0">Case</span>
-                  <span className="text-[#193C1F] font-bold text-right text-sm max-w-[65%]">
+                  <span className="text-[#8ea087] shrink-0">Case</span>
+                  <span className="text-[#193c1f] font-bold text-right text-sm max-w-[65%]">
                     {report.title}
                   </span>
                 </div>
               )}
               <div className="flex justify-between items-center">
-                <span className="text-[#8EA087]">Amount</span>
-                <span className="text-[#193C1F] font-bold">
+                <span className="text-[#8ea087]">Amount</span>
+                <span className="text-[#193c1f] font-bold">
                   {fmt(amount || 0)}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[#8EA087]">Processing Fee</span>
-                <span className="text-[#193C1F] font-bold">Rp 0</span>
+                <span className="text-[#8ea087]">Processing Fee</span>
+                <span className="text-[#193c1f] font-bold">Rp 0</span>
               </div>
-              <hr className="border-[#D0D5CB]" />
+              <hr className="border-[#d0d5cb]" />
               <div className="flex justify-between items-end">
-                <span className="text-[#193C1F] font-bold text-lg">Total</span>
-                <span className="text-2xl font-extrabold text-[#D1B698]">
+                <span className="text-[#193c1f] font-bold text-lg">Total</span>
+                <span className="text-2xl font-extrabold text-[#d1b698]">
                   {fmt(amount || 0)}
                 </span>
               </div>
@@ -489,7 +489,7 @@ export function DonationForm({
             <button
               onClick={handleDonate}
               disabled={isSubmitting}
-              className="w-full bg-[#8EA087] text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 mb-4 hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-[#8ea087] text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 mb-4 hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <svg
                 className="w-5 h-5"
@@ -506,7 +506,7 @@ export function DonationForm({
               </svg>
               Donate Now
             </button>
-            <p className="text-center text-xs text-[#8EA087] flex items-center justify-center gap-1">
+            <p className="text-center text-xs text-[#8ea087] flex items-center justify-center gap-1">
               <svg
                 className="w-3 h-3"
                 fill="none"

@@ -24,7 +24,7 @@ export const Toast = ({ show, msg, type, onClose }: ToastProps) => {
     <div
       className={`fixed top-10 left-1/2 -translate-x-1/2 z-[300] px-6 py-4 rounded-2xl shadow-2xl border flex items-center gap-3 animate-in slide-in-from-top-full duration-300 ${
         type === 'success'
-          ? 'bg-[#193C1F] text-white border-[#193C1F]'
+          ? 'bg-[#193c1f] text-white border-[#193c1f]'
           : 'bg-red-500 text-white border-red-600'
       }`}
     >

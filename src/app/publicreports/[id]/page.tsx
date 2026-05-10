@@ -65,10 +65,10 @@ export default function PublicReportDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F7F3ED] flex items-center justify-center">
+      <div className="min-h-screen bg-[#f7f3ed] flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-10 w-10 border-b-2 border-[#193C1F] mb-4" />
-          <p className="text-[#8EA087] font-medium">Loading report...</p>
+          <div className="inline-block animate-spin rounded-full h-10 w-10 border-b-2 border-[#193c1f] mb-4" />
+          <p className="text-[#8ea087] font-medium">Loading report...</p>
         </div>
       </div>
     );
@@ -76,14 +76,14 @@ export default function PublicReportDetailPage() {
 
   if (error || !report) {
     return (
-      <div className="min-h-screen bg-[#F7F3ED] flex items-center justify-center">
+      <div className="min-h-screen bg-[#f7f3ed] flex items-center justify-center">
         <div className="text-center">
           <p className="text-red-600 font-bold mb-4">
             Report not found or unavailable.
           </p>
           <Link
             href="/publicreports"
-            className="text-[#8EA087] font-bold hover:underline"
+            className="text-[#8ea087] font-bold hover:underline"
           >
             ← Back to Reports
           </Link>
@@ -113,14 +113,14 @@ export default function PublicReportDetailPage() {
       : `${Math.round(bytes / 1024)} KB`;
 
   return (
-    <div className="min-h-screen bg-[#F7F3ED]">
+    <div className="min-h-screen bg-[#f7f3ed]">
       <PublicHeader />
 
       <main className="max-w-5xl mx-auto px-6 py-12">
         {/* Back */}
         <Link
           href="/publicreports"
-          className="inline-flex items-center gap-2 text-[#8EA087] hover:text-[#193C1F] font-bold text-sm mb-8 transition-colors"
+          className="inline-flex items-center gap-2 text-[#8ea087] hover:text-[#193c1f] font-bold text-sm mb-8 transition-colors"
         >
           <ArrowLeft size={16} /> Back to Public Reports
         </Link>
@@ -141,7 +141,7 @@ export default function PublicReportDetailPage() {
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 70vw"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#193C1F]/60 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#193c1f]/60 via-transparent to-transparent" />
                 <span className="absolute bottom-4 left-4 text-[10px] font-black uppercase tracking-widest text-white bg-white/20 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/30">
                   ID: {String(report.id).padStart(5, '0')}
                 </span>
@@ -149,8 +149,8 @@ export default function PublicReportDetailPage() {
             )}
 
             {!coverImage && (
-              <div className="w-full h-40 rounded-3xl bg-gradient-to-br from-[#EBE6DE] to-[#D0D5CB] flex items-center justify-center">
-                <span className="text-[10px] font-black uppercase tracking-widest text-[#8EA087] bg-white px-4 py-2 rounded-xl border border-[#D0D5CB]">
+              <div className="w-full h-40 rounded-3xl bg-gradient-to-br from-[#EBE6DE] to-[#d0d5cb] flex items-center justify-center">
+                <span className="text-[10px] font-black uppercase tracking-widest text-[#8ea087] bg-white px-4 py-2 rounded-xl border border-[#d0d5cb]">
                   ID: {String(report.id).padStart(5, '0')} · No Image
                 </span>
               </div>
@@ -163,15 +163,15 @@ export default function PublicReportDetailPage() {
               >
                 {report.status}
               </span>
-              <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full bg-[#F7F3ED] border border-[#D0D5CB] text-[#193C1F] flex items-center gap-1">
+              <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full bg-[#f7f3ed] border border-[#d0d5cb] text-[#193c1f] flex items-center gap-1">
                 <Tag size={10} />
                 {CATEGORY_LABEL[report.category] || report.category}
               </span>
-              <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full bg-[#F7F3ED] border border-[#D0D5CB] text-[#8EA087] flex items-center gap-1">
+              <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full bg-[#f7f3ed] border border-[#d0d5cb] text-[#8ea087] flex items-center gap-1">
                 <Calendar size={10} />
                 {fmtDate(report.incidentDate)}
               </span>
-              <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full bg-[#F7F3ED] border border-[#D0D5CB] text-[#8EA087] flex items-center gap-1">
+              <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full bg-[#f7f3ed] border border-[#d0d5cb] text-[#8ea087] flex items-center gap-1">
                 <MapPin size={10} />
                 {report.city}, {report.province}
               </span>
@@ -179,14 +179,14 @@ export default function PublicReportDetailPage() {
 
             {/* Title & Description */}
             <div>
-              <h1 className="text-3xl md:text-4xl font-black text-[#193C1F] italic tracking-tight leading-tight mb-4">
+              <h1 className="text-3xl md:text-4xl font-black text-[#193c1f] italic tracking-tight leading-tight mb-4">
                 {report.title}
               </h1>
-              <div className="bg-white border border-[#D0D5CB] rounded-2xl p-6">
-                <h3 className="text-[11px] font-black uppercase tracking-widest text-[#8EA087] mb-3">
+              <div className="bg-white border border-[#d0d5cb] rounded-2xl p-6">
+                <h3 className="text-[11px] font-black uppercase tracking-widest text-[#8ea087] mb-3">
                   Incident Description
                 </h3>
-                <p className="text-[#193C1F]/80 leading-relaxed whitespace-pre-wrap">
+                <p className="text-[#193c1f]/80 leading-relaxed whitespace-pre-wrap">
                   {report.description}
                 </p>
               </div>
@@ -195,14 +195,14 @@ export default function PublicReportDetailPage() {
             {/* Image Gallery */}
             {images.length > 1 && (
               <div>
-                <h3 className="text-[11px] font-black uppercase tracking-widest text-[#8EA087] mb-3">
+                <h3 className="text-[11px] font-black uppercase tracking-widest text-[#8ea087] mb-3">
                   Evidence ({images.length})
                 </h3>
                 <div className="grid grid-cols-3 gap-3">
                   {images.map((img) => (
                     <div
                       key={img.id}
-                      className="relative h-28 rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition-opacity border border-[#D0D5CB]"
+                      className="relative h-28 rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition-opacity border border-[#d0d5cb]"
                       onClick={() => setSelectedImage(img.fileUrl)}
                     >
                       <Image
@@ -221,7 +221,7 @@ export default function PublicReportDetailPage() {
             {/* Documents */}
             {docs.length > 0 && (
               <div>
-                <h3 className="text-[11px] font-black uppercase tracking-widest text-[#8EA087] mb-3">
+                <h3 className="text-[11px] font-black uppercase tracking-widest text-[#8ea087] mb-3">
                   Documents
                 </h3>
                 <div className="space-y-2">
@@ -231,11 +231,11 @@ export default function PublicReportDetailPage() {
                       href={doc.fileUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-3 bg-white border border-[#D0D5CB] rounded-xl p-3 hover:border-[#193C1F] transition-colors"
+                      className="flex items-center gap-3 bg-white border border-[#d0d5cb] rounded-xl p-3 hover:border-[#193c1f] transition-colors"
                     >
-                      <div className="w-8 h-8 bg-[#F7F3ED] rounded-lg flex items-center justify-center shrink-0">
+                      <div className="w-8 h-8 bg-[#f7f3ed] rounded-lg flex items-center justify-center shrink-0">
                         <svg
-                          className="w-4 h-4 text-[#8EA087]"
+                          className="w-4 h-4 text-[#8ea087]"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
@@ -249,15 +249,15 @@ export default function PublicReportDetailPage() {
                         </svg>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-[#193C1F] truncate">
+                        <p className="text-sm font-bold text-[#193c1f] truncate">
                           {doc.fileName}
                         </p>
-                        <p className="text-[11px] text-[#8EA087]">
+                        <p className="text-[11px] text-[#8ea087]">
                           {fmtSize(doc.fileSize)}
                         </p>
                       </div>
                       <svg
-                        className="w-4 h-4 text-[#8EA087] shrink-0"
+                        className="w-4 h-4 text-[#8ea087] shrink-0"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -279,16 +279,16 @@ export default function PublicReportDetailPage() {
           {/* Right: Sidebar */}
           <aside className="space-y-6">
             {/* Location Card */}
-            <div className="bg-white border border-[#D0D5CB] rounded-2xl p-6">
-              <h3 className="text-[11px] font-black uppercase tracking-widest text-[#8EA087] mb-4">
+            <div className="bg-white border border-[#d0d5cb] rounded-2xl p-6">
+              <h3 className="text-[11px] font-black uppercase tracking-widest text-[#8ea087] mb-4">
                 Location
               </h3>
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-[#193C1F]">
-                  <MapPin size={14} className="text-[#8EA087]" />
+                <div className="flex items-center gap-2 text-[#193c1f]">
+                  <MapPin size={14} className="text-[#8ea087]" />
                   <p className="font-bold">{report.city}</p>
                 </div>
-                <p className="text-sm text-[#193C1F]/70 ml-5">
+                <p className="text-sm text-[#193c1f]/70 ml-5">
                   {report.district}, {report.province}
                 </p>
               </div>
@@ -296,15 +296,15 @@ export default function PublicReportDetailPage() {
 
             {/* Donate CTA */}
             {report.status !== 'REJECTED' && (
-              <div className="bg-[#193C1F] rounded-2xl p-6 text-white">
+              <div className="bg-[#193c1f] rounded-2xl p-6 text-white">
                 <h3 className="font-black text-lg mb-2">Support This Case</h3>
-                <p className="text-[#8EA087] text-sm mb-4 leading-relaxed">
+                <p className="text-[#8ea087] text-sm mb-4 leading-relaxed">
                   Your donation goes directly to supporting the victim of this
                   reported case.
                 </p>
                 <button
                   onClick={() => router.push(`/donation/report/${report.id}`)}
-                  className="w-full bg-[#8EA087] hover:bg-[#8EA087]/80 text-white py-3 rounded-xl font-black uppercase tracking-wider text-sm transition-colors flex items-center justify-center gap-2"
+                  className="w-full bg-[#8ea087] hover:bg-[#8ea087]/80 text-white py-3 rounded-xl font-black uppercase tracking-wider text-sm transition-colors flex items-center justify-center gap-2"
                 >
                   <svg
                     className="w-4 h-4"
@@ -321,26 +321,26 @@ export default function PublicReportDetailPage() {
                   </svg>
                   Donate Now
                 </button>
-                <p className="text-center text-[10px] text-[#8EA087] mt-2">
+                <p className="text-center text-[10px] text-[#8ea087] mt-2">
                   0% transaction fee
                 </p>
               </div>
             )}
 
             {/* Report Info */}
-            <div className="bg-white border border-[#D0D5CB] rounded-2xl p-6">
-              <h3 className="text-[11px] font-black uppercase tracking-widest text-[#8EA087] mb-4">
+            <div className="bg-white border border-[#d0d5cb] rounded-2xl p-6">
+              <h3 className="text-[11px] font-black uppercase tracking-widest text-[#8ea087] mb-4">
                 Report Info
               </h3>
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-[#8EA087]">Report ID</span>
-                  <span className="font-bold text-[#193C1F]">
+                  <span className="text-[#8ea087]">Report ID</span>
+                  <span className="font-bold text-[#193c1f]">
                     #{String(report.id).padStart(5, '0')}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#8EA087]">Status</span>
+                  <span className="text-[#8ea087]">Status</span>
                   <span
                     className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full border ${STATUS_BADGE[report.status]}`}
                   >
@@ -348,20 +348,20 @@ export default function PublicReportDetailPage() {
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#8EA087]">Category</span>
-                  <span className="font-bold text-[#193C1F] text-right max-w-[60%]">
+                  <span className="text-[#8ea087]">Category</span>
+                  <span className="font-bold text-[#193c1f] text-right max-w-[60%]">
                     {CATEGORY_LABEL[report.category] || report.category}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#8EA087]">Incident Date</span>
-                  <span className="font-bold text-[#193C1F]">
+                  <span className="text-[#8ea087]">Incident Date</span>
+                  <span className="font-bold text-[#193c1f]">
                     {fmtDate(report.incidentDate)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-[#8EA087]">Evidence</span>
-                  <span className="font-bold text-[#193C1F]">
+                  <span className="text-[#8ea087]">Evidence</span>
+                  <span className="font-bold text-[#193c1f]">
                     {report.evidences.length} file(s)
                   </span>
                 </div>

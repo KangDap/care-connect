@@ -60,15 +60,19 @@ export default function ConsultationPage() {
     const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
 
     if (selected.size > maxSize) {
-      alert('File size must be less than 10MB');
+      setMessage({ type: 'error', text: 'File size must be less than 10MB' });
       return;
     }
 
     if (!allowedTypes.includes(selected.type)) {
-      alert('Only PDF, JPG, and PNG files are allowed');
+      setMessage({
+        type: 'error',
+        text: 'Only PDF, JPG, and PNG files are allowed',
+      });
       return;
     }
 
+    setMessage({ type: '', text: '' });
     setFile(selected);
   };
 
@@ -196,15 +200,15 @@ export default function ConsultationPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F7F3ED] text-[#193C1F] font-sans relative">
+    <div className="min-h-screen flex flex-col bg-[#f7f3ed] text-[#193c1f] font-sans relative">
       {/* Loading & Success Overlay */}
       {(isSubmitting || message.type === 'success') && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 backdrop-blur-sm transition-all duration-300">
           {message.type === 'success' ? (
             <div className="bg-white p-10 rounded-2xl shadow-xl flex flex-col items-center gap-4 text-center max-w-sm w-full mx-4 transform transition-all scale-100">
-              <div className="w-20 h-20 bg-[#8EA087]/10 rounded-full flex items-center justify-center mb-2">
+              <div className="w-20 h-20 bg-[#8ea087]/10 rounded-full flex items-center justify-center mb-2">
                 <svg
-                  className="h-10 w-10 text-[#8EA087]"
+                  className="h-10 w-10 text-[#8ea087]"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -217,13 +221,13 @@ export default function ConsultationPage() {
                   ></path>
                 </svg>
               </div>
-              <h3 className="text-2xl font-bold text-[#193C1F]">Success!</h3>
-              <p className="text-[#193C1F]/70">{message.text}</p>
+              <h3 className="text-2xl font-bold text-[#193c1f]">Success!</h3>
+              <p className="text-[#193c1f]/70">{message.text}</p>
             </div>
           ) : (
             <div className="bg-white p-10 rounded-2xl shadow-xl flex flex-col items-center gap-6 text-center max-w-sm w-full mx-4">
               <svg
-                className="animate-spin h-12 w-12 text-[#8EA087]"
+                className="animate-spin h-12 w-12 text-[#8ea087]"
                 viewBox="0 0 24 24"
               >
                 <circle
@@ -242,10 +246,10 @@ export default function ConsultationPage() {
                 ></path>
               </svg>
               <div>
-                <h3 className="text-xl font-bold text-[#193C1F] mb-1">
+                <h3 className="text-xl font-bold text-[#193c1f] mb-1">
                   Processing request...
                 </h3>
-                <p className="text-sm text-[#193C1F]/60">
+                <p className="text-sm text-[#193c1f]/60">
                   Please wait while we secure your slot.
                 </p>
               </div>
@@ -259,12 +263,12 @@ export default function ConsultationPage() {
 
       {/* Main Content */}
       <main className="flex-grow flex items-center justify-center py-16 px-4">
-        <div className="bg-white rounded-2xl border border-[#D0D5CB] p-12 max-w-[800px] w-full shadow-sm">
+        <div className="bg-white rounded-2xl border border-[#d0d5cb] p-12 max-w-[800px] w-full shadow-sm">
           {/* Form Header */}
           <div className="text-center mb-10">
-            <div className="w-14 h-14 bg-[#F7F3ED] rounded-full flex items-center justify-center mx-auto mb-6 border border-[#D0D5CB]">
+            <div className="w-14 h-14 bg-[#f7f3ed] rounded-full flex items-center justify-center mx-auto mb-6 border border-[#d0d5cb]">
               <svg
-                className="h-6 w-6 text-[#8EA087]"
+                className="h-6 w-6 text-[#8ea087]"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -278,10 +282,10 @@ export default function ConsultationPage() {
                 ></path>
               </svg>
             </div>
-            <h1 className="text-3xl font-bold text-[#193C1F] mb-4">
+            <h1 className="text-3xl font-bold text-[#193c1f] mb-4">
               Consultation Form
             </h1>
-            <p className="text-[#193C1F]/70 max-w-lg mx-auto leading-relaxed">
+            <p className="text-[#193c1f]/70 max-w-lg mx-auto leading-relaxed">
               Your safety and privacy are our top priorities. Share your details
               securely and privately with our certified counselors.
             </p>
@@ -317,7 +321,7 @@ export default function ConsultationPage() {
           >
             <div>
               <label
-                className="block text-sm font-semibold text-[#193C1F] mb-2"
+                className="block text-sm font-semibold text-[#193c1f] mb-2"
                 htmlFor="inquiry-title"
               >
                 Inquiry Title
@@ -325,7 +329,7 @@ export default function ConsultationPage() {
               <input
                 name="title"
                 required
-                className="w-full px-4 py-4 rounded-xl border border-[#D0D5CB] bg-white text-[#193C1F] focus:ring-[#8EA087] focus:border-[#8EA087] placeholder-[#193C1F]/30"
+                className="w-full px-4 py-4 rounded-xl border border-[#d0d5cb] bg-white text-[#193c1f] focus:ring-[#8ea087] focus:border-[#8ea087] placeholder-[#193C1F]/30"
                 id="inquiry-title"
                 placeholder="Enter a brief title for your request"
                 type="text"
@@ -334,7 +338,7 @@ export default function ConsultationPage() {
 
             <div>
               <label
-                className="block text-sm font-semibold text-[#193C1F] mb-2"
+                className="block text-sm font-semibold text-[#193c1f] mb-2"
                 htmlFor="consultation-nature"
               >
                 Nature of Consultation
@@ -343,7 +347,7 @@ export default function ConsultationPage() {
                 <select
                   name="nature"
                   required
-                  className="w-full px-4 py-4 rounded-xl border border-[#D0D5CB] bg-white text-[#193C1F]/90 focus:ring-[#8EA087] focus:border-[#8EA087] appearance-none"
+                  className="w-full px-4 py-4 rounded-xl border border-[#d0d5cb] bg-white text-[#193c1f]/90 focus:ring-[#8ea087] focus:border-[#8ea087] appearance-none"
                   id="consultation-nature"
                   defaultValue=""
                 >
@@ -367,7 +371,7 @@ export default function ConsultationPage() {
               {/* Date Column */}
               <div>
                 <label
-                  className="block text-sm font-semibold text-[#193C1F] mb-2"
+                  className="block text-sm font-semibold text-[#193c1f] mb-2"
                   htmlFor="consultation-date"
                 >
                   Preferred Date
@@ -375,7 +379,7 @@ export default function ConsultationPage() {
                 <input
                   type="date"
                   id="consultation-date"
-                  className="w-full px-4 py-4 rounded-xl border border-[#D0D5CB] bg-white text-[#193C1F] focus:ring-[#8EA087] focus:border-[#8EA087] min-h-[58px]"
+                  className="w-full px-4 py-4 rounded-xl border border-[#d0d5cb] bg-white text-[#193c1f] focus:ring-[#8ea087] focus:border-[#8ea087] min-h-[58px]"
                   min={getTodayWIB()}
                   value={selectedDate}
                   onChange={(e) => {
@@ -388,19 +392,19 @@ export default function ConsultationPage() {
 
               {/* Time Slots Column */}
               <div>
-                <label className="block text-sm font-semibold text-[#193C1F] mb-2">
+                <label className="block text-sm font-semibold text-[#193c1f] mb-2">
                   Available Time Slots
                 </label>
                 {!selectedDate ? (
-                  <div className="w-full h-[58px] px-4 rounded-xl border border-[#D0D5CB] border-dashed bg-[#F7F3ED] text-[#193C1F]/40 flex items-center justify-center text-sm">
+                  <div className="w-full h-[58px] px-4 rounded-xl border border-[#d0d5cb] border-dashed bg-[#f7f3ed] text-[#193c1f]/40 flex items-center justify-center text-sm">
                     Select a date to view available times
                   </div>
                 ) : isLoadingSlots ? (
-                  <div className="w-full h-[58px] px-4 rounded-xl border border-[#D0D5CB] bg-[#F7F3ED] text-[#193C1F]/70 flex items-center justify-center text-sm">
+                  <div className="w-full h-[58px] px-4 rounded-xl border border-[#d0d5cb] bg-[#f7f3ed] text-[#193c1f]/70 flex items-center justify-center text-sm">
                     Loading available slots...
                   </div>
                 ) : timeSlots.length === 0 ? (
-                  <div className="w-full h-[58px] px-4 rounded-xl border border-[#D0D5CB] bg-[#F7F3ED] text-[#193C1F]/70 flex items-center justify-center text-sm">
+                  <div className="w-full h-[58px] px-4 rounded-xl border border-[#d0d5cb] bg-[#f7f3ed] text-[#193c1f]/70 flex items-center justify-center text-sm">
                     No available slots for this date.
                   </div>
                 ) : (
@@ -415,8 +419,8 @@ export default function ConsultationPage() {
                           !slot.available
                             ? 'bg-[#F3F4F6] border-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed'
                             : selectedTime === slot.time
-                              ? 'bg-[#8EA087] border-[#8EA087] text-[#F7F3ED] shadow-sm'
-                              : 'bg-white border-[#D0D5CB] text-[#193C1F] hover:border-[#8EA087] hover:bg-[#F7F3ED]'
+                              ? 'bg-[#8ea087] border-[#8ea087] text-[#f7f3ed] shadow-sm'
+                              : 'bg-white border-[#d0d5cb] text-[#193c1f] hover:border-[#8ea087] hover:bg-[#f7f3ed]'
                         }`}
                       >
                         {slot.time}
@@ -429,7 +433,7 @@ export default function ConsultationPage() {
 
             <div>
               <label
-                className="block text-sm font-semibold text-[#193C1F] mb-2"
+                className="block text-sm font-semibold text-[#193c1f] mb-2"
                 htmlFor="detailed-description"
               >
                 Detailed Description
@@ -437,7 +441,7 @@ export default function ConsultationPage() {
               <textarea
                 name="description"
                 required
-                className="w-full px-4 py-4 rounded-xl border border-[#D0D5CB] bg-white text-[#193C1F] focus:ring-[#8EA087] focus:border-[#8EA087] placeholder-[#193C1F]/30"
+                className="w-full px-4 py-4 rounded-xl border border-[#d0d5cb] bg-white text-[#193c1f] focus:ring-[#8ea087] focus:border-[#8ea087] placeholder-[#193C1F]/30"
                 id="detailed-description"
                 placeholder="Please describe your situation here..."
                 rows={5}
@@ -445,10 +449,10 @@ export default function ConsultationPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-[#193C1F] mb-2">
+              <label className="block text-sm font-semibold text-[#193c1f] mb-2">
                 Relevant Documents (Optional)
               </label>
-              <div className="border-2 border-dashed border-[#D0D5CB] rounded-xl p-8 flex flex-col items-center justify-center bg-[#F7F3ED] hover:bg-white transition-colors cursor-pointer relative overflow-hidden group">
+              <div className="border-2 border-dashed border-[#d0d5cb] rounded-xl p-8 flex flex-col items-center justify-center bg-[#f7f3ed] hover:bg-white transition-colors cursor-pointer relative overflow-hidden group">
                 <input
                   type="file"
                   name="document"
@@ -457,7 +461,7 @@ export default function ConsultationPage() {
                   onChange={handleFileChange}
                 />
                 <svg
-                  className="h-10 w-10 text-[#D0D5CB] mb-3 group-hover:text-[#8EA087] transition-colors"
+                  className="h-10 w-10 text-[#d0d5cb] mb-3 group-hover:text-[#8ea087] transition-colors"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -470,18 +474,18 @@ export default function ConsultationPage() {
                     strokeWidth="2"
                   ></path>
                 </svg>
-                <p className="text-[#193C1F] font-medium">
+                <p className="text-[#193c1f] font-medium">
                   Click to upload or drag and drop
                 </p>
-                <p className="text-xs text-[#193C1F]/60 mt-1">
+                <p className="text-xs text-[#193c1f]/60 mt-1">
                   Supported formats: PDF, JPG, PNG (max 10MB)
                 </p>
               </div>
             </div>
             {file && (
               <div className="mt-4">
-                <div className="flex items-center justify-between bg-[#F7F3ED] border border-[#D0D5CB] rounded-lg px-4 py-2">
-                  <div className="flex items-center gap-2 text-[#193C1F]">
+                <div className="flex items-center justify-between bg-[#f7f3ed] border border-[#d0d5cb] rounded-lg px-4 py-2">
+                  <div className="flex items-center gap-2 text-[#193c1f]">
                     <span>{file.type.includes('pdf') ? '📄' : '🖼️'}</span>
                     <span className="text-sm truncate max-w-[300px]">
                       {file.name}
@@ -490,7 +494,7 @@ export default function ConsultationPage() {
                   <button
                     type="button"
                     onClick={() => setFile(null)}
-                    className="text-[#8EA087] hover:text-red-500 text-sm transition"
+                    className="text-[#8ea087] hover:text-red-500 text-sm transition"
                   >
                     ✕
                   </button>
@@ -498,24 +502,24 @@ export default function ConsultationPage() {
               </div>
             )}
 
-            <div className="bg-[#F7F3ED] border border-[#D0D5CB] rounded-xl px-6 py-5 flex items-center justify-between">
+            <div className="bg-[#f7f3ed] border border-[#d0d5cb] rounded-xl px-6 py-5 flex items-center justify-between">
               <div>
-                <h4 className="font-semibold text-[#193C1F]">
+                <h4 className="font-semibold text-[#193c1f]">
                   Submit Anonymously
                 </h4>
-                <p className="text-xs text-[#193C1F]/60">
+                <p className="text-xs text-[#193c1f]/60">
                   Your identity will be hidden from the reviewer
                 </p>
               </div>
               <div className="relative inline-block w-12 align-middle select-none transition duration-200 ease-in">
                 <input
-                  className="peer absolute block w-6 h-6 rounded-full bg-white border-4 border-[#D0D5CB] appearance-none cursor-pointer checked:right-0 checked:border-[#8EA087]"
+                  className="peer absolute block w-6 h-6 rounded-full bg-white border-4 border-[#d0d5cb] appearance-none cursor-pointer checked:right-0 checked:border-[#8ea087]"
                   id="toggle"
                   name="isAnonymous"
                   type="checkbox"
                 />
                 <label
-                  className="block overflow-hidden h-6 rounded-full bg-[#D0D5CB] cursor-pointer peer-checked:bg-[#8EA087] transition-colors duration-200"
+                  className="block overflow-hidden h-6 rounded-full bg-[#d0d5cb] cursor-pointer peer-checked:bg-[#8ea087] transition-colors duration-200"
                   htmlFor="toggle"
                 ></label>
               </div>
@@ -523,7 +527,7 @@ export default function ConsultationPage() {
 
             <button
               disabled={isSubmitting}
-              className="w-full py-5 bg-[#8EA087] hover:bg-[#8EA087]/90 disabled:opacity-50 disabled:cursor-not-allowed text-[#193C1F] font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm"
+              className="w-full py-5 bg-[#8ea087] hover:bg-[#8ea087]/90 disabled:opacity-50 disabled:cursor-not-allowed text-[#193c1f] font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm"
               type="submit"
             >
               {isSubmitting ? (
@@ -561,9 +565,9 @@ export default function ConsultationPage() {
               )}
             </button>
 
-            <div className="bg-white border border-[#D0D5CB]/30 rounded-xl p-4 flex items-start gap-3">
+            <div className="bg-white border border-[#d0d5cb]/30 rounded-xl p-4 flex items-start gap-3">
               <svg
-                className="h-5 w-5 text-[#8EA087] mt-0.5"
+                className="h-5 w-5 text-[#8ea087] mt-0.5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -576,11 +580,11 @@ export default function ConsultationPage() {
                   strokeWidth="2"
                 ></path>
               </svg>
-              <p className="text-sm text-[#193C1F]/70">
+              <p className="text-sm text-[#193c1f]/70">
                 If you are in immediate danger, please contact your local
                 emergency services or use the{' '}
                 <Link
-                  className="text-[#8EA087] font-semibold underline"
+                  className="text-[#8ea087] font-semibold underline"
                   href="#"
                 >
                   Emergency
@@ -593,67 +597,67 @@ export default function ConsultationPage() {
           {/* Review Section */}
           {step === 'review' && reviewData && (
             <div className="space-y-8">
-              <div className="bg-[#F7F3ED] p-8 rounded-xl border border-[#D0D5CB]">
-                <h3 className="text-xl font-bold text-[#193C1F] mb-6">
+              <div className="bg-[#f7f3ed] p-8 rounded-xl border border-[#d0d5cb]">
+                <h3 className="text-xl font-bold text-[#193c1f] mb-6">
                   Review Your Request
                 </h3>
 
                 <div className="space-y-4">
                   <div>
-                    <p className="text-sm font-semibold text-[#193C1F]/60">
+                    <p className="text-sm font-semibold text-[#193c1f]/60">
                       Title
                     </p>
-                    <p className="text-base text-[#193C1F]">
+                    <p className="text-base text-[#193c1f]">
                       {reviewData.title}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-[#193C1F]/60">
+                    <p className="text-sm font-semibold text-[#193c1f]/60">
                       Nature of Consultation
                     </p>
-                    <p className="text-base text-[#193C1F]">
+                    <p className="text-base text-[#193c1f]">
                       {reviewData.nature}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-[#193C1F]/60">
+                    <p className="text-sm font-semibold text-[#193c1f]/60">
                       Details
                     </p>
-                    <p className="text-base text-[#193C1F] whitespace-pre-wrap">
+                    <p className="text-base text-[#193c1f] whitespace-pre-wrap">
                       {reviewData.details}
                     </p>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-sm font-semibold text-[#193C1F]/60">
+                      <p className="text-sm font-semibold text-[#193c1f]/60">
                         Date
                       </p>
-                      <p className="text-base text-[#193C1F]">
+                      <p className="text-base text-[#193c1f]">
                         {reviewData.date}
                       </p>
                     </div>
                     <div>
-                      <p className="text-sm font-semibold text-[#193C1F]/60">
+                      <p className="text-sm font-semibold text-[#193c1f]/60">
                         Time
                       </p>
-                      <p className="text-base text-[#193C1F]">
+                      <p className="text-base text-[#193c1f]">
                         {reviewData.time}
                       </p>
                     </div>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-[#193C1F]/60">
+                    <p className="text-sm font-semibold text-[#193c1f]/60">
                       Urgency
                     </p>
-                    <p className="text-base text-[#193C1F] capitalize">
+                    <p className="text-base text-[#193c1f] capitalize">
                       {reviewData.urgency}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-[#193C1F]/60">
+                    <p className="text-sm font-semibold text-[#193c1f]/60">
                       Attached File
                     </p>
-                    <p className="text-base text-[#193C1F]">
+                    <p className="text-base text-[#193c1f]">
                       {reviewData.fileName}
                     </p>
                   </div>
@@ -664,7 +668,7 @@ export default function ConsultationPage() {
                 <button
                   type="button"
                   onClick={() => setStep('form')}
-                  className="flex-1 px-8 py-4 rounded-xl font-bold text-[#193C1F] bg-[#F7F3ED] border border-[#D0D5CB] hover:bg-[#EBE6DE] transition-colors"
+                  className="flex-1 px-8 py-4 rounded-xl font-bold text-[#193c1f] bg-[#f7f3ed] border border-[#d0d5cb] hover:bg-[#EBE6DE] transition-colors"
                 >
                   Back to Edit
                 </button>
@@ -672,7 +676,7 @@ export default function ConsultationPage() {
                   type="button"
                   onClick={submitAfterReview}
                   disabled={isSubmitting}
-                  className="flex-1 px-8 py-4 rounded-xl font-bold text-[#F7F3ED] bg-[#193C1F] hover:bg-[#2d5a35] transition-colors shadow-lg shadow-[#193C1F]/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 px-8 py-4 rounded-xl font-bold text-[#f7f3ed] bg-[#193c1f] hover:bg-[#2d5a35] transition-colors shadow-lg shadow-[#193c1f]/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   Confirm & Submit
                 </button>
@@ -683,29 +687,29 @@ export default function ConsultationPage() {
       </main>
 
       {/* Footer */}
-      <footer className="w-full py-12 px-12 bg-white border-t border-[#D0D5CB] mt-10">
+      <footer className="w-full py-12 px-12 bg-white border-t border-[#d0d5cb] mt-10">
         <div className="flex flex-col items-center gap-6">
           <div className="flex gap-8">
             <Link
               href="#"
-              className="text-xs font-bold text-[#193C1F]/60 hover:text-[#193C1F] tracking-widest uppercase"
+              className="text-xs font-bold text-[#193c1f]/60 hover:text-[#193c1f] tracking-widest uppercase"
             >
               Privacy Policy
             </Link>
             <Link
               href="#"
-              className="text-xs font-bold text-[#193C1F]/60 hover:text-[#193C1F] tracking-widest uppercase"
+              className="text-xs font-bold text-[#193c1f]/60 hover:text-[#193c1f] tracking-widest uppercase"
             >
               Terms of Service
             </Link>
             <Link
               href="#"
-              className="text-xs font-bold text-[#193C1F]/60 hover:text-[#193C1F] tracking-widest uppercase"
+              className="text-xs font-bold text-[#193c1f]/60 hover:text-[#193c1f] tracking-widest uppercase"
             >
               Help Center
             </Link>
           </div>
-          <p className="text-sm text-[#193C1F]/40">
+          <p className="text-sm text-[#193c1f]/40">
             © 2024 CareConnect. All rights reserved.
           </p>
         </div>
