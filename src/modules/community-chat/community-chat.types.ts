@@ -50,8 +50,8 @@ export interface ChatMessage {
 
 export interface CreateChannelDTO {
   name: string;
-  description?: string;
-  coverUrl?: string;
+  description?: string | null;
+  coverUrl?: string | null;
   coverImage?: File | null;
   type?: 'PUBLIC' | 'PRIVATE';
 }
