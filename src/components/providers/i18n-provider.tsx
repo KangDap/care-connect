@@ -2,7 +2,13 @@
 
 import { en } from '@/i18n/en';
 import { id } from '@/i18n/id';
-import React, { ReactNode, createContext, useContext, useState } from 'react';
+import React, {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
 type Language = 'en' | 'id';
 
@@ -15,13 +21,16 @@ interface I18nContextProps {
 const I18nContext = createContext<I18nContextProps | undefined>(undefined);
 
 export const I18nProvider = ({ children }: { children: ReactNode }) => {
-  const [language, setLanguageState] = useState<Language>(() => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('care-connect-lang');
-      if (stored === 'en' || stored === 'id') return stored;
+  const [language, setLanguageState] = useState<Language>('en');
+
+  // Sync from localStorage after mount — must run client-side only to avoid SSR mismatch
+  useEffect(() => {
+    const stored = localStorage.getItem('care-connect-lang');
+    if (stored === 'en' || stored === 'id') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setLanguageState(stored);
     }
-    return 'en';
-  });
+  }, []);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
