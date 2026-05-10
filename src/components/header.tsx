@@ -105,11 +105,6 @@ export const Header = ({
   const pathname = usePathname();
   const { data: session } = authClient.useSession();
   const { t, language, setLanguage } = useTranslation();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');

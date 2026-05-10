@@ -4,7 +4,7 @@ import { authClient } from '@/lib/auth/auth-client';
 import { useTranslation } from '@/components/providers/i18n-provider';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense } from 'react';
 
 function PublicHeaderContent() {
   const { data: session } = authClient.useSession();
@@ -13,11 +13,6 @@ function PublicHeaderContent() {
   const router = useRouter();
   const pathname = usePathname();
   const { t, language, setLanguage } = useTranslation();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const fromDashboard = searchParams.get('from') === 'dashboard';
 

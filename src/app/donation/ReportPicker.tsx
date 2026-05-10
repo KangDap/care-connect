@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
 type ReportOption = {
@@ -34,10 +35,7 @@ export function ReportPicker({ onSelect, onBack }: Props) {
       .finally(() => setLoading(false));
   }, []);
 
-  // Reset page to 1 when search changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [search]);
+  // Page is reset inside the search onChange handler
 
   const filtered = reports.filter(
     (r) =>
@@ -96,7 +94,7 @@ export function ReportPicker({ onSelect, onBack }: Props) {
         <input
           type="text"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
           placeholder="Search by title, category, or city..."
           className="w-full pl-12 pr-4 py-4 rounded-2xl border border-[#d0d5cb] bg-white focus:ring-[#8ea087] focus:border-[#8ea087] outline-none text-[#193c1f] shadow-sm transition-all"
         />
@@ -135,10 +133,12 @@ export function ReportPicker({ onSelect, onBack }: Props) {
                 {/* Image Section */}
                 <div className="relative h-48 w-full bg-[#f7f3ed] overflow-hidden shrink-0">
                   {report.coverImageUrl ? (
-                    <img
+                    <Image
                       src={report.coverImageUrl}
                       alt={report.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      unoptimized
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-[#8ea087]/50 group-hover:scale-105 transition-transform duration-500">

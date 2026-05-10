@@ -82,7 +82,7 @@ export function UserActions({ id, role, banned, name }: UserProps) {
       setIsUnbanAlertOpen(false);
       setBanReason('');
       router.refresh();
-    } catch (error) {
+    } catch (_error) {
       setToastState({ show: true, msg: 'Error updating ban status', type: 'error' });
     } finally {
       setIsUpdating(false);
