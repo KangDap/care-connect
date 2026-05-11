@@ -1,8 +1,8 @@
 'use client';
 
+import { ForumModal } from '@/components/ForumModal';
 import { PublicHeader } from '@/components/public-header';
 import { authClient } from '@/lib/auth/auth-client';
-import { ForumModal } from '@/modules/community-chat/components/ForumModal';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowRight, Loader2, MessageSquare, Plus, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';

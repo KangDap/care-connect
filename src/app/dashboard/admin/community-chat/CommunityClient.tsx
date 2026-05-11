@@ -1,9 +1,9 @@
 'use client';
 
+import { ForumModal } from '@/components/ForumModal';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Toast } from '@/components/toast';
-import { ForumModal } from '@/modules/community-chat/components/ForumModal';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
