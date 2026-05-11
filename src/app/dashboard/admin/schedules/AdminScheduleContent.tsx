@@ -1,18 +1,19 @@
 'use client';
 
 import {
+  AlertCircle,
   Calendar,
   Check,
   ChevronDown,
   Clock,
+  Loader2,
   Plus,
   Trash2,
   User,
-  X,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -36,39 +37,18 @@ interface DaySchedule {
   slots: TimeSlot[];
 }
 
-interface PsychologistSchedule {
-  psychologistId: string;
-  schedule: DaySchedule[];
+interface Psychologist {
+  id: string;
+  name: string;
+  image: string | null;
 }
 
-// ─── Dummy Data ───────────────────────────────────────────────────────────────
-
-const DUMMY_PSYCHOLOGISTS = [
-  {
-    id: 'psy-1',
-    name: 'Dr. Anika Sari, M.Psi',
-    specialization: 'Anxiety & Depression',
-    image: null,
-  },
-  {
-    id: 'psy-2',
-    name: 'Dr. Budi Santoso, M.Psi',
-    specialization: 'Trauma & PTSD',
-    image: null,
-  },
-  {
-    id: 'psy-3',
-    name: 'Dr. Clara Dewi, M.Psi',
-    specialization: 'Child & Adolescent',
-    image: null,
-  },
-  {
-    id: 'psy-4',
-    name: 'Dr. Dimas Pratama, M.Psi',
-    specialization: 'Relationships & Family',
-    image: null,
-  },
-];
+interface ScheduleApiResponse {
+  id: string;
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+}
 
 const DAYS: Day[] = [
   'Monday',
@@ -80,6 +60,26 @@ const DAYS: Day[] = [
   'Sunday',
 ];
 
+const DAY_MAP: Record<Day, number> = {
+  Monday: 1,
+  Tuesday: 2,
+  Wednesday: 3,
+  Thursday: 4,
+  Friday: 5,
+  Saturday: 6,
+  Sunday: 7,
+};
+
+const REV_DAY_MAP: Record<number, Day> = {
+  1: 'Monday',
+  2: 'Tuesday',
+  3: 'Wednesday',
+  4: 'Thursday',
+  5: 'Friday',
+  6: 'Saturday',
+  7: 'Sunday',
+};
+
 const DAY_SHORT: Record<Day, string> = {
   Monday: 'Mon',
   Tuesday: 'Tue',
@@ -90,25 +90,6 @@ const DAY_SHORT: Record<Day, string> = {
   Sunday: 'Sun',
 };
 
-const INITIAL_SCHEDULES: Record<string, PsychologistSchedule> = {
-  'psy-1': {
-    psychologistId: 'psy-1',
-    schedule: [
-      { day: 'Monday', slots: [{ id: 's1', start: '09:00', end: '12:00' }] },
-      { day: 'Wednesday', slots: [{ id: 's2', start: '13:00', end: '17:00' }] },
-    ],
-  },
-  'psy-2': {
-    psychologistId: 'psy-2',
-    schedule: [
-      { day: 'Tuesday', slots: [{ id: 's3', start: '08:00', end: '11:00' }] },
-      { day: 'Thursday', slots: [{ id: 's4', start: '14:00', end: '18:00' }] },
-    ],
-  },
-  'psy-3': { psychologistId: 'psy-3', schedule: [] },
-  'psy-4': { psychologistId: 'psy-4', schedule: [] },
-};
-
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const uid = () => Math.random().toString(36).substring(2, 9);
@@ -117,100 +98,128 @@ const uid = () => Math.random().toString(36).substring(2, 9);
 
 export default function AdminSchedulePage() {
   const searchParams = useSearchParams();
-  const initialId = searchParams.get('id') || DUMMY_PSYCHOLOGISTS[0].id;
 
-  const [selectedPsyId, setSelectedPsyId] = useState<string>(initialId);
-  const [schedules, setSchedules] =
-    useState<Record<string, PsychologistSchedule>>(INITIAL_SCHEDULES);
-  const [activeDays, setActiveDays] = useState<Record<string, Set<Day>>>(() => {
-    const init: Record<string, Set<Day>> = {};
-    for (const psy of DUMMY_PSYCHOLOGISTS) {
-      init[psy.id] = new Set(
-        (INITIAL_SCHEDULES[psy.id]?.schedule ?? []).map((d) => d.day),
-      );
-    }
-    return init;
-  });
+  const [psychologists, setPsychologists] = useState<Psychologist[]>([]);
+  const [selectedPsyId, setSelectedPsyId] = useState<string>('');
+  const [schedule, setSchedule] = useState<DaySchedule[]>([]);
+  const [activeDays, setActiveDays] = useState<Set<Day>>(new Set());
+
+  const [loading, setLoading] = useState(true);
+  const [saveLoading, setSaveLoading] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const selectedPsy = DUMMY_PSYCHOLOGISTS.find((p) => p.id === selectedPsyId)!;
-  const currentSchedule = schedules[selectedPsyId]?.schedule ?? [];
-  const currentActiveDays = activeDays[selectedPsyId] ?? new Set<Day>();
+  // 1. Fetch Psychologists
+  useEffect(() => {
+    const fetchPsychologists = async () => {
+      try {
+        const res = await fetch('/api/dashboard/admin/schedules/psychologists');
+        const data = await res.json();
+        if (data.success) {
+          console.log('Psychologists fetched:', data.data);
+          setPsychologists(data.data);
+          const initialId = searchParams.get('id') || data.data[0]?.id;
+          if (initialId) setSelectedPsyId(initialId);
+        } else {
+          console.error('API Error fetching psychologists:', data);
+        }
+      } catch (err) {
+        console.error('Failed to fetch psychologists:', err);
+        setError('Gagal memuat daftar psikolog.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchPsychologists();
+  }, [searchParams]);
+
+  // 2. Fetch Schedule when Psychologist changes
+  useEffect(() => {
+    if (!selectedPsyId) return;
+
+    const fetchSchedule = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const res = await fetch(
+          `/api/dashboard/admin/schedules/${selectedPsyId}`,
+        );
+        const data = await res.json();
+
+        if (data.success) {
+          // Group by day
+          const grouped: Record<number, TimeSlot[]> = {};
+          data.data.forEach((s: ScheduleApiResponse) => {
+            if (!grouped[s.dayOfWeek]) grouped[s.dayOfWeek] = [];
+            grouped[s.dayOfWeek].push({
+              id: s.id.toString(),
+              start: s.startTime,
+              end: s.endTime,
+            });
+          });
+
+          const formattedSchedule: DaySchedule[] = Object.entries(grouped).map(
+            ([dayNum, slots]) => ({
+              day: REV_DAY_MAP[Number(dayNum)],
+              slots,
+            }),
+          );
+
+          setSchedule(formattedSchedule);
+          setActiveDays(new Set(formattedSchedule.map((s) => s.day)));
+        }
+      } catch (err) {
+        console.error('Failed to fetch schedule:', err);
+        setError('Gagal memuat jadwal.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSchedule();
+  }, [selectedPsyId]);
+
+  const selectedPsy = psychologists.find((p) => p.id === selectedPsyId);
 
   // Toggle whether a day is active
   const toggleDay = (day: Day) => {
-    const newActive = new Set(currentActiveDays);
+    const newActive = new Set(activeDays);
     if (newActive.has(day)) {
       newActive.delete(day);
-      setSchedules((prev) => ({
-        ...prev,
-        [selectedPsyId]: {
-          ...prev[selectedPsyId],
-          schedule: (prev[selectedPsyId]?.schedule ?? []).filter(
-            (d) => d.day !== day,
-          ),
-        },
-      }));
+      setSchedule((prev) => prev.filter((d) => d.day !== day));
     } else {
       newActive.add(day);
-      const alreadyExists = currentSchedule.some((d) => d.day === day);
-      if (!alreadyExists) {
-        setSchedules((prev) => ({
-          ...prev,
-          [selectedPsyId]: {
-            psychologistId: selectedPsyId,
-            schedule: [
-              ...(prev[selectedPsyId]?.schedule ?? []),
-              { day, slots: [{ id: uid(), start: '09:00', end: '17:00' }] },
-            ],
-          },
-        }));
-      }
+      setSchedule((prev) => [
+        ...prev,
+        { day, slots: [{ id: uid(), start: '09:00', end: '17:00' }] },
+      ]);
     }
-    setActiveDays((prev) => ({ ...prev, [selectedPsyId]: newActive }));
+    setActiveDays(newActive);
   };
 
   // Add a time slot to a day
   const addSlot = (day: Day) => {
-    setSchedules((prev) => {
-      const existing = prev[selectedPsyId]?.schedule ?? [];
-      return {
-        ...prev,
-        [selectedPsyId]: {
-          psychologistId: selectedPsyId,
-          schedule: existing.map((d) =>
-            d.day === day
-              ? {
-                  ...d,
-                  slots: [
-                    ...d.slots,
-                    { id: uid(), start: '09:00', end: '17:00' },
-                  ],
-                }
-              : d,
-          ),
-        },
-      };
-    });
+    setSchedule((prev) =>
+      prev.map((d) =>
+        d.day === day
+          ? {
+              ...d,
+              slots: [...d.slots, { id: uid(), start: '09:00', end: '17:00' }],
+            }
+          : d,
+      ),
+    );
   };
 
   // Remove a time slot
   const removeSlot = (day: Day, slotId: string) => {
-    setSchedules((prev) => {
-      const existing = prev[selectedPsyId]?.schedule ?? [];
-      return {
-        ...prev,
-        [selectedPsyId]: {
-          psychologistId: selectedPsyId,
-          schedule: existing.map((d) =>
-            d.day === day
-              ? { ...d, slots: d.slots.filter((s) => s.id !== slotId) }
-              : d,
-          ),
-        },
-      };
-    });
+    setSchedule((prev) =>
+      prev.map((d) =>
+        d.day === day
+          ? { ...d, slots: d.slots.filter((s) => s.id !== slotId) }
+          : d,
+      ),
+    );
   };
 
   // Update slot time
@@ -220,38 +229,70 @@ export default function AdminSchedulePage() {
     field: 'start' | 'end',
     value: string,
   ) => {
-    setSchedules((prev) => {
-      const existing = prev[selectedPsyId]?.schedule ?? [];
-      return {
-        ...prev,
-        [selectedPsyId]: {
-          psychologistId: selectedPsyId,
-          schedule: existing.map((d) =>
-            d.day === day
-              ? {
-                  ...d,
-                  slots: d.slots.map((s) =>
-                    s.id === slotId ? { ...s, [field]: value } : s,
-                  ),
-                }
-              : d,
-          ),
-        },
-      };
-    });
+    setSchedule((prev) =>
+      prev.map((d) =>
+        d.day === day
+          ? {
+              ...d,
+              slots: d.slots.map((s) =>
+                s.id === slotId ? { ...s, [field]: value } : s,
+              ),
+            }
+          : d,
+      ),
+    );
   };
 
-  const handleSave = () => {
-    // NOTE: Backend API not yet implemented. When ready, POST to /api/admin/schedules.
-    console.log('[DUMMY SAVE] Schedule data:', schedules[selectedPsyId]);
-    setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 3000);
+  const handleSave = async () => {
+    if (!selectedPsyId) return;
+
+    setSaveLoading(true);
+    setError(null);
+
+    try {
+      // Flatten schedule for API
+      const slots = schedule.flatMap((d) =>
+        d.slots.map((s) => ({
+          dayOfWeek: DAY_MAP[d.day],
+          startTime: s.start,
+          endTime: s.end,
+        })),
+      );
+
+      const res = await fetch('/api/dashboard/admin/schedules', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: selectedPsyId, slots }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 3000);
+      } else {
+        setError(data.message || 'Gagal menyimpan jadwal.');
+      }
+    } catch (err) {
+      console.error('Save error:', err);
+      setError('Terjadi kesalahan saat menyimpan.');
+    } finally {
+      setSaveLoading(false);
+    }
   };
 
-  const daySchedule = (day: Day) => currentSchedule.find((d) => d.day === day);
+  const daySchedule = (day: Day) => schedule.find((d) => d.day === day);
+
+  if (loading && psychologists.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+        <Loader2 className="animate-spin text-[#193c1f]" size={40} />
+        <p className="text-[#8ea087] font-medium">Memuat data...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8">
+    <div className="max-w-5xl mx-auto space-y-8 pb-20">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-4">
@@ -280,19 +321,22 @@ export default function AdminSchedulePage() {
             </h1>
             <p className="text-sm text-[#8EA087] mt-1 font-medium">
               Set available consultation days and time slots for{' '}
-              {selectedPsy.name}.
+              {selectedPsy?.name || 'Psychologist'}.
             </p>
           </div>
         </div>
         <button
           onClick={handleSave}
-          className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-sm font-bold transition-all shadow-sm ${
+          disabled={saveLoading || !selectedPsyId}
+          className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-sm font-bold transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed ${
             saveSuccess
               ? 'bg-green-500 text-white scale-95'
               : 'bg-[#193c1f] text-white hover:bg-[#2d5c36]'
           }`}
         >
-          {saveSuccess ? (
+          {saveLoading ? (
+            <Loader2 className="animate-spin" size={16} />
+          ) : saveSuccess ? (
             <>
               <Check size={16} /> Saved!
             </>
@@ -303,6 +347,13 @@ export default function AdminSchedulePage() {
           )}
         </button>
       </div>
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-5 py-4 rounded-2xl flex items-center gap-3">
+          <AlertCircle size={20} className="shrink-0" />
+          <p className="text-sm font-bold">{error}</p>
+        </div>
+      )}
 
       {/* Psychologist Selector */}
       <div className="bg-white rounded-3xl border border-[#d0d5cb] p-6 shadow-sm">
@@ -315,15 +366,20 @@ export default function AdminSchedulePage() {
             className="w-full flex items-center justify-between px-5 py-4 bg-[#f7f3ed] border border-[#d0d5cb] rounded-2xl hover:border-[#8ea087] transition-colors"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#d0d5cb] flex items-center justify-center text-[#8ea087] shrink-0">
-                <User size={20} />
+              <div className="w-10 h-10 rounded-full bg-[#d0d5cb] flex items-center justify-center text-[#8ea087] shrink-0 overflow-hidden">
+                {selectedPsy?.image ? (
+                  <img
+                    src={selectedPsy.image}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User size={20} />
+                )}
               </div>
               <div className="text-left">
                 <p className="text-sm font-bold text-[#193c1f]">
-                  {selectedPsy.name}
-                </p>
-                <p className="text-[10px] text-[#8ea087] font-medium">
-                  {selectedPsy.specialization}
+                  {selectedPsy?.name || 'Pilih Psikolog'}
                 </p>
               </div>
             </div>
@@ -334,34 +390,51 @@ export default function AdminSchedulePage() {
           </button>
 
           {dropdownOpen && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-[#d0d5cb] rounded-2xl shadow-xl z-20 overflow-hidden">
-              {DUMMY_PSYCHOLOGISTS.map((psy) => (
-                <button
-                  key={psy.id}
-                  onClick={() => {
-                    setSelectedPsyId(psy.id);
-                    setDropdownOpen(false);
-                  }}
-                  className={`w-full flex items-center gap-3 px-5 py-4 hover:bg-[#f7f3ed] transition-colors text-left ${
-                    psy.id === selectedPsyId ? 'bg-[#f7f3ed]' : ''
-                  }`}
-                >
-                  <div className="w-9 h-9 rounded-full bg-[#d0d5cb] flex items-center justify-center text-[#8ea087] shrink-0">
-                    <User size={18} />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-[#193c1f]">
-                      {psy.name}
-                    </p>
-                    <p className="text-[10px] text-[#8ea087]">
-                      {psy.specialization}
-                    </p>
-                  </div>
-                  {psy.id === selectedPsyId && (
-                    <Check size={16} className="ml-auto text-[#8ea087]" />
-                  )}
-                </button>
-              ))}
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-[#d0d5cb] rounded-2xl shadow-xl z-20 overflow-hidden max-h-60 overflow-y-auto">
+              {psychologists.length === 0 ? (
+                <div className="px-5 py-8 text-center">
+                  <User
+                    size={32}
+                    className="mx-auto text-[#d0d5cb] mb-2 opacity-20"
+                  />
+                  <p className="text-xs text-[#8ea087] font-medium">
+                    Tidak ada psikolog aktif ditemukan
+                  </p>
+                </div>
+              ) : (
+                psychologists.map((psy) => (
+                  <button
+                    key={psy.id}
+                    onClick={() => {
+                      setSelectedPsyId(psy.id);
+                      setDropdownOpen(false);
+                    }}
+                    className={`w-full flex items-center gap-3 px-5 py-4 hover:bg-[#f7f3ed] transition-colors text-left ${
+                      psy.id === selectedPsyId ? 'bg-[#f7f3ed]' : ''
+                    }`}
+                  >
+                    <div className="w-9 h-9 rounded-full bg-[#d0d5cb] flex items-center justify-center text-[#8ea087] shrink-0 overflow-hidden">
+                      {psy.image ? (
+                        <img
+                          src={psy.image}
+                          alt=""
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <User size={18} />
+                      )}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-[#193c1f]">
+                        {psy.name}
+                      </p>
+                    </div>
+                    {psy.id === selectedPsyId && (
+                      <Check size={16} className="ml-auto text-[#8ea087]" />
+                    )}
+                  </button>
+                ))
+              )}
             </div>
           )}
         </div>
@@ -374,7 +447,7 @@ export default function AdminSchedulePage() {
         </p>
         <div className="flex flex-wrap gap-3">
           {DAYS.map((day) => {
-            const isActive = currentActiveDays.has(day);
+            const isActive = activeDays.has(day);
             return (
               <button
                 key={day}
@@ -395,7 +468,7 @@ export default function AdminSchedulePage() {
             );
           })}
         </div>
-        {currentActiveDays.size === 0 && (
+        {activeDays.size === 0 && (
           <p className="text-xs text-[#8ea087] mt-4 italic">
             No days selected. Click a day to add availability.
           </p>
@@ -403,7 +476,7 @@ export default function AdminSchedulePage() {
       </div>
 
       {/* Time Slot Editor per Day */}
-      {DAYS.filter((day) => currentActiveDays.has(day)).map((day) => {
+      {DAYS.filter((day) => activeDays.has(day)).map((day) => {
         const ds = daySchedule(day);
         const slots = ds?.slots ?? [];
         return (
@@ -485,7 +558,7 @@ export default function AdminSchedulePage() {
       })}
 
       {/* Empty State */}
-      {currentActiveDays.size === 0 && (
+      {activeDays.size === 0 && (
         <div className="bg-white rounded-3xl border-2 border-dashed border-[#d0d5cb] p-12 flex flex-col items-center justify-center text-center">
           <Calendar size={40} className="text-[#d0d5cb] mb-4" />
           <p className="font-bold text-[#193c1f] opacity-40">
@@ -496,24 +569,6 @@ export default function AdminSchedulePage() {
           </p>
         </div>
       )}
-
-      {/* Backend Note Banner */}
-      <div className="bg-amber-50 border border-amber-200 rounded-2xl px-5 py-4 flex items-start gap-3">
-        <X size={16} className="text-amber-500 shrink-0 mt-0.5" />
-        <div>
-          <p className="text-xs font-bold text-amber-700">
-            Frontend Only — Backend Pending
-          </p>
-          <p className="text-[11px] text-amber-600 mt-0.5">
-            Data is currently stored in local state only. Once the backend API{' '}
-            <code className="bg-amber-100 px-1 rounded">
-              POST /api/admin/schedules
-            </code>{' '}
-            is ready, connect the <strong>Save Schedule</strong> button to
-            persist this data.
-          </p>
-        </div>
-      </div>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 'use client';
 
-import { Calendar, Clock } from 'lucide-react';
-import React from 'react';
+import { AlertCircle, Calendar, Clock, Loader2 } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -25,19 +25,12 @@ interface DaySchedule {
   slots: TimeSlot[];
 }
 
-// ─── Dummy Data (will be replaced with API call once backend is ready) ────────
-
-const DUMMY_MY_SCHEDULE: DaySchedule[] = [
-  { day: 'Monday', slots: [{ id: 's1', start: '09:00', end: '12:00' }] },
-  { day: 'Wednesday', slots: [{ id: 's2', start: '13:00', end: '17:00' }] },
-  {
-    day: 'Friday',
-    slots: [
-      { id: 's3', start: '08:00', end: '11:00' },
-      { id: 's4', start: '14:00', end: '16:00' },
-    ],
-  },
-];
+interface ScheduleApiResponse {
+  id: string;
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+}
 
 const DAY_ORDER: Day[] = [
   'Monday',
@@ -48,6 +41,16 @@ const DAY_ORDER: Day[] = [
   'Saturday',
   'Sunday',
 ];
+
+const REV_DAY_MAP: Record<number, Day> = {
+  1: 'Monday',
+  2: 'Tuesday',
+  3: 'Wednesday',
+  4: 'Thursday',
+  5: 'Friday',
+  6: 'Saturday',
+  7: 'Sunday',
+};
 
 const today = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(
   new Date(),
@@ -63,12 +66,89 @@ function formatTime(t: string) {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function PsychologistScheduleView() {
-  const schedule = DUMMY_MY_SCHEDULE;
+  const [schedule, setSchedule] = useState<DaySchedule[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchMySchedule = async () => {
+      try {
+        const res = await fetch('/api/dashboard/psikolog/schedule');
+        const data = await res.json();
+
+        if (data.success) {
+          // Group API data by day
+          const grouped: Record<string, TimeSlot[]> = {};
+          data.data.forEach((s: ScheduleApiResponse) => {
+            const dayName = REV_DAY_MAP[s.dayOfWeek];
+            if (!dayName) return;
+            if (!grouped[dayName]) grouped[dayName] = [];
+            grouped[dayName].push({
+              id: s.id,
+              start: s.startTime,
+              end: s.endTime,
+            });
+          });
+
+          // Convert to DaySchedule array
+          const scheduleList: DaySchedule[] = Object.entries(grouped).map(
+            ([day, slots]) => ({
+              day: day as Day,
+              slots,
+            }),
+          );
+
+          setSchedule(scheduleList);
+        } else {
+          setError(data.error?.message || 'Failed to fetch schedule');
+        }
+      } catch (err) {
+        console.error('Fetch schedule error:', err);
+        setError('An unexpected error occurred while loading your schedule.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMySchedule();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
+        <Loader2 className="animate-spin text-[#193c1f]" size={40} />
+        <p className="text-[#8ea087] font-medium animate-pulse">
+          Memuat jadwal Anda...
+        </p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-50 border border-red-100 rounded-3xl p-8 text-center max-w-2xl mx-auto">
+        <AlertCircle size={40} className="text-red-500 mx-auto mb-4" />
+        <h3 className="text-red-900 font-bold text-lg mb-2">
+          Terjadi Kesalahan
+        </h3>
+        <p className="text-red-700 text-sm">{error}</p>
+      </div>
+    );
+  }
+
   const orderedSchedule = DAY_ORDER.filter((day) =>
     schedule.some((d) => d.day === day),
   ).map((day) => schedule.find((d) => d.day === day)!);
 
-  const totalSlots = schedule.reduce((acc, d) => acc + d.slots.length, 0);
+  const totalSlots = schedule.reduce((acc, d) => {
+    const slotsInDay = d.slots.reduce((a, s) => {
+      const [sh] = s.start.split(':').map(Number);
+      const [eh] = s.end.split(':').map(Number);
+      return a + (eh - sh);
+    }, 0);
+    return acc + slotsInDay;
+  }, 0);
+
   const totalHours = schedule.reduce((acc, d) => {
     const h = d.slots.reduce((a, s) => {
       const [sh, sm] = s.start.split(':').map(Number);
@@ -87,7 +167,7 @@ export default function PsychologistScheduleView() {
             My Consultation Schedule
           </h2>
           <p className="text-sm text-[#8ea087] mt-1 font-medium">
-            Your availability as configured by the admin.
+            Jadwal ketersediaan Anda yang diatur oleh Admin.
           </p>
         </div>
         <div className="text-right">
@@ -126,7 +206,9 @@ export default function PsychologistScheduleView() {
             <p className="text-[10px] font-black uppercase tracking-widest text-[#8ea087]">
               Hours/Week
             </p>
-            <p className="text-lg font-black text-[#193c1f]">{totalHours}h</p>
+            <p className="text-lg font-black text-[#193c1f]">
+              {Math.round(totalHours * 10) / 10}h
+            </p>
           </div>
         </div>
       </div>
@@ -136,10 +218,11 @@ export default function PsychologistScheduleView() {
         <div className="bg-white rounded-3xl border-2 border-dashed border-[#d0d5cb] p-12 text-center">
           <Calendar size={40} className="text-[#d0d5cb] mx-auto mb-4" />
           <p className="font-bold text-[#193c1f] opacity-40">
-            No schedule has been set yet
+            Belum ada jadwal yang diatur
           </p>
           <p className="text-xs text-[#8ea087] mt-1">
-            The admin will configure your availability. Check back later.
+            Admin akan mengatur jadwal ketersediaan Anda. Silakan cek kembali
+            nanti.
           </p>
         </div>
       ) : (
@@ -151,8 +234,8 @@ export default function PsychologistScheduleView() {
                 key={daySchedule.day}
                 className={`rounded-3xl border p-6 shadow-sm transition-all ${
                   isToday
-                    ? 'bg-[#193c1f] border-[#193c1f] text-white'
-                    : 'bg-white border-[#d0d5cb]'
+                    ? 'bg-[#193c1f] border-[#193c1f] text-white shadow-lg shadow-[#193c1f]/20'
+                    : 'bg-white border-[#d0d5cb] hover:border-[#8ea087]'
                 }`}
               >
                 <div className="flex items-center justify-between mb-4">
@@ -162,10 +245,7 @@ export default function PsychologistScheduleView() {
                         isToday ? 'bg-white/20' : 'bg-[#193c1f]'
                       }`}
                     >
-                      <Calendar
-                        size={16}
-                        className={isToday ? 'text-white' : 'text-white'}
-                      />
+                      <Calendar size={16} className="text-white" />
                     </div>
                     <h3
                       className={`font-black text-base ${isToday ? 'text-white' : 'text-[#193c1f]'}`}
@@ -175,13 +255,17 @@ export default function PsychologistScheduleView() {
                   </div>
                   {isToday && (
                     <span className="text-[9px] font-black uppercase tracking-widest bg-white/20 text-white px-3 py-1 rounded-full">
-                      Today
+                      Hari Ini
                     </span>
                   )}
                   {!isToday && (
                     <span className="text-[9px] font-black uppercase tracking-widest bg-[#f7f3ed] text-[#8ea087] px-3 py-1 rounded-full">
-                      {daySchedule.slots.length} slot
-                      {daySchedule.slots.length !== 1 ? 's' : ''}
+                      {daySchedule.slots.reduce((a, s) => {
+                        const [sh] = s.start.split(':').map(Number);
+                        const [eh] = s.end.split(':').map(Number);
+                        return a + (eh - sh);
+                      }, 0)}{' '}
+                      slots
                     </span>
                   )}
                 </div>
