@@ -69,12 +69,18 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLogoutAlertOpen, setIsLogoutAlertOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // LOGIKA DETEKSI HALAMAN (Berdasarkan Folder)
   const isAtPsikologPage = pathname.startsWith('/dashboard/psikolog');
   const isAtAdminPage = pathname.startsWith('/dashboard/admin');
+
+  // Close sidebar on route change (mobile)
+  React.useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [pathname]);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -85,8 +91,20 @@ export default function DashboardLayout({
 
   return (
     <div className="fixed inset-0 w-full h-full flex bg-[#F7F3ED] overflow-hidden m-0 p-0 z-0">
+      {/* OVERLAY FOR MOBILE */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-[#193C1F]/40 backdrop-blur-sm z-[150] lg:hidden animate-in fade-in duration-300"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* SIDEBAR */}
-      <aside className="w-[280px] bg-[#F2EDE4] border-r border-[#D0D5CB] flex flex-col shrink-0 h-full">
+      <aside
+        className={`fixed lg:relative top-0 bottom-0 left-0 w-[280px] bg-[#F2EDE4] border-r border-[#D0D5CB] flex flex-col shrink-0 h-full z-[200] transition-transform duration-300 ease-in-out ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        }`}
+      >
         <div className="p-10 flex flex-col gap-1 shrink-0">
           <Link
             href="/"
@@ -217,11 +235,16 @@ export default function DashboardLayout({
       {/* MAIN CONTENT AREA */}
       <main className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         <div className="shrink-0 w-full">
-          <Header onLogoutClick={() => setIsLogoutAlertOpen(true)} />
+          <Header
+            onLogoutClick={() => setIsLogoutAlertOpen(true)}
+            onMenuClick={() => setIsSidebarOpen(true)}
+          />
         </div>
 
         <div className="flex-1 overflow-y-auto w-full bg-[#F7F3ED]">
-          <div className="p-10 w-full min-h-full box-border">{children}</div>
+          <div className="p-6 md:p-10 w-full min-h-full box-border">
+            {children}
+          </div>
         </div>
       </main>
 

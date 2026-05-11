@@ -10,6 +10,8 @@ import {
   User,
   X,
 } from 'lucide-react';
+import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import React, { useState } from 'react';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -114,9 +116,10 @@ const uid = () => Math.random().toString(36).substring(2, 9);
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function AdminSchedulePage() {
-  const [selectedPsyId, setSelectedPsyId] = useState<string>(
-    DUMMY_PSYCHOLOGISTS[0].id,
-  );
+  const searchParams = useSearchParams();
+  const initialId = searchParams.get('id') || DUMMY_PSYCHOLOGISTS[0].id;
+
+  const [selectedPsyId, setSelectedPsyId] = useState<string>(initialId);
   const [schedules, setSchedules] =
     useState<Record<string, PsychologistSchedule>>(INITIAL_SCHEDULES);
   const [activeDays, setActiveDays] = useState<Record<string, Set<Day>>>(() => {
@@ -251,14 +254,35 @@ export default function AdminSchedulePage() {
     <div className="max-w-5xl mx-auto space-y-8">
       {/* Header */}
       <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-3xl font-black text-[#193C1F] tracking-tight">
-            Psychologist Schedules
-          </h1>
-          <p className="text-sm text-[#8EA087] mt-1 font-medium">
-            Set available consultation days and time slots for each
-            psychologist.
-          </p>
+        <div className="flex items-center gap-4">
+          <Link
+            href="/dashboard/admin/schedules"
+            className="p-2.5 bg-white border border-[#D0D5CB] hover:bg-[#F7F3ED] rounded-2xl transition-all shadow-sm flex items-center justify-center shrink-0 group"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#193C1F"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="group-hover:-translate-x-1 transition-transform"
+            >
+              <path d="M19 12H5"></path>
+              <path d="M12 19l-7-7 7-7"></path>
+            </svg>
+          </Link>
+          <div>
+            <h1 className="text-3xl font-black text-[#193C1F] tracking-tight">
+              Manage Schedule
+            </h1>
+            <p className="text-sm text-[#8EA087] mt-1 font-medium">
+              Set available consultation days and time slots for{' '}
+              {selectedPsy.name}.
+            </p>
+          </div>
         </div>
         <button
           onClick={handleSave}

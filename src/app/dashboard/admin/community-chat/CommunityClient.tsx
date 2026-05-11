@@ -2,12 +2,11 @@
 
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
-import { Input } from '@/components/input';
-import { Modal } from '@/components/modal';
 import { Toast } from '@/components/toast';
+import { ForumModal } from '@/modules/community-chat/components/ForumModal';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 type Channel = {
   id: number;
@@ -46,18 +45,9 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [channelToDelete, setChannelToDelete] = useState<number | null>(null);
 
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleCreate = async (data: FormData) => {
     setLoading(true);
     try {
-      const data = new FormData();
-      data.append('name', formData.name);
-      data.append('description', formData.description);
-      data.append('type', formData.type);
-      if (formData.coverImage) {
-        data.append('coverImage', formData.coverImage);
-      }
-
       const res = await fetch('/api/community-chat', {
         method: 'POST',
         body: data,
@@ -99,20 +89,14 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
     setIsUpdateModalOpen(true);
   };
 
-  const handleUpdate = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleUpdate = async (data: FormData) => {
     if (!updateId) return;
     setLoading(true);
     try {
+      data.append('id', updateId.toString());
       const res = await fetch('/api/dashboard/admin/community-chat', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: updateId,
-          name: formData.name,
-          description: formData.description,
-          type: formData.type,
-        }),
+        body: data,
       });
 
       if (!res.ok) throw new Error('Failed to update channel');
@@ -289,132 +273,34 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
         </table>
       </div>
 
-      <Modal
-        title="Create Channel"
+      <ForumModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-      >
-        <form onSubmit={handleCreate} className="space-y-4">
-          <Input
-            label="Name"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            required
-            placeholder="e.g. stress-relief"
-          />
-          <div>
-            <label className="text-sm font-bold text-[#193C1F] mb-1.5 block">
-              Profile Picture
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-[#F7F3ED] file:text-[#193C1F] hover:file:bg-[#EDE4D8] transition"
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  coverImage: e.target.files?.[0] || null,
-                })
-              }
-            />
-          </div>
-          <div>
-            <label className="text-sm font-bold text-[#193C1F] mb-1.5 block">
-              Description
-            </label>
-            <textarea
-              className="w-full bg-[#f9faf7] border border-[#d0d5cb] rounded-xl px-4 py-3 text-sm text-[#193c1f] focus:outline-none focus:border-[#8ea087] focus:ring-1 focus:ring-[#8ea087] transition-shadow resize-none"
-              rows={3}
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-            />
-          </div>
-          <div>
-            <label className="text-sm font-bold text-[#193C1F] mb-1.5 block">
-              Type
-            </label>
-            <select
-              className="w-full bg-[#f9faf7] border border-[#d0d5cb] rounded-xl px-4 py-3 text-sm text-[#193c1f] focus:outline-none focus:border-[#8ea087] focus:ring-1 focus:ring-[#8ea087]"
-              value={formData.type}
-              onChange={(e) =>
-                setFormData({ ...formData, type: e.target.value })
-              }
-            >
-              <option value="PUBLIC">Public</option>
-              <option value="PRIVATE">Private</option>
-            </select>
-          </div>
-          <div className="pt-2 flex justify-end gap-2">
-            <Button
-              variant="ghost"
-              type="button"
-              onClick={() => setIsCreateModalOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button loading={loading} type="submit">
-              Create
-            </Button>
-          </div>
-        </form>
-      </Modal>
-      <Modal
+        onSubmit={handleCreate}
+        loading={loading}
+      />
+
+      <ForumModal
         title="Edit Channel"
         isOpen={isUpdateModalOpen}
-        onClose={() => setIsUpdateModalOpen(false)}
-      >
-        <form onSubmit={handleUpdate} className="space-y-4">
-          <Input
-            label="Name"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            required
-            placeholder="e.g. stress-relief"
-          />
-          <div>
-            <label className="text-sm font-bold text-[#193C1F] mb-1.5 block">
-              Description
-            </label>
-            <textarea
-              className="w-full bg-[#f9faf7] border border-[#d0d5cb] rounded-xl px-4 py-3 text-sm text-[#193c1f] focus:outline-none focus:border-[#8ea087] focus:ring-1 focus:ring-[#8ea087] transition-shadow resize-none"
-              rows={3}
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
+        onClose={() => {
+          setIsUpdateModalOpen(false);
+          setUpdateId(null);
+        }}
+        onSubmit={handleUpdate}
+        loading={loading}
+        initialData={
+          updateId
+            ? {
+                name: formData.name,
+                description: formData.description,
+                category: '', // Channels don't have category yet
+                type: formData.type,
+                coverUrl: channels.find((c) => c.id === updateId)?.coverUrl,
               }
-            />
-          </div>
-          <div>
-            <label className="text-sm font-bold text-[#193C1F] mb-1.5 block">
-              Type
-            </label>
-            <select
-              className="w-full bg-[#f9faf7] border border-[#d0d5cb] rounded-xl px-4 py-3 text-sm text-[#193c1f] focus:outline-none focus:border-[#8ea087] focus:ring-1 focus:ring-[#8ea087]"
-              value={formData.type}
-              onChange={(e) =>
-                setFormData({ ...formData, type: e.target.value })
-              }
-            >
-              <option value="PUBLIC">Public</option>
-              <option value="PRIVATE">Private</option>
-            </select>
-          </div>
-          <div className="pt-2 flex justify-end gap-2">
-            <Button
-              variant="ghost"
-              type="button"
-              onClick={() => setIsUpdateModalOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button loading={loading} type="submit">
-              Save
-            </Button>
-          </div>
-        </form>
-      </Modal>
+            : undefined
+        }
+      />
     </div>
   );
 }

@@ -90,6 +90,7 @@ interface HeaderProps {
   withLogo?: boolean;
   onProfileClick?: () => void;
   onLogoutClick?: () => void;
+  onMenuClick?: () => void;
   showBackButton?: boolean;
 }
 
@@ -98,6 +99,7 @@ export const Header = ({
   withLogo = false,
   onProfileClick,
   onLogoutClick,
+  onMenuClick,
   showBackButton = false,
 }: HeaderProps) => {
   const router = useRouter();
@@ -139,8 +141,30 @@ export const Header = ({
 
   return (
     <>
-      <header className="h-[90px] w-full sticky top-0 border-b border-[#D0D5CB] flex items-center justify-between px-12 bg-[#F7F3ED]/80 backdrop-blur-md shrink-0 z-[100]">
-        <div className="flex items-center gap-8 flex-grow">
+      <header className="h-[90px] w-full sticky top-0 border-b border-[#D0D5CB] flex items-center justify-between px-6 md:px-12 bg-[#F7F3ED]/80 backdrop-blur-md shrink-0 z-[100]">
+        <div className="flex items-center gap-4 md:gap-8 flex-grow">
+          {onMenuClick && (
+            <button
+              onClick={onMenuClick}
+              className="p-2.5 bg-white border border-[#D0D5CB] hover:bg-[#EBE6DE] rounded-2xl transition-all shadow-sm flex items-center justify-center shrink-0 lg:hidden"
+            >
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="#193C1F"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+              </svg>
+            </button>
+          )}
+
           {showBackButton && (
             <button
               onClick={() => router.back()}

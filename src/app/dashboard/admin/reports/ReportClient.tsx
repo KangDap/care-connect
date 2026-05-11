@@ -3,6 +3,7 @@
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Modal } from '@/components/modal';
+import { Pagination } from '@/components/pagination';
 import { Toast } from '@/components/toast';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -233,18 +234,32 @@ export function ReportClient({
                     </td>
                     <td className="px-6 py-4">
                       {r.isAnonymous ? (
-                        <span className="text-[#8EA087] italic text-xs">
-                          Anonymous
-                        </span>
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-[#F7F3ED] border border-[#D0D5CB] flex items-center justify-center shrink-0">
+                            <span className="text-[10px] text-[#8EA087]">
+                              ?
+                            </span>
+                          </div>
+                          <span className="text-[#8EA087] italic text-xs">
+                            Anonymous
+                          </span>
+                        </div>
                       ) : (
-                        <>
-                          <p className="font-medium text-[#193C1F]">
-                            {r.user.name}
-                          </p>
-                          <p className="text-[11px] text-[#8EA087]">
-                            {r.user.email}
-                          </p>
-                        </>
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-[#F7F3ED] border border-[#D0D5CB] flex items-center justify-center shrink-0 overflow-hidden relative">
+                            <div className="text-[10px] font-bold text-[#193C1F]">
+                              {r.user.name.charAt(0)}
+                            </div>
+                          </div>
+                          <div>
+                            <p className="font-medium text-[#193C1F]">
+                              {r.user.name}
+                            </p>
+                            <p className="text-[11px] text-[#8EA087]">
+                              {r.user.email}
+                            </p>
+                          </div>
+                        </div>
                       )}
                     </td>
                     <td className="px-6 py-4">
@@ -298,24 +313,15 @@ export function ReportClient({
               Showing {(page - 1) * perPage + 1}–
               {Math.min(page * perPage, totalCount)} of {totalCount}
             </span>
-            <div className="flex gap-2">
-              {page > 1 && (
-                <Link
-                  href={`/dashboard/admin/reports?status=${activeTab}&page=${page - 1}`}
-                  className="px-3 py-1.5 text-xs font-bold text-[#193C1F] bg-white border border-[#D0D5CB] rounded-lg hover:border-[#193C1F] transition-colors"
-                >
-                  Prev
-                </Link>
-              )}
-              {page < totalPages && (
-                <Link
-                  href={`/dashboard/admin/reports?status=${activeTab}&page=${page + 1}`}
-                  className="px-3 py-1.5 text-xs font-bold text-[#193C1F] bg-white border border-[#D0D5CB] rounded-lg hover:border-[#193C1F] transition-colors"
-                >
-                  Next
-                </Link>
-              )}
-            </div>
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={(p) =>
+                router.push(
+                  `/dashboard/admin/reports?status=${activeTab}&page=${p}`,
+                )
+              }
+            />
           </div>
         )}
       </div>

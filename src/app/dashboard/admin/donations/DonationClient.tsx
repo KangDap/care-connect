@@ -1,6 +1,7 @@
 'use client';
 
 import { Badge } from '@/components/badge';
+import { Pagination } from '@/components/pagination';
 import { Toast } from '@/components/toast';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -50,6 +51,10 @@ type DonationClientProps = {
   currentMonth: number;
   currentYear: number;
   currentStatus: string;
+  page: number;
+  totalPages: number;
+  perPage: number;
+  totalCount: number;
   counts: {
     all: number;
     paid: number;
@@ -68,6 +73,10 @@ export function DonationClient({
   currentMonth,
   currentYear,
   currentStatus,
+  page,
+  totalPages,
+  perPage,
+  totalCount,
   counts,
 }: DonationClientProps) {
   const router = useRouter();
@@ -569,6 +578,24 @@ export function DonationClient({
               </tbody>
             </table>
           </div>
+          {totalPages > 1 && (
+            <div className="px-8 py-5 bg-[#F7F3ED]/30 border-t border-[#F7F3ED] flex justify-between items-center">
+              <span className="text-[#8EA087] text-xs font-bold">
+                {(page - 1) * perPage + 1}–
+                {Math.min(page * perPage, totalCount)} of {totalCount}
+              </span>
+              <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={(p) => {
+                  router.push(
+                    `/dashboard/admin/donations?month=${currentMonth}&year=${currentYear}&status=${currentStatus}&page=${p}`,
+                    { scroll: false },
+                  );
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

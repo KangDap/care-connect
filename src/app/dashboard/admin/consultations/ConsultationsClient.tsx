@@ -1,7 +1,9 @@
 'use client';
 
+import { Pagination } from '@/components/pagination';
 import { Toast } from '@/components/toast';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
 import { ConsultationActions } from './ConsultationActions';
@@ -49,6 +51,7 @@ export function ConsultationsClient({
   totalPages,
   perPage,
 }: ConsultationsClientProps) {
+  const router = useRouter();
   const [toast, setToast] = useState<{
     show: boolean;
     msg: string;
@@ -196,26 +199,50 @@ export function ConsultationsClient({
                     </td>
                     <td className="px-6 py-4">
                       {c.isAnonymous ? (
-                        <span className="text-[#8EA087] italic text-xs">
-                          Anonymous
-                        </span>
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-[#F7F3ED] border border-[#D0D5CB] flex items-center justify-center shrink-0">
+                            <span className="text-[10px] text-[#8EA087]">
+                              ?
+                            </span>
+                          </div>
+                          <span className="text-[#8EA087] italic text-xs">
+                            Anonymous
+                          </span>
+                        </div>
                       ) : (
-                        <>
-                          <p className="font-medium text-[#193C1F]">
-                            {c.user.name}
-                          </p>
-                          <p className="text-[11px] text-[#8EA087]">
-                            {c.user.email}
-                          </p>
-                        </>
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-lg bg-[#F7F3ED] border border-[#D0D5CB] flex items-center justify-center shrink-0 overflow-hidden relative">
+                            {/* Placeholder for now, could use c.user.image if available */}
+                            <div className="text-[10px] font-bold text-[#193C1F]">
+                              {c.user.name.charAt(0)}
+                            </div>
+                          </div>
+                          <div>
+                            <p className="font-medium text-[#193C1F]">
+                              {c.user.name}
+                            </p>
+                            <p className="text-[11px] text-[#8EA087]">
+                              {c.user.email}
+                            </p>
+                          </div>
+                        </div>
                       )}
                     </td>
                     <td className="px-6 py-4 text-[#193C1F]">
-                      {c.psychologist?.name ?? (
-                        <span className="text-[#8EA087] italic text-xs">
-                          Unassigned
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-[#193C1F]/5 border border-[#193C1F]/10 flex items-center justify-center shrink-0">
+                          <div className="text-[10px] font-bold text-[#193C1F]">
+                            {c.psychologist?.name.charAt(0) || 'P'}
+                          </div>
+                        </div>
+                        <span className="font-medium">
+                          {c.psychologist?.name ?? (
+                            <span className="text-[#8EA087] italic text-xs">
+                              Unassigned
+                            </span>
+                          )}
                         </span>
-                      )}
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       <span
@@ -248,24 +275,15 @@ export function ConsultationsClient({
               {(page - 1) * perPage + 1}–{Math.min(page * perPage, totalCount)}{' '}
               of {totalCount}
             </span>
-            <div className="flex gap-2">
-              {page > 1 && (
-                <Link
-                  href={`/dashboard/admin/consultations?tab=${tab}&page=${page - 1}`}
-                  className="px-3 py-1.5 text-xs font-bold text-[#193C1F] bg-white border border-[#D0D5CB] rounded-lg hover:border-[#193C1F]"
-                >
-                  ← Prev
-                </Link>
-              )}
-              {page < totalPages && (
-                <Link
-                  href={`/dashboard/admin/consultations?tab=${tab}&page=${page + 1}`}
-                  className="px-3 py-1.5 text-xs font-bold text-[#193C1F] bg-white border border-[#D0D5CB] rounded-lg hover:border-[#193C1F]"
-                >
-                  Next →
-                </Link>
-              )}
-            </div>
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={(p) =>
+                router.push(
+                  `/dashboard/admin/consultations?tab=${tab}&page=${p}`,
+                )
+              }
+            />
           </div>
         )}
       </div>

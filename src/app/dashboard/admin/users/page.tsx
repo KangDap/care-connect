@@ -1,19 +1,34 @@
 import { prisma } from '@/lib/prisma';
 
 import { UserActions } from './UserActions';
+import { UsersPagination } from './UsersPagination';
 
-export default async function AdminUsersPage() {
-  const users = await prisma.user.findMany({
-    orderBy: { createdAt: 'desc' },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      role: true,
-      banned: true,
-      createdAt: true,
-    },
-  });
+export default async function AdminUsersPage({
+  searchParams,
+}: {
+  searchParams: { page?: string };
+}) {
+  const page = Number(searchParams.page) || 1;
+  const perPage = 10;
+
+  const [users, totalCount] = await Promise.all([
+    prisma.user.findMany({
+      orderBy: { createdAt: 'desc' },
+      skip: (page - 1) * perPage,
+      take: perPage,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        banned: true,
+        createdAt: true,
+      },
+    }),
+    prisma.user.count(),
+  ]);
+
+  const totalPages = Math.ceil(totalCount / perPage);
 
   const fmtDate = (d: Date) =>
     new Intl.DateTimeFormat('id-ID', {
@@ -61,8 +76,17 @@ export default async function AdminUsersPage() {
                   key={user.id}
                   className="hover:bg-[#F7F3ED]/50 transition-colors"
                 >
-                  <td className="px-6 py-4 font-medium text-[#193C1F]">
-                    {user.name}
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-[#F7F3ED] border border-[#D0D5CB] flex items-center justify-center shrink-0">
+                        <div className="text-[10px] font-bold text-[#193C1F]">
+                          {user.name.charAt(0)}
+                        </div>
+                      </div>
+                      <span className="font-medium text-[#193C1F]">
+                        {user.name}
+                      </span>
+                    </div>
                   </td>
                   <td className="px-6 py-4 text-gray-600">{user.email}</td>
                   <td className="px-6 py-4 text-gray-600 font-bold">
@@ -95,6 +119,16 @@ export default async function AdminUsersPage() {
             )}
           </tbody>
         </table>
+
+        {totalPages > 1 && (
+          <div className="px-6 py-4 bg-[#F7F3ED]/50 border-t border-[#D0D5CB] flex justify-between items-center">
+            <span className="text-[#8EA087] text-xs font-semibold">
+              Showing {(page - 1) * perPage + 1}–
+              {Math.min(page * perPage, totalCount)} of {totalCount}
+            </span>
+            <UsersPagination totalPages={totalPages} />
+          </div>
+        )}
       </div>
     </div>
   );
