@@ -1,5 +1,6 @@
 'use client';
 
+import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Modal } from '@/components/modal';
 import { useRouter } from 'next/navigation';
@@ -23,7 +24,7 @@ export function ConsultationActions({
   const router = useRouter();
   const [isUpdating, setIsUpdating] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [newStatus, setNewStatus] = useState(status);
 
   const handleStatusSubmit = async (e: React.FormEvent) => {
@@ -55,7 +56,7 @@ export function ConsultationActions({
       });
 
       if (!res.ok) throw new Error('Failed to delete consultation');
-      setIsDeleteModalOpen(false);
+      setIsDeleteAlertOpen(false);
       onSuccess('Konsultasi berhasil dihapus!');
       router.refresh();
     } catch {
@@ -77,13 +78,12 @@ export function ConsultationActions({
       >
         Edit
       </Button>
-      <Button
-        variant="outline"
-        onClick={() => setIsDeleteModalOpen(true)}
-        className="text-xs px-4 py-1.5 min-h-0 h-auto text-red-600 border-red-600 hover:bg-red-50"
+      <button
+        onClick={() => setIsDeleteAlertOpen(true)}
+        className="text-xs font-bold text-red-600 hover:text-red-700 transition uppercase tracking-wider"
       >
         Delete
-      </Button>
+      </button>
 
       {/* Edit Status Modal */}
       <Modal
@@ -125,35 +125,17 @@ export function ConsultationActions({
         </form>
       </Modal>
 
-      {/* Delete Confirmation Modal */}
-      <Modal
-        title="Delete Consultation"
-        isOpen={isDeleteModalOpen}
-        onClose={() => setIsDeleteModalOpen(false)}
-      >
-        <div className="space-y-4">
-          <p className="text-sm text-gray-500">
-            Apakah Anda yakin ingin menghapus konsultasi{' '}
-            <strong>{title}</strong>? Tindakan ini tidak dapat dibatalkan.
-          </p>
-          <div className="flex justify-end gap-2 pt-2">
-            <Button
-              variant="ghost"
-              type="button"
-              onClick={() => setIsDeleteModalOpen(false)}
-            >
-              Batal
-            </Button>
-            <Button
-              loading={isUpdating}
-              onClick={handleDelete}
-              className="bg-red-600 hover:bg-red-700 text-white border-none"
-            >
-              Hapus
-            </Button>
-          </div>
-        </div>
-      </Modal>
+      {/* Delete Confirmation Alert */}
+      <Alert
+        isOpen={isDeleteAlertOpen}
+        onClose={() => setIsDeleteAlertOpen(false)}
+        onConfirm={handleDelete}
+        type="danger"
+        title="Hapus Konsultasi?"
+        description={`Apakah Anda yakin ingin menghapus konsultasi "${title}"? Tindakan ini tidak dapat dibatalkan.`}
+        confirmText={isUpdating ? 'Menghapus...' : 'Ya, Hapus'}
+        cancelText="Batal"
+      />
     </div>
   );
 }

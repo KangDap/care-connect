@@ -1,5 +1,4 @@
 'use client';
-
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Modal } from '@/components/modal';
@@ -18,11 +17,12 @@ export function UserActions({ id, role, banned, name }: UserProps) {
   const router = useRouter();
   const [isUpdating, setIsUpdating] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newRole, setNewRole] = useState(role);
-
   const [isBanModalOpen, setIsBanModalOpen] = useState(false);
-  const [banReason, setBanReason] = useState('');
   const [isUnbanAlertOpen, setIsUnbanAlertOpen] = useState(false);
+  const [isErrorAlertOpen, setIsErrorAlertOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [banReason, setBanReason] = useState('');
+  const [newRole, setNewRole] = useState(role);
 
   const [toastState, setToastState] = useState<{
     show: boolean;
@@ -52,8 +52,65 @@ export function UserActions({ id, role, banned, name }: UserProps) {
       });
       setIsModalOpen(false);
       router.refresh();
-    } catch {
-      setToastState({ show: true, msg: 'Error updating role', type: 'error' });
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : 'Error updating role',
+      );
+      setIsErrorAlertOpen(true);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleBanSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsUpdating(true);
+    try {
+      const res = await fetch('/api/dashboard/admin/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id,
+          action: 'ban',
+          payload: { banned: true, reason: banReason },
+        }),
+      });
+
+      if (!res.ok) throw new Error('Failed to ban user');
+      setIsBanModalOpen(false);
+      setBanReason('');
+      router.refresh();
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : 'Error banning user',
+      );
+      setIsErrorAlertOpen(true);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handleUnban = async () => {
+    setIsUpdating(true);
+    try {
+      const res = await fetch('/api/dashboard/admin/users', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id,
+          action: 'ban',
+          payload: { banned: false, reason: null },
+        }),
+      });
+
+      if (!res.ok) throw new Error('Failed to unban user');
+      setIsUnbanAlertOpen(false);
+      router.refresh();
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : 'Error unbanning user',
+      );
+      setIsErrorAlertOpen(true);
     } finally {
       setIsUpdating(false);
     }
@@ -64,40 +121,6 @@ export function UserActions({ id, role, banned, name }: UserProps) {
       setIsUnbanAlertOpen(true);
     } else {
       setIsBanModalOpen(true);
-    }
-  };
-
-  const executeBanToggle = async (reason: string | null = null) => {
-    setIsUpdating(true);
-    try {
-      const res = await fetch('/api/dashboard/admin/users', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id,
-          action: 'ban',
-          payload: { banned: !banned, reason },
-        }),
-      });
-
-      if (!res.ok) throw new Error('Failed to update ban status');
-      setToastState({
-        show: true,
-        msg: `User ${banned ? 'unbanned' : 'banned'} successfully`,
-        type: 'success',
-      });
-      setIsBanModalOpen(false);
-      setIsUnbanAlertOpen(false);
-      setBanReason('');
-      router.refresh();
-    } catch (_error) {
-      setToastState({
-        show: true,
-        msg: 'Error updating ban status',
-        type: 'error',
-      });
-    } finally {
-      setIsUpdating(false);
     }
   };
 
@@ -171,35 +194,30 @@ export function UserActions({ id, role, banned, name }: UserProps) {
         </form>
       </Modal>
 
+      {/* Ban Reason Modal */}
       <Modal
         title="Ban User"
         isOpen={isBanModalOpen}
         onClose={() => setIsBanModalOpen(false)}
       >
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            executeBanToggle(banReason);
-          }}
-          className="space-y-4 text-left"
-        >
+        <form onSubmit={handleBanSubmit} className="space-y-4 text-left">
+          <p className="text-sm text-gray-500">
+            Please provide a reason for banning <strong>{name}</strong>. This
+            reason will be visible to the user.
+          </p>
           <div>
-            <p className="text-sm text-gray-500 mb-4">
-              Please provide a reason for banning <strong>{name}</strong>.
-            </p>
-            <label className="text-sm font-bold text-[#193c1f] mb-1.5 block">
+            <label className="text-sm font-bold text-[#193C1F] mb-1.5 block uppercase tracking-widest">
               Reason
             </label>
-            <input
-              type="text"
+            <textarea
               required
-              className="w-full bg-[#ede4d8] border border-[#d0d5cb] rounded-xl px-4 py-3 text-sm text-[#193c1f] focus:outline-none focus:border-[#8ea087] focus:ring-1 focus:ring-[#8ea087]"
+              className="w-full bg-[#f9faf7] border border-[#d0d5cb] rounded-xl px-4 py-3 text-sm text-[#193c1f] focus:outline-none focus:border-[#8ea087] focus:ring-1 focus:ring-[#8ea087] min-h-[100px] resize-none"
               value={banReason}
               onChange={(e) => setBanReason(e.target.value)}
-              placeholder="e.g., Violation of terms"
+              placeholder="e.g., Violating community guidelines..."
             />
           </div>
-          <div className="pt-2 flex justify-end gap-2">
+          <div className="flex justify-end gap-2 pt-2">
             <Button
               variant="ghost"
               type="button"
@@ -207,7 +225,11 @@ export function UserActions({ id, role, banned, name }: UserProps) {
             >
               Cancel
             </Button>
-            <Button loading={isUpdating} type="submit">
+            <Button
+              loading={isUpdating}
+              type="submit"
+              className="bg-red-600 hover:bg-red-700 text-white border-none"
+            >
               Ban User
             </Button>
           </div>
@@ -217,11 +239,23 @@ export function UserActions({ id, role, banned, name }: UserProps) {
       <Alert
         isOpen={isUnbanAlertOpen}
         onClose={() => setIsUnbanAlertOpen(false)}
-        onConfirm={() => executeBanToggle(null)}
-        title="Unban User"
-        description={`Are you sure you want to unban ${name}? They will regain access to their account.`}
-        confirmText="Unban"
-        type="primary"
+        onConfirm={handleUnban}
+        type="warning"
+        title="Unban User?"
+        description={`Are you sure you want to unban ${name}? They will be able to access the platform again.`}
+        confirmText={isUpdating ? 'Unbanning...' : 'Yes, Unban'}
+        cancelText="Cancel"
+      />
+
+      {/* Error Alert */}
+      <Alert
+        isOpen={isErrorAlertOpen}
+        onClose={() => setIsErrorAlertOpen(false)}
+        onConfirm={() => setIsErrorAlertOpen(false)}
+        type="danger"
+        title="Error"
+        description={errorMessage}
+        confirmText="Understand"
       />
     </div>
   );

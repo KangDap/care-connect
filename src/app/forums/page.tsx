@@ -2,6 +2,7 @@
 
 import { PublicHeader } from '@/components/public-header';
 import { authClient } from '@/lib/auth/auth-client';
+import { ForumModal } from '@/modules/community-chat/components/ForumModal';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowRight, Loader2, MessageSquare, Plus, Users } from 'lucide-react';
 import { useRouter } from 'next/navigation';
@@ -27,6 +28,8 @@ const SupportForumsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [joiningId, setJoiningId] = useState<number | null>(null);
   const [bannedNotice, setBannedNotice] = useState<string | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
   // 1. Ambil session untuk cek Role Admin
   const { data: session } = authClient.useSession();
@@ -102,6 +105,33 @@ const SupportForumsPage = () => {
       console.error('Error joining room:', error);
     } finally {
       setJoiningId(null);
+    }
+  };
+
+  const handleCreateForum = async (data: FormData) => {
+    try {
+      setIsCreating(true);
+
+      const response = await fetch('/api/community-chat', {
+        method: 'POST',
+        body: data,
+      });
+
+      if (response.ok) {
+        setIsCreateModalOpen(false);
+        router.refresh();
+        // Reload rooms manually since we use local state
+        const updatedRooms = await fetch('/api/community-chat?all=true').then(
+          (res) => res.json(),
+        );
+        setRooms(
+          Array.isArray(updatedRooms) ? updatedRooms : updatedRooms.data,
+        );
+      }
+    } catch (error) {
+      console.error('Error creating forum:', error);
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -264,8 +294,11 @@ const SupportForumsPage = () => {
           )}
 
           {isAdmin && (
-            <div className="border-2 border-dashed border-[#d0d5cb] rounded-[40px] flex flex-col items-center justify-center p-12 text-center space-y-6 group cursor-pointer hover:bg-white/50 transition-all duration-500 h-full min-h-[400px]">
-              <div className="w-16 h-16 bg-[#EBE6DE] rounded-full flex items-center justify-center text-[#8ea087] group-hover:bg-[#193c1f] group-hover:text-white transition-all duration-500 shadow-sm">
+            <div
+              onClick={() => setIsCreateModalOpen(true)}
+              className="border-2 border-dashed border-[#D0D5CB] rounded-[40px] flex flex-col items-center justify-center p-12 text-center space-y-6 group cursor-pointer hover:bg-white/50 transition-all duration-500 h-full min-h-[400px]"
+            >
+              <div className="w-16 h-16 bg-[#EBE6DE] rounded-full flex items-center justify-center text-[#8EA087] group-hover:bg-[#193C1F] group-hover:text-white transition-all duration-500 shadow-sm">
                 <Plus size={32} strokeWidth={3} />
               </div>
               <div>
@@ -280,6 +313,13 @@ const SupportForumsPage = () => {
           )}
         </div>
       </main>
+
+      <ForumModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmit={handleCreateForum}
+        loading={isCreating}
+      />
     </div>
   );
 };

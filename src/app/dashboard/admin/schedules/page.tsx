@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 
-import AdminScheduleContent from './AdminScheduleContent';
+import HistoryClient from './HistoryClient';
 
 export const metadata = {
   title: 'Psychologist Schedules | Admin Dashboard',
@@ -17,7 +17,7 @@ export default function AdminSchedulesPage() {
         </div>
       }
     >
-      <AdminScheduleContent />
+      <HistoryClient />
     </Suspense>
   );
 }
