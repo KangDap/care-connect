@@ -26,6 +26,15 @@ export default function ConsultationPage() {
   const [isLogoutAlertOpen, setIsLogoutAlertOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
+  const { data: session, isPending } = authClient.useSession();
+
+  useEffect(() => {
+    const userRole = (session?.user as { role?: string })?.role;
+    if (!isPending && userRole === 'PSYCHOLOGIST') {
+      router.replace('/dashboard');
+    }
+  }, [session, isPending, router]);
+
   const handleLogout = async () => {
     setIsLoggingOut(true);
     await authClient.signOut();

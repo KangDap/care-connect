@@ -43,6 +43,10 @@ export async function POST(req: Request) {
       throw Errors.unauthorized('Invalid user session');
     }
 
+    if (session.user.role === 'PSYCHOLOGIST') {
+      throw Errors.forbidden('Psychologists cannot create consultations');
+    }
+
     const formData = await req.formData();
     const validatedData =
       ConsultationService.validateCreateConsultation(formData);
