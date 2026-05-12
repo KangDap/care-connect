@@ -10,7 +10,7 @@ export const createChannelSchema = z.object({
 
 export const sendMessageSchema = z.object({
   channelId: z.number(),
-  content: z.string().min(1).max(5000),
+  content: z.string().min(0).max(5000),
   mediaUrl: z.string().url().optional().nullable(),
   isAnonymous: z.boolean().optional().default(false),
   replyToId: z.number().optional().nullable(),
