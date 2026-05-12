@@ -28,6 +28,7 @@ interface ChannelDetails {
   type?: string;
   myRole: string | null;
   lastViewedAt?: string | null;
+  createdAt?: string | Date;
   _count: { members: number };
   messages: (ChatMessage & {
     roleInChannel?: string;
@@ -150,6 +151,9 @@ export default function CommunityChatContent() {
         queryKey: ['community-messages', selectedChannelId],
       });
       setActiveMenuId(null);
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 200);
     },
     onError: (error: Error) => {
       const msg = error.message.toLowerCase();
@@ -190,6 +194,9 @@ export default function CommunityChatContent() {
         queryKey: ['community-messages', selectedChannelId],
       });
       setActiveMenuId(null);
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 200);
     },
     onError: (error: Error) => {
       const msg = error.message.toLowerCase();
@@ -233,14 +240,14 @@ export default function CommunityChatContent() {
       if (fileInputRef.current) fileInputRef.current.value = '';
       setTimeout(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
+      }, 200);
     },
   });
 
   useEffect(() => {
     const timer = setTimeout(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
+    }, 200);
     return () => clearTimeout(timer);
   }, [chatData.messages]);
 
@@ -451,8 +458,32 @@ export default function CommunityChatContent() {
                 <p className="text-center text-[#193c1f] text-xs opacity-50 py-4 animate-pulse">
                   Loading discussion...
                 </p>
+              ) : chatData.messages.length === 0 ? (
+                (() => {
+                  const roomDateRaw = chatData.createdAt;
+                  const roomDate = roomDateRaw
+                    ? new Date(roomDateRaw).toLocaleDateString([], {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })
+                    : 'Unknown Date';
+                  return (
+                    <div className="space-y-4">
+                      <div className="flex justify-center my-6">
+                        <span className="bg-[#d0d5cb] bg-opacity-30 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full text-[#193c1f] opacity-60">
+                          {roomDate}
+                        </span>
+                      </div>
+                      <p className="text-center text-[#193c1f] text-xs opacity-50 py-4">
+                        No messages yet. Start the conversation!
+                      </p>
+                    </div>
+                  );
+                })()
               ) : (
-                chatData.messages.map((chat) => {
+                chatData.messages.map((chat, index) => {
                   const isMe = session?.user?.id === chat.user.id;
                   const time = new Date(
                     chat.timestamp ?? new Date(),
@@ -460,6 +491,32 @@ export default function CommunityChatContent() {
                     hour: '2-digit',
                     minute: '2-digit',
                   });
+
+                  const currentChatDate = new Date(
+                    chat.timestamp,
+                  ).toLocaleDateString([], {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  });
+
+                  let showDatePill = false;
+                  if (index === 0) {
+                    showDatePill = true;
+                  } else {
+                    const prevChatDate = new Date(
+                      chatData.messages[index - 1].timestamp,
+                    ).toLocaleDateString([], {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    });
+                    if (currentChatDate !== prevChatDate) {
+                      showDatePill = true;
+                    }
+                  }
                   const targetRoleInChannel = chat.roleInChannel || 'MEMBER';
                   const targetIsBanned = targetRoleInChannel === 'BANNED';
 
@@ -495,6 +552,13 @@ export default function CommunityChatContent() {
                   if (chat.isSystem) {
                     return (
                       <React.Fragment key={chat.id}>
+                        {showDatePill && (
+                          <div className="flex justify-center my-6">
+                            <span className="bg-[#d0d5cb] bg-opacity-30 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full text-[#193c1f] opacity-60">
+                              {currentChatDate}
+                            </span>
+                          </div>
+                        )}
                         {showUnreadDivider && (
                           <div className="flex items-center justify-center my-6">
                             <div className="h-px bg-red-300 flex-1"></div>
@@ -515,6 +579,13 @@ export default function CommunityChatContent() {
 
                   return (
                     <React.Fragment key={chat.id}>
+                      {showDatePill && (
+                        <div className="flex justify-center my-6">
+                          <span className="bg-[#d0d5cb] bg-opacity-30 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full text-[#193c1f] opacity-60">
+                            {currentChatDate}
+                          </span>
+                        </div>
+                      )}
                       {showUnreadDivider && (
                         <div className="flex items-center justify-center my-6">
                           <div className="h-px bg-red-300 flex-1"></div>

@@ -5,6 +5,7 @@ import { PublicHeader } from '@/components/public-header';
 import { authClient } from '@/lib/auth/auth-client';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowRight, Loader2, MessageSquare, Plus, Users } from 'lucide-react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
@@ -19,6 +20,7 @@ interface ForumRoom {
   _count?: {
     members: number;
   };
+  coverUrl?: string | null;
 }
 
 const SupportForumsPage = () => {
@@ -214,11 +216,25 @@ const SupportForumsPage = () => {
                     >
                       <div className="h-44 bg-[#f7f3ed] flex items-center justify-center relative overflow-hidden transition-colors group-hover:bg-[#EBE6DE]">
                         <div className="absolute inset-0 bg-gradient-to-br from-[#f7f3ed] via-[#E6DED3] to-[#d0d5cb]" />
-                        <MessageSquare
-                          size={48}
-                          className="relative z-10 text-[#8ea087] opacity-40 group-hover:scale-110 transition-transform duration-500"
-                        />
-                        <span className="absolute bottom-6 left-8 z-10 text-[10px] font-black uppercase tracking-[0.2em] text-[#8ea087] bg-white/80 backdrop-blur-sm px-4 py-2 rounded-xl border border-[#d0d5cb]/50">
+                        {room.coverUrl ? (
+                          <Image
+                            src={room.coverUrl}
+                            alt={
+                              room.title ||
+                              (room as { name?: string }).name ||
+                              'Forum'
+                            }
+                            fill
+                            className="object-cover relative z-10 transition-transform duration-500 group-hover:scale-105"
+                            unoptimized
+                          />
+                        ) : (
+                          <MessageSquare
+                            size={48}
+                            className="relative z-10 text-[#8ea087] opacity-40 group-hover:scale-110 transition-transform duration-500"
+                          />
+                        )}
+                        <span className="absolute bottom-6 left-8 z-20 text-[10px] font-black uppercase tracking-[0.2em] text-[#8ea087] bg-white/80 backdrop-blur-sm px-4 py-2 rounded-xl border border-[#d0d5cb]/50">
                           ROOM #{room.id}
                         </span>
                         {banned && (

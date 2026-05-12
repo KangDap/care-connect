@@ -409,7 +409,7 @@ export const CommunityChatService = {
     const target = await CommunityChatRepository.getUserById(targetUserId);
     await CommunityChatRepository.sendMessage(adminId, {
       channelId,
-      content: `${target?.name || 'Seorang pengguna'} telah dikeluarkan dari forum oleh ${admin?.name || 'Admin'}`,
+      content: `${target?.name || 'A user'} was kicked by ${admin?.name || 'Admin'}`,
       isSystem: true,
     });
 
