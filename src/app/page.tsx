@@ -19,7 +19,7 @@ export default async function LandingPage() {
   const [totalReports, totalConsultations, paidDonations, recentReports] =
     await Promise.all([
       prisma.report.count({
-        where: { status: ReportStatus.RESOLVED },
+        where: { status: ReportStatus.RESOLVED, isPublic: true },
       }),
       prisma.consultation.count(),
       prisma.donation.aggregate({
@@ -129,7 +129,10 @@ export default async function LandingPage() {
             <p className="text-[#193c1f] font-semibold mb-2 opacity-80">
               Community Donations
             </p>
-            <h2 className="text-6xl font-black text-[#193c1f] mb-4">
+            <h2
+              className="text-3xl lg:text-4xl xl:text-5xl font-black text-[#193c1f] mb-4 truncate"
+              title={formattedDonations}
+            >
               {formattedDonations}
             </h2>
             <div className="w-16 h-1 bg-[#8ea087] mx-auto rounded-full"></div>
@@ -138,7 +141,7 @@ export default async function LandingPage() {
       </section>
 
       {/* Support Methods Section */}
-      <section className="max-w-[1440px] mx-auto py-32 px-12 text-center">
+      <section className="max-w-[1440px] mx-auto pt-32 pb-16 px-12 text-center">
         <h2 className="text-5xl font-black text-[#193c1f] mb-6">
           How we support you
         </h2>
@@ -239,11 +242,9 @@ export default async function LandingPage() {
       </section>
 
       {/* Recent Reports Section */}
-      <section className="max-w-[1440px] mx-auto py-32 px-12">
+      <section className="max-w-[1440px] mx-auto pt-16 pb-32 px-12">
         <div className="flex justify-between items-end mb-12">
-          <h2 className="text-4xl font-black text-[#193c1f]">
-            Recent Anonymized Reports
-          </h2>
+          <h2 className="text-4xl font-black text-[#193c1f]">Recent Reports</h2>
           <Link
             className="text-[#8ea087] font-bold flex items-center gap-2 hover:text-[#193c1f] transition-colors"
             href={isLoggedIn ? '/publicreports' : '/login'}
@@ -265,54 +266,90 @@ export default async function LandingPage() {
             </svg>
           </Link>
         </div>
-        <div className="grid grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           {recentReports.map((report) => (
-            <Card
-              data-purpose="report-card"
+            <Link
               key={report.id}
-              className="bg-transparent border-0 shadow-none"
+              href={isLoggedIn ? `/publicreports/${report.id}` : '/login'}
+              className="block h-full outline-none"
             >
-              <div className="w-full aspect-video bg-[#d0d5cb] rounded-2xl mb-6 flex items-center justify-center text-[#8ea087] overflow-hidden relative">
-                {report.evidences && report.evidences.length > 0 ? (
-                  <Image
-                    src={report.evidences[0].fileUrl}
-                    alt={`Report #${report.id} image`}
-                    fill
-                    className="object-cover"
-                    unoptimized
-                  />
-                ) : (
-                  <svg
-                    className="w-12 h-12"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.744c0 5.578 4.5 10.13 10.125 10.13 5.625 0 10.125-4.552 10.125-10.13 0-1.494-.273-2.925-.77-4.244a11.959 11.959 0 0 1-8.355-3.212Z"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    ></path>
-                  </svg>
-                )}
-              </div>
-              <h3 className="text-2xl font-bold text-[#193c1f] mb-2">
-                Report #{report.id}
-              </h3>
-              <p className="text-[#193c1f] opacity-80 mb-6 truncate">
-                {report.description}
-              </p>
-              <div className="flex gap-2">
-                <Badge className="rounded bg-[#ede4d8] px-3 py-1 text-[#8ea087]">
-                  {report.status}
-                </Badge>
-                <Badge className="rounded bg-[#d0d5cb] px-3 py-1 text-[#193c1f]">
-                  {report.category}
-                </Badge>
-              </div>
-            </Card>
+              <Card
+                data-purpose="report-card"
+                className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-3xl bg-white transition-all duration-300 hover:border-[#193c1f] hover:shadow-xl"
+              >
+                <div className="relative h-56 w-full shrink-0 overflow-hidden bg-[#f7f3ed]">
+                  {report.evidences && report.evidences.length > 0 ? (
+                    <Image
+                      src={report.evidences[0].fileUrl}
+                      alt={`Report #${report.id} image`}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-[#8ea087]">
+                      <svg
+                        className="h-12 w-12"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.744c0 5.578 4.5 10.13 10.125 10.13 5.625 0 10.125-4.552 10.125-10.13 0-1.494-.273-2.925-.77-4.244a11.959 11.959 0 0 1-8.355-3.212Z"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        ></path>
+                      </svg>
+                    </div>
+                  )}
+                  <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+                    <Badge className="bg-white/90 text-[#193c1f] backdrop-blur-sm border-0 font-bold shadow-sm">
+                      {report.category}
+                    </Badge>
+                    <Badge className="bg-[#193c1f]/90 text-white backdrop-blur-sm border-0 font-bold shadow-sm">
+                      {report.status}
+                    </Badge>
+                  </div>
+                </div>
+
+                <div className="flex flex-1 flex-col p-6">
+                  <div className="mb-3 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#8ea087]">
+                    <span>#{String(report.id).padStart(4, '0')}</span>
+                    <span className="h-1 w-1 rounded-full bg-[#d0d5cb]" />
+                    <span className="truncate">
+                      {report.city}, {report.province}
+                    </span>
+                  </div>
+
+                  <h3 className="mb-3 line-clamp-2 text-xl font-black leading-tight text-[#193c1f] transition-colors group-hover:text-[#8ea087]">
+                    {report.title}
+                  </h3>
+
+                  <p className="mb-6 line-clamp-3 flex-1 text-sm font-medium leading-relaxed text-[#193c1f]/60">
+                    {report.description}
+                  </p>
+
+                  <div className="mt-auto flex items-center justify-center gap-2 rounded-2xl bg-[#f7f3ed] px-4 py-3 text-sm font-bold text-[#193c1f] transition-colors group-hover:bg-[#193c1f] group-hover:text-white">
+                    View Details
+                    <svg
+                      className="w-4 h-4 transition-transform group-hover:translate-x-1"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                      ></path>
+                    </svg>
+                  </div>
+                </div>
+              </Card>
+            </Link>
           ))}
         </div>
       </section>
