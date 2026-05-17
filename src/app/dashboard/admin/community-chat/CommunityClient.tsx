@@ -2,14 +2,13 @@
 
 import { ForumModal } from '@/components/ForumModal';
 import { Alert } from '@/components/alert';
-import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
-import { Card } from '@/components/card';
 import { Toast } from '@/components/toast';
-import { MessageSquarePlus, Pencil, Trash2 } from 'lucide-react';
-import Image from 'next/image';
+import { MessageSquarePlus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+
+import { CommunityTable } from './CommunityTable';
 
 type Channel = {
   id: number;
@@ -155,13 +154,6 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
     }
   };
 
-  const fmtDate = (d: Date) =>
-    new Intl.DateTimeFormat('id-ID', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    }).format(new Date(d));
-
   return (
     <div className="space-y-6">
       <Toast
@@ -194,94 +186,14 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
         </Button>
       </div>
 
-      <Card className="overflow-hidden rounded-2xl p-0">
-        <table className="w-full text-left">
-          <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
-            <tr>
-              <th className="px-6 py-4">Channel Name</th>
-              <th className="px-6 py-4">Type</th>
-              <th className="px-6 py-4">Created At</th>
-              <th className="px-6 py-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[#f7f3ed] text-sm">
-            {channels.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={4}
-                  className="px-6 py-12 text-center text-[#8ea087] font-medium"
-                >
-                  No channels found.
-                </td>
-              </tr>
-            ) : (
-              channels.map((ch) => (
-                <tr
-                  key={ch.id}
-                  className="hover:bg-[#f7f3ed]/50 transition-colors"
-                >
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl overflow-hidden bg-[#F7F3ED] flex items-center justify-center border border-[#D0D5CB] shrink-0 relative">
-                        {ch.coverUrl ? (
-                          <Image
-                            src={ch.coverUrl}
-                            alt={ch.name}
-                            fill
-                            className="object-cover"
-                            unoptimized
-                          />
-                        ) : (
-                          <span className="text-[#8EA087] font-black text-xs">
-                            #{ch.name.charAt(0)}
-                          </span>
-                        )}
-                      </div>
-                      <div>
-                        <div className="font-bold text-[#193C1F]">
-                          #{ch.name}
-                        </div>
-                        <div className="text-xs text-gray-500 line-clamp-1 max-w-[200px]">
-                          {ch.description}
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 font-medium text-gray-600">
-                    <Badge>{ch.type}</Badge>
-                  </td>
-                  <td className="px-6 py-4 text-gray-500">
-                    {fmtDate(ch.createdAt)}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        onClick={() => openUpdateModal(ch)}
-                        variant="outline"
-                        className="rounded-xl px-3 py-2 text-xs normal-case tracking-normal text-blue-700 shadow-none"
-                      >
-                        <Pencil size={14} />
-                        Edit
-                      </Button>
-                      <Button
-                        onClick={() => {
-                          setChannelToDelete(ch.id);
-                          setIsDeleteAlertOpen(true);
-                        }}
-                        variant="outline"
-                        className="rounded-xl border-red-200 px-3 py-2 text-xs normal-case tracking-normal text-red-600 shadow-none hover:bg-red-50"
-                      >
-                        <Trash2 size={14} />
-                        Delete
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </Card>
+      <CommunityTable
+        channels={channels}
+        onEdit={openUpdateModal}
+        onDelete={(id) => {
+          setChannelToDelete(id);
+          setIsDeleteAlertOpen(true);
+        }}
+      />
 
       <ForumModal
         isOpen={isCreateModalOpen}
@@ -304,7 +216,6 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
             ? {
                 name: formData.name,
                 description: formData.description,
-                category: '', // Channels don't have category yet
                 type: formData.type,
                 coverUrl: channels.find((c) => c.id === updateId)?.coverUrl,
               }

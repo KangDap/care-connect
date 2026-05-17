@@ -296,31 +296,31 @@ export default function AdminSchedulePage() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 pb-20">
+    <div className="space-y-8 pb-20">
       {/* Header */}
-      <div className="flex items-start justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           <Link
             href="/dashboard/admin/schedules"
-            className="p-2.5 bg-white border border-[#D0D5CB] hover:bg-[#F7F3ED] rounded-2xl transition-all shadow-sm flex items-center justify-center shrink-0 group"
+            className="p-2 sm:p-2.5 bg-white border border-[#D0D5CB] hover:bg-[#F7F3ED] rounded-xl sm:rounded-2xl transition-all shadow-sm flex items-center justify-center shrink-0 group"
           >
             <svg
-              width="20"
-              height="20"
+              width="18"
+              height="18"
               viewBox="0 0 24 24"
               fill="none"
               stroke="#193C1F"
               strokeWidth="2.5"
               strokeLinecap="round"
               strokeLinejoin="round"
-              className="group-hover:-translate-x-1 transition-transform"
+              className="group-hover:-translate-x-1 transition-transform sm:w-5 sm:h-5"
             >
               <path d="M19 12H5"></path>
               <path d="M12 19l-7-7 7-7"></path>
             </svg>
           </Link>
           <div>
-            <h1 className="text-3xl font-black text-[#193C1F] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-[#193C1F] tracking-tight">
               Manage Schedule
             </h1>
             <p className="text-sm text-[#8EA087] mt-1 font-medium">
@@ -333,7 +333,7 @@ export default function AdminSchedulePage() {
           onClick={handleSave}
           disabled={saveLoading || !selectedPsyId}
           loading={saveLoading}
-          className={`rounded-2xl px-6 py-3 text-sm ${
+          className={`w-full sm:w-auto rounded-xl sm:rounded-2xl px-5 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm ${
             saveSuccess
               ? 'scale-95 bg-green-500 text-white'
               : 'bg-[#193c1f] text-white hover:bg-[#2d5c36]'
@@ -361,7 +361,7 @@ export default function AdminSchedulePage() {
       )}
 
       {/* Psychologist Selector */}
-      <Card className="rounded-3xl p-6">
+      <Card className="rounded-3xl p-6 overflow-visible">
         <p className="text-[10px] font-black uppercase tracking-widest text-[#8ea087] mb-4">
           Select Psychologist
         </p>
@@ -399,7 +399,7 @@ export default function AdminSchedulePage() {
           </Button>
 
           {dropdownOpen && (
-            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-[#d0d5cb] rounded-2xl shadow-xl z-20 overflow-hidden max-h-60 overflow-y-auto">
+            <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-[#d0d5cb] rounded-2xl shadow-xl z-50 overflow-hidden max-h-60 overflow-y-auto">
               {psychologists.length === 0 ? (
                 <div className="px-5 py-8 text-center">
                   <User
@@ -520,13 +520,13 @@ export default function AdminSchedulePage() {
                 slots.map((slot, idx) => (
                   <div
                     key={slot.id}
-                    className="flex items-center gap-4 bg-[#f7f3ed] rounded-2xl px-5 py-3 group"
+                    className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 bg-[#f7f3ed] rounded-2xl px-4 py-4 md:px-5 md:py-3 group relative"
                   >
-                    <span className="text-[11px] font-black text-[#8ea087] uppercase tracking-wider w-6 shrink-0">
+                    <span className="absolute top-4 right-4 sm:static text-[11px] font-black text-[#8ea087] uppercase tracking-wider w-6 shrink-0 text-right sm:text-left">
                       #{idx + 1}
                     </span>
-                    <div className="flex items-center gap-3 flex-1">
-                      <div className="flex flex-col gap-0.5">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 w-full sm:flex-1">
+                      <div className="flex flex-col gap-0.5 w-full sm:w-auto">
                         <label className="text-[9px] font-black uppercase tracking-widest text-[#8ea087]">
                           From
                         </label>
@@ -536,11 +536,13 @@ export default function AdminSchedulePage() {
                           onChange={(e) =>
                             updateSlot(day, slot.id, 'start', e.target.value)
                           }
-                          className="rounded-xl bg-white px-3 py-2 text-sm font-bold text-[#193c1f]"
+                          className="rounded-xl bg-white px-3 py-2 text-sm font-bold text-[#193c1f] w-full"
                         />
                       </div>
-                      <span className="text-[#d0d5cb] font-black mt-4">→</span>
-                      <div className="flex flex-col gap-0.5">
+                      <span className="hidden sm:inline-block text-[#d0d5cb] font-black mt-4">
+                        →
+                      </span>
+                      <div className="flex flex-col gap-0.5 w-full sm:w-auto">
                         <label className="text-[9px] font-black uppercase tracking-widest text-[#8ea087]">
                           To
                         </label>
@@ -550,14 +552,14 @@ export default function AdminSchedulePage() {
                           onChange={(e) =>
                             updateSlot(day, slot.id, 'end', e.target.value)
                           }
-                          className="rounded-xl bg-white px-3 py-2 text-sm font-bold text-[#193c1f]"
+                          className="rounded-xl bg-white px-3 py-2 text-sm font-bold text-[#193c1f] w-full"
                         />
                       </div>
                     </div>
                     <Button
                       onClick={() => removeSlot(day, slot.id)}
                       variant="ghost"
-                      className="rounded-xl p-2 text-red-400 opacity-0 hover:bg-red-50 hover:text-red-600 group-hover:opacity-100"
+                      className="rounded-xl p-2 text-red-400 sm:opacity-0 hover:bg-red-50 hover:text-red-600 group-hover:opacity-100 self-end sm:self-auto w-full sm:w-auto mt-2 sm:mt-0 flex justify-center"
                       title="Remove slot"
                     >
                       <Trash2 size={15} />

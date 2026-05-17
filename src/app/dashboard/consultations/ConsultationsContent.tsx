@@ -4,6 +4,7 @@ import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Pagination } from '@/components/pagination';
+import { MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -25,20 +26,7 @@ type ConsultationsContentProps = {
   consultations: ConsultationItem[];
 };
 
-const ChatIcon = () => (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-  </svg>
-);
+const ChatIcon = () => <MessageSquare size={18} strokeWidth={2.5} />;
 
 const formatDateTimeLabel = (dateValue: Date, timeValue: Date) => {
   const dateLabel = new Intl.DateTimeFormat('id-ID', {
@@ -77,6 +65,7 @@ export default function ConsultationsContent({
   const searchParams = useSearchParams();
   const query = searchParams.get('search')?.toLowerCase() || '';
   const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
+  const [expandedRowId, setExpandedRowId] = useState<number | null>(null);
 
   // --- LOGIKA PAGINATION ---
   const [currentPage, setCurrentPage] = useState(1);
@@ -146,13 +135,13 @@ export default function ConsultationsContent({
   }, [filteredData, currentPage]);
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      <div className="flex justify-between items-center">
+    <div className="space-y-6 md:space-y-8 animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-[32px] font-black text-[#193c1f]">
+          <h2 className="text-2xl sm:text-3xl md:text-[32px] font-black text-[#193c1f]">
             My Consultations
           </h2>
-          <p className="text-[#8ea087] font-medium italic">
+          <p className="text-[#8ea087] font-medium italic text-sm md:text-base">
             {query
               ? `Showing results for "${query}"`
               : 'View and manage your consultation history.'}
@@ -161,182 +150,191 @@ export default function ConsultationsContent({
         <Button
           onClick={() => router.push('/consultation?from=dashboard')}
           variant="secondary"
-          className="whitespace-nowrap shadow-lg"
+          className="whitespace-nowrap shadow-lg shrink-0"
         >
           + New Consultation
         </Button>
       </div>
 
-      <Card className="overflow-hidden rounded-[32px] p-0">
-        <table className="w-full text-left border-collapse">
-          <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
-            <tr>
-              <th className="px-8 py-5">Doctor & Specialist</th>
-              <th className="px-8 py-5">Date & Time</th>
-              <th className="px-8 py-5">Status</th>
-              <th className="px-8 py-5 text-right">Action</th>
-            </tr>
-          </thead>
-          {currentItems.length > 0 ? (
-            currentItems.map((row) => (
-              <tbody
-                key={row.id}
-                onMouseEnter={() => setHoveredRowId(row.id)}
-                onMouseLeave={() => setHoveredRowId(null)}
-                className="group border-b border-[#f7f3ed] last:border-0"
-              >
-                <tr
-                  className={`transition-colors cursor-default ${
-                    hoveredRowId === row.id ? 'bg-[#FDFCFB]' : ''
-                  }`}
+      <Card className="overflow-hidden rounded-2xl md:rounded-[32px] p-0">
+        <div className="overflow-x-auto w-full">
+          <table className="w-full text-left border-collapse min-w-\[480px\]">
+            <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
+              <tr>
+                <th className="px-2 sm:px-4 py-2">Doctor & Specialist</th>
+                <th className="px-2 sm:px-4 py-2">Date & Time</th>
+                <th className="px-2 sm:px-4 py-2">Status</th>
+                <th className="px-2 sm:px-4 py-2 text-right">Action</th>
+              </tr>
+            </thead>
+            {currentItems.length > 0 ? (
+              currentItems.map((row) => (
+                <tbody
+                  key={row.id}
+                  onMouseEnter={() => setHoveredRowId(row.id)}
+                  onMouseLeave={() => setHoveredRowId(null)}
+                  onClick={() =>
+                    setExpandedRowId((p) => (p === row.id ? null : row.id))
+                  }
+                  className="group border-b border-[#f7f3ed] last:border-0 cursor-pointer"
                 >
-                  <td className="px-8 py-6">
-                    <div className="flex items-center gap-2">
-                      <p className="font-bold">
-                        {row.psychologist?.name ??
-                          'Waiting for psychologist...'}
+                  <tr
+                    className={`transition-colors ${
+                      hoveredRowId === row.id || expandedRowId === row.id
+                        ? 'bg-[#FDFCFB]'
+                        : 'hover:bg-[#FDFCFB]'
+                    }`}
+                  >
+                    <td className="px-2 sm:px-4 py-2">
+                      <div className="flex items-center gap-2">
+                        <p className="font-bold">
+                          {row.psychologist?.name ??
+                            'Waiting for psychologist...'}
+                        </p>
+                        {row.isAnonymous && (
+                          <Badge className="rounded-md px-2 py-0.5 text-[#193c1f]/60">
+                            Anonymous
+                          </Badge>
+                        )}
+                      </div>
+                      <p className="text-[12px] opacity-60 font-medium">
+                        {row.title} • {row.category}
                       </p>
-                      {row.isAnonymous && (
-                        <Badge className="rounded-md px-2 py-0.5 text-[#193c1f]/60">
-                          Anonymous
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="text-[12px] opacity-60 font-medium">
-                      {row.title} • {row.category}
-                    </p>
-                  </td>
-                  <td className="px-8 py-6 font-bold text-[#193c1f]">
-                    {formatDateTimeLabel(row.date, row.time)}
-                  </td>
-                  <td className="px-8 py-6">
-                    <Badge className={getStatusBadgeClass(row.status)}>
-                      {row.status}
-                    </Badge>
-                  </td>
-                  <td className="px-8 py-6 text-right">
-                    <div className="flex justify-end items-center gap-3">
-                      <Link
-                        href={`/consultation-chat/${row.id}`}
-                        title={
-                          row.status === 'ONGOING'
-                            ? 'Join Chat'
-                            : 'Chat History'
-                        }
-                        className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all shadow-sm border ${
-                          row.status === 'ONGOING'
-                            ? 'bg-[#193c1f] text-white border-[#193c1f] hover:bg-[#122d17]'
-                            : 'bg-white text-[#8ea087] border-[#d0d5cb] hover:bg-[#f7f3ed] hover:text-[#193c1f]'
+                    </td>
+                    <td className="px-2 sm:px-4 py-2 font-bold text-[#193c1f] text-sm">
+                      {formatDateTimeLabel(row.date, row.time)}
+                    </td>
+                    <td className="px-2 sm:px-4 py-2">
+                      <Badge className={getStatusBadgeClass(row.status)}>
+                        {row.status}
+                      </Badge>
+                    </td>
+                    <td className="px-2 sm:px-4 py-2 text-right">
+                      <div className="flex justify-end items-center gap-3">
+                        <Link
+                          href={`/consultation-chat/${row.id}`}
+                          title={
+                            row.status === 'ONGOING'
+                              ? 'Join Chat'
+                              : 'Chat History'
+                          }
+                          className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all shadow-sm border ${
+                            row.status === 'ONGOING'
+                              ? 'bg-[#193c1f] text-white border-[#193c1f] hover:bg-[#122d17]'
+                              : 'bg-white text-[#8ea087] border-[#d0d5cb] hover:bg-[#f7f3ed] hover:text-[#193c1f]'
+                          }`}
+                        >
+                          <ChatIcon />
+                        </Link>
+                      </div>
+                    </td>
+                  </tr>
+
+                  {/* Detail Dropdown Row (Accordion) */}
+                  <tr>
+                    <td colSpan={4} className="p-0">
+                      <div
+                        className={`overflow-hidden transition-all duration-500 ease-in-out bg-[#FDFCFB] ${
+                          hoveredRowId === row.id ? 'max-h-[800px]' : 'max-h-0'
                         }`}
                       >
-                        <ChatIcon />
-                      </Link>
-                    </div>
-                  </td>
-                </tr>
+                        <div className="px-4 sm:px-6 pb-5 pt-1">
+                          <div className="p-4 sm:p-5 bg-white border border-[#d0d5cb]/40 rounded-[18px] shadow-sm">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                              <div className="space-y-6">
+                                <div>
+                                  <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087] mb-4">
+                                    Consultation Summary
+                                  </h4>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    <div className="space-y-1">
+                                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                                        Title
+                                      </p>
+                                      <p className="text-[14px] font-bold text-[#193c1f]">
+                                        {row.title}
+                                      </p>
+                                    </div>
+                                    <div className="space-y-1">
+                                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                                        Category
+                                      </p>
+                                      <p className="text-[14px] font-bold text-[#193c1f]">
+                                        {row.category}
+                                      </p>
+                                    </div>
+                                    <div className="space-y-1">
+                                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                                        Assigned Psychologist
+                                      </p>
+                                      <p className="text-[14px] font-bold text-[#193c1f]">
+                                        {row.psychologist?.name ??
+                                          'Processing...'}
+                                      </p>
+                                    </div>
+                                    <div className="space-y-1">
+                                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                                        Identity
+                                      </p>
+                                      <p className="text-[14px] font-bold text-[#193c1f]">
+                                        {row.isAnonymous
+                                          ? 'Anonymous'
+                                          : 'Public'}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
 
-                {/* Detail Dropdown Row (Accordion) */}
-                <tr>
-                  <td colSpan={4} className="p-0">
-                    <div
-                      className={`overflow-hidden transition-all duration-500 ease-in-out bg-[#FDFCFB] ${
-                        hoveredRowId === row.id ? 'max-h-[800px]' : 'max-h-0'
-                      }`}
-                    >
-                      <div className="px-8 pb-8 pt-2">
-                        <div className="p-7 bg-white border border-[#d0d5cb]/40 rounded-[24px] shadow-sm">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                            <div className="space-y-6">
-                              <div>
+                              <div className="flex flex-col border-l border-[#f7f3ed] pl-10">
                                 <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087] mb-4">
-                                  Consultation Summary
+                                  Description & Documents
                                 </h4>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                  <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
-                                      Title
-                                    </p>
-                                    <p className="text-[14px] font-bold text-[#193c1f]">
-                                      {row.title}
-                                    </p>
-                                  </div>
-                                  <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
-                                      Category
-                                    </p>
-                                    <p className="text-[14px] font-bold text-[#193c1f]">
-                                      {row.category}
-                                    </p>
-                                  </div>
-                                  <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
-                                      Assigned Psychologist
-                                    </p>
-                                    <p className="text-[14px] font-bold text-[#193c1f]">
-                                      {row.psychologist?.name ??
-                                        'Processing...'}
-                                    </p>
-                                  </div>
-                                  <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
-                                      Identity
-                                    </p>
-                                    <p className="text-[14px] font-bold text-[#193c1f]">
-                                      {row.isAnonymous ? 'Anonymous' : 'Public'}
-                                    </p>
-                                  </div>
+                                <div className="bg-[#f7f3ed]/30 p-5 rounded-2xl border border-[#f7f3ed] max-h-[200px] overflow-y-auto custom-scrollbar font-medium">
+                                  <p className="text-[13px] leading-relaxed text-[#193c1f]/80 whitespace-pre-wrap italic">
+                                    &quot;
+                                    {row.description ||
+                                      'No description provided.'}
+                                    &quot;
+                                  </p>
                                 </div>
+                                {row.attachmentUrl && (
+                                  <div className="mt-6 flex items-center justify-between p-3 bg-[#f7f3ed] rounded-xl border border-[#d0d5cb]/30">
+                                    <span className="text-[12px] font-bold text-[#193c1f] truncate max-w-[150px]">
+                                      Attached Document
+                                    </span>
+                                    <Link
+                                      href={row.attachmentUrl}
+                                      target="_blank"
+                                      className="text-[10px] font-black text-[#8ea087] uppercase hover:text-[#193c1f]"
+                                    >
+                                      View
+                                    </Link>
+                                  </div>
+                                )}
                               </div>
-                            </div>
-
-                            <div className="flex flex-col border-l border-[#f7f3ed] pl-10">
-                              <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087] mb-4">
-                                Description & Documents
-                              </h4>
-                              <div className="bg-[#f7f3ed]/30 p-5 rounded-2xl border border-[#f7f3ed] max-h-[200px] overflow-y-auto custom-scrollbar font-medium">
-                                <p className="text-[13px] leading-relaxed text-[#193c1f]/80 whitespace-pre-wrap italic">
-                                  &quot;
-                                  {row.description ||
-                                    'No description provided.'}
-                                  &quot;
-                                </p>
-                              </div>
-                              {row.attachmentUrl && (
-                                <div className="mt-6 flex items-center justify-between p-3 bg-[#f7f3ed] rounded-xl border border-[#d0d5cb]/30">
-                                  <span className="text-[12px] font-bold text-[#193c1f] truncate max-w-[150px]">
-                                    Attached Document
-                                  </span>
-                                  <Link
-                                    href={row.attachmentUrl}
-                                    target="_blank"
-                                    className="text-[10px] font-black text-[#8ea087] uppercase hover:text-[#193c1f]"
-                                  >
-                                    View
-                                  </Link>
-                                </div>
-                              )}
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </td>
+                  </tr>
+                </tbody>
+              ))
+            ) : (
+              <tbody className="text-[14px] text-[#193c1f]">
+                <tr>
+                  <td
+                    colSpan={4}
+                    className="p-20 text-center text-[#8ea087] font-bold"
+                  >
+                    No consultations found.
                   </td>
                 </tr>
               </tbody>
-            ))
-          ) : (
-            <tbody className="text-[14px] text-[#193c1f]">
-              <tr>
-                <td
-                  colSpan={4}
-                  className="p-20 text-center text-[#8ea087] font-bold"
-                >
-                  No consultations found.
-                </td>
-              </tr>
-            </tbody>
-          )}
-        </table>
+            )}
+          </table>
+        </div>
       </Card>
 
       {/* Komponen Pagination */}

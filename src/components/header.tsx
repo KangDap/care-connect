@@ -6,86 +6,10 @@ import { Logo } from '@/components/logo';
 import { useTranslation } from '@/components/providers/i18n-provider';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { authClient } from '@/lib/auth/auth-client';
-import { ArrowLeft, Menu } from 'lucide-react';
+import { ChevronLeft, LogOut, Menu, Search, User } from 'lucide-react';
 import Image from 'next/image';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
-
-// --- Icons ---
-const SearchIcon = () => (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="#8EA087"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <circle cx="11" cy="11" r="8"></circle>
-    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-  </svg>
-);
-
-{
-  /*const BellIcon = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="#193C1F"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-    <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-  </svg>
-);*/
-}
-
-const UserIcon = () => (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-    <circle cx="12" cy="7" r="4"></circle>
-  </svg>
-);
-
-const LogoutIcon = () => (
-  <svg
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-    <polyline points="16 17 21 12 16 7"></polyline>
-    <line x1="21" y1="12" x2="9" y2="12"></line>
-  </svg>
-);
-
-{
-  /*const ChevronLeftIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M15 18l-6-6 6-6" />
-  </svg>
-);*/
-}
 
 const SILHOUETTE_AVATAR = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23e5e7eb'/%3E%3Ccircle cx='100' cy='70' r='35' fill='%239ca3af'/%3E%3Cpath d='M40 140c0-30 27-50 60-50s60 20 60 50v50H40z' fill='%239ca3af'/%3E%3C/svg%3E`;
 
@@ -109,12 +33,38 @@ export const Header = ({
 }: HeaderProps) => {
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { data: session } = authClient.useSession();
   const { t, language, setLanguage } = useTranslation();
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchExpanded, setIsSearchExpanded] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get('search') || '',
+  );
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Synchronize internal state when URL changes externally
+  useEffect(() => {
+    // eslint-disable-next-line
+    setSearchQuery(searchParams.get('search') || '');
+  }, [searchParams]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      const currentSearch = searchParams.get('search') || '';
+      if (currentSearch !== searchQuery) {
+        const params = new URLSearchParams(searchParams.toString());
+        if (searchQuery) {
+          params.set('search', searchQuery);
+        } else {
+          params.delete('search');
+        }
+        router.push(`${pathname}?${params.toString()}`);
+      }
+    }, 300);
+    return () => clearTimeout(handler);
+  }, [searchQuery, pathname, router, searchParams]);
 
   const profileUsername = session?.user?.username || 'User';
   const profileId = session?.user?.id
@@ -147,15 +97,15 @@ export const Header = ({
 
   return (
     <>
-      <header className="h-[90px] w-full sticky top-0 border-b border-[#D0D5CB] flex items-center justify-between px-6 md:px-12 bg-[#F7F3ED]/80 backdrop-blur-md shrink-0 z-[100]">
-        <div className="flex items-center gap-4 md:gap-8 flex-grow">
+      <header className="h-[70px] md:h-[90px] w-full sticky top-0 border-b border-[#D0D5CB] flex items-center justify-between px-4 md:px-12 bg-[#F7F3ED]/80 backdrop-blur-md shrink-0 z-[100]">
+        <div className="flex items-center gap-2 md:gap-8 flex-grow">
           {onMenuClick && (
             <Button
               onClick={onMenuClick}
               variant="outline"
-              className="h-11 w-11 shrink-0 rounded-full bg-white p-0 lg:hidden"
+              className="shrink-0 p-1.5 md:p-2.5 lg:hidden bg-transparent border-transparent text-[#193C1F] hover:bg-black/5"
             >
-              <Menu className="h-5 w-5 text-[#193C1F]" />
+              <Menu className="h-5 w-5 md:h-6 md:w-6" />
             </Button>
           )}
 
@@ -163,41 +113,83 @@ export const Header = ({
             <Button
               onClick={() => router.back()}
               variant="outline"
-              className="icon-button back-icon-button group h-11 w-11 shrink-0 rounded-full p-0"
-              aria-label="Back"
+              className="group shrink-0 p-1.5 md:p-2.5 bg-transparent border-transparent hover:bg-black/5"
             >
-              <ArrowLeft className="h-5 w-5 text-[#193C1F] transition-transform group-hover:-translate-x-1" />
+              <ChevronLeft size={20} strokeWidth={2.5} />
             </Button>
           )}
 
           {withLogo && (
-            <div className="shrink-0">
+            <div className="shrink-0 hidden sm:block">
               <Logo />
             </div>
           )}
 
-          {withSearch ? (
-            <div className="relative w-full max-w-[600px]">
-              <Input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={`${t('common.search')}...`}
-                icon={<SearchIcon />}
-                className="h-[52px] w-[250px] bg-[#EBE6DE] pr-6 text-[15px] text-[#193c1f] shadow-sm"
-              />
+          {withSearch && (
+            <div
+              className={`hidden md:block transition-all duration-300 w-[250px]`}
+            >
+              <div className="relative w-full flex items-center">
+                <Input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={`${t('common.search')}...`}
+                  icon={
+                    <Search
+                      size={18}
+                      className="text-[#8EA087]"
+                      strokeWidth={2.5}
+                    />
+                  }
+                  className="h-[40px] md:h-[52px] w-full bg-[#EBE6DE] pr-4 text-[14px] md:text-[15px] text-[#193c1f] placeholder:text-[#8ea087] shadow-sm rounded-xl"
+                />
+              </div>
             </div>
-          ) : (
-            <div />
           )}
         </div>
 
-        <div className="flex items-center gap-6 ml-10">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 sm:gap-3 md:gap-6 ml-auto">
+          {withSearch && (
+            <div className="flex items-center md:hidden">
+              {!isSearchExpanded ? (
+                <Button
+                  variant="ghost"
+                  className="p-1.5 sm:p-2 text-[#193C1F] hover:bg-black/5 shrink-0"
+                  onClick={() => setIsSearchExpanded(true)}
+                >
+                  <Search size={18} strokeWidth={2.5} />
+                </Button>
+              ) : (
+                <div className="relative flex items-center w-[140px] sm:w-[200px] transition-all duration-300 animate-in fade-in slide-in-from-right-2">
+                  <Input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onBlur={() =>
+                      setTimeout(() => setIsSearchExpanded(false), 200)
+                    }
+                    placeholder={`${t('common.search')}...`}
+                    icon={
+                      <Search
+                        size={18}
+                        className="text-[#8EA087]"
+                        strokeWidth={2.5}
+                      />
+                    }
+                    className="h-[36px] sm:h-[40px] w-full bg-[#EBE6DE] pr-2 text-[13px] sm:text-[14px] text-[#193c1f] placeholder:text-[#8ea087] shadow-sm rounded-lg"
+                    autoFocus
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="flex items-center gap-1 sm:gap-2 md:gap-3 shrink-0">
             <Button
               onClick={() => setLanguage(language === 'en' ? 'id' : 'en')}
               variant="outline"
-              className="rounded-md border-[#193c1f] px-2 py-1 text-xs text-[#193c1f] hover:bg-[#193c1f] hover:text-[#f7f3ed]"
+              className="rounded-md border-[#193c1f] px-1.5 sm:px-2 py-0.5 sm:py-1 text-[9px] sm:text-[10px] md:text-xs text-[#193c1f] hover:bg-[#193c1f] hover:text-[#f7f3ed] h-5 sm:h-6 md:h-9 min-w-0 shrink-0 font-bold"
             >
               {language === 'en' ? 'ID' : 'EN'}
             </Button>
@@ -205,21 +197,21 @@ export const Header = ({
             <ThemeToggle />
           </div>
 
-          <div className="relative" ref={dropdownRef}>
+          <div className="relative shrink-0" ref={dropdownRef}>
             <div
               onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="flex items-center gap-4 pl-6 border-l border-[#d0d5cb] cursor-pointer group select-none"
+              className="flex items-center gap-1 sm:gap-2 md:gap-4 pl-1.5 sm:pl-2 md:pl-6 border-l border-[#d0d5cb] cursor-pointer group select-none"
             >
-              <div className="text-right hidden md:block">
-                <p className="text-[15px] font-bold text-[#193c1f] leading-tight">
+              <div className="text-right hidden sm:block">
+                <p className="text-[12px] md:text-[15px] font-bold text-[#193c1f] leading-tight max-w-[80px] md:max-w-none truncate">
                   {profileUsername}
                 </p>
-                <p className="text-[11px] text-[#8ea087] font-bold uppercase mt-0.5">
+                <p className="text-[9px] md:text-[11px] text-[#8ea087] font-bold uppercase mt-0.5">
                   ID: {profileId}
                 </p>
               </div>
               <div
-                className={`w-12 h-12 rounded-2xl overflow-hidden border-2 shadow-md transition-all ${isProfileOpen ? 'border-[#8ea087] ring-4 ring-[#8ea087]/10' : 'border-white group-hover:border-[#8ea087]'}`}
+                className={`w-6 h-6 sm:w-8 sm:h-8 md:w-12 md:h-12 shrink-0 rounded-full md:rounded-2xl overflow-hidden border border-white md:border-2 shadow-sm md:shadow-md transition-all ${isProfileOpen ? 'border-[#8ea087] ring-2 ring-[#8ea087]/10 md:ring-4' : 'group-hover:border-[#8ea087]'}`}
               >
                 <Image
                   src={profileAvatar}
@@ -233,27 +225,31 @@ export const Header = ({
             </div>
 
             {isProfileOpen && (
-              <div className="absolute right-0 mt-4 w-64 bg-white border border-[#d0d5cb] rounded-[24px] shadow-2xl py-3 z-[1001] animate-in fade-in zoom-in duration-200">
-                <Button
+              <div className="absolute right-0 mt-2 md:mt-3 w-44 md:w-52 bg-white border border-[#e2ddd6] rounded-xl shadow-xl z-[1001] animate-in fade-in zoom-in-95 duration-150 overflow-hidden">
+                <div className="px-3 py-2.5 border-b border-[#f0ece5]">
+                  <p className="text-[11px] font-black text-[#193c1f] truncate">
+                    {profileUsername}
+                  </p>
+                  <p className="text-[9px] text-[#8ea087] font-bold mt-0.5">
+                    ID: {profileId}
+                  </p>
+                </div>
+                <button
                   onClick={handleProfileClick}
-                  variant="ghost"
-                  className="w-full justify-start px-6 py-3 text-[14px] text-[#193c1f] hover:bg-[#f7f3ed]"
+                  className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[12px] md:text-[13px] text-[#193c1f] hover:bg-[#f7f3ed] transition-colors text-left"
                 >
-                  <UserIcon /> {t('header.profile')}
-                </Button>
-                <div className="h-px bg-[#f7f3ed] my-2 mx-4" />
-                <Button
+                  <User size={18} strokeWidth={2} /> {t('header.profile')}
+                </button>
+                <div className="h-px bg-[#f0ece5] mx-0" />
+                <button
                   onClick={() => {
                     setIsProfileOpen(false);
-                    if (onLogoutClick) {
-                      onLogoutClick();
-                    }
+                    if (onLogoutClick) onLogoutClick();
                   }}
-                  variant="ghost"
-                  className="w-full justify-start px-6 py-4 text-[14px] text-red-500 hover:bg-red-50"
+                  className="w-full flex items-center gap-2.5 px-3 py-2.5 text-[12px] md:text-[13px] text-red-500 hover:bg-red-50 transition-colors text-left"
                 >
-                  <LogoutIcon /> {t('header.logout')}
-                </Button>
+                  <LogOut size={18} strokeWidth={2} /> {t('header.logout')}
+                </button>
               </div>
             )}
           </div>

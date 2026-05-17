@@ -1,74 +1,16 @@
 'use client';
 
+import { Badge } from '@/components/badge';
+import { Card } from '@/components/card';
+import { Table } from '@/components/table';
+import { Activity, CheckCircle, Clock, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import React from 'react';
 
-const TotalIcon = () => (
-  <svg
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="#193C1F"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-    <circle cx="9" cy="7" r="4"></circle>
-    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-  </svg>
-);
-
-const PendingIcon = () => (
-  <svg
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="#193C1F"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <circle cx="12" cy="12" r="10"></circle>
-    <polyline points="12 6 12 12 16 14"></polyline>
-  </svg>
-);
-
-const CompletedIcon = () => (
-  <svg
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="#193C1F"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-    <polyline points="22 4 12 14.01 9 11.01"></polyline>
-  </svg>
-);
-
-const EarningsIcon = () => (
-  <svg
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="#193C1F"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-  </svg>
-);
+const TotalIcon = () => <Activity size={20} strokeWidth={2} />;
+const PendingIcon = () => <Clock size={20} strokeWidth={2} />;
+const CompletedIcon = () => <CheckCircle size={20} strokeWidth={2} />;
+const EarningsIcon = () => <CreditCard size={20} strokeWidth={2} />;
 
 const formatDateLabel = (value: Date | string) => {
   if (!value) return '-';
@@ -79,13 +21,12 @@ const formatDateLabel = (value: Date | string) => {
   }).format(new Date(value));
 };
 
-// Interface yang lebih longgar agar tidak bentrok dengan enum Prisma tapi tetap aman dari 'any'
 interface DashboardConsultation {
   id: number;
   title: string;
   category: string;
   date: Date;
-  status: string | unknown; // Menggunakan unknown alih-alih any
+  status: string | unknown;
   isAnonymous?: boolean;
   user: { name: string | null } | null;
 }
@@ -142,184 +83,179 @@ export default function PsychologistDashboardContent({
     maximumFractionDigits: 0,
   }).format(monthlyEarnings);
 
+  const stats = [
+    {
+      label: 'Total Consultations',
+      val: String(totalConsultationsCount),
+      icon: <TotalIcon />,
+    },
+    {
+      label: 'Pending / Scheduled',
+      val: String(pendingConsultationsCount),
+      icon: <PendingIcon />,
+    },
+    {
+      label: 'Completed Sessions',
+      val: String(completedConsultationsCount),
+      icon: <CompletedIcon />,
+    },
+    {
+      label: 'Monthly Earnings (Est.)',
+      val: formattedEarnings,
+      icon: <EarningsIcon />,
+      highlight: true,
+    },
+  ];
+
   return (
-    <div className="space-y-10 animate-fade-in">
-      <div className="flex justify-between items-end">
-        <div>
-          <h2 className="text-[36px] font-black text-[#193c1f] tracking-tight leading-tight">
-            Welcome, {displayName}
-          </h2>
-          <p className="text-[#8ea087] text-[16px] font-medium mt-1">
-            {searchBarQuery
-              ? `Showing results for "${searchBarQuery}"`
-              : `You have ${pendingConsultationsCount} upcoming consultations to handle.`}
-          </p>
-        </div>
+    <div className="space-y-6 md:space-y-8 animate-fade-in">
+      {/* Header */}
+      <div>
+        <h2 className="text-2xl sm:text-3xl md:text-[36px] font-black text-[#193c1f] tracking-tight leading-tight">
+          Welcome, {displayName}
+        </h2>
+        <p className="text-[#8ea087] text-sm md:text-[16px] font-medium mt-1">
+          {searchBarQuery
+            ? `Showing results for "${searchBarQuery}"`
+            : `You have ${pendingConsultationsCount} upcoming consultations to handle.`}
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {[
-          {
-            label: 'Total Consultations',
-            val: String(totalConsultationsCount),
-            icon: <TotalIcon />,
-          },
-          {
-            label: 'Pending / Scheduled',
-            val: String(pendingConsultationsCount),
-            icon: <PendingIcon />,
-          },
-          {
-            label: 'Completed Sessions',
-            val: String(completedConsultationsCount),
-            icon: <CompletedIcon />,
-          },
-          {
-            label: 'Monthly Earnings (Est.)',
-            val: formattedEarnings,
-            icon: <EarningsIcon />,
-            highlight: true,
-          },
-        ].map((item, index) => (
-          <div
+      {/* Stats Cards — 2 cols on mobile/sm, 4 on lg */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
+        {stats.map((item, index) => (
+          <Card
             key={index}
-            className={`p-8 rounded-[28px] border flex items-center gap-6 shadow-sm transition-all hover:shadow-md ${
-              item.highlight
-                ? 'bg-[#193c1f] border-[#193c1f] text-white'
-                : 'bg-[#f7f3ed] border-[#d0d5cb] text-[#193c1f]'
-            }`}
+            className="flex items-center gap-3 md:gap-4 p-3 sm:p-4 md:p-5 rounded-[20px] md:rounded-[28px] bg-[#f7f3ed] border-0"
           >
-            <div
-              className={`w-14 h-14 rounded-2xl flex items-center justify-center shrink-0 ${
-                item.highlight ? 'bg-white/10' : 'bg-[#EBE6DE]'
-              }`}
-            >
-              {React.cloneElement(
-                item.icon as React.ReactElement<{ stroke?: string }>,
-                {
-                  stroke: item.highlight ? '#FFFFFF' : '#193C1F',
-                },
-              )}
+            <div className="w-9 h-9 md:w-11 md:h-11 bg-[#EBE6DE] rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 text-[#193c1f]">
+              {item.icon}
             </div>
-            <div>
-              <p
-                className={`text-[10px] uppercase font-black tracking-widest mb-1 ${
-                  item.highlight ? 'text-white/60' : 'text-[#8ea087]'
-                }`}
-              >
+            <div className="min-w-0">
+              <p className="text-[8px] sm:text-[9px] md:text-[10px] uppercase font-black text-[#8ea087] tracking-widest truncate leading-tight mb-0.5">
                 {item.label}
               </p>
               <p
-                className={`text-[24px] font-bold leading-none ${
-                  item.highlight ? 'text-white' : 'text-[#193c1f]'
+                className={`font-bold text-[#193c1f] leading-tight ${
+                  item.highlight
+                    ? 'text-xs sm:text-sm md:text-base'
+                    : 'text-lg sm:text-xl md:text-2xl'
                 }`}
               >
                 {item.val}
               </p>
+              {item.highlight && (
+                <p className="text-[8px] md:text-[9px] text-[#d6a36c] font-black uppercase tracking-widest mt-0.5">
+                  This month
+                </p>
+              )}
             </div>
-          </div>
+          </Card>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
-        <div className="bg-white border border-[#d0d5cb] rounded-[32px] overflow-hidden shadow-sm">
-          <div className="p-8 border-b border-[#f7f3ed] flex justify-between items-center bg-[#FDFCFB]">
-            <h3 className="font-bold text-[18px] text-[#193c1f]">
-              Upcoming Consultations
-            </h3>
+      {/* Tables Row */}
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 md:gap-8">
+        {/* Upcoming Consultations */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h3 className="text-lg sm:text-xl font-black text-[#193c1f] tracking-tight">
+                Upcoming Consultations
+              </h3>
+              <p className="text-xs text-[#8ea087] font-medium mt-0.5">
+                Scheduled sessions awaiting action
+              </p>
+            </div>
             <Link
               href="/dashboard/psikolog/consultations"
-              className="text-[11px] font-black text-[#8ea087] tracking-[0.2em] uppercase hover:text-[#193c1f] transition-colors"
+              className="text-[11px] md:text-sm font-black text-[#193c1f] hover:opacity-70 transition-opacity bg-[#F7F3ED] px-3 py-1.5 rounded-xl border border-[#D0D5CB] whitespace-nowrap"
             >
-              View All
+              View All →
             </Link>
           </div>
-          <table className="w-full text-left">
-            <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
-              <tr>
-                <th className="px-8 py-4">Patient</th>
-                <th className="px-8 py-4">Date</th>
-                <th className="px-8 py-4">Status</th>
-              </tr>
-            </thead>
-            <tbody className="text-[14px] text-[#193c1f]">
-              {pendingData.slice(0, 3).map((row) => (
-                <tr
-                  key={row.id}
-                  className="border-b border-[#f7f3ed] hover:bg-[#FDFCFB]"
-                >
-                  <td className="px-8 py-5 font-bold">
+          <Table
+            data={pendingData.slice(0, 5)}
+            keyExtractor={(row) => row.id}
+            emptyMessage="No upcoming consultations found."
+            columns={[
+              {
+                header: 'Patient',
+                cell: (row) => (
+                  <p className="font-bold text-[#193c1f] text-xs md:text-sm">
                     {row.isAnonymous
                       ? 'Anonymous Patient'
                       : row.user?.name || 'Anonymous'}
-                  </td>
-                  <td className="px-8 py-5 opacity-70">
+                  </p>
+                ),
+              },
+              {
+                header: 'Date',
+                cell: (row) => (
+                  <p className="text-[#8ea087] text-xs">
                     {formatDateLabel(row.date)}
-                  </td>
-                  <td className="px-8 py-5">
-                    <span className="px-4 py-1.5 rounded-full text-[10px] font-black bg-[#d1b698]/20 text-[#d1b698]">
-                      {String(row.status)}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {pendingData.length === 0 && (
-            <p className="p-10 text-center text-[#8ea087]">
-              No upcoming consultations found.
-            </p>
-          )}
+                  </p>
+                ),
+              },
+              {
+                header: 'Status',
+                cell: (row) => (
+                  <Badge status="UPCOMING">{String(row.status)}</Badge>
+                ),
+              },
+            ]}
+          />
         </div>
 
-        <div className="bg-white border border-[#d0d5cb] rounded-[32px] overflow-hidden shadow-sm">
-          <div className="p-8 border-b border-[#f7f3ed] flex justify-between items-center bg-[#FDFCFB]">
-            <h3 className="font-bold text-[18px] text-[#193c1f]">
-              Completed Sessions
-            </h3>
+        {/* Completed Sessions */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h3 className="text-lg sm:text-xl font-black text-[#193c1f] tracking-tight">
+                Completed Sessions
+              </h3>
+              <p className="text-xs text-[#8ea087] font-medium mt-0.5">
+                Your finished consultation history
+              </p>
+            </div>
             <Link
               href="/dashboard/psikolog/consultations?filter=completed"
-              className="text-[11px] font-black text-[#8ea087] tracking-[0.2em] uppercase hover:text-[#193c1f] transition-colors"
+              className="text-[11px] md:text-sm font-black text-[#193c1f] hover:opacity-70 transition-opacity bg-[#F7F3ED] px-3 py-1.5 rounded-xl border border-[#D0D5CB] whitespace-nowrap"
             >
-              View All
+              View All →
             </Link>
           </div>
-          <table className="w-full text-left">
-            <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
-              <tr>
-                <th className="px-8 py-4">Patient</th>
-                <th className="px-8 py-4">Date</th>
-                <th className="px-8 py-4">Status</th>
-              </tr>
-            </thead>
-            <tbody className="text-[14px] text-[#193c1f]">
-              {completedData.slice(0, 3).map((row) => (
-                <tr
-                  key={row.id}
-                  className="border-b border-[#f7f3ed] hover:bg-[#FDFCFB]"
-                >
-                  <td className="px-8 py-5 font-bold">
+          <Table
+            data={completedData.slice(0, 5)}
+            keyExtractor={(row) => row.id}
+            emptyMessage="No completed sessions yet."
+            columns={[
+              {
+                header: 'Patient',
+                cell: (row) => (
+                  <p className="font-bold text-[#193c1f] text-xs md:text-sm">
                     {row.isAnonymous
                       ? 'Anonymous Patient'
                       : row.user?.name || 'Anonymous'}
-                  </td>
-                  <td className="px-8 py-5 opacity-70">
+                  </p>
+                ),
+              },
+              {
+                header: 'Date',
+                cell: (row) => (
+                  <p className="text-[#8ea087] text-xs">
                     {formatDateLabel(row.date)}
-                  </td>
-                  <td className="px-8 py-5">
-                    <span className="px-4 py-1.5 rounded-full text-[10px] font-black bg-[#EBE6DE] text-[#193c1f]">
-                      {String(row.status)}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {completedData.length === 0 && (
-            <p className="p-10 text-center text-[#8ea087]">
-              No completed sessions yet.
-            </p>
-          )}
+                  </p>
+                ),
+              },
+              {
+                header: 'Status',
+                cell: (row) => (
+                  <Badge status="SUCCESS">{String(row.status)}</Badge>
+                ),
+              },
+            ]}
+          />
         </div>
       </div>
     </div>

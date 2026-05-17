@@ -244,9 +244,6 @@ const SupportForumsPage = () => {
                       </div>
 
                       <div className="p-8 flex flex-col flex-1">
-                        <span className="text-[9px] font-black text-[#d1b698] uppercase tracking-[0.2em] mb-4 inline-block">
-                          TOPIC: {room.category || 'GENERAL'}
-                        </span>
                         <h3 className="font-black text-xl text-[#193c1f] mb-3 group-hover:text-[#8ea087] transition-colors italic tracking-tight line-clamp-2 leading-tight">
                           {room.title ||
                             (room as { name?: string }).name ||

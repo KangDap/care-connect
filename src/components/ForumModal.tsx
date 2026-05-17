@@ -14,7 +14,6 @@ interface ForumModalProps {
   initialData?: {
     name: string;
     description: string;
-    category: string;
     type: string;
     coverUrl?: string | null;
   };
@@ -32,7 +31,6 @@ export const ForumModal = ({
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    category: '',
     type: 'PUBLIC',
   });
   const [coverImage, setCoverImage] = useState<File | null>(null);
@@ -43,14 +41,12 @@ export const ForumModal = ({
       setFormData({
         name: initialData.name || '',
         description: initialData.description || '',
-        category: initialData.category || '',
         type: initialData.type || 'PUBLIC',
       });
     } else {
       setFormData({
         name: '',
         description: '',
-        category: '',
         type: 'PUBLIC',
       });
     }
@@ -63,7 +59,6 @@ export const ForumModal = ({
     const data = new FormData();
     data.append('name', formData.name);
     data.append('description', formData.description);
-    data.append('category', formData.category);
     data.append('type', formData.type);
     if (coverImage) {
       data.append('coverImage', coverImage);
@@ -86,16 +81,6 @@ export const ForumModal = ({
             value={formData.name}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             placeholder="e.g., Mental Health Support"
-          />
-
-          <Input
-            label="Category"
-            required
-            value={formData.category}
-            onChange={(e) =>
-              setFormData({ ...formData, category: e.target.value })
-            }
-            placeholder="e.g., Depression, Anxiety, etc."
           />
 
           <Input

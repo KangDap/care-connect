@@ -170,15 +170,14 @@ export function ReportPicker({ onSelect, onBack }: Props) {
     <div className="pb-10 text-[#193c1f]">
       <div className="mb-8 flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
         <div className="flex items-start gap-4">
-          <Button
+          <button
             type="button"
-            variant="outline"
             onClick={onBack}
-            className="icon-button back-icon-button h-11 w-11 shrink-0 rounded-full !p-0"
             aria-label="Back to donation options"
+            className="p-2 sm:p-2.5 bg-white border border-[#D0D5CB] hover:bg-[#F7F3ED] rounded-xl sm:rounded-2xl transition-all shadow-sm flex items-center justify-center shrink-0"
           >
-            <ArrowLeft size={20} />
-          </Button>
+            <ArrowLeft size={18} className="text-[#193c1f]" />
+          </button>
           <div>
             <h2 className="text-3xl font-black tracking-normal md:text-4xl">
               Choose a Report to Support

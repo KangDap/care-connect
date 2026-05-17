@@ -2,8 +2,9 @@
 
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
+import { Card } from '@/components/card';
 import { Input } from '@/components/input';
-import { Pagination } from '@/components/pagination';
+import { Table } from '@/components/table';
 import { Toast } from '@/components/toast';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -14,9 +15,6 @@ const STATUS_BADGE: Record<string, 'PENDING' | 'SUCCESS' | 'DEFAULT'> = {
   PAID: 'SUCCESS',
   PENDING: 'PENDING',
   FAILED: 'DEFAULT',
-  EXPIRED: 'DEFAULT',
-  REFUNDED: 'PENDING',
-  CANCELLED: 'DEFAULT',
 };
 
 type DonationType = {
@@ -62,9 +60,6 @@ type DonationClientProps = {
     paid: number;
     pending: number;
     failed: number;
-    expired: number;
-    refunded: number;
-    cancelled: number;
   };
 };
 
@@ -134,7 +129,7 @@ export function DonationClient({
     }).format(new Date(d));
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6 md:space-y-10">
       <Toast
         show={toast.show}
         msg={toast.msg}
@@ -144,8 +139,8 @@ export function DonationClient({
 
       {/* Header */}
       <div>
-        <h1 className="text-[40px] font-black text-[#193c1f] tracking-tight leading-none">
-          Donation & Payouts
+        <h1 className="text-2xl sm:text-3xl md:text-[40px] font-black text-[#193c1f] tracking-tight leading-tight">
+          Donation &amp; Payouts
         </h1>
         <p className="text-[#8ea087] font-medium mt-2">
           Monitor platform revenue and calculate psychologist shares.
@@ -153,15 +148,14 @@ export function DonationClient({
       </div>
 
       {/* Summary Stats */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 items-stretch">
         {/* Card 1: Revenue */}
-        <div className="bg-[#193c1f] p-8 rounded-[40px] text-white shadow-2xl relative overflow-hidden group border-4 border-[#193c1f] flex flex-col h-full">
+        <Card className="p-3 sm:p-4 md:p-6 shadow-md relative group flex flex-col h-full rounded-2xl md:rounded-3xl border border-[#D0D5CB]/50">
           <div className="relative z-10 flex flex-col h-full">
-            <div className="flex items-center gap-2 mb-6">
-              <div className="p-2 bg-white/10 rounded-lg">
+            <div className="flex items-center gap-2 mb-3 md:mb-6">
+              <div className="p-1.5 md:p-2 bg-[#193c1f] rounded-lg text-white shrink-0">
                 <svg
-                  width="20"
-                  height="20"
+                  className="w-4 h-4 md:w-5 md:h-5"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -172,70 +166,68 @@ export function DonationClient({
                   <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                 </svg>
               </div>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">
+              <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-[#8ea087]">
                 Revenue {months[currentMonth - 1]}
               </p>
             </div>
 
-            <div className="flex items-baseline gap-2 mb-6">
-              <h3 className="text-4xl font-black tracking-tighter">
+            <div className="flex items-baseline gap-1.5 mb-4 md:mb-6">
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tighter text-[#193c1f]">
                 {fmt(summary.platformTotal)}
               </h3>
-              <span className="text-xs font-bold opacity-40 uppercase">
+              <span className="text-[10px] md:text-xs font-bold text-[#8ea087] uppercase">
                 IDR
               </span>
             </div>
 
             {/* Monthly Breakdown */}
-            <div className="grid grid-cols-2 gap-4 mb-8 py-5 border-y border-white/10">
+            <div className="grid grid-cols-2 gap-3 mb-4 md:mb-8 py-3 md:py-5 border-y border-[#D0D5CB]/50">
               <div>
-                <p className="text-[8px] font-black uppercase tracking-widest opacity-40 mb-1">
+                <p className="text-[7px] md:text-[8px] font-black uppercase tracking-widest text-[#8ea087] mb-0.5 md:mb-1">
                   Monthly Platform (10%)
                 </p>
-                <p className="font-bold text-sm">
+                <p className="font-bold text-xs md:text-sm text-[#193c1f]">
                   {fmt(summary.platformTotal * 0.1)}
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-[8px] font-black uppercase tracking-widest text-[#F1B166] mb-1">
+                <p className="text-[7px] md:text-[8px] font-black uppercase tracking-widest text-[#d6a36c] mb-0.5 md:mb-1">
                   Monthly Psych (90%)
                 </p>
-                <p className="font-black text-sm text-[#F1B166]">
+                <p className="font-black text-xs md:text-sm text-[#d6a36c]">
                   {fmt(summary.psychologistPool)}
                 </p>
               </div>
             </div>
 
-            <div className="mt-auto flex justify-between items-end">
+            <div className="mt-auto flex justify-between items-end pt-2">
               <div className="flex flex-col">
-                <span className="text-[8px] font-bold uppercase tracking-widest opacity-40 mb-1">
+                <span className="text-[8px] font-bold uppercase tracking-widest text-[#8ea087] mb-1">
                   All Time Platform
                 </span>
-                <span className="font-bold text-xs opacity-80">
+                <span className="font-bold text-xs text-[#193c1f]">
                   {fmt(summary.allTimeTotal * 0.1)}
                 </span>
               </div>
               <div className="flex flex-col items-end">
-                <span className="text-[8px] font-bold uppercase tracking-widest text-[#F1B166] mb-1">
+                <span className="text-[8px] font-bold uppercase tracking-widest text-[#d6a36c] mb-1">
                   All Time Psych
                 </span>
-                <span className="font-black text-sm text-[#F1B166] leading-none">
+                <span className="font-black text-sm text-[#d6a36c] leading-none">
                   {fmt(summary.allTimeTotal * 0.9)}
                 </span>
               </div>
             </div>
           </div>
-          <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full -mr-20 -mt-20 group-hover:scale-110 transition-transform duration-700" />
-        </div>
+        </Card>
 
         {/* Card 2: Sessions */}
-        <div className="bg-white p-8 rounded-[40px] border-4 border-[#f7f3ed] shadow-xl relative overflow-hidden group flex flex-col h-full">
+        <Card className="p-3 sm:p-4 md:p-6 border border-[#f7f3ed] shadow-md relative group flex flex-col h-full rounded-2xl md:rounded-3xl">
           <div className="relative z-10 flex flex-col h-full">
-            <div className="flex items-center gap-2 mb-6">
-              <div className="p-2 bg-[#f7f3ed] rounded-lg text-[#193c1f]">
+            <div className="flex items-center gap-2 mb-3 md:mb-6">
+              <div className="p-1.5 md:p-2 bg-[#f7f3ed] rounded-lg text-[#193c1f]">
                 <svg
-                  width="20"
-                  height="20"
+                  className="w-4 h-4 md:w-5 md:h-5"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -249,27 +241,27 @@ export function DonationClient({
                   <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                 </svg>
               </div>
-              <p className="text-[10px] font-black text-[#8ea087] uppercase tracking-[0.2em]">
+              <p className="text-[8px] md:text-[10px] font-black text-[#8ea087] uppercase tracking-[0.2em]">
                 Monthly Sessions
               </p>
             </div>
 
-            <div className="flex items-baseline gap-2 mb-6">
-              <h3 className="text-4xl font-black text-[#193c1f] tracking-tighter">
+            <div className="flex items-baseline gap-1.5 mb-4 md:mb-6">
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#193c1f] tracking-tighter">
                 {summary.totalSessions}
               </h3>
-              <span className="text-xs font-bold text-[#8ea087] uppercase">
+              <span className="text-[10px] md:text-xs font-bold text-[#8ea087] uppercase">
                 Completed
               </span>
             </div>
 
             {/* Session Stats */}
-            <div className="grid grid-cols-2 gap-4 mb-8 py-5 border-y border-[#f7f3ed]">
+            <div className="grid grid-cols-2 gap-3 mb-4 md:mb-8 py-3 md:py-5 border-y border-[#f7f3ed]">
               <div>
-                <p className="text-[8px] font-black text-[#8ea087] uppercase tracking-widest mb-1">
+                <p className="text-[7px] md:text-[8px] font-black text-[#8ea087] uppercase tracking-widest mb-0.5 md:mb-1">
                   Avg. Sessions
                 </p>
-                <p className="font-bold text-sm text-[#193c1f]">
+                <p className="font-bold text-xs md:text-sm text-[#193c1f]">
                   {psychologistBreakdown.length > 0
                     ? (
                         summary.totalSessions / psychologistBreakdown.length
@@ -278,16 +270,16 @@ export function DonationClient({
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-[8px] font-black text-[#8ea087] uppercase tracking-widest mb-1">
+                <p className="text-[7px] md:text-[8px] font-black text-[#8ea087] uppercase tracking-widest mb-0.5 md:mb-1">
                   Active Psych
                 </p>
-                <p className="font-black text-sm text-[#193c1f]">
+                <p className="font-black text-xs md:text-sm text-[#193c1f]">
                   {psychologistBreakdown.length}
                 </p>
               </div>
             </div>
 
-            <div className="mt-auto flex justify-between items-end">
+            <div className="mt-auto flex justify-between items-end pt-2">
               <div className="flex flex-col">
                 <span className="text-[8px] font-bold text-[#8ea087] uppercase tracking-widest mb-1">
                   Total (All Time)
@@ -301,16 +293,15 @@ export function DonationClient({
               </div>
             </div>
           </div>
-        </div>
+        </Card>
 
         {/* Card 3: Top Payout */}
-        <div className="bg-[#F1B166] p-8 rounded-[40px] text-[#193c1f] shadow-2xl relative overflow-hidden group border-4 border-[#F1B166] flex flex-col h-full">
+        <Card className="p-3 sm:p-4 md:p-6 shadow-md relative group flex flex-col h-full rounded-2xl md:rounded-3xl border border-[#D0D5CB]/50">
           <div className="relative z-10 flex flex-col h-full">
-            <div className="flex items-center gap-2 mb-6">
-              <div className="p-2 bg-[#193c1f] rounded-lg text-[#F1B166]">
+            <div className="flex items-center gap-2 mb-3 md:mb-6">
+              <div className="p-1.5 md:p-2 bg-[#193c1f] rounded-lg text-[#d6a36c] shrink-0">
                 <svg
-                  width="20"
-                  height="20"
+                  className="w-4 h-4 md:w-5 md:h-5"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -323,13 +314,13 @@ export function DonationClient({
                   <path d="M3 9h18" />
                 </svg>
               </div>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">
+              <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-[#8ea087]">
                 Top Share Est.
               </p>
             </div>
 
-            <div className="flex items-baseline gap-2 mb-6">
-              <h3 className="text-4xl font-black tracking-tighter">
+            <div className="flex items-baseline gap-1.5 mb-4 md:mb-6">
+              <h3 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tighter text-[#193c1f]">
                 {fmt(
                   Math.max(...psychologistBreakdown.map((p) => p.earnings), 0),
                 )}
@@ -337,12 +328,12 @@ export function DonationClient({
             </div>
 
             {/* Payout Stats */}
-            <div className="grid grid-cols-2 gap-4 mb-8 py-5 border-y border-black/10">
+            <div className="grid grid-cols-2 gap-3 mb-4 md:mb-8 py-3 md:py-5 border-y border-[#D0D5CB]/50">
               <div>
-                <p className="text-[8px] font-black uppercase tracking-widest opacity-60 mb-1">
+                <p className="text-[7px] md:text-[8px] font-black uppercase tracking-widest text-[#8ea087] mb-0.5 md:mb-1">
                   Average Share
                 </p>
-                <p className="font-bold text-sm">
+                <p className="font-bold text-xs md:text-sm text-[#193c1f]">
                   {fmt(
                     psychologistBreakdown.length > 0
                       ? summary.psychologistPool / psychologistBreakdown.length
@@ -351,33 +342,32 @@ export function DonationClient({
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-[8px] font-black uppercase tracking-widest opacity-60 mb-1">
+                <p className="text-[7px] md:text-[8px] font-black uppercase tracking-widest text-[#8ea087] mb-0.5 md:mb-1">
                   Total Pool
                 </p>
-                <p className="font-black text-sm">
+                <p className="font-black text-xs md:text-sm text-[#193c1f]">
                   {fmt(summary.psychologistPool)}
                 </p>
               </div>
             </div>
 
-            <div className="mt-auto">
-              <p className="text-[10px] font-black uppercase tracking-widest opacity-60 leading-relaxed">
+            <div className="mt-auto pt-2">
+              <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-[#8ea087] leading-relaxed">
                 Estimasi tertinggi berdasarkan <br /> proporsi sesi bulan ini.
               </p>
             </div>
           </div>
-          <div className="absolute bottom-0 right-0 w-48 h-48 bg-black/5 rounded-full -mr-16 -mb-16 group-hover:scale-110 transition-transform duration-700" />
-        </div>
+        </Card>
       </div>
 
       {/* Psychologist Breakdown Section */}
-      <div className="bg-white border-4 border-[#f7f3ed] rounded-[48px] p-10 shadow-xl">
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-8 border-b-2 border-[#f7f3ed]">
+      <Card className="rounded-[24px] md:rounded-[40px] p-0 md:p-0">
+        <div className="p-5 sm:p-6 md:p-8 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#D0D5CB]/50 bg-[#FDFCFB]">
           <div>
-            <h2 className="text-2xl font-black text-[#193c1f] tracking-tight">
+            <h2 className="text-xl md:text-2xl font-black text-[#193c1f] tracking-tight">
               Psychologist Payout Breakdown
             </h2>
-            <p className="text-sm text-[#8ea087] font-medium mt-1">
+            <p className="text-xs md:text-sm text-[#8ea087] font-medium mt-1">
               Data sesi dan bagi hasil untuk periode{' '}
               <strong>
                 {months[currentMonth - 1]} {currentYear}
@@ -392,7 +382,7 @@ export function DonationClient({
               onChange={(e) =>
                 handleTimeChange(Number(e.target.value), currentYear)
               }
-              className="rounded-2xl bg-white px-5 py-3 text-xs font-black text-[#193c1f] hover:bg-[#F1B166]"
+              className="rounded-2xl bg-white px-3 py-2 text-xs font-black text-[#193c1f] hover:bg-[#F1B166]"
             >
               {months.map((m, i) => (
                 <option key={m} value={i + 1}>
@@ -406,7 +396,7 @@ export function DonationClient({
               onChange={(e) =>
                 handleTimeChange(currentMonth, Number(e.target.value))
               }
-              className="rounded-2xl bg-white px-5 py-3 text-xs font-black text-[#193c1f] hover:bg-[#F1B166]"
+              className="rounded-2xl bg-white px-3 py-2 text-xs font-black text-[#193c1f] hover:bg-[#F1B166]"
             >
               {years.map((y) => (
                 <option key={y} value={y}>
@@ -417,191 +407,234 @@ export function DonationClient({
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left min-w-[600px]">
-            <thead className="text-[11px] font-black text-[#8EA087] uppercase tracking-widest">
-              <tr>
-                <th className="pb-6 px-4">Psychologist Name</th>
-                <th className="pb-6 px-4">Consultation Sessions</th>
-                <th className="pb-6 px-4 text-right">Estimated Share</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#f7f3ed]">
-              {psychologistBreakdown.map((p) => (
-                <tr
-                  key={p.id}
-                  className="group hover:bg-[#f7f3ed]/30 transition-all duration-300"
-                >
-                  <td className="py-6 px-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-[#f7f3ed] flex items-center justify-center text-[#193c1f] font-black text-xs">
-                        {p.name.charAt(0)}
-                      </div>
-                      <span className="font-bold text-[#193c1f] text-lg">
-                        {p.name}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="py-6 px-4 text-[#193c1f]">
-                    <span className="font-black text-xl">{p.sessions}</span>
-                    <span className="text-xs font-bold text-[#8ea087] ml-2 uppercase tracking-widest">
-                      Sesi
-                    </span>
-                  </td>
-                  <td className="py-6 px-4 text-right">
-                    <span className="font-black text-xl text-[#193c1f]">
-                      {fmt(p.earnings)}
-                    </span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+        <Table
+          className="rounded-t-none border-t-0 shadow-none"
+          data={psychologistBreakdown}
+          keyExtractor={(p) => p.id}
+          emptyMessage="No payout data for this period."
+          columns={[
+            {
+              header: 'Psychologist Name',
+              cell: (p) => (
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#f7f3ed] border border-[#D0D5CB] flex items-center justify-center text-[#193c1f] font-black text-xs shrink-0">
+                    {p.name.charAt(0)}
+                  </div>
+                  <span className="font-bold text-[#193c1f] text-sm md:text-base">
+                    {p.name}
+                  </span>
+                </div>
+              ),
+            },
+            {
+              header: 'Consultation Sessions',
+              cell: (p) => (
+                <div className="text-[#193c1f]">
+                  <span className="font-black text-lg md:text-xl">
+                    {p.sessions}
+                  </span>
+                  <span className="text-[10px] md:text-xs font-bold text-[#8ea087] ml-2 uppercase tracking-widest">
+                    Sesi
+                  </span>
+                </div>
+              ),
+            },
+            {
+              header: 'Estimated Share',
+              headerClassName: 'text-right',
+              className: 'text-right',
+              cell: (p) => (
+                <span className="font-black text-lg md:text-xl text-[#193c1f]">
+                  {fmt(p.earnings)}
+                </span>
+              ),
+            },
+          ]}
+        />
+      </Card>
 
       {/* Donation History Section */}
-      <div className="space-y-8">
-        <div className="flex flex-col gap-6">
+      <div className="space-y-5">
+        {/* Section Header*/}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 className="text-3xl font-black text-[#193c1f] tracking-tight">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-[#193c1f] tracking-tight">
               Donation History
             </h2>
-            <p className="text-sm text-[#8ea087] font-medium mt-1">
+            <p className="text-xs sm:text-sm text-[#8ea087] font-medium mt-1">
               Manage and track all incoming donations.
             </p>
           </div>
+        </div>
 
-          <div className="flex flex-wrap gap-3">
-            {[
-              { label: 'ALL', count: counts.all },
-              { label: 'PAID', count: counts.paid },
-              { label: 'PENDING', count: counts.pending },
-              { label: 'FAILED', count: counts.failed },
-              { label: 'EXPIRED', count: counts.expired },
-              { label: 'REFUNDED', count: counts.refunded },
-              { label: 'CANCELLED', count: counts.cancelled },
-            ].map((s) => (
-              <Button
-                key={s.label}
-                onClick={() => handleStatusChange(s.label)}
-                variant={currentStatus === s.label ? 'primary' : 'outline'}
-                className={`rounded-2xl px-6 py-2.5 text-xs ${
+        {/* Status Filter Buttons */}
+        <div className="flex flex-wrap gap-2">
+          {[
+            { label: 'ALL', count: counts.all },
+            { label: 'PAID', count: counts.paid },
+            { label: 'PENDING', count: counts.pending },
+            { label: 'FAILED', count: counts.failed },
+          ].map((s) => (
+            <Button
+              key={s.label}
+              onClick={() => handleStatusChange(s.label)}
+              variant={currentStatus === s.label ? 'primary' : 'outline'}
+              className={`rounded-[14px] px-3 md:px-4 py-1.5 md:py-2 text-[10px] md:text-xs ${
+                currentStatus === s.label
+                  ? 'border-[#193c1f] shadow-md'
+                  : 'border-[#f7f3ed] hover:border-[#193c1f]'
+              }`}
+            >
+              <span>{s.label}</span>
+              <span
+                className={`text-[9px] md:text-[10px] font-black px-1.5 py-0.5 rounded-md ml-1.5 ${
                   currentStatus === s.label
-                    ? 'border-[#193c1f] shadow-lg'
-                    : 'border-[#f7f3ed] hover:border-[#193c1f]'
+                    ? 'bg-white/20 text-white'
+                    : 'bg-[#f7f3ed] text-[#8ea087]'
                 }`}
               >
-                <span>{s.label}</span>
-                <span
-                  className={`text-[10px] font-black px-2 py-0.5 rounded-lg ${
-                    currentStatus === s.label
-                      ? 'bg-white/20 text-white'
-                      : 'bg-[#f7f3ed] text-[#8ea087]'
-                  }`}
-                >
-                  {s.count}
-                </span>
-              </Button>
-            ))}
-          </div>
+                {s.count}
+              </span>
+            </Button>
+          ))}
         </div>
 
-        <div className="bg-white border-4 border-[#f7f3ed] rounded-[48px] overflow-hidden shadow-xl">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left min-w-[800px]">
-              <thead className="bg-[#F7F3ED]/30 text-[11px] font-black text-[#8EA087] uppercase tracking-widest">
-                <tr>
-                  <th className="px-8 py-5">Donor & Amount</th>
-                  <th className="px-8 py-5">For Report / Platform</th>
-                  <th className="px-8 py-5">Status</th>
-                  <th className="px-8 py-5">Date</th>
-                  <th className="px-8 py-5 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[#f7f3ed] text-sm">
-                {donations.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={5}
-                      className="px-8 py-12 text-center text-[#8ea087] font-medium italic"
-                    >
-                      No donations found.
-                    </td>
-                  </tr>
-                ) : (
-                  donations.map((d) => (
-                    <tr
-                      key={d.id}
-                      className="hover:bg-[#f7f3ed]/20 transition-colors"
-                    >
-                      <td className="px-8 py-6">
-                        <p className="font-black text-[#193c1f] text-lg leading-tight">
-                          {fmt(d.amount)}
+        {/* Donations Table */}
+        <Table
+          data={donations}
+          keyExtractor={(d) => d.id}
+          emptyMessage="No donations found."
+          currentPage={page}
+          totalPages={totalPages}
+          onPageChange={(p) => {
+            router.push(
+              `/dashboard/admin/donations?month=${currentMonth}&year=${currentYear}&status=${currentStatus}&page=${p}`,
+              { scroll: false },
+            );
+          }}
+          paginationInfo={`Showing ${(page - 1) * perPage + 1}–${Math.min(page * perPage, totalCount)} of ${totalCount}`}
+          renderExpandedRow={(d) => (
+            <div className="p-4 sm:p-5 bg-white border border-[#d0d5cb]/40 rounded-[18px] shadow-sm cursor-default">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div className="space-y-6">
+                  <div>
+                    <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087] mb-4">
+                      Transaction Details
+                    </h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      <div className="space-y-1">
+                        <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                          Donor Name
                         </p>
-                        <p className="text-xs font-bold text-[#8ea087] mt-1 uppercase tracking-wider">
+                        <p className="text-[14px] font-bold text-[#193c1f]">
                           {d.userName}
                         </p>
-                      </td>
-                      <td className="px-8 py-6">
-                        <p className="font-bold text-[#193c1f] line-clamp-1 max-w-[250px]">
-                          {d.report.title}
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                          Transaction Date
                         </p>
-                        <p className="text-[10px] font-black text-[#8ea087] uppercase tracking-widest mt-1">
+                        <p className="text-[14px] font-bold text-[#193c1f]">
+                          {fmtDate(d.createdAt)}
+                        </p>
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                          Destination
+                        </p>
+                        <p className="text-[14px] font-bold text-[#193c1f]">
                           {d.report.title === 'Platform Donation'
-                            ? 'PLATFORM'
-                            : 'REPORT'}
+                            ? 'Platform Operations'
+                            : 'Report Funds'}
                         </p>
-                      </td>
-                      <td className="px-8 py-6">
-                        <Badge
-                          status={STATUS_BADGE[d.paymentStatus] || 'DEFAULT'}
-                        >
+                      </div>
+                      <div className="space-y-1">
+                        <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                          Status
+                        </p>
+                        <p className="text-[14px] font-bold text-[#193c1f]">
                           {d.paymentStatus}
-                        </Badge>
-                      </td>
-                      <td className="px-8 py-6 text-[#8ea087] text-xs font-bold">
-                        {fmtDate(d.createdAt)}
-                      </td>
-                      <td className="px-8 py-6 text-right">
-                        <DonationActions
-                          id={d.id}
-                          status={d.paymentStatus}
-                          amount={d.amount}
-                          donor={d.userName}
-                          onSuccess={(msg) =>
-                            setToast({ show: true, msg, type: 'success' })
-                          }
-                          onError={(msg) =>
-                            setToast({ show: true, msg, type: 'error' })
-                          }
-                        />
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
-          {totalPages > 1 && (
-            <div className="px-8 py-5 bg-[#F7F3ED]/30 border-t border-[#F7F3ED] flex justify-between items-center">
-              <span className="text-[#8EA087] text-xs font-bold">
-                {(page - 1) * perPage + 1}–
-                {Math.min(page * perPage, totalCount)} of {totalCount}
-              </span>
-              <Pagination
-                currentPage={page}
-                totalPages={totalPages}
-                onPageChange={(p) => {
-                  router.push(
-                    `/dashboard/admin/donations?month=${currentMonth}&year=${currentYear}&status=${currentStatus}&page=${p}`,
-                    { scroll: false },
-                  );
-                }}
-              />
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-col md:border-l border-[#f7f3ed] md:pl-10">
+                  <div className="space-y-1">
+                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                      Target Summary
+                    </p>
+                    <p className="text-[13px] text-[#193c1f] line-clamp-2">
+                      {d.report.description || 'General platform support.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
-        </div>
+          columns={[
+            {
+              header: 'Donor & Amount',
+              cell: (d) => (
+                <>
+                  <p className="font-black text-[#193c1f] text-base md:text-lg leading-tight">
+                    {fmt(d.amount)}
+                  </p>
+                  <p className="text-[10px] md:text-xs font-bold text-[#8ea087] mt-1 uppercase tracking-wider">
+                    {d.userName}
+                  </p>
+                </>
+              ),
+            },
+            {
+              header: 'For Report / Platform',
+              cell: (d) => (
+                <>
+                  <p className="font-bold text-[#193c1f] line-clamp-1 max-w-[150px] md:max-w-[250px] text-xs md:text-sm">
+                    {d.report.title}
+                  </p>
+                  <p className="text-[9px] md:text-[10px] font-black text-[#8ea087] uppercase tracking-widest mt-1">
+                    {d.report.title === 'Platform Donation'
+                      ? 'PLATFORM'
+                      : 'REPORT'}
+                  </p>
+                </>
+              ),
+            },
+            {
+              header: 'Status',
+              cell: (d) => (
+                <Badge status={STATUS_BADGE[d.paymentStatus] || 'DEFAULT'}>
+                  {d.paymentStatus}
+                </Badge>
+              ),
+            },
+            {
+              header: 'Date',
+              className: 'text-[#8ea087] text-[10px] md:text-xs font-bold',
+              cell: (d) => fmtDate(d.createdAt),
+            },
+            {
+              header: 'Actions',
+              headerClassName: 'text-right',
+              className: 'text-right',
+              cell: (d) => (
+                <DonationActions
+                  id={d.id}
+                  status={d.paymentStatus}
+                  amount={d.amount}
+                  donor={d.userName}
+                  onSuccess={(msg) =>
+                    setToast({ show: true, msg, type: 'success' })
+                  }
+                  onError={(msg) =>
+                    setToast({ show: true, msg, type: 'error' })
+                  }
+                />
+              ),
+            },
+          ]}
+        />
       </div>
     </div>
   );

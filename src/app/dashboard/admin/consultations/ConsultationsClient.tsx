@@ -1,6 +1,6 @@
 'use client';
 
-import { Pagination } from '@/components/pagination';
+import { Table } from '@/components/table';
 import { Toast } from '@/components/toast';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -24,6 +24,8 @@ type Consultation = {
   isAnonymous: boolean;
   user: { name: string; email: string };
   psychologist: { name: string } | null;
+  description?: string;
+  attachmentUrl?: string | null;
 };
 
 type ConsultationsClientProps = {
@@ -160,133 +162,190 @@ export function ConsultationsClient({
       </div>
 
       {/* Table */}
-      <div className="bg-white border border-[#D0D5CB] rounded-2xl overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left min-w-[1000px]">
-            <thead className="bg-[#F7F3ED] text-[11px] text-[#8EA087] font-black uppercase tracking-widest">
-              <tr>
-                <th className="px-6 py-4">Consultation</th>
-                <th className="px-6 py-4">User</th>
-                <th className="px-6 py-4">Psychologist</th>
-                <th className="px-6 py-4">Status</th>
-                <th className="px-6 py-4">Date</th>
-                <th className="px-6 py-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#F7F3ED] text-sm">
-              {consultations.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="px-6 py-12 text-center text-[#8EA087] font-medium"
-                  >
-                    No consultations found.
-                  </td>
-                </tr>
-              ) : (
-                consultations.map((c) => (
-                  <tr
-                    key={c.id}
-                    className="hover:bg-[#F7F3ED]/50 transition-colors"
-                  >
-                    <td className="px-6 py-4">
-                      <p className="font-bold text-[#193C1F] line-clamp-1">
+      <Table
+        data={consultations}
+        keyExtractor={(c) => c.id}
+        emptyMessage="No consultations found."
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={(p) =>
+          router.push(`/dashboard/admin/consultations?tab=${tab}&page=${p}`)
+        }
+        paginationInfo={
+          totalPages > 1
+            ? `Showing ${(page - 1) * perPage + 1}–${Math.min(page * perPage, totalCount)} of ${totalCount}`
+            : undefined
+        }
+        renderExpandedRow={(c) => (
+          <div className="p-4 sm:p-5 bg-white border border-[#d0d5cb]/40 rounded-[18px] shadow-sm cursor-default">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              <div className="space-y-6">
+                <div>
+                  <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087] mb-4">
+                    Consultation Summary
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                        Title
+                      </p>
+                      <p className="text-[14px] font-bold text-[#193c1f]">
                         {c.title}
                       </p>
-                      <p className="text-[11px] text-[#8EA087] mt-0.5">
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                        Category
+                      </p>
+                      <p className="text-[14px] font-bold text-[#193c1f]">
                         {c.category}
                       </p>
-                    </td>
-                    <td className="px-6 py-4">
-                      {c.isAnonymous ? (
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-[#F7F3ED] border border-[#D0D5CB] flex items-center justify-center shrink-0">
-                            <span className="text-[10px] text-[#8EA087]">
-                              ?
-                            </span>
-                          </div>
-                          <span className="text-[#8EA087] italic text-xs">
-                            Anonymous
-                          </span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-[#F7F3ED] border border-[#D0D5CB] flex items-center justify-center shrink-0 overflow-hidden relative">
-                            {/* Placeholder for now, could use c.user.image if available */}
-                            <div className="text-[10px] font-bold text-[#193C1F]">
-                              {c.user.name.charAt(0)}
-                            </div>
-                          </div>
-                          <div>
-                            <p className="font-medium text-[#193C1F]">
-                              {c.user.name}
-                            </p>
-                            <p className="text-[11px] text-[#8EA087]">
-                              {c.user.email}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 text-[#193C1F]">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-[#193C1F]/5 border border-[#193C1F]/10 flex items-center justify-center shrink-0">
-                          <div className="text-[10px] font-bold text-[#193C1F]">
-                            {c.psychologist?.name.charAt(0) || 'P'}
-                          </div>
-                        </div>
-                        <span className="font-medium">
-                          {c.psychologist?.name ?? (
-                            <span className="text-[#8EA087] italic text-xs">
-                              Unassigned
-                            </span>
-                          )}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full border ${STATUS_BADGE[c.status] || 'bg-gray-100 text-gray-600'}`}
-                      >
-                        {c.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-[#8EA087] text-xs">
-                      {fmtDate(c.date)}
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <ConsultationActions
-                        id={c.id}
-                        status={c.status}
-                        title={c.title}
-                        onSuccess={(msg) => showToast(msg, 'success')}
-                        onError={(msg) => showToast(msg, 'error')}
-                      />
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-        {totalPages > 1 && (
-          <div className="px-6 py-4 bg-[#f7f3ed]/50 border-t border-[#d0d5cb] flex justify-between items-center">
-            <span className="text-[#8ea087] text-xs font-semibold">
-              {(page - 1) * perPage + 1}–{Math.min(page * perPage, totalCount)}{' '}
-              of {totalCount}
-            </span>
-            <Pagination
-              currentPage={page}
-              totalPages={totalPages}
-              onPageChange={(p) =>
-                router.push(
-                  `/dashboard/admin/consultations?tab=${tab}&page=${p}`,
-                )
-              }
-            />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                        Assigned Psychologist
+                      </p>
+                      <p className="text-[14px] font-bold text-[#193c1f]">
+                        {c.psychologist?.name ?? 'Processing...'}
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                        Identity
+                      </p>
+                      <p className="text-[14px] font-bold text-[#193c1f]">
+                        {c.isAnonymous ? 'Anonymous' : 'Public'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col md:border-l border-[#f7f3ed] md:pl-10">
+                <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087] mb-4">
+                  Consultation Description
+                </h4>
+                <div className="bg-[#f7f3ed]/30 p-5 rounded-2xl border border-[#f7f3ed] max-h-[200px] overflow-y-auto custom-scrollbar font-medium">
+                  <p className="text-[13px] leading-relaxed text-[#193c1f]/80 whitespace-pre-wrap italic">
+                    &quot;
+                    {c.description || 'No description provided.'}
+                    &quot;
+                  </p>
+                </div>
+                {c.attachmentUrl && (
+                  <div className="mt-6 flex items-center justify-between p-3 bg-[#f7f3ed] rounded-xl border border-[#d0d5cb]/30">
+                    <span className="text-[12px] font-bold text-[#193c1f] truncate max-w-[150px]">
+                      Attached Document
+                    </span>
+                    <Link
+                      href={c.attachmentUrl}
+                      target="_blank"
+                      className="text-[10px] font-black text-[#8ea087] uppercase hover:text-[#193c1f]"
+                    >
+                      View
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         )}
-      </div>
+        columns={[
+          {
+            header: 'Consultation',
+            cell: (c) => (
+              <>
+                <p className="font-bold text-[#193C1F] line-clamp-1">
+                  {c.title}
+                </p>
+                <p className="text-[11px] text-[#8EA087] mt-0.5">
+                  {c.category}
+                </p>
+              </>
+            ),
+          },
+          {
+            header: 'User',
+            cell: (c) =>
+              c.isAnonymous ? (
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#F7F3ED] border border-[#D0D5CB] flex items-center justify-center shrink-0">
+                    <span className="text-[10px] text-[#8EA087]">?</span>
+                  </div>
+                  <span className="text-[#8EA087] italic text-xs">
+                    Anonymous
+                  </span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#F7F3ED] border border-[#D0D5CB] flex items-center justify-center shrink-0 overflow-hidden relative">
+                    <div className="text-[10px] font-bold text-[#193C1F]">
+                      {c.user.name.charAt(0)}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="font-medium text-[#193C1F] text-xs md:text-sm">
+                      {c.user.name}
+                    </p>
+                    <p className="text-[10px] md:text-[11px] text-[#8EA087]">
+                      {c.user.email}
+                    </p>
+                  </div>
+                </div>
+              ),
+          },
+          {
+            header: 'Psychologist',
+            cell: (c) => (
+              <div className="flex items-center gap-3 text-[#193C1F]">
+                <div className="w-8 h-8 rounded-lg bg-[#193C1F]/5 border border-[#193C1F]/10 flex items-center justify-center shrink-0">
+                  <div className="text-[10px] font-bold text-[#193C1F]">
+                    {c.psychologist?.name.charAt(0) || 'P'}
+                  </div>
+                </div>
+                <span className="font-medium text-xs md:text-sm">
+                  {c.psychologist?.name ?? (
+                    <span className="text-[#8EA087] italic text-xs">
+                      Unassigned
+                    </span>
+                  )}
+                </span>
+              </div>
+            ),
+          },
+          {
+            header: 'Status',
+            cell: (c) => (
+              <span
+                className={`text-[9px] md:text-[10px] font-black uppercase tracking-wider px-2 md:px-3 py-1 md:py-1.5 rounded-full border whitespace-nowrap ${STATUS_BADGE[c.status] || 'bg-gray-100 text-gray-600'}`}
+              >
+                {c.status}
+              </span>
+            ),
+          },
+          {
+            header: 'Date',
+            cell: (c) => (
+              <span className="text-[#8EA087] text-xs font-bold">
+                {fmtDate(c.date)}
+              </span>
+            ),
+          },
+          {
+            header: 'Actions',
+            headerClassName: 'text-right',
+            className: 'text-right',
+            cell: (c) => (
+              <ConsultationActions
+                id={c.id}
+                status={c.status}
+                title={c.title}
+                onSuccess={(msg) => showToast(msg, 'success')}
+                onError={(msg) => showToast(msg, 'error')}
+              />
+            ),
+          },
+        ]}
+      />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Pagination } from '@/components/pagination';
+import { FileText } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
@@ -60,36 +61,14 @@ const getStatusBadgeClass = (status: string) => {
   }
 };
 
-const FileIcon = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M13 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V9L13 2Z"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M13 2V9H20"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
+const FileIcon = () => <FileText size={20} strokeWidth={2} />;
 
 export default function ReportsContent({ reports }: ReportsContentProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams.get('search')?.toLowerCase() || '';
   const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
+  const [expandedRowId, setExpandedRowId] = useState<number | null>(null);
 
   // --- LOGIKA PAGINATION ---
   const [currentPage, setCurrentPage] = useState(1);
@@ -119,11 +98,13 @@ export default function ReportsContent({ reports }: ReportsContentProps) {
   }, [filteredData, currentPage]);
 
   return (
-    <div className="space-y-8 animate-fade-in">
-      <div className="flex justify-between items-center">
+    <div className="space-y-6 md:space-y-8 animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-[32px] font-black text-[#193c1f]">My Reports</h2>
-          <p className="text-[#8ea087] font-medium">
+          <h2 className="text-2xl sm:text-3xl md:text-[32px] font-black text-[#193c1f]">
+            My Reports
+          </h2>
+          <p className="text-[#8ea087] font-medium text-sm md:text-base">
             {query
               ? `Showing results for "${query}"`
               : 'Track the status of your submitted reports.'}
@@ -132,165 +113,176 @@ export default function ReportsContent({ reports }: ReportsContentProps) {
         <Button
           onClick={() => router.push('/report?from=dashboard')}
           variant="secondary"
-          className="whitespace-nowrap shadow-lg"
+          className="whitespace-nowrap shadow-lg shrink-0"
         >
           + New Report
         </Button>
       </div>
 
-      <Card className="overflow-hidden rounded-[32px] p-0">
-        <table className="w-full text-left border-collapse">
-          <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
-            <tr>
-              <th className="px-8 py-5">Report ID</th>
-              <th className="px-8 py-5">Type</th>
-              <th className="px-8 py-5">Date</th>
-              <th className="px-8 py-5">Status</th>
-            </tr>
-          </thead>
-          {currentItems.length > 0 ? (
-            currentItems.map((row) => (
-              <tbody
-                key={row.id}
-                onMouseEnter={() => setHoveredRowId(row.id)}
-                onMouseLeave={() => setHoveredRowId(null)}
-                className="group border-b border-[#f7f3ed] last:border-0"
-              >
-                <tr
-                  className={`transition-colors cursor-default ${
-                    hoveredRowId === row.id ? 'bg-[#FDFCFB]' : ''
-                  }`}
+      <Card className="overflow-hidden rounded-2xl md:rounded-[32px] p-0">
+        <div className="overflow-x-auto w-full">
+          <table className="w-full text-left border-collapse min-w-\[480px\]">
+            <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
+              <tr>
+                <th className="px-2 sm:px-4 py-2">Report ID</th>
+                <th className="px-2 sm:px-4 py-2">Type</th>
+                <th className="px-2 sm:px-4 py-2">Date</th>
+                <th className="px-2 sm:px-4 py-2">Status</th>
+              </tr>
+            </thead>
+            {currentItems.length > 0 ? (
+              currentItems.map((row) => (
+                <tbody
+                  key={row.id}
+                  onMouseEnter={() => setHoveredRowId(row.id)}
+                  onMouseLeave={() => setHoveredRowId(null)}
+                  onClick={() =>
+                    setExpandedRowId((p) => (p === row.id ? null : row.id))
+                  }
+                  className="group border-b border-[#f7f3ed] last:border-0 cursor-pointer"
                 >
-                  <td className="px-8 py-6 font-bold text-[#193c1f]">
-                    #REP-{String(row.id).padStart(4, '0')}
-                  </td>
-                  <td className="px-8 py-6 font-medium text-[#193c1f]/80">
-                    {row.title}
-                  </td>
-                  <td className="px-8 py-6 text-[#193c1f]/60">
-                    {formatDateLabel(row.createdAt)}
-                  </td>
-                  <td className="px-8 py-6">
-                    <Badge className={getStatusBadgeClass(row.status)}>
-                      {getStatusLabel(row.status)}
-                    </Badge>
-                  </td>
-                </tr>
-                {/* Detail Dropdown Row */}
-                <tr>
-                  <td colSpan={4} className="p-0">
-                    <div
-                      className={`overflow-hidden transition-all duration-500 ease-in-out bg-[#FDFCFB] ${
-                        hoveredRowId === row.id ? 'max-h-[800px]' : 'max-h-0'
-                      }`}
-                    >
-                      <div className="px-8 pb-8 pt-2">
-                        <div className="p-7 bg-white border border-[#d0d5cb]/40 rounded-[24px] shadow-sm">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                            {/* Left Side: Summary Fields */}
-                            <div className="space-y-6">
-                              <div>
+                  <tr
+                    className={`transition-colors ${
+                      hoveredRowId === row.id || expandedRowId === row.id
+                        ? 'bg-[#FDFCFB]'
+                        : 'hover:bg-[#FDFCFB]'
+                    }`}
+                  >
+                    <td className="px-2 sm:px-4 py-2 font-bold text-[#193c1f] text-sm">
+                      #REP-{String(row.id).padStart(4, '0')}
+                    </td>
+                    <td className="px-2 sm:px-4 py-2 font-medium text-[#193c1f]/80 text-sm">
+                      {row.title}
+                    </td>
+                    <td className="px-2 sm:px-4 py-2 text-[#193c1f]/60 text-sm">
+                      {formatDateLabel(row.createdAt)}
+                    </td>
+                    <td className="px-2 sm:px-4 py-2">
+                      <Badge className={getStatusBadgeClass(row.status)}>
+                        {getStatusLabel(row.status)}
+                      </Badge>
+                    </td>
+                  </tr>
+                  {/* Detail Dropdown Row */}
+                  <tr>
+                    <td colSpan={4} className="p-0">
+                      <div
+                        className={`overflow-hidden transition-all duration-500 ease-in-out bg-[#FDFCFB] ${
+                          hoveredRowId === row.id ? 'max-h-[800px]' : 'max-h-0'
+                        }`}
+                      >
+                        <div className="px-4 sm:px-6 pb-5 pt-1">
+                          <div className="p-4 sm:p-5 bg-white border border-[#d0d5cb]/40 rounded-[18px] shadow-sm">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                              {/* Left Side: Summary Fields */}
+                              <div className="space-y-6">
+                                <div>
+                                  <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087] mb-4">
+                                    Report Details (Form Summary)
+                                  </h4>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                    <div className="space-y-1">
+                                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                                        Category
+                                      </p>
+                                      <p className="text-[14px] font-bold text-[#193c1f]">
+                                        {row.category}
+                                      </p>
+                                    </div>
+                                    <div className="space-y-1">
+                                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                                        Incident Date
+                                      </p>
+                                      <p className="text-[14px] font-bold text-[#193c1f]">
+                                        {formatDateLabel(row.incidentDate)}
+                                      </p>
+                                    </div>
+                                    <div className="space-y-1">
+                                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                                        Location
+                                      </p>
+                                      <p className="text-[14px] font-bold text-[#193c1f]">
+                                        {row.district}, {row.city},{' '}
+                                        {row.province}
+                                      </p>
+                                    </div>
+                                    <div className="space-y-1">
+                                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                                        Anonymity
+                                      </p>
+                                      <p className="text-[14px] font-bold text-[#193c1f]">
+                                        {row.isAnonymous
+                                          ? 'Anonymous'
+                                          : 'Public'}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                              {/* Right Side: Description & Evidences */}
+                              <div className="flex flex-col border-l border-[#f7f3ed] pl-10">
                                 <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087] mb-4">
-                                  Report Details (Form Summary)
+                                  Description & Evidences
                                 </h4>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                  <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
-                                      Category
-                                    </p>
-                                    <p className="text-[14px] font-bold text-[#193c1f]">
-                                      {row.category}
-                                    </p>
-                                  </div>
-                                  <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
-                                      Incident Date
-                                    </p>
-                                    <p className="text-[14px] font-bold text-[#193c1f]">
-                                      {formatDateLabel(row.incidentDate)}
-                                    </p>
-                                  </div>
-                                  <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
-                                      Location
-                                    </p>
-                                    <p className="text-[14px] font-bold text-[#193c1f]">
-                                      {row.district}, {row.city}, {row.province}
-                                    </p>
-                                  </div>
-                                  <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
-                                      Anonymity
-                                    </p>
-                                    <p className="text-[14px] font-bold text-[#193c1f]">
-                                      {row.isAnonymous ? 'Anonymous' : 'Public'}
-                                    </p>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                            {/* Right Side: Description & Evidences */}
-                            <div className="flex flex-col border-l border-[#f7f3ed] pl-10">
-                              <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087] mb-4">
-                                Description & Evidences
-                              </h4>
-                              <div className="bg-[#f7f3ed]/30 p-5 rounded-2xl border border-[#f7f3ed] max-h-[200px] overflow-y-auto custom-scrollbar">
-                                <p className="text-[14px] leading-relaxed text-[#193c1f]/80 whitespace-pre-wrap">
-                                  {row.description ||
-                                    'No description provided.'}
-                                </p>
-                              </div>
-                              {row.evidences.length > 0 && (
-                                <div className="mt-6 space-y-3">
-                                  <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
-                                    Attached Evidences ({row.evidences.length})
+                                <div className="bg-[#f7f3ed]/30 p-5 rounded-2xl border border-[#f7f3ed] max-h-[200px] overflow-y-auto custom-scrollbar">
+                                  <p className="text-[14px] leading-relaxed text-[#193c1f]/80 whitespace-pre-wrap">
+                                    {row.description ||
+                                      'No description provided.'}
                                   </p>
-                                  <div className="grid grid-cols-1 gap-2">
-                                    {row.evidences.map((file) => (
-                                      <Link
-                                        key={file.id}
-                                        href={file.fileUrl}
-                                        target="_blank"
-                                        className="flex items-center justify-between p-3 bg-[#f7f3ed] rounded-xl border border-[#d0d5cb]/30 hover:bg-[#EBE6DE] transition-colors group/file"
-                                      >
-                                        <div className="flex items-center gap-3">
-                                          <div className="text-[#8ea087] group-hover/file:text-[#193c1f]">
-                                            <FileIcon />
-                                          </div>
-                                          <span className="text-[12px] font-bold text-[#193c1f] truncate max-w-[150px]">
-                                            {file.fileName}
-                                          </span>
-                                        </div>
-                                        <span className="text-[10px] font-black text-[#8ea087] uppercase tracking-widest">
-                                          View
-                                        </span>
-                                      </Link>
-                                    ))}
-                                  </div>
                                 </div>
-                              )}
+                                {row.evidences.length > 0 && (
+                                  <div className="mt-6 space-y-3">
+                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                                      Attached Evidences ({row.evidences.length}
+                                      )
+                                    </p>
+                                    <div className="grid grid-cols-1 gap-2">
+                                      {row.evidences.map((file) => (
+                                        <Link
+                                          key={file.id}
+                                          href={file.fileUrl}
+                                          target="_blank"
+                                          className="flex items-center justify-between p-3 bg-[#f7f3ed] rounded-xl border border-[#d0d5cb]/30 hover:bg-[#EBE6DE] transition-colors group/file"
+                                        >
+                                          <div className="flex items-center gap-3">
+                                            <div className="text-[#8ea087] group-hover/file:text-[#193c1f]">
+                                              <FileIcon />
+                                            </div>
+                                            <span className="text-[12px] font-bold text-[#193c1f] truncate max-w-[150px]">
+                                              {file.fileName}
+                                            </span>
+                                          </div>
+                                          <span className="text-[10px] font-black text-[#8ea087] uppercase tracking-widest">
+                                            View
+                                          </span>
+                                        </Link>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </td>
+                  </tr>
+                </tbody>
+              ))
+            ) : (
+              <tbody className="text-[14px] text-[#193c1f]">
+                <tr>
+                  <td
+                    colSpan={4}
+                    className="p-20 text-center text-[#8ea087] font-bold"
+                  >
+                    No reports found.
                   </td>
                 </tr>
               </tbody>
-            ))
-          ) : (
-            <tbody className="text-[14px] text-[#193c1f]">
-              <tr>
-                <td
-                  colSpan={4}
-                  className="p-20 text-center text-[#8ea087] font-bold"
-                >
-                  No reports found.
-                </td>
-              </tr>
-            </tbody>
-          )}
-        </table>
+            )}
+          </table>
+        </div>
       </Card>
 
       {/* RENDER KOMPONEN PAGINATION DI SINI */}

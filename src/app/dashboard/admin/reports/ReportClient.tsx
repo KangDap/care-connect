@@ -1,12 +1,10 @@
 'use client';
 
 import { Alert } from '@/components/alert';
-import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
-import { Card } from '@/components/card';
 import { Input } from '@/components/input';
 import { Modal } from '@/components/modal';
-import { Pagination } from '@/components/pagination';
+import { Table } from '@/components/table';
 import { Toast } from '@/components/toast';
 import { FileText, Pencil, Trash2 } from 'lucide-react';
 import Link from 'next/link';
@@ -75,7 +73,6 @@ export function ReportClient({
   const [reportToDelete, setReportToDelete] = useState<number | null>(null);
   const [newStatus, setNewStatus] = useState<string>('PENDING');
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const fmtDate = (d: string) =>
     new Intl.DateTimeFormat('id-ID', {
       day: '2-digit',
@@ -172,185 +169,226 @@ export function ReportClient({
         </p>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex gap-2 flex-wrap items-center">
         {tabs.map((tab) => (
           <Link
             key={tab.value}
             href={`/dashboard/admin/reports?status=${tab.value}`}
+            className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border ${
+              activeTab === tab.value
+                ? 'bg-[#193c1f] text-white border-[#193c1f]'
+                : 'bg-white text-[#193c1f] border-[#d0d5cb] hover:border-[#193c1f]'
+            }`}
           >
-            <Button
-              variant={activeTab === tab.value ? 'primary' : 'outline'}
-              className="rounded-xl px-4 py-2 text-sm normal-case tracking-normal shadow-none"
+            {tab.label}
+            <span
+              className={`ml-2 px-2 py-0.5 rounded-full text-[10px] font-black ${activeTab === tab.value ? 'bg-white/20' : 'bg-[#f7f3ed]'}`}
             >
-              {tab.label}
-              <Badge
-                className={`ml-1 px-2 py-0.5 ${
-                  activeTab === tab.value
-                    ? 'bg-white/20 text-white'
-                    : 'bg-[#f7f3ed]'
-                }`}
-              >
-                {tab.count}
-              </Badge>
-            </Button>
+              {tab.count}
+            </span>
           </Link>
         ))}
       </div>
 
-      <Card className="rounded-2xl">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left table-fixed min-w-[1000px]">
-            <thead className="bg-[#F7F3ED] text-[11px] text-[#8EA087] font-black uppercase tracking-widest">
-              <tr>
-                <th className="px-6 py-4 w-[320px]">Report</th>
-                <th className="px-6 py-4 w-[220px]">Reporter</th>
-                <th className="px-6 py-4 w-[140px]">Category</th>
-                <th className="px-6 py-4 w-[120px]">Status</th>
-                <th className="px-6 py-4 w-[140px]">Donations</th>
-                <th className="px-6 py-4 w-[140px] text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[#F7F3ED] text-sm">
-              {reports.length === 0 ? (
-                <tr>
-                  <td
-                    colSpan={6}
-                    className="px-6 py-12 text-center text-[#8EA087] font-medium"
-                  >
-                    No reports found.
-                  </td>
-                </tr>
-              ) : (
-                reports.map((r) => (
-                  <tr
-                    key={r.id}
-                    className="hover:bg-[#F7F3ED]/50 transition-colors"
-                  >
-                    <td className="px-6 py-4 align-top">
-                      <Link
-                        href={`/publicreports/${r.id}`}
-                        className="hover:underline"
-                      >
-                        <p className="font-bold text-[#193C1F] line-clamp-2 max-w-[300px]">
-                          {r.title}
-                        </p>
-                      </Link>
-                      <div className="mt-0.5 flex max-w-[300px] items-center gap-2 truncate text-[11px] text-[#8EA087]">
-                        <span className="truncate">
-                          {r.city}, {r.province}
-                        </span>
-                        <span>/</span>
-                        {r.hasEvidence ? (
-                          <span className="inline-flex items-center gap-1">
-                            <FileText size={12} />
-                            Has evidence
-                          </span>
-                        ) : (
-                          <span>No evidence</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      {r.isAnonymous ? (
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-[#F7F3ED] border border-[#D0D5CB] flex items-center justify-center shrink-0">
-                            <span className="text-[10px] text-[#8EA087]">
-                              ?
-                            </span>
-                          </div>
-                          <span className="text-[#8EA087] italic text-xs">
-                            Anonymous
-                          </span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-[#F7F3ED] border border-[#D0D5CB] flex items-center justify-center shrink-0 overflow-hidden relative">
-                            <div className="text-[10px] font-bold text-[#193C1F]">
-                              {r.user.name.charAt(0)}
-                            </div>
-                          </div>
-                          <div>
-                            <p className="font-medium text-[#193C1F]">
-                              {r.user.name}
-                            </p>
-                            <p className="text-[11px] text-[#8EA087]">
-                              {r.user.email}
-                            </p>
-                          </div>
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <Badge className="border border-[#D0D5CB] bg-[#F7F3ED] text-[#193C1F]">
+      <Table
+        data={reports}
+        keyExtractor={(r) => r.id}
+        emptyMessage="No reports found."
+        currentPage={page}
+        totalPages={totalPages}
+        onPageChange={(p) =>
+          router.push(`/dashboard/admin/reports?status=${activeTab}&page=${p}`)
+        }
+        paginationInfo={`Showing ${(page - 1) * perPage + 1}–${Math.min(page * perPage, totalCount)} of ${totalCount}`}
+        renderExpandedRow={(r) => (
+          <div className="p-4 sm:p-5 bg-white border border-[#d0d5cb]/40 rounded-[18px] shadow-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              <div className="space-y-6">
+                <div>
+                  <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087] mb-4">
+                    Report Details (Form Summary)
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                        Category
+                      </p>
+                      <p className="text-[14px] font-bold text-[#193c1f]">
                         {CATEGORY_LABEL[r.category] || r.category}
-                      </Badge>
-                    </td>
-                    <td className="px-6 py-4">
-                      <Badge
-                        className={`border ${STATUS_BADGE[r.status] || 'bg-gray-100 text-gray-600'}`}
-                      >
-                        {r.status}
-                      </Badge>
-                    </td>
-                    <td className="px-6 py-4">
-                      {r.donationTotal > 0 ? (
-                        <span className="text-green-700 font-bold text-xs">
-                          {fmt(r.donationTotal)}
-                        </span>
-                      ) : (
-                        <span className="text-[#8EA087] text-xs">—</span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => openUpdateModal(r)}
-                          className="rounded-xl px-3 py-2 text-xs normal-case tracking-normal text-blue-700 shadow-none"
-                        >
-                          <Pencil size={14} />
-                          Update
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => {
-                            setReportToDelete(r.id);
-                            setIsDeleteAlertOpen(true);
-                          }}
-                          className="rounded-xl border-red-200 px-3 py-2 text-xs normal-case tracking-normal text-red-600 shadow-none hover:bg-red-50"
-                        >
-                          <Trash2 size={14} />
-                          Delete
-                        </Button>
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                        Incident Date
+                      </p>
+                      <p className="text-[14px] font-bold text-[#193c1f]">
+                        {fmtDate(r.incidentDate)}
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                        Location
+                      </p>
+                      <p className="text-[14px] font-bold text-[#193c1f]">
+                        {r.city}, {r.province}
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                        Anonymity
+                      </p>
+                      <p className="text-[14px] font-bold text-[#193c1f]">
+                        {r.isAnonymous ? 'Anonymous' : 'Public'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col md:border-l border-[#f7f3ed] md:pl-10">
+                <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087] mb-4">
+                  Description & Evidences
+                </h4>
+                <div className="bg-[#f7f3ed]/30 p-5 rounded-2xl border border-[#f7f3ed] max-h-[200px] overflow-y-auto custom-scrollbar">
+                  <p className="text-[14px] leading-relaxed text-[#193c1f]/80 whitespace-pre-wrap">
+                    {r.description || 'No description provided.'}
+                  </p>
+                </div>
+                {r.hasEvidence && (
+                  <div className="mt-4">
+                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight mb-2">
+                      Attached Evidence
+                    </p>
+                    <div className="bg-white border border-[#d0d5cb]/60 rounded-xl px-4 py-3 flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-[#f7f3ed] flex items-center justify-center shrink-0">
+                        <FileText size={16} className="text-[#8ea087]" />
                       </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {totalPages > 1 && (
-          <div className="px-6 py-4 bg-[#f7f3ed]/50 border-t border-[#d0d5cb] flex justify-between items-center">
-            <span className="text-[#8ea087] text-xs font-semibold">
-              Showing {(page - 1) * perPage + 1}–
-              {Math.min(page * perPage, totalCount)} of {totalCount}
-            </span>
-            <Pagination
-              currentPage={page}
-              totalPages={totalPages}
-              onPageChange={(p) =>
-                router.push(
-                  `/dashboard/admin/reports?status=${activeTab}&page=${p}`,
-                )
-              }
-            />
+                      <div>
+                        <p className="text-sm font-bold text-[#193c1f]">
+                          Evidence Files Attached
+                        </p>
+                        <p className="text-[10px] text-[#8ea087]">
+                          Available in full report view.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         )}
-      </Card>
+        columns={[
+          {
+            header: 'Report',
+            className: 'align-top',
+            cell: (r) => (
+              <>
+                <Link
+                  href={`/publicreports/${r.id}`}
+                  className="hover:underline"
+                >
+                  <p className="font-bold text-[#193C1F] line-clamp-2 max-w-[200px] md:max-w-[300px]">
+                    {r.title}
+                  </p>
+                </Link>
+                <p className="text-[11px] text-[#8EA087] mt-0.5 truncate max-w-[200px] md:max-w-[300px]">
+                  {r.city}, {r.province} -{' '}
+                  {r.hasEvidence ? 'Has evidence' : 'No evidence'}
+                </p>
+              </>
+            ),
+          },
+          {
+            header: 'Reporter',
+            cell: (r) =>
+              r.isAnonymous ? (
+                <div className="flex items-center gap-2 md:gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#F7F3ED] border border-[#D0D5CB] flex items-center justify-center shrink-0">
+                    <span className="text-[10px] text-[#8EA087]">?</span>
+                  </div>
+                  <span className="text-[#8EA087] italic text-[10px] md:text-xs">
+                    Anonymous
+                  </span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 md:gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-[#F7F3ED] border border-[#D0D5CB] flex items-center justify-center shrink-0 overflow-hidden relative">
+                    <div className="text-[10px] font-bold text-[#193C1F]">
+                      {r.user.name.charAt(0)}
+                    </div>
+                  </div>
+                  <div>
+                    <p className="font-medium text-[#193C1F] text-xs md:text-sm">
+                      {r.user.name}
+                    </p>
+                    <p className="text-[10px] md:text-[11px] text-[#8EA087]">
+                      {r.user.email}
+                    </p>
+                  </div>
+                </div>
+              ),
+          },
+          {
+            header: 'Category',
+            cell: (r) => (
+              <span className="text-[10px] md:text-xs font-bold text-[#193C1F] bg-[#F7F3ED] border border-[#D0D5CB] px-2 py-1 rounded-full whitespace-nowrap">
+                {CATEGORY_LABEL[r.category] || r.category}
+              </span>
+            ),
+          },
+          {
+            header: 'Status',
+            cell: (r) => (
+              <span
+                className={`text-[9px] md:text-[10px] font-black uppercase tracking-wider px-2 md:px-3 py-1 md:py-1.5 rounded-full border whitespace-nowrap ${STATUS_BADGE[r.status] || 'bg-gray-100 text-gray-600'}`}
+              >
+                {r.status}
+              </span>
+            ),
+          },
+          {
+            header: 'Donations',
+            cell: (r) =>
+              r.donationTotal > 0 ? (
+                <span className="text-green-700 font-bold text-[10px] md:text-xs whitespace-nowrap">
+                  {fmt(r.donationTotal)}
+                </span>
+              ) : (
+                <span className="text-[#8EA087] text-[10px] md:text-xs">—</span>
+              ),
+          },
+          {
+            header: 'Actions',
+            headerClassName: 'text-right',
+            className: 'text-right',
+            cell: (r) => (
+              <div className="flex items-center justify-end gap-2 md:gap-3">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => openUpdateModal(r)}
+                  className="px-2 py-1 text-xs md:text-sm text-blue-600 hover:text-blue-700 bg-blue-50/50 hover:bg-blue-50"
+                >
+                  <Pencil size={14} />
+                  Update
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => {
+                    setReportToDelete(r.id);
+                    setIsDeleteAlertOpen(true);
+                  }}
+                  className="px-2 py-1 text-xs md:text-sm text-red-600 hover:text-red-700 bg-red-50/50 hover:bg-red-50"
+                >
+                  <Trash2 size={14} />
+                  Delete
+                </Button>
+              </div>
+            ),
+          },
+        ]}
+      />
 
       <Modal
         title="Update Report Status"

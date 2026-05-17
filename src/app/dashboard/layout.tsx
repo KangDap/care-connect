@@ -5,6 +5,7 @@ import { Header } from '@/components/header';
 import { Logo } from '@/components/logo';
 import { authClient } from '@/lib/auth/auth-client';
 import {
+  BrainCircuit,
   Calendar,
   CreditCard,
   FileText,
@@ -160,6 +161,13 @@ export default function DashboardLayout({
             /* --- MENU ADMIN --- */
             <>
               <SidebarItem
+                icon={BrainCircuit}
+                label="AI Analysis"
+                href="/dashboard/admin/ai"
+                active={pathname.startsWith('/dashboard/admin/ai')}
+                isDark={theme === 'dark'}
+              />
+              <SidebarItem
                 icon={ShieldAlert}
                 label="All Reports"
                 href="/dashboard/admin/reports"
@@ -274,7 +282,7 @@ export default function DashboardLayout({
         </div>
 
         <div className="dashboard-main-scroll flex-1 overflow-y-auto w-full bg-[#F7F3ED]">
-          <div className="p-6 md:p-10 w-full min-h-full box-border">
+          <div className="px-2 sm:px-4 md:px-8 py-3 sm:py-5 md:py-8 w-full min-h-full box-border">
             {children}
           </div>
         </div>
