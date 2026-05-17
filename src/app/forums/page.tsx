@@ -1,10 +1,21 @@
 'use client';
 
 import { ForumModal } from '@/components/ForumModal';
+import { Badge } from '@/components/badge';
+import { Button } from '@/components/button';
+import { Card } from '@/components/card';
+import { Input } from '@/components/input';
 import { PublicHeader } from '@/components/public-header';
 import { authClient } from '@/lib/auth/auth-client';
 import { useQuery } from '@tanstack/react-query';
-import { ArrowRight, Loader2, MessageSquare, Plus, Users } from 'lucide-react';
+import {
+  ArrowRight,
+  Loader2,
+  MessageSquare,
+  Plus,
+  Search,
+  Users,
+} from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -146,12 +157,15 @@ const SupportForumsPage = () => {
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 bg-red-600 text-white text-sm font-bold px-6 py-4 rounded-2xl shadow-2xl max-w-md w-[90%]">
           <span className="text-xl">🚫</span>
           <span className="flex-1">{bannedNotice}</span>
-          <button
+          <Button
+            type="button"
+            variant="ghost"
             onClick={() => setBannedNotice(null)}
-            className="ml-2 opacity-70 hover:opacity-100 text-xl leading-none"
+            className="ml-2 px-0 py-0 text-white hover:text-white"
+            aria-label="Close notice"
           >
             ×
-          </button>
+          </Button>
         </div>
       )}
 
@@ -165,28 +179,13 @@ const SupportForumsPage = () => {
           </p>
         </div>
 
-        <div className="mb-12 relative w-full max-w-3xl mx-auto">
-          <span className="absolute left-5 top-1/2 -translate-y-1/2 opacity-70">
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="#8EA087"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-          </span>
-          <input
-            type="text"
+        <div className="mx-auto mb-12 w-full max-w-3xl">
+          <Input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search forums..."
-            className="w-full h-[56px] bg-[#EBE6DE] border border-[#d0d5cb] focus:border-[#8ea087] focus:bg-white rounded-2xl pl-14 pr-6 outline-none text-[15px] text-[#193c1f] shadow-sm transition-all"
+            icon={<Search size={18} />}
+            className="h-[56px] bg-[#EBE6DE]"
           />
         </div>
 
@@ -207,11 +206,11 @@ const SupportForumsPage = () => {
                 const banned = room.myRole === 'BANNED';
                 return (
                   <div key={room.id} className="group">
-                    <div
-                      className={`bg-white rounded-[40px] border overflow-hidden transition-all duration-500 flex flex-col h-full ${
+                    <Card
+                      className={`flex h-full flex-col rounded-[40px] transition-all duration-500 ${
                         banned
                           ? 'border-red-200 opacity-80'
-                          : 'border-[#d0d5cb] hover:shadow-2xl'
+                          : 'hover:shadow-2xl'
                       }`}
                     >
                       <div className="h-44 bg-[#f7f3ed] flex items-center justify-center relative overflow-hidden transition-colors group-hover:bg-[#EBE6DE]">
@@ -234,13 +233,13 @@ const SupportForumsPage = () => {
                             className="relative z-10 text-[#8ea087] opacity-40 group-hover:scale-110 transition-transform duration-500"
                           />
                         )}
-                        <span className="absolute bottom-6 left-8 z-20 text-[10px] font-black uppercase tracking-[0.2em] text-[#8ea087] bg-white/80 backdrop-blur-sm px-4 py-2 rounded-xl border border-[#d0d5cb]/50">
+                        <Badge className="absolute bottom-6 left-8 z-20 rounded-xl bg-white/80 tracking-[0.2em] backdrop-blur-sm">
                           ROOM #{room.id}
-                        </span>
+                        </Badge>
                         {banned && (
-                          <div className="absolute top-4 right-4 z-10 bg-red-500 text-white text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-xl shadow">
+                          <Badge className="absolute right-4 top-4 z-10 rounded-xl bg-red-500 text-white shadow">
                             Removed
-                          </div>
+                          </Badge>
                         )}
                       </div>
 
@@ -265,14 +264,18 @@ const SupportForumsPage = () => {
                           </span>
 
                           {banned ? (
-                            <button
+                            <Button
+                              type="button"
+                              variant="outline"
                               onClick={triggerBannedNotice}
                               className="text-[10px] font-black uppercase flex items-center gap-1.5 text-red-500 border border-red-200 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-xl transition-all tracking-[0.1em]"
                             >
                               🚫 Removed
-                            </button>
+                            </Button>
                           ) : isAlreadyJoined(room.id) ? (
-                            <button
+                            <Button
+                              type="button"
+                              variant="secondary"
                               onClick={() =>
                                 router.push(`/community-chat/${room.id}`)
                               }
@@ -280,9 +283,11 @@ const SupportForumsPage = () => {
                             >
                               Joined{' '}
                               <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                            </button>
+                            </Button>
                           ) : (
-                            <button
+                            <Button
+                              type="button"
+                              variant="ghost"
                               onClick={() => handleJoinRoom(room.id)}
                               disabled={joiningId === room.id}
                               className="text-[11px] font-black uppercase flex items-center gap-1 text-[#193c1f] group-hover:gap-3 transition-all tracking-[0.1em] disabled:opacity-50"
@@ -291,7 +296,7 @@ const SupportForumsPage = () => {
                                 ? 'Joining...'
                                 : 'Join Room'}{' '}
                               <ArrowRight size={16} strokeWidth={3} />
-                            </button>
+                            </Button>
                           )}
                         </div>
 
@@ -303,14 +308,14 @@ const SupportForumsPage = () => {
                           </p>
                         )}
                       </div>
-                    </div>
+                    </Card>
                   </div>
                 );
               })
           )}
 
           {isAdmin && (
-            <div
+            <Card
               onClick={() => setIsCreateModalOpen(true)}
               className="border-2 border-dashed border-[#D0D5CB] rounded-[40px] flex flex-col items-center justify-center p-12 text-center space-y-6 group cursor-pointer hover:bg-white/50 transition-all duration-500 h-full min-h-[400px]"
             >
@@ -325,7 +330,7 @@ const SupportForumsPage = () => {
                   Admin only: Add a new topic.
                 </p>
               </div>
-            </div>
+            </Card>
           )}
         </div>
       </main>

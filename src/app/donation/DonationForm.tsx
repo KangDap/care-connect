@@ -1,7 +1,19 @@
 'use client';
 
+import { Button } from '@/components/button';
+import { Card } from '@/components/card';
+import { Input } from '@/components/input';
 import { PublicHeader } from '@/components/public-header';
 import { syncDonationPayment } from '@/lib/donation-client';
+import {
+  ArrowLeft,
+  Check,
+  CreditCard,
+  Heart,
+  Lock,
+  Shield,
+  Wallet,
+} from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -190,27 +202,15 @@ export function DonationForm({
       {(isSubmitting || message.type === 'success') && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 backdrop-blur-sm">
           {message.type === 'success' ? (
-            <div className="bg-white p-10 rounded-2xl shadow-xl flex flex-col items-center gap-4 text-center max-w-sm w-full mx-4">
+            <Card className="mx-4 flex w-full max-w-sm flex-col items-center gap-4 rounded-2xl p-10 text-center shadow-xl">
               <div className="w-20 h-20 bg-[#8ea087]/10 rounded-full flex items-center justify-center">
-                <svg
-                  className="h-10 w-10 text-[#8ea087]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
+                <Check className="h-10 w-10 text-[#8ea087]" />
               </div>
               <h3 className="text-2xl font-bold text-[#193c1f]">Thank You!</h3>
               <p className="text-[#193c1f]/70">{message.text}</p>
-            </div>
+            </Card>
           ) : (
-            <div className="bg-white p-10 rounded-2xl shadow-xl flex flex-col items-center gap-6 text-center max-w-sm w-full mx-4">
+            <Card className="mx-4 flex w-full max-w-sm flex-col items-center gap-6 rounded-2xl p-10 text-center shadow-xl">
               <svg
                 className="animate-spin h-12 w-12 text-[#8ea087]"
                 viewBox="0 0 24 24"
@@ -238,7 +238,7 @@ export function DonationForm({
                   Securely completing your transaction.
                 </p>
               </div>
-            </div>
+            </Card>
           )}
         </div>
       )}
@@ -249,25 +249,15 @@ export function DonationForm({
         {/* Left Column */}
         <div className="md:col-span-8 flex flex-col gap-8">
           {/* Back button */}
-          <button
+          <Button
+            type="button"
+            variant="ghost"
             onClick={() => router.push(backHref)}
-            className="flex items-center gap-2 text-[#8ea087] hover:text-[#193c1f] font-bold text-sm transition-colors w-fit"
+            className="w-fit px-0"
           >
-            <svg
-              className="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
+            <ArrowLeft size={16} />
             Back
-          </button>
+          </Button>
 
           <section>
             <h1 className="text-4xl font-extrabold text-[#193c1f] mb-2">
@@ -282,21 +272,9 @@ export function DonationForm({
 
           {/* Report info card */}
           {donationType === 'REPORT' && report && (
-            <section className="bg-white border border-[#d0d5cb] rounded-xl p-8 shadow-sm">
+            <Card className="rounded-xl p-8">
               <div className="flex items-center gap-2 mb-6 text-[#d1b698]">
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M8 10h.01M12 10h.01M16 10h.01M9 16h6M7 4h10a2 2 0 012 2v12a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2z"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                  />
-                </svg>
+                <Shield className="w-5 h-5" />
                 <h2 className="text-[#193c1f] font-bold text-lg">
                   Report Target
                 </h2>
@@ -317,35 +295,23 @@ export function DonationForm({
                   {report.description}
                 </p>
                 <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div className="rounded-lg bg-white border border-[#d0d5cb] p-3">
+                  <Card className="rounded-lg p-3">
                     <p className="text-[#8ea087] text-xs mb-1">Location</p>
                     <p className="font-bold text-[#193c1f]">
                       {report.city}, {report.province}
                     </p>
-                  </div>
+                  </Card>
                 </div>
               </div>
-            </section>
+            </Card>
           )}
 
           {/* Platform info card */}
           {donationType === 'PLATFORM' && (
-            <section className="bg-white border border-[#d0d5cb] rounded-xl p-8 shadow-sm">
+            <Card className="rounded-xl p-8">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 bg-[#8ea087]/10 rounded-xl flex items-center justify-center shrink-0">
-                  <svg
-                    className="w-6 h-6 text-[#8ea087]"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                    />
-                  </svg>
+                  <Heart className="w-6 h-6 text-[#8ea087]" />
                 </div>
                 <div>
                   <h3 className="font-bold text-[#193c1f] text-lg">
@@ -357,86 +323,62 @@ export function DonationForm({
                   </p>
                 </div>
               </div>
-            </section>
+            </Card>
           )}
 
           {/* Amount */}
-          <section className="bg-white border border-[#d0d5cb] rounded-xl p-8 shadow-sm">
+          <Card className="rounded-xl p-8">
             <div className="flex items-center gap-2 mb-6 text-[#d1b698]">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
-                />
-              </svg>
+              <Wallet className="w-5 h-5" />
               <h2 className="text-[#193c1f] font-bold text-lg">
                 Choose Amount
               </h2>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
               {PRESET_AMOUNTS.map((val) => (
-                <button
+                <Button
+                  type="button"
+                  variant={amount === val ? 'primary' : 'outline'}
                   key={val}
                   onClick={() => setAmount(val)}
-                  className={`py-4 rounded-lg font-bold transition-colors ${amount === val ? 'bg-[#d0d5cb] border-2 border-[#193c1f]' : 'bg-[#ede4d8] border border-[#d0d5cb]'} text-[#193c1f]`}
+                  className={`rounded-lg py-4 ${amount === val ? '' : 'text-[#193c1f]'}`}
                 >
                   {fmt(val)}
-                </button>
+                </Button>
               ))}
             </div>
-            <div className="relative mt-2">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8ea087]">
-                Rp
-              </span>
-              <input
-                className="w-full pl-12 py-3 rounded-lg border border-[#d0d5cb] bg-white outline-none focus:border-[#8ea087]"
-                placeholder="Enter custom amount"
-                type="number"
-                value={amount || ''}
-                onChange={(e) => setAmount(Number(e.target.value))}
-              />
-            </div>
-          </section>
+            <Input
+              label="Custom Amount"
+              placeholder="Enter custom amount"
+              type="number"
+              value={amount || ''}
+              onChange={(e) => setAmount(Number(e.target.value))}
+              className="bg-white"
+            />
+          </Card>
 
           {/* Payment Method */}
-          <section className="bg-white border border-[#d0d5cb] rounded-xl p-8 shadow-sm">
+          <Card className="rounded-xl p-8">
             <div className="flex items-center gap-2 mb-6 text-[#d1b698]">
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-                />
-              </svg>
+              <CreditCard className="w-5 h-5" />
               <h2 className="text-[#193c1f] font-bold text-lg">
                 Payment Method
               </h2>
             </div>
             <div className="space-y-4">
               {PAYMENT_METHODS.map((m) => (
-                <div
+                <Button
+                  type="button"
+                  variant="outline"
                   key={m.id}
                   onClick={() => setPaymentMethod(m.id)}
-                  className={`flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-colors ${paymentMethod === m.id ? 'border-[#193c1f] bg-[#f7f3ed]' : 'border-[#d0d5cb] bg-white'}`}
+                  className={`w-full justify-start rounded-lg border p-4 text-left shadow-none ${paymentMethod === m.id ? 'border-[#193c1f] bg-[#f7f3ed]' : 'border-[#d0d5cb] bg-white'}`}
                 >
                   <div
                     className={`w-5 h-5 rounded-full border-4 ${paymentMethod === m.id ? 'border-[#193c1f] bg-white' : 'border-[#d0d5cb]'}`}
                   />
                   <span className="text-[#193c1f] font-medium">{m.label}</span>
-                </div>
+                </Button>
               ))}
             </div>
             {message.type === 'error' && (
@@ -444,12 +386,12 @@ export function DonationForm({
                 {message.text}
               </div>
             )}
-          </section>
+          </Card>
         </div>
 
         {/* Right Column: Summary */}
         <aside className="md:col-span-4 flex flex-col gap-6">
-          <section className="bg-[#f7f3ed] border border-[#d0d5cb] rounded-xl p-8 shadow-md sticky top-8">
+          <Card className="sticky top-8 rounded-xl bg-[#f7f3ed] p-8 shadow-md">
             <h2 className="text-[#193c1f] font-bold text-xl mb-6">
               Donation Summary
             </h2>
@@ -486,43 +428,20 @@ export function DonationForm({
                 </span>
               </div>
             </div>
-            <button
+            <Button
               onClick={handleDonate}
               disabled={isSubmitting}
-              className="w-full bg-[#8ea087] text-white py-4 rounded-xl font-bold flex items-center justify-center gap-2 mb-4 hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              variant="secondary"
+              className="mb-4 w-full rounded-xl py-4"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                />
-              </svg>
+              <Lock className="w-5 h-5" />
               Donate Now
-            </button>
+            </Button>
             <p className="text-center text-xs text-[#8ea087] flex items-center justify-center gap-1">
-              <svg
-                className="w-3 h-3"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                />
-              </svg>
+              <Shield className="w-3 h-3" />
               256-bit Secure SSL Connection
             </p>
-          </section>
+          </Card>
         </aside>
       </main>
     </div>

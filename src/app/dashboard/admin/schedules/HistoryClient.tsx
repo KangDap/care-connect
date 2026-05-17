@@ -1,6 +1,10 @@
 'use client';
 
+import { Badge } from '@/components/badge';
+import { Button } from '@/components/button';
+import { Card } from '@/components/card';
 import { Calendar, Loader2, User } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
 
@@ -53,16 +57,15 @@ export default function HistoryClient() {
             Manage availability and consultation hours for all psychologists.
           </p>
         </div>
-        <Link
-          href="/dashboard/admin/schedules/form"
-          className="flex items-center gap-2 px-6 py-3 bg-[#193C1F] text-white rounded-2xl text-sm font-bold hover:bg-[#2d5c36] transition-all shadow-sm"
-        >
-          <Calendar size={16} /> Manage Schedule
+        <Link href="/dashboard/admin/schedules/form">
+          <Button className="rounded-2xl px-6 py-3 text-sm shadow-sm">
+            <Calendar size={16} /> Manage Schedule
+          </Button>
         </Link>
       </div>
 
       {/* Table of Psychologists */}
-      <div className="bg-white border border-[#D0D5CB] rounded-2xl overflow-hidden shadow-sm">
+      <Card className="overflow-hidden rounded-2xl p-0">
         <div className="overflow-x-auto">
           <table className="w-full text-left min-w-[800px]">
             <thead className="bg-[#F7F3ED] text-[11px] text-[#8EA087] font-black uppercase tracking-widest">
@@ -92,9 +95,12 @@ export default function HistoryClient() {
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-xl bg-[#F7F3ED] flex items-center justify-center text-[#8EA087] shrink-0 border border-[#D0D5CB] overflow-hidden">
                           {psy.image ? (
-                            <img
+                            <Image
                               src={psy.image}
                               alt=""
+                              width={40}
+                              height={40}
+                              unoptimized
                               className="w-full h-full object-cover"
                             />
                           ) : (
@@ -112,12 +118,12 @@ export default function HistoryClient() {
                       <div className="flex flex-wrap gap-1.5">
                         {psy.activeDays && psy.activeDays.length > 0 ? (
                           psy.activeDays.map((day) => (
-                            <span
+                            <Badge
                               key={day}
-                              className="px-2.5 py-0.5 bg-[#193C1F]/5 text-[#193C1F] text-[10px] font-black rounded-lg border border-[#193C1F]/10"
+                              className="rounded-lg border border-[#193C1F]/10 bg-[#193C1F]/5 px-2.5 py-0.5 text-[#193C1F]"
                             >
                               {day}
-                            </span>
+                            </Badge>
                           ))
                         ) : (
                           <span className="text-xs text-[#8EA087] italic">
@@ -129,9 +135,13 @@ export default function HistoryClient() {
                     <td className="px-6 py-4 text-right">
                       <Link
                         href={`/dashboard/admin/schedules/form?id=${psy.id}`}
-                        className="text-xs font-black text-[#193C1F] hover:underline bg-[#F7F3ED] px-4 py-2 rounded-xl border border-[#D0D5CB] transition-all hover:bg-white"
                       >
-                        Edit Schedule
+                        <Button
+                          variant="outline"
+                          className="rounded-xl bg-[#F7F3ED] px-4 py-2 text-xs text-[#193C1F] hover:bg-white"
+                        >
+                          Edit Schedule
+                        </Button>
                       </Link>
                     </td>
                   </tr>
@@ -140,7 +150,7 @@ export default function HistoryClient() {
             </tbody>
           </table>
         </div>
-      </div>
+      </Card>
     </div>
   );
 }

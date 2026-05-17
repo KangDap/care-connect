@@ -2,7 +2,9 @@
 
 import { ForumModal } from '@/components/ForumModal';
 import { Alert } from '@/components/alert';
+import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
+import { Card } from '@/components/card';
 import { Toast } from '@/components/toast';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -190,7 +192,7 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
         </Button>
       </div>
 
-      <div className="bg-white border border-[#d0d5cb] rounded-2xl overflow-hidden shadow-sm">
+      <Card className="overflow-hidden rounded-2xl p-0">
         <table className="w-full text-left">
           <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
             <tr>
@@ -244,34 +246,36 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
                     </div>
                   </td>
                   <td className="px-6 py-4 font-medium text-gray-600">
-                    {ch.type}
+                    <Badge>{ch.type}</Badge>
                   </td>
                   <td className="px-6 py-4 text-gray-500">
                     {fmtDate(ch.createdAt)}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <button
+                    <Button
                       onClick={() => openUpdateModal(ch)}
-                      className="text-sm font-bold text-blue-600 hover:text-blue-700 transition"
+                      variant="ghost"
+                      className="px-0 py-0 text-sm text-blue-600 hover:text-blue-700"
                     >
                       Edit
-                    </button>
-                    <button
+                    </Button>
+                    <Button
                       onClick={() => {
                         setChannelToDelete(ch.id);
                         setIsDeleteAlertOpen(true);
                       }}
-                      className="text-sm font-bold text-red-600 hover:text-red-700 ml-4 transition"
+                      variant="ghost"
+                      className="ml-4 px-0 py-0 text-sm text-red-600 hover:text-red-700"
                     >
                       Delete
-                    </button>
+                    </Button>
                   </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
-      </div>
+      </Card>
 
       <ForumModal
         isOpen={isCreateModalOpen}

@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/button';
+import { Card } from '@/components/card';
 import { Input } from '@/components/input';
 import { Logo } from '@/components/logo';
 import { Modal } from '@/components/modal';
@@ -137,12 +138,12 @@ const FeatureCard = ({
   icon: React.ElementType;
   text: string;
 }) => (
-  <div className="flex-1 h-[90px] bg-[#f7f3ed] border border-[#d0d5cb] rounded-[12px] flex flex-col items-center justify-center gap-2 p-4 text-center">
+  <Card className="flex h-[90px] flex-1 flex-col items-center justify-center gap-2 rounded-[12px] bg-[#f7f3ed] p-4 text-center">
     <Icon className="text-[#8ea087] text-xl" />
     <span className="text-[14px] font-bold text-[#193c1f] leading-tight">
       {text}
     </span>
-  </div>
+  </Card>
 );
 
 // ==========================================
@@ -313,7 +314,7 @@ export default function LoginPage() {
           <div className="w-full max-w-[400px]">
             <div className="flex border-b border-[#d0d5cb] mb-12 relative h-[56px]">
               {(['login', 'register'] as const).map((tab) => (
-                <button
+                <Button
                   key={tab}
                   type="button"
                   onClick={() => {
@@ -321,7 +322,8 @@ export default function LoginPage() {
                     setError('');
                     setSuccess('');
                   }}
-                  className={`flex-1 flex justify-center items-center font-bold text-lg transition-all ${
+                  variant="ghost"
+                  className={`flex-1 justify-center rounded-none py-0 text-lg normal-case tracking-normal ${
                     activeTab === tab ||
                     (activeTab === 'forgot_password' && tab === 'login')
                       ? 'text-[#193c1f]'
@@ -329,7 +331,7 @@ export default function LoginPage() {
                   }`}
                 >
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </button>
+                </Button>
               ))}
               <div
                 className="absolute bottom-0 h-1 bg-[#8ea087] transition-all duration-300 rounded-t-full w-1/2"
@@ -390,13 +392,14 @@ export default function LoginPage() {
                   >
                     {loading ? 'Sending...' : 'Send Reset Link'}
                   </Button>
-                  <button
+                  <Button
                     type="button"
-                    className="text-sm font-bold text-[#8ea087] hover:text-[#193c1f] transition-colors"
+                    variant="ghost"
+                    className="py-0 text-sm normal-case tracking-normal"
                     onClick={() => setActiveTab('login')}
                   >
                     Back to login
-                  </button>
+                  </Button>
                 </div>
               ) : (
                 <div className="flex flex-col gap-6 animate-fade-in">
@@ -444,13 +447,14 @@ export default function LoginPage() {
                     />
                     {activeTab === 'login' && (
                       <div className="flex justify-end">
-                        <button
+                        <Button
                           type="button"
-                          className="text-xs font-bold text-[#8ea087] hover:text-[#193c1f] transition-colors mt-2"
+                          variant="ghost"
+                          className="mt-2 px-0 py-0 text-xs normal-case tracking-normal"
                           onClick={() => setActiveTab('forgot_password')}
                         >
                           Forgot password?
-                        </button>
+                        </Button>
                       </div>
                     )}
                   </div>

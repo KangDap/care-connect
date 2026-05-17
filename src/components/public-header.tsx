@@ -1,7 +1,9 @@
 'use client';
 
+import { Button } from '@/components/button';
 import { useTranslation } from '@/components/providers/i18n-provider';
 import { authClient } from '@/lib/auth/auth-client';
+import { ChevronLeft, Moon } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { Suspense } from 'react';
@@ -49,24 +51,14 @@ function PublicHeaderContent() {
       </Link>
 
       {fromDashboard ? (
-        <button
+        <Button
           onClick={() => router.back()}
-          className="flex items-center gap-2 text-[#193c1f] font-bold hover:text-[#8ea087] transition-colors"
+          variant="ghost"
+          className="text-[#193c1f] hover:text-[#8ea087]"
         >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="m15 18-6-6 6-6" />
-          </svg>
+          <ChevronLeft size={20} />
           Back to Dashboard
-        </button>
+        </Button>
       ) : (
         <>
           <nav className="flex items-center gap-12 text-[#193c1f] font-medium hidden md:flex">
@@ -127,37 +119,27 @@ function PublicHeaderContent() {
           </nav>
 
           <div className="flex items-center gap-4">
-            <button
+            <Button
               onClick={() => setLanguage(language === 'en' ? 'id' : 'en')}
-              className="text-xs font-bold text-[#193c1f] border border-[#193c1f] rounded-md px-2 py-1 hover:bg-[#193c1f] hover:text-[#f7f3ed] transition-colors"
+              variant="outline"
+              className="rounded-md border-[#193c1f] px-2 py-1 text-xs text-[#193c1f] hover:bg-[#193c1f] hover:text-[#f7f3ed]"
             >
               {language === 'en' ? 'ID' : 'EN'}
-            </button>
+            </Button>
 
-            <button
+            <Button
               type="button"
-              className="w-9 h-9 rounded-full flex items-center justify-center border border-[#d0d5cb] text-[#193c1f] hover:bg-[#d0d5cb]/50 transition-colors"
+              variant="outline"
+              className="h-9 w-9 rounded-full border-[#d0d5cb] p-0 text-[#193c1f] hover:bg-[#d0d5cb]/50"
               title="Dark Mode (Coming Soon)"
             >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                />
-              </svg>
-            </button>
+              <Moon className="h-4 w-4" />
+            </Button>
 
             <Link href={isLoggedIn ? '/dashboard' : '/login'}>
-              <button className="bg-[#8ea087] text-[#f7f3ed] px-8 py-2.5 rounded-lg font-bold hover:bg-[#193c1f] transition-colors">
+              <Button variant="secondary" className="rounded-lg px-8 py-2.5">
                 {isLoggedIn ? t('header.dashboard') : t('header.login')}
-              </button>
+              </Button>
             </Link>
           </div>
         </>

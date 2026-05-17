@@ -1,5 +1,8 @@
 'use client';
 
+import { Badge } from '@/components/badge';
+import { Button } from '@/components/button';
+import { Card } from '@/components/card';
 import { Pagination } from '@/components/pagination';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -126,15 +129,16 @@ export default function ReportsContent({ reports }: ReportsContentProps) {
               : 'Track the status of your submitted reports.'}
           </p>
         </div>
-        <button
+        <Button
           onClick={() => router.push('/report?from=dashboard')}
-          className="px-7 py-3.5 bg-[#8ea087] hover:bg-[#193c1f] text-white rounded-2xl font-bold text-[14px] transition-all shadow-lg whitespace-nowrap"
+          variant="secondary"
+          className="whitespace-nowrap shadow-lg"
         >
           + New Report
-        </button>
+        </Button>
       </div>
 
-      <div className="bg-white border border-[#d0d5cb] rounded-[32px] overflow-hidden shadow-sm">
+      <Card className="overflow-hidden rounded-[32px] p-0">
         <table className="w-full text-left border-collapse">
           <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
             <tr>
@@ -167,11 +171,9 @@ export default function ReportsContent({ reports }: ReportsContentProps) {
                     {formatDateLabel(row.createdAt)}
                   </td>
                   <td className="px-8 py-6">
-                    <span
-                      className={`px-4 py-1.5 rounded-full text-[10px] font-black ${getStatusBadgeClass(row.status)}`}
-                    >
+                    <Badge className={getStatusBadgeClass(row.status)}>
                       {getStatusLabel(row.status)}
-                    </span>
+                    </Badge>
                   </td>
                 </tr>
                 {/* Detail Dropdown Row */}
@@ -289,7 +291,7 @@ export default function ReportsContent({ reports }: ReportsContentProps) {
             </tbody>
           )}
         </table>
-      </div>
+      </Card>
 
       {/* RENDER KOMPONEN PAGINATION DI SINI */}
       <Pagination

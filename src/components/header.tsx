@@ -1,8 +1,11 @@
 'use client';
 
+import { Button } from '@/components/button';
+import { Input } from '@/components/input';
 import { Logo } from '@/components/logo';
 import { useTranslation } from '@/components/providers/i18n-provider';
 import { authClient } from '@/lib/auth/auth-client';
+import { ArrowLeft, Menu, Moon } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
@@ -146,47 +149,23 @@ export const Header = ({
       <header className="h-[90px] w-full sticky top-0 border-b border-[#D0D5CB] flex items-center justify-between px-6 md:px-12 bg-[#F7F3ED]/80 backdrop-blur-md shrink-0 z-[100]">
         <div className="flex items-center gap-4 md:gap-8 flex-grow">
           {onMenuClick && (
-            <button
+            <Button
               onClick={onMenuClick}
-              className="p-2.5 bg-white border border-[#D0D5CB] hover:bg-[#EBE6DE] rounded-2xl transition-all shadow-sm flex items-center justify-center shrink-0 lg:hidden"
+              variant="outline"
+              className="shrink-0 p-2.5 lg:hidden"
             >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#193C1F"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <line x1="3" y1="12" x2="21" y2="12"></line>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <line x1="3" y1="18" x2="21" y2="18"></line>
-              </svg>
-            </button>
+              <Menu className="h-5 w-5 text-[#193C1F]" />
+            </Button>
           )}
 
           {showBackButton && (
-            <button
+            <Button
               onClick={() => router.back()}
-              className="p-2.5 bg-white border border-[#d0d5cb] hover:bg-[#EBE6DE] rounded-2xl transition-all shadow-sm flex items-center justify-center group shrink-0"
+              variant="outline"
+              className="group shrink-0 p-2.5"
             >
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#193C1F"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="group-hover:-translate-x-1 transition-transform"
-              >
-                <path d="M19 12H5"></path>
-                <path d="M12 19l-7-7 7-7"></path>
-              </svg>
-            </button>
+              <ArrowLeft className="h-5 w-5 text-[#193C1F] transition-transform group-hover:-translate-x-1" />
+            </Button>
           )}
 
           {withLogo && (
@@ -197,15 +176,13 @@ export const Header = ({
 
           {withSearch ? (
             <div className="relative w-full max-w-[600px]">
-              <span className="absolute left-5 top-1/2 -translate-y-1/2 opacity-70">
-                <SearchIcon />
-              </span>
-              <input
+              <Input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder={`${t('common.search')}...`}
-                className="w-[250px] h-[52px] bg-[#EBE6DE] border border-transparent focus:border-[#8ea087] focus:bg-white rounded-2xl pl-14 pr-6 outline-none text-[15px] text-[#193c1f] shadow-sm transition-all"
+                icon={<SearchIcon />}
+                className="h-[52px] w-[250px] bg-[#EBE6DE] pr-6 text-[15px] text-[#193c1f] shadow-sm"
               />
             </div>
           ) : (
@@ -215,32 +192,22 @@ export const Header = ({
 
         <div className="flex items-center gap-6 ml-10">
           <div className="flex items-center gap-3">
-            <button
+            <Button
               onClick={() => setLanguage(language === 'en' ? 'id' : 'en')}
-              className="text-xs font-bold text-[#193c1f] border border-[#193c1f] rounded-md px-2 py-1 hover:bg-[#193c1f] hover:text-[#f7f3ed] transition-colors"
+              variant="outline"
+              className="rounded-md border-[#193c1f] px-2 py-1 text-xs text-[#193c1f] hover:bg-[#193c1f] hover:text-[#f7f3ed]"
             >
               {language === 'en' ? 'ID' : 'EN'}
-            </button>
+            </Button>
 
-            <button
+            <Button
               type="button"
-              className="w-9 h-9 rounded-full flex items-center justify-center border border-[#d0d5cb] text-[#193c1f] hover:bg-[#d0d5cb]/50 transition-colors"
+              variant="outline"
+              className="h-9 w-9 rounded-full border-[#d0d5cb] p-0 text-[#193c1f] hover:bg-[#d0d5cb]/50"
               title="Dark Mode (Coming Soon)"
             >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                />
-              </svg>
-            </button>
+              <Moon className="h-4 w-4" />
+            </Button>
           </div>
 
           <div className="relative" ref={dropdownRef}>
@@ -272,24 +239,26 @@ export const Header = ({
 
             {isProfileOpen && (
               <div className="absolute right-0 mt-4 w-64 bg-white border border-[#d0d5cb] rounded-[24px] shadow-2xl py-3 z-[1001] animate-in fade-in zoom-in duration-200">
-                <button
+                <Button
                   onClick={handleProfileClick}
-                  className="w-full flex items-center gap-3 px-6 py-3 text-[14px] text-[#193c1f] hover:bg-[#f7f3ed] transition-colors"
+                  variant="ghost"
+                  className="w-full justify-start px-6 py-3 text-[14px] text-[#193c1f] hover:bg-[#f7f3ed]"
                 >
                   <UserIcon /> {t('header.profile')}
-                </button>
+                </Button>
                 <div className="h-px bg-[#f7f3ed] my-2 mx-4" />
-                <button
+                <Button
                   onClick={() => {
                     setIsProfileOpen(false);
                     if (onLogoutClick) {
                       onLogoutClick();
                     }
                   }}
-                  className="w-full flex items-center gap-3 px-6 py-4 text-[14px] text-red-500 font-bold hover:bg-red-50 transition-colors"
+                  variant="ghost"
+                  className="w-full justify-start px-6 py-4 text-[14px] text-red-500 hover:bg-red-50"
                 >
                   <LogoutIcon /> {t('header.logout')}
-                </button>
+                </Button>
               </div>
             )}
           </div>

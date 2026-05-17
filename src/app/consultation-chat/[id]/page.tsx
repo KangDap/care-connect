@@ -1,9 +1,12 @@
 'use client';
 
 import { Alert } from '@/components/alert';
+import { Button } from '@/components/button';
 import { Header } from '@/components/header';
+import { Input } from '@/components/input';
 import { authClient } from '@/lib/auth/auth-client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Paperclip, Send, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -513,9 +516,10 @@ export default function ConsultationChatContent() {
                                   </div>
                                 </div>
 
-                                <button
+                                <Button
                                   onClick={() => setReplyingTo(chat)}
-                                  className="hidden group-hover:flex items-center justify-center p-2 text-[#193c1f] opacity-40 hover:opacity-100 transition-opacity self-center"
+                                  variant="ghost"
+                                  className="hidden self-center p-2 text-[#193c1f] opacity-40 hover:opacity-100 group-hover:flex"
                                   title="Reply"
                                 >
                                   <svg
@@ -531,7 +535,7 @@ export default function ConsultationChatContent() {
                                       d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
                                     ></path>
                                   </svg>
-                                </button>
+                                </Button>
                               </div>
                               <span className="text-[10px] text-[#193c1f] opacity-40 ml-11">
                                 {time}
@@ -634,9 +638,10 @@ export default function ConsultationChatContent() {
                                 </div>
                               </div>
 
-                              <button
+                              <Button
                                 onClick={() => setReplyingTo(chat)}
-                                className="hidden group-hover:flex items-center justify-center p-2 text-[#193c1f] opacity-40 hover:opacity-100 transition-opacity self-center"
+                                variant="ghost"
+                                className="hidden self-center p-2 text-[#193c1f] opacity-40 hover:opacity-100 group-hover:flex"
                                 title="Reply"
                               >
                                 <svg
@@ -652,7 +657,7 @@ export default function ConsultationChatContent() {
                                     d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
                                   ></path>
                                 </svg>
-                              </button>
+                              </Button>
                             </div>
                             <span className="text-[10px] text-[#193c1f] opacity-40 mr-11">
                               {time}
@@ -678,24 +683,13 @@ export default function ConsultationChatContent() {
                       {replyingTo.content}
                     </p>
                   </div>
-                  <button
+                  <Button
                     onClick={() => setReplyingTo(null)}
-                    className="ml-4 text-[#193c1f] opacity-40 hover:opacity-100"
+                    variant="ghost"
+                    className="ml-4 p-0 text-[#193c1f] opacity-40 hover:opacity-100"
                   >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M6 18L18 6M6 6l12 12"
-                      ></path>
-                    </svg>
-                  </button>
+                    <X className="h-4 w-4" />
+                  </Button>
                 </div>
               )}
               {mediaFile && (
@@ -703,24 +697,13 @@ export default function ConsultationChatContent() {
                   <span className="text-xs text-[#193c1f] font-semibold">
                     {mediaFile.name} ({(mediaFile.size / 1024).toFixed(1)}KB)
                   </span>
-                  <button
+                  <Button
                     onClick={() => setMediaFile(null)}
-                    className="ml-4 text-red-500 hover:text-red-700 bg-red-100 p-1 rounded-full"
+                    variant="ghost"
+                    className="ml-4 rounded-full bg-red-100 p-1 text-red-500 hover:text-red-700"
                   >
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M6 18L18 6M6 6l12 12"
-                      ></path>
-                    </svg>
-                  </button>
+                    <X className="h-4 w-4" />
+                  </Button>
                 </div>
               )}
               {isExpired ? (
@@ -760,25 +743,14 @@ export default function ConsultationChatContent() {
                       className="hidden"
                       accept=".jpg,.jpeg,.png,.pdf"
                     />
-                    <button
+                    <Button
                       onClick={() => fileInputRef.current?.click()}
-                      className="text-[#193c1f] opacity-40 hover:opacity-70 mr-3"
+                      variant="ghost"
+                      className="mr-3 p-0 text-[#193c1f] opacity-40 hover:opacity-70"
                     >
-                      <svg
-                        className="w-6 h-6"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                        ></path>
-                      </svg>
-                    </button>
-                    <input
+                      <Paperclip className="h-6 w-6" />
+                    </Button>
+                    <Input
                       className="bg-transparent border-none focus:ring-0 text-sm text-[#193c1f] w-full p-0 outline-none"
                       placeholder="Type your message here..."
                       type="text"
@@ -789,26 +761,22 @@ export default function ConsultationChatContent() {
                       }}
                     />
                   </div>
-                  <button
+                  <Button
                     onClick={handleSendMessage}
                     disabled={
                       sendMessageMutation.isPending ||
                       (!messageInput.trim() && !mediaFile)
                     }
-                    className="w-12 h-12 bg-[#8ea087] hover:brightness-110 disabled:opacity-50 disabled:hover:brightness-100 text-white rounded-2xl flex items-center justify-center transition-transform active:scale-95 shadow-sm shrink-0"
+                    variant="secondary"
+                    loading={sendMessageMutation.isPending}
+                    className="h-12 w-12 shrink-0 rounded-2xl p-0 shadow-sm hover:brightness-110 disabled:hover:brightness-100"
                   >
                     {sendMessageMutation.isPending ? (
-                      <span className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                      ''
                     ) : (
-                      <svg
-                        className="w-6 h-6 transform rotate-90"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
-                      </svg>
+                      <Send className="h-6 w-6 rotate-45" />
                     )}
-                  </button>
+                  </Button>
                 </div>
               )}
             </footer>

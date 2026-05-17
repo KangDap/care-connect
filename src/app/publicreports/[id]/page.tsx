@@ -1,7 +1,10 @@
 'use client';
 
+import { Badge } from '@/components/badge';
+import { Button } from '@/components/button';
+import { Card } from '@/components/card';
 import { PublicHeader } from '@/components/public-header';
-import { ArrowLeft, Calendar, MapPin, Tag } from 'lucide-react';
+import { ArrowLeft, Calendar, Heart, MapPin, Tag } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -118,11 +121,10 @@ export default function PublicReportDetailPage() {
 
       <main className="max-w-5xl mx-auto px-6 py-12">
         {/* Back */}
-        <Link
-          href="/publicreports"
-          className="inline-flex items-center gap-2 text-[#8ea087] hover:text-[#193c1f] font-bold text-sm mb-8 transition-colors"
-        >
-          <ArrowLeft size={16} /> Back to Public Reports
+        <Link href="/publicreports" className="mb-8 inline-block">
+          <Button variant="ghost" className="px-0">
+            <ArrowLeft size={16} /> Back to Public Reports
+          </Button>
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -158,23 +160,25 @@ export default function PublicReportDetailPage() {
 
             {/* Metadata badges */}
             <div className="flex flex-wrap gap-2">
-              <span
-                className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full border ${STATUS_BADGE[report.status] || 'bg-gray-100 text-gray-600'}`}
+              <Badge
+                className={
+                  STATUS_BADGE[report.status] || 'bg-gray-100 text-gray-600'
+                }
               >
                 {report.status}
-              </span>
-              <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full bg-[#f7f3ed] border border-[#d0d5cb] text-[#193c1f] flex items-center gap-1">
+              </Badge>
+              <Badge className="flex items-center gap-1 bg-[#f7f3ed] text-[#193c1f]">
                 <Tag size={10} />
                 {CATEGORY_LABEL[report.category] || report.category}
-              </span>
-              <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full bg-[#f7f3ed] border border-[#d0d5cb] text-[#8ea087] flex items-center gap-1">
+              </Badge>
+              <Badge className="flex items-center gap-1 bg-[#f7f3ed] text-[#8ea087]">
                 <Calendar size={10} />
                 {fmtDate(report.incidentDate)}
-              </span>
-              <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full bg-[#f7f3ed] border border-[#d0d5cb] text-[#8ea087] flex items-center gap-1">
+              </Badge>
+              <Badge className="flex items-center gap-1 bg-[#f7f3ed] text-[#8ea087]">
                 <MapPin size={10} />
                 {report.city}, {report.province}
-              </span>
+              </Badge>
             </div>
 
             {/* Title & Description */}
@@ -182,14 +186,14 @@ export default function PublicReportDetailPage() {
               <h1 className="text-3xl md:text-4xl font-black text-[#193c1f] italic tracking-tight leading-tight mb-4">
                 {report.title}
               </h1>
-              <div className="bg-white border border-[#d0d5cb] rounded-2xl p-6">
+              <Card className="rounded-2xl p-6">
                 <h3 className="text-[11px] font-black uppercase tracking-widest text-[#8ea087] mb-3">
                   Incident Description
                 </h3>
                 <p className="text-[#193c1f]/80 leading-relaxed whitespace-pre-wrap">
                   {report.description}
                 </p>
-              </div>
+              </Card>
             </div>
 
             {/* Image Gallery */}
@@ -279,7 +283,7 @@ export default function PublicReportDetailPage() {
           {/* Right: Sidebar */}
           <aside className="space-y-6">
             {/* Location Card */}
-            <div className="bg-white border border-[#d0d5cb] rounded-2xl p-6">
+            <Card className="rounded-2xl p-6">
               <h3 className="text-[11px] font-black uppercase tracking-widest text-[#8ea087] mb-4">
                 Location
               </h3>
@@ -292,43 +296,33 @@ export default function PublicReportDetailPage() {
                   {report.district}, {report.province}
                 </p>
               </div>
-            </div>
+            </Card>
 
             {/* Donate CTA */}
             {report.status !== 'REJECTED' && (
-              <div className="bg-[#193c1f] rounded-2xl p-6 text-white">
+              <Card className="rounded-2xl border-[#193c1f] bg-[#193c1f] p-6 text-white">
                 <h3 className="font-black text-lg mb-2">Support This Case</h3>
                 <p className="text-[#8ea087] text-sm mb-4 leading-relaxed">
                   Your donation goes directly to supporting the victim of this
                   reported case.
                 </p>
-                <button
+                <Button
+                  type="button"
+                  variant="secondary"
                   onClick={() => router.push(`/donation/report/${report.id}`)}
-                  className="w-full bg-[#8ea087] hover:bg-[#8ea087]/80 text-white py-3 rounded-xl font-black uppercase tracking-wider text-sm transition-colors flex items-center justify-center gap-2"
+                  className="w-full rounded-xl py-3 uppercase tracking-wider"
                 >
-                  <svg
-                    className="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                    />
-                  </svg>
+                  <Heart className="w-4 h-4" />
                   Donate Now
-                </button>
+                </Button>
                 <p className="text-center text-[10px] text-[#8ea087] mt-2">
                   0% transaction fee
                 </p>
-              </div>
+              </Card>
             )}
 
             {/* Report Info */}
-            <div className="bg-white border border-[#d0d5cb] rounded-2xl p-6">
+            <Card className="rounded-2xl p-6">
               <h3 className="text-[11px] font-black uppercase tracking-widest text-[#8ea087] mb-4">
                 Report Info
               </h3>
@@ -366,7 +360,7 @@ export default function PublicReportDetailPage() {
                   </span>
                 </div>
               </div>
-            </div>
+            </Card>
           </aside>
         </div>
       </main>
@@ -378,12 +372,14 @@ export default function PublicReportDetailPage() {
           onClick={() => setSelectedImage(null)}
         >
           <div className="relative max-w-4xl w-full max-h-[90vh]">
-            <button
+            <Button
+              type="button"
+              variant="ghost"
               className="absolute -top-10 right-0 text-white font-bold hover:opacity-70 transition-opacity"
               onClick={() => setSelectedImage(null)}
             >
               ✕ Close
-            </button>
+            </Button>
             <div className="relative w-full h-[80vh] rounded-2xl overflow-hidden">
               <Image
                 src={selectedImage}

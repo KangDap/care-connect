@@ -2,6 +2,8 @@
 
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
+import { Card } from '@/components/card';
+import { Input } from '@/components/input';
 import { Modal } from '@/components/modal';
 import { Pagination } from '@/components/pagination';
 import { Toast } from '@/components/toast';
@@ -189,7 +191,7 @@ export function ReportClient({
         ))}
       </div>
 
-      <div className="bg-white border border-[#D0D5CB] rounded-2xl overflow-hidden shadow-sm">
+      <Card className="rounded-2xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left table-fixed min-w-[1000px]">
             <thead className="bg-[#F7F3ED] text-[11px] text-[#8EA087] font-black uppercase tracking-widest">
@@ -284,21 +286,25 @@ export function ReportClient({
                       )}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <button
+                      <Button
+                        type="button"
+                        variant="ghost"
                         onClick={() => openUpdateModal(r)}
-                        className="text-sm font-bold text-blue-600 hover:text-blue-700 transition"
+                        className="px-2 text-sm text-blue-600 hover:text-blue-700"
                       >
                         Update
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="ghost"
                         onClick={() => {
                           setReportToDelete(r.id);
                           setIsDeleteAlertOpen(true);
                         }}
-                        className="text-sm font-bold text-red-600 hover:text-red-700 ml-4 transition"
+                        className="ml-2 px-2 text-sm text-red-600 hover:text-red-700"
                       >
                         Delete
-                      </button>
+                      </Button>
                     </td>
                   </tr>
                 ))
@@ -324,7 +330,7 @@ export function ReportClient({
             />
           </div>
         )}
-      </div>
+      </Card>
 
       <Modal
         title="Update Report Status"
@@ -332,25 +338,21 @@ export function ReportClient({
         onClose={() => setIsUpdateModalOpen(false)}
       >
         <form onSubmit={handleUpdateStatus} className="space-y-4">
-          <div>
-            <p className="text-sm text-gray-500 mb-4">
-              Update the status for report{' '}
-              <strong>{selectedReport?.title}</strong>.
-            </p>
-            <label className="text-sm font-bold text-[#193c1f] mb-1.5 block">
-              Status
-            </label>
-            <select
-              className="w-full bg-[#ede4d8] border border-[#d0d5cb] rounded-xl px-4 py-3 text-sm text-[#193c1f] focus:outline-none focus:border-[#8ea087] focus:ring-1 focus:ring-[#8ea087]"
-              value={newStatus}
-              onChange={(e) => setNewStatus(e.target.value)}
-            >
-              <option value="PENDING">PENDING</option>
-              <option value="REVIEWED">REVIEWED</option>
-              <option value="RESOLVED">RESOLVED</option>
-              <option value="REJECTED">REJECTED</option>
-            </select>
-          </div>
+          <p className="text-sm text-gray-500 mb-4">
+            Update the status for report{' '}
+            <strong>{selectedReport?.title}</strong>.
+          </p>
+          <Input
+            label="Status"
+            type="select"
+            value={newStatus}
+            onChange={(e) => setNewStatus(e.target.value)}
+          >
+            <option value="PENDING">PENDING</option>
+            <option value="REVIEWED">REVIEWED</option>
+            <option value="RESOLVED">RESOLVED</option>
+            <option value="REJECTED">REJECTED</option>
+          </Input>
           <div className="pt-2 flex justify-end gap-2">
             <Button
               variant="ghost"

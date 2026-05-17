@@ -1,6 +1,7 @@
 'use client';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
+import { Input } from '@/components/input';
 import { Modal } from '@/components/modal';
 import { Toast } from '@/components/toast';
 import { useRouter } from 'next/navigation';
@@ -162,23 +163,19 @@ export function UserActions({ id, role, banned, name }: UserProps) {
         onClose={() => setIsModalOpen(false)}
       >
         <form onSubmit={handleRoleSubmit} className="space-y-4 text-left">
-          <div>
-            <p className="text-sm text-gray-500 mb-4">
-              Update the role for user <strong>{name}</strong>.
-            </p>
-            <label className="text-sm font-bold text-[#193c1f] mb-1.5 block">
-              Role
-            </label>
-            <select
-              className="w-full bg-[#ede4d8] border border-[#d0d5cb] rounded-xl px-4 py-3 text-sm text-[#193c1f] focus:outline-none focus:border-[#8ea087] focus:ring-1 focus:ring-[#8ea087]"
-              value={newRole}
-              onChange={(e) => setNewRole(e.target.value)}
-            >
-              <option value="user">USER</option>
-              <option value="ADMIN">ADMIN</option>
-              <option value="PSYCHOLOGIST">PSYCHOLOGIST</option>
-            </select>
-          </div>
+          <p className="text-sm text-gray-500 mb-4">
+            Update the role for user <strong>{name}</strong>.
+          </p>
+          <Input
+            label="Role"
+            type="select"
+            value={newRole}
+            onChange={(e) => setNewRole(e.target.value)}
+          >
+            <option value="user">USER</option>
+            <option value="ADMIN">ADMIN</option>
+            <option value="PSYCHOLOGIST">PSYCHOLOGIST</option>
+          </Input>
           <div className="pt-2 flex justify-end gap-2">
             <Button
               variant="ghost"
@@ -205,18 +202,15 @@ export function UserActions({ id, role, banned, name }: UserProps) {
             Please provide a reason for banning <strong>{name}</strong>. This
             reason will be visible to the user.
           </p>
-          <div>
-            <label className="text-sm font-bold text-[#193C1F] mb-1.5 block uppercase tracking-widest">
-              Reason
-            </label>
-            <textarea
-              required
-              className="w-full bg-[#f9faf7] border border-[#d0d5cb] rounded-xl px-4 py-3 text-sm text-[#193c1f] focus:outline-none focus:border-[#8ea087] focus:ring-1 focus:ring-[#8ea087] min-h-[100px] resize-none"
-              value={banReason}
-              onChange={(e) => setBanReason(e.target.value)}
-              placeholder="e.g., Violating community guidelines..."
-            />
-          </div>
+          <Input
+            label="Reason"
+            type="textarea"
+            required
+            rows={4}
+            value={banReason}
+            onChange={(e) => setBanReason(e.target.value)}
+            placeholder="e.g., Violating community guidelines..."
+          />
           <div className="flex justify-end gap-2 pt-2">
             <Button
               variant="ghost"

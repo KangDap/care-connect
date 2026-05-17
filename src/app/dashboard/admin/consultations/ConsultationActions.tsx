@@ -2,6 +2,7 @@
 
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
+import { Input } from '@/components/input';
 import { Modal } from '@/components/modal';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -78,12 +79,14 @@ export function ConsultationActions({
       >
         Edit
       </Button>
-      <button
+      <Button
+        type="button"
+        variant="ghost"
         onClick={() => setIsDeleteAlertOpen(true)}
-        className="text-xs font-bold text-red-600 hover:text-red-700 transition uppercase tracking-wider"
+        className="px-2 text-xs text-red-600 hover:text-red-700"
       >
         Delete
-      </button>
+      </Button>
 
       {/* Edit Status Modal */}
       <Modal
@@ -95,21 +98,17 @@ export function ConsultationActions({
           <p className="text-sm text-gray-500">
             Ubah status untuk konsultasi <strong>{title}</strong>.
           </p>
-          <div>
-            <label className="text-sm font-bold text-[#193c1f] mb-1.5 block uppercase tracking-widest">
-              Status
-            </label>
-            <select
-              className="w-full bg-[#ede4d8] border border-[#d0d5cb] rounded-xl px-4 py-3 text-sm text-[#193c1f] focus:outline-none focus:border-[#8ea087] focus:ring-1 focus:ring-[#8ea087] font-bold"
-              value={newStatus}
-              onChange={(e) => setNewStatus(e.target.value)}
-            >
-              <option value="SCHEDULED">SCHEDULED</option>
-              <option value="ONGOING">ONGOING</option>
-              <option value="COMPLETED">COMPLETED</option>
-              <option value="CANCELLED">CANCELLED</option>
-            </select>
-          </div>
+          <Input
+            label="Status"
+            type="select"
+            value={newStatus}
+            onChange={(e) => setNewStatus(e.target.value)}
+          >
+            <option value="SCHEDULED">SCHEDULED</option>
+            <option value="ONGOING">ONGOING</option>
+            <option value="COMPLETED">COMPLETED</option>
+            <option value="CANCELLED">CANCELLED</option>
+          </Input>
           <div className="flex justify-end gap-2 pt-2">
             <Button
               variant="ghost"

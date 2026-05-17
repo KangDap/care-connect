@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/button';
+import { Card } from '@/components/card';
 import { Input } from '@/components/input';
 import { Modal } from '@/components/modal';
 import { Toast } from '@/components/toast';
@@ -188,21 +189,20 @@ export default function ProfileManagement() {
 
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center gap-5 mb-10">
-          <Link
-            href="/dashboard"
-            className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white border border-[#d0d5cb] hover:bg-[#EBE6DE] transition-all shadow-sm"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <line x1="19" y1="12" x2="5" y2="12"></line>
-              <polyline points="12 19 5 12 12 5"></polyline>
-            </svg>
+          <Link href="/dashboard" className="inline-block">
+            <Button variant="outline" className="h-12 w-12 rounded-2xl p-0">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+              >
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+              </svg>
+            </Button>
           </Link>
           <h1 className="text-2xl font-black tracking-tight">
             Profile Settings
@@ -211,7 +211,7 @@ export default function ProfileManagement() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           <div className="lg:col-span-4">
-            <div className="bg-white p-10 rounded-[40px] border border-[#d0d5cb]/50 shadow-sm flex flex-col items-center text-center">
+            <Card className="flex flex-col items-center rounded-[40px] p-10 text-center">
               <div
                 className="relative group cursor-pointer"
                 onClick={() => fileInputRef.current?.click()}
@@ -266,11 +266,11 @@ export default function ProfileManagement() {
                   {session?.user.email}
                 </p>
               </div>
-            </div>
+            </Card>
           </div>
 
           <div className="lg:col-span-8 space-y-6">
-            <section className="bg-white p-8 md:p-10 rounded-[40px] border border-[#d0d5cb]/50 shadow-sm">
+            <Card className="rounded-[40px] p-8 md:p-10">
               <h3 className="text-lg font-black mb-8 text-[#193c1f]">
                 Public Profile
               </h3>
@@ -293,9 +293,9 @@ export default function ProfileManagement() {
                   />
                 </div>
               </div>
-            </section>
+            </Card>
 
-            <section className="bg-white p-8 md:p-10 rounded-[40px] border border-[#d0d5cb]/50 shadow-sm">
+            <Card className="rounded-[40px] p-8 md:p-10">
               <h3 className="text-lg font-black mb-8 text-[#193c1f]">
                 Personal Details
               </h3>
@@ -332,9 +332,9 @@ export default function ProfileManagement() {
                   <option value="PREFER_NOT_TO_SAY">Prefer not to say</option>
                 </Input>
               </div>
-            </section>
+            </Card>
 
-            <section className="bg-white p-8 md:p-10 rounded-[40px] border border-[#d0d5cb]/50 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <Card className="flex flex-col justify-between gap-6 rounded-[40px] p-8 md:flex-row md:items-center md:p-10">
               <div className="flex items-center gap-5">
                 <div className="w-14 h-14 bg-[#193c1f]/10 rounded-2xl flex items-center justify-center text-[#193c1f]">
                   <svg
@@ -363,7 +363,7 @@ export default function ProfileManagement() {
               >
                 Change Password
               </Button>
-            </section>
+            </Card>
 
             <div className="pt-4 flex justify-end">
               <Button

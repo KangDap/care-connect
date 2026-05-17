@@ -1,5 +1,8 @@
 'use client';
 
+import { Button } from '@/components/button';
+import { Card } from '@/components/card';
+import { Input } from '@/components/input';
 import {
   AlertCircle,
   Calendar,
@@ -11,6 +14,7 @@ import {
   Trash2,
   User,
 } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -325,17 +329,18 @@ export default function AdminSchedulePage() {
             </p>
           </div>
         </div>
-        <button
+        <Button
           onClick={handleSave}
           disabled={saveLoading || !selectedPsyId}
-          className={`flex items-center gap-2 px-6 py-3 rounded-2xl text-sm font-bold transition-all shadow-sm disabled:opacity-50 disabled:cursor-not-allowed ${
+          loading={saveLoading}
+          className={`rounded-2xl px-6 py-3 text-sm ${
             saveSuccess
-              ? 'bg-green-500 text-white scale-95'
+              ? 'scale-95 bg-green-500 text-white'
               : 'bg-[#193c1f] text-white hover:bg-[#2d5c36]'
           }`}
         >
           {saveLoading ? (
-            <Loader2 className="animate-spin" size={16} />
+            'Saving...'
           ) : saveSuccess ? (
             <>
               <Check size={16} /> Saved!
@@ -345,7 +350,7 @@ export default function AdminSchedulePage() {
               <Calendar size={16} /> Save Schedule
             </>
           )}
-        </button>
+        </Button>
       </div>
 
       {error && (
@@ -356,21 +361,25 @@ export default function AdminSchedulePage() {
       )}
 
       {/* Psychologist Selector */}
-      <div className="bg-white rounded-3xl border border-[#d0d5cb] p-6 shadow-sm">
+      <Card className="rounded-3xl p-6">
         <p className="text-[10px] font-black uppercase tracking-widest text-[#8ea087] mb-4">
           Select Psychologist
         </p>
         <div className="relative">
-          <button
+          <Button
             onClick={() => setDropdownOpen((v) => !v)}
-            className="w-full flex items-center justify-between px-5 py-4 bg-[#f7f3ed] border border-[#d0d5cb] rounded-2xl hover:border-[#8ea087] transition-colors"
+            variant="outline"
+            className="w-full justify-between rounded-2xl bg-[#f7f3ed] px-5 py-4 hover:border-[#8ea087]"
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-[#d0d5cb] flex items-center justify-center text-[#8ea087] shrink-0 overflow-hidden">
                 {selectedPsy?.image ? (
-                  <img
+                  <Image
                     src={selectedPsy.image}
                     alt=""
+                    width={40}
+                    height={40}
+                    unoptimized
                     className="w-full h-full object-cover"
                   />
                 ) : (
@@ -387,7 +396,7 @@ export default function AdminSchedulePage() {
               size={18}
               className={`text-[#8ea087] transition-transform ${dropdownOpen ? 'rotate-180' : ''}`}
             />
-          </button>
+          </Button>
 
           {dropdownOpen && (
             <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-[#d0d5cb] rounded-2xl shadow-xl z-20 overflow-hidden max-h-60 overflow-y-auto">
@@ -403,21 +412,25 @@ export default function AdminSchedulePage() {
                 </div>
               ) : (
                 psychologists.map((psy) => (
-                  <button
+                  <Button
                     key={psy.id}
                     onClick={() => {
                       setSelectedPsyId(psy.id);
                       setDropdownOpen(false);
                     }}
-                    className={`w-full flex items-center gap-3 px-5 py-4 hover:bg-[#f7f3ed] transition-colors text-left ${
+                    variant="ghost"
+                    className={`w-full justify-start px-5 py-4 text-left normal-case tracking-normal text-[#193c1f] hover:bg-[#f7f3ed] ${
                       psy.id === selectedPsyId ? 'bg-[#f7f3ed]' : ''
                     }`}
                   >
                     <div className="w-9 h-9 rounded-full bg-[#d0d5cb] flex items-center justify-center text-[#8ea087] shrink-0 overflow-hidden">
                       {psy.image ? (
-                        <img
+                        <Image
                           src={psy.image}
                           alt=""
+                          width={36}
+                          height={36}
+                          unoptimized
                           className="w-full h-full object-cover"
                         />
                       ) : (
@@ -432,16 +445,16 @@ export default function AdminSchedulePage() {
                     {psy.id === selectedPsyId && (
                       <Check size={16} className="ml-auto text-[#8ea087]" />
                     )}
-                  </button>
+                  </Button>
                 ))
               )}
             </div>
           )}
         </div>
-      </div>
+      </Card>
 
       {/* Day Picker */}
-      <div className="bg-white rounded-3xl border border-[#d0d5cb] p-6 shadow-sm">
+      <Card className="rounded-3xl p-6">
         <p className="text-[10px] font-black uppercase tracking-widest text-[#8ea087] mb-4">
           Available Days
         </p>
@@ -449,13 +462,14 @@ export default function AdminSchedulePage() {
           {DAYS.map((day) => {
             const isActive = activeDays.has(day);
             return (
-              <button
+              <Button
                 key={day}
                 onClick={() => toggleDay(day)}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm border-2 transition-all duration-150 ${
+                variant={isActive ? 'primary' : 'outline'}
+                className={`rounded-xl px-5 py-2.5 text-sm ${
                   isActive
-                    ? 'bg-[#193c1f] text-white border-[#193c1f] shadow-sm'
-                    : 'bg-white text-[#193c1f] border-[#d0d5cb] hover:border-[#8ea087]'
+                    ? 'border-[#193c1f] shadow-sm'
+                    : 'border-[#d0d5cb] text-[#193c1f] hover:border-[#8ea087]'
                 }`}
               >
                 {isActive ? (
@@ -464,7 +478,7 @@ export default function AdminSchedulePage() {
                   <Plus size={14} className="opacity-40" />
                 )}
                 {DAY_SHORT[day]}
-              </button>
+              </Button>
             );
           })}
         </div>
@@ -473,17 +487,14 @@ export default function AdminSchedulePage() {
             No days selected. Click a day to add availability.
           </p>
         )}
-      </div>
+      </Card>
 
       {/* Time Slot Editor per Day */}
       {DAYS.filter((day) => activeDays.has(day)).map((day) => {
         const ds = daySchedule(day);
         const slots = ds?.slots ?? [];
         return (
-          <div
-            key={day}
-            className="bg-white rounded-3xl border border-[#d0d5cb] p-6 shadow-sm"
-          >
+          <Card key={day} className="rounded-3xl p-6">
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-xl bg-[#193c1f] flex items-center justify-center">
@@ -491,12 +502,13 @@ export default function AdminSchedulePage() {
                 </div>
                 <h3 className="font-black text-[#193c1f]">{day}</h3>
               </div>
-              <button
+              <Button
                 onClick={() => addSlot(day)}
-                className="flex items-center gap-1.5 text-[11px] font-bold text-[#8ea087] border border-[#d0d5cb] hover:border-[#8ea087] hover:bg-[#f7f3ed] px-3 py-1.5 rounded-xl transition-all"
+                variant="outline"
+                className="rounded-xl px-3 py-1.5 text-[11px] text-[#8ea087] hover:border-[#8ea087]"
               >
                 <Plus size={13} /> Add Slot
-              </button>
+              </Button>
             </div>
 
             <div className="space-y-3">
@@ -518,13 +530,13 @@ export default function AdminSchedulePage() {
                         <label className="text-[9px] font-black uppercase tracking-widest text-[#8ea087]">
                           From
                         </label>
-                        <input
+                        <Input
                           type="time"
                           value={slot.start}
                           onChange={(e) =>
                             updateSlot(day, slot.id, 'start', e.target.value)
                           }
-                          className="bg-white border border-[#d0d5cb] rounded-xl px-3 py-2 text-sm font-bold text-[#193c1f] focus:outline-none focus:border-[#8ea087] transition-colors"
+                          className="rounded-xl bg-white px-3 py-2 text-sm font-bold text-[#193c1f]"
                         />
                       </div>
                       <span className="text-[#d0d5cb] font-black mt-4">→</span>
@@ -532,28 +544,29 @@ export default function AdminSchedulePage() {
                         <label className="text-[9px] font-black uppercase tracking-widest text-[#8ea087]">
                           To
                         </label>
-                        <input
+                        <Input
                           type="time"
                           value={slot.end}
                           onChange={(e) =>
                             updateSlot(day, slot.id, 'end', e.target.value)
                           }
-                          className="bg-white border border-[#d0d5cb] rounded-xl px-3 py-2 text-sm font-bold text-[#193c1f] focus:outline-none focus:border-[#8ea087] transition-colors"
+                          className="rounded-xl bg-white px-3 py-2 text-sm font-bold text-[#193c1f]"
                         />
                       </div>
                     </div>
-                    <button
+                    <Button
                       onClick={() => removeSlot(day, slot.id)}
-                      className="opacity-0 group-hover:opacity-100 p-2 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                      variant="ghost"
+                      className="rounded-xl p-2 text-red-400 opacity-0 hover:bg-red-50 hover:text-red-600 group-hover:opacity-100"
                       title="Remove slot"
                     >
                       <Trash2 size={15} />
-                    </button>
+                    </Button>
                   </div>
                 ))
               )}
             </div>
-          </div>
+          </Card>
         );
       })}
 

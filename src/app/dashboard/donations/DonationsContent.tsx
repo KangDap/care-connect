@@ -1,5 +1,8 @@
 'use client';
 
+import { Badge } from '@/components/badge';
+import { Button } from '@/components/button';
+import { Card } from '@/components/card';
 import { Pagination } from '@/components/pagination';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
@@ -415,16 +418,17 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
               : 'Your contributions to the community.'}
           </p>
         </div>
-        <button
+        <Button
           onClick={() => router.push('/donation')}
-          className="px-7 py-3.5 bg-[#8ea087] hover:bg-[#193c1f] text-white rounded-2xl font-bold text-[14px] transition-all shadow-lg whitespace-nowrap"
+          variant="secondary"
+          className="whitespace-nowrap shadow-lg"
         >
           + New Donation
-        </button>
+        </Button>
       </div>
 
       {/* Table */}
-      <div className="bg-white border border-[#d0d5cb] rounded-[32px] overflow-hidden shadow-sm">
+      <Card className="overflow-hidden rounded-[32px] p-0">
         <table className="w-full text-left">
           <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
             <tr>
@@ -472,9 +476,9 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
                           </p>
                         </div>
                         {isPending && (
-                          <span className="ml-2 text-[10px] text-amber-600 bg-amber-50 border border-amber-200 rounded-full px-2 py-0.5 font-bold whitespace-nowrap">
+                          <Badge className="ml-2 whitespace-nowrap border border-amber-200 bg-amber-50 px-2 py-0.5 text-amber-600">
                             Click to pay
-                          </span>
+                          </Badge>
                         )}
                       </div>
                     </td>
@@ -485,11 +489,7 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
                       {formatPaymentMethod(row.paymentMethod)}
                     </td>
                     <td className="px-8 py-6">
-                      <span
-                        className={`px-4 py-1.5 rounded-full text-[10px] font-black ${badge.cls}`}
-                      >
-                        {badge.label}
-                      </span>
+                      <Badge className={badge.cls}>{badge.label}</Badge>
                     </td>
                     <td className="px-8 py-6 text-right font-black text-[16px]">
                       {formatRupiah(row.amount)}
@@ -533,11 +533,9 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
                                     <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
                                       Status
                                     </p>
-                                    <span
-                                      className={`inline-block px-3 py-1 rounded-full text-[10px] font-black uppercase ${badge.cls}`}
-                                    >
+                                    <Badge className={badge.cls}>
                                       {badge.label}
-                                    </span>
+                                    </Badge>
                                   </div>
                                   <div className="space-y-1">
                                     <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
@@ -560,37 +558,17 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
                                       )}
 
                                     {/* Complete Payment Button */}
-                                    <button
+                                    <Button
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         handleCompletePayment(row);
                                       }}
                                       disabled={isProcessing || isCanceling}
-                                      className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-[#193c1f] text-white rounded-xl font-bold text-[13px] hover:bg-[#8ea087] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                      loading={isProcessing}
+                                      className="w-full rounded-xl px-4 py-3 text-[13px] hover:bg-[#8ea087]"
                                     >
                                       {isProcessing ? (
-                                        <>
-                                          <svg
-                                            className="animate-spin h-4 w-4"
-                                            viewBox="0 0 24 24"
-                                          >
-                                            <circle
-                                              className="opacity-25"
-                                              cx="12"
-                                              cy="12"
-                                              r="10"
-                                              stroke="currentColor"
-                                              strokeWidth="4"
-                                              fill="none"
-                                            />
-                                            <path
-                                              className="opacity-75"
-                                              fill="currentColor"
-                                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                                            />
-                                          </svg>
-                                          Opening payment...
-                                        </>
+                                        'Opening payment...'
                                       ) : (
                                         <>
                                           <svg
@@ -609,40 +587,21 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
                                           Complete Payment
                                         </>
                                       )}
-                                    </button>
+                                    </Button>
 
                                     {/* Change Payment Method Button */}
-                                    <button
+                                    <Button
                                       onClick={(e) => {
                                         e.stopPropagation();
                                         void handleChangePaymentMethod(row);
                                       }}
                                       disabled={isProcessing || isCanceling}
-                                      className="w-full flex items-center justify-center gap-2 px-4 py-3 border border-[#d0d5cb] text-[#193c1f] rounded-xl font-bold text-[13px] hover:bg-[#f7f3ed] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                      loading={isCanceling}
+                                      variant="outline"
+                                      className="w-full rounded-xl px-4 py-3 text-[13px]"
                                     >
                                       {isCanceling ? (
-                                        <>
-                                          <svg
-                                            className="animate-spin h-4 w-4"
-                                            viewBox="0 0 24 24"
-                                          >
-                                            <circle
-                                              className="opacity-25"
-                                              cx="12"
-                                              cy="12"
-                                              r="10"
-                                              stroke="currentColor"
-                                              strokeWidth="4"
-                                              fill="none"
-                                            />
-                                            <path
-                                              className="opacity-75"
-                                              fill="currentColor"
-                                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                                            />
-                                          </svg>
-                                          Canceling old donation...
-                                        </>
+                                        'Canceling old donation...'
                                       ) : (
                                         <>
                                           <svg
@@ -661,7 +620,7 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
                                           Change Payment Method
                                         </>
                                       )}
-                                    </button>
+                                    </Button>
                                   </div>
                                 )}
                               </div>
@@ -727,7 +686,7 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
             </tbody>
           )}
         </table>
-      </div>
+      </Card>
 
       <Pagination
         currentPage={currentPage}
