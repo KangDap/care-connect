@@ -1,10 +1,16 @@
 'use client';
 
+import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
+import { Card } from '@/components/card';
+import { Input } from '@/components/input';
+import { Pagination } from '@/components/pagination';
 import { PublicHeader } from '@/components/public-header';
 import {
   ArrowRight,
+  Calendar,
   Check,
+  FileText,
   Filter,
   MapPin,
   RotateCcw,
@@ -27,24 +33,48 @@ interface Report {
   coverImageUrl: string | null;
 }
 
+const categoryOptions = [
+  { label: 'Physical Violence', value: 'PHYSICAL' },
+  { label: 'Sexual Harassment', value: 'SEXUAL' },
+  { label: 'Psychological / Verbal', value: 'PSYCHOLOGICAL' },
+  { label: 'Other', value: 'OTHER' },
+];
+
+const statusOptions = [
+  { label: 'Pending', value: 'PENDING' },
+  { label: 'Reviewed', value: 'REVIEWED' },
+  { label: 'Resolved', value: 'RESOLVED' },
+  { label: 'Rejected', value: 'REJECTED' },
+];
+
+const categoryLabel = Object.fromEntries(
+  categoryOptions.map((category) => [category.value, category.label]),
+);
+
+const statusLabel = Object.fromEntries(
+  statusOptions.map((status) => [status.value, status.label]),
+);
+
+const getStatusBadge = (status: string) => {
+  if (status === 'RESOLVED') return 'SUCCESS';
+  if (status === 'PENDING') return 'PENDING';
+  if (status === 'REVIEWED') return 'UPCOMING';
+  return 'DEFAULT';
+};
+
+const reportsPerPage = 6;
+
 const PublicReportsPage = () => {
   const [reports, setReports] = useState<Report[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Filter States
+  const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedStatus, setSelectedStatus] = useState('ALL');
   const [locationFilter, setLocationFilter] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [sortBy, setSortBy] = useState('newest');
-
-  const categories = [
-    'Physical Violence',
-    'Sexual Harassment',
-    'Psychological / Verbal',
-    'Other',
-  ];
 
   useEffect(() => {
     const fetchReports = async () => {
@@ -56,17 +86,20 @@ const PublicReportsPage = () => {
         setReports(data.data || []);
       } catch (err) {
         console.error('Failed to fetch reports:', err);
+        setReports([]);
       } finally {
         setIsLoading(false);
       }
     };
+
     fetchReports();
   }, []);
 
   const handleCategoryToggle = (category: string) => {
+    setCurrentPage(1);
     setSelectedCategories((prev) =>
       prev.includes(category)
-        ? prev.filter((c) => c !== category)
+        ? prev.filter((current) => current !== category)
         : [...prev, category],
     );
   };
@@ -74,36 +107,33 @@ const PublicReportsPage = () => {
   const resetFilters = () => {
     setSearchQuery('');
     setSelectedCategories([]);
+    setSelectedStatus('ALL');
     setLocationFilter('');
     setStartDate('');
     setEndDate('');
     setSortBy('newest');
+    setCurrentPage(1);
   };
 
   const filteredReports = useMemo(() => {
     return reports
       .filter((report) => {
+        const normalizedSearch = searchQuery.toLowerCase();
         const matchesSearch =
-          report.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          report.description.toLowerCase().includes(searchQuery.toLowerCase());
-
-        const categoryMapping: Record<string, string> = {
-          'Physical Violence': 'PHYSICAL',
-          'Sexual Harassment': 'SEXUAL',
-          'Psychological / Verbal': 'PSYCHOLOGICAL',
-          Other: 'OTHER',
-        };
-        const mappedSelectedCategories = selectedCategories.map(
-          (c) => categoryMapping[c] || c,
-        );
+          report.title.toLowerCase().includes(normalizedSearch) ||
+          report.description.toLowerCase().includes(normalizedSearch);
 
         const matchesCategory =
-          mappedSelectedCategories.length === 0 ||
-          mappedSelectedCategories.includes(report.category);
+          selectedCategories.length === 0 ||
+          selectedCategories.includes(report.category);
 
+        const matchesStatus =
+          selectedStatus === 'ALL' || report.status === selectedStatus;
+
+        const normalizedLocation = locationFilter.toLowerCase();
         const matchesLocation =
-          report.city.toLowerCase().includes(locationFilter.toLowerCase()) ||
-          report.province.toLowerCase().includes(locationFilter.toLowerCase());
+          report.city.toLowerCase().includes(normalizedLocation) ||
+          report.province.toLowerCase().includes(normalizedLocation);
 
         const reportDate = new Date(report.incidentDate).getTime();
         const start = startDate ? new Date(startDate).getTime() : -Infinity;
@@ -111,254 +141,285 @@ const PublicReportsPage = () => {
         const matchesDate = reportDate >= start && reportDate <= end;
 
         return (
-          matchesSearch && matchesCategory && matchesLocation && matchesDate
+          matchesSearch &&
+          matchesCategory &&
+          matchesStatus &&
+          matchesLocation &&
+          matchesDate
         );
       })
       .sort((a, b) => {
-        if (sortBy === 'newest')
-          return (
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          );
-        return (
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-        );
+        const newest =
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        return sortBy === 'newest' ? newest : -newest;
       });
   }, [
     reports,
     searchQuery,
     selectedCategories,
+    selectedStatus,
     locationFilter,
     startDate,
     endDate,
     sortBy,
   ]);
 
+  const totalPages = Math.ceil(filteredReports.length / reportsPerPage);
+  const paginatedReports = filteredReports.slice(
+    (currentPage - 1) * reportsPerPage,
+    currentPage * reportsPerPage,
+  );
+
   return (
-    <div className="min-h-screen bg-[#f7f3ed]">
+    <div className="min-h-screen bg-[#f7f3ed] text-[#193c1f]">
       <PublicHeader />
 
-      <main className="max-w-7xl mx-auto p-6 md:p-12">
-        {/* Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-6 text-left">
+      <main className="mx-auto w-full max-w-7xl px-6 py-10 md:px-12">
+        <div className="mb-8 flex flex-col gap-6 text-left md:flex-row md:items-end md:justify-between">
           <div>
-            <h1 className="text-5xl md:text-6xl font-black uppercase text-[#193c1f] tracking-tighter leading-none mb-4">
+            <h1 className="mb-4 text-4xl font-black uppercase leading-none tracking-normal text-[#193c1f] md:text-6xl">
               Public Reports
             </h1>
-            <p className="text-[#8ea087] text-lg font-medium">
-              Community safety and insights.
+            <p className="max-w-2xl text-base font-medium text-[#8ea087] md:text-lg">
+              Community safety reports from every moderation status.
             </p>
           </div>
           <Link href="/report">
-            <Button className="bg-[#193c1f] hover:bg-[#8ea087] text-white rounded-2xl px-8 py-4 font-bold shadow-lg uppercase tracking-widest text-sm">
+            <Button className="w-full uppercase tracking-widest md:w-auto">
               Create Report
+              <ArrowRight size={18} />
             </Button>
           </Link>
         </div>
 
-        {/* Search Bar */}
-        <div className="mb-10 relative w-full group">
-          <span className="absolute left-6 top-1/2 -translate-y-1/2">
-            <Search
-              size={22}
-              className="text-[#8ea087] group-focus-within:text-[#193c1f]"
-            />
-          </span>
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search reports..."
-            className="w-full h-[64px] bg-white border border-[#d0d5cb] focus:border-[#193c1f] rounded-[24px] pl-16 pr-8 outline-none text-[#193c1f] shadow-sm transition-all"
-          />
-        </div>
+        <Input
+          value={searchQuery}
+          onChange={(event) => {
+            setSearchQuery(event.target.value);
+            setCurrentPage(1);
+          }}
+          placeholder="Search reports..."
+          icon={<Search size={20} />}
+          className="h-16 bg-white text-base shadow-sm"
+        />
 
-        <div className="flex flex-col lg:flex-row gap-12 mt-10">
-          {/* Sidebar Filters */}
-          <aside className="w-full lg:w-80 space-y-6">
-            <div className="bg-white p-8 rounded-[40px] border border-[#d0d5cb] shadow-sm sticky top-8 text-left">
-              <div className="flex justify-between items-center mb-10">
-                <h2 className="font-black uppercase text-sm tracking-widest flex items-center gap-2 text-[#193c1f]">
-                  <Filter size={18} /> Filters
+        <div className="mt-10 flex flex-col gap-8 lg:flex-row">
+          <aside className="w-full lg:w-80">
+            <Card className="sticky top-8 rounded-3xl p-6">
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="flex items-center gap-2 text-sm font-black uppercase tracking-widest">
+                  <Filter size={18} />
+                  Filters
                 </h2>
-                <button
+                <Button
+                  variant="ghost"
                   onClick={resetFilters}
-                  className="text-[10px] text-[#8ea087] font-black uppercase flex items-center gap-1 hover:text-red-500"
+                  className="px-2 py-2"
                 >
-                  <RotateCcw size={12} /> Reset
-                </button>
+                  <RotateCcw size={14} />
+                  Reset
+                </Button>
               </div>
 
-              {/* Sort By */}
-              <div className="mb-10">
-                <p className="text-[11px] font-black text-[#8ea087] uppercase tracking-widest mb-4">
-                  Sort By
-                </p>
-                <select
+              <div className="space-y-6">
+                <Input
+                  label="Sort By"
+                  type="select"
                   value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full bg-[#f7f3ed] rounded-xl px-4 py-3 text-sm font-bold text-[#193c1f] outline-none cursor-pointer"
+                  onChange={(event) => {
+                    setSortBy(event.target.value);
+                    setCurrentPage(1);
+                  }}
                 >
                   <option value="newest">Most Recent</option>
                   <option value="oldest">Oldest</option>
-                </select>
-              </div>
+                </Input>
 
-              {/* VISUAL CHECKBOXES CATEGORY */}
-              <div className="space-y-4 mb-10">
-                <p className="text-[11px] font-black text-[#8ea087] uppercase tracking-widest">
-                  Category
-                </p>
-                <div className="flex flex-col gap-3">
-                  {categories.map((cat) => (
-                    <div
-                      key={cat}
-                      onClick={() => handleCategoryToggle(cat)}
-                      className="flex items-center gap-3 cursor-pointer group"
-                    >
-                      {/* Custom Visual Checkbox */}
-                      <div
-                        className={`
-                        w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-200
-                        ${
-                          selectedCategories.includes(cat)
-                            ? 'bg-[#193c1f] border-[#193c1f]'
-                            : 'bg-transparent border-[#d0d5cb] group-hover:border-[#8ea087]'
-                        }
-                      `}
-                      >
-                        {selectedCategories.includes(cat) && (
-                          <Check size={14} className="text-white stroke-[4]" />
-                        )}
-                      </div>
-
-                      <span
-                        className={`text-sm font-bold transition-colors ${selectedCategories.includes(cat) ? 'text-[#193c1f]' : 'text-[#193c1f]/60 group-hover:text-[#8ea087]'}`}
-                      >
-                        {cat}
-                      </span>
-                    </div>
+                <Input
+                  label="Status"
+                  type="select"
+                  value={selectedStatus}
+                  onChange={(event) => {
+                    setSelectedStatus(event.target.value);
+                    setCurrentPage(1);
+                  }}
+                >
+                  <option value="ALL">All Statuses</option>
+                  {statusOptions.map((status) => (
+                    <option key={status.value} value={status.value}>
+                      {status.label}
+                    </option>
                   ))}
-                </div>
-              </div>
+                </Input>
 
-              {/* Location Filter */}
-              <div className="mb-10">
-                <p className="text-[11px] font-black text-[#8ea087] uppercase tracking-widest mb-4">
-                  Location
-                </p>
-                <div className="relative">
-                  <MapPin
-                    size={16}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 text-[#8ea087]"
-                  />
-                  <input
-                    placeholder="City or province..."
-                    value={locationFilter}
-                    onChange={(e) => setLocationFilter(e.target.value)}
-                    className="w-full bg-[#f7f3ed] rounded-xl pl-10 pr-4 py-3 text-sm font-bold outline-none border-transparent focus:border-[#8ea087]"
-                  />
-                </div>
-              </div>
+                <div>
+                  <p className="mb-3 text-[11px] font-black uppercase tracking-widest text-[#8ea087]">
+                    Category
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    {categoryOptions.map((category) => {
+                      const isSelected = selectedCategories.includes(
+                        category.value,
+                      );
 
-              {/* Date Filter */}
-              <div className="space-y-3">
-                <p className="text-[11px] font-black text-[#8ea087] uppercase tracking-widest">
-                  Date Range
-                </p>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-[#8ea087] uppercase px-2">
-                    Start Date
-                  </label>
-                  <input
+                      return (
+                        <button
+                          key={category.value}
+                          type="button"
+                          onClick={() => handleCategoryToggle(category.value)}
+                          className="flex items-center gap-3 rounded-2xl px-2 py-2 text-left transition-colors hover:bg-[#f7f3ed]"
+                        >
+                          <span
+                            className={`flex h-6 w-6 items-center justify-center rounded-lg border-2 transition-colors ${
+                              isSelected
+                                ? 'border-[#193c1f] bg-[#193c1f] text-white'
+                                : 'border-[#d0d5cb] text-transparent'
+                            }`}
+                          >
+                            <Check size={14} />
+                          </span>
+                          <span className="text-sm font-bold">
+                            {category.label}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <Input
+                  label="Location"
+                  value={locationFilter}
+                  onChange={(event) => {
+                    setLocationFilter(event.target.value);
+                    setCurrentPage(1);
+                  }}
+                  placeholder="City or province..."
+                  icon={<MapPin size={16} />}
+                />
+
+                <div className="grid grid-cols-1 gap-3">
+                  <Input
+                    label="Start Date"
                     type="date"
                     value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
-                    className="w-full bg-[#f7f3ed] rounded-xl px-4 py-3 text-xs font-bold outline-none"
+                    onChange={(event) => {
+                      setStartDate(event.target.value);
+                      setCurrentPage(1);
+                    }}
+                    icon={<Calendar size={16} />}
                   />
-                  <label className="text-[10px] font-bold text-[#8ea087] uppercase px-2">
-                    End Date
-                  </label>
-                  <input
+                  <Input
+                    label="End Date"
                     type="date"
                     value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
-                    className="w-full bg-[#f7f3ed] rounded-xl px-4 py-3 text-xs font-bold outline-none"
+                    onChange={(event) => {
+                      setEndDate(event.target.value);
+                      setCurrentPage(1);
+                    }}
+                    icon={<Calendar size={16} />}
                   />
                 </div>
               </div>
-            </div>
+            </Card>
           </aside>
 
-          {/* Grid Content */}
-          <div className="flex-1">
-            <div className="mb-6 px-4 text-left">
-              <p className="text-sm font-bold text-[#193c1f]">
+          <section className="min-w-0 flex-1">
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm font-bold">
                 Showing{' '}
                 <span className="text-[#8ea087]">{filteredReports.length}</span>{' '}
-                Results
+                of {reports.length} reports
               </p>
             </div>
 
             {isLoading ? (
-              <div className="py-20 text-center bg-white rounded-[40px] border border-[#d0d5cb]">
-                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#193c1f]"></div>
-              </div>
+              <Card className="rounded-3xl py-16 text-center">
+                <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-[#193c1f]" />
+                <p className="mt-4 text-xs font-black uppercase tracking-widest text-[#8ea087]">
+                  Loading reports...
+                </p>
+              </Card>
             ) : filteredReports.length === 0 ? (
-              <div className="py-20 text-center bg-white rounded-[40px] border border-dashed border-[#d0d5cb]">
-                <p className="text-[#8ea087] italic">No reports found.</p>
-              </div>
+              <Card className="rounded-3xl border-dashed py-16 text-center">
+                <FileText size={40} className="mx-auto mb-4 text-[#8ea087]" />
+                <p className="font-bold">No reports found.</p>
+                <p className="mt-1 text-sm text-[#8ea087]">
+                  Try adjusting your filters.
+                </p>
+              </Card>
             ) : (
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                {filteredReports.map((report) => (
-                  <Link
-                    key={report.id}
-                    href={`/publicreports/${report.id}`}
-                    className="group"
-                  >
-                    <div className="bg-white rounded-[48px] border border-[#d0d5cb] overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col h-full text-left">
-                      <div className="h-56 relative overflow-hidden bg-[#EBE6DE]">
-                        {report.coverImageUrl && (
-                          <Image
-                            src={report.coverImageUrl}
-                            alt="Cover"
-                            fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-700"
-                          />
-                        )}
-                        <div className="absolute top-6 left-6 z-10">
-                          <span className="text-[10px] font-black uppercase text-[#193c1f] bg-white/90 px-4 py-2 rounded-full shadow-sm">
-                            CASE #{report.id.toString().slice(-5).toUpperCase()}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="p-10 flex flex-col flex-1">
-                        <span className="text-[10px] font-black text-[#8ea087] uppercase tracking-widest mb-4">
-                          {report.category}
-                        </span>
-                        <h3 className="font-black text-2xl text-[#193c1f] mb-4 group-hover:text-[#8ea087] transition-colors leading-tight italic">
-                          {report.title}
-                        </h3>
-                        <p className="text-sm text-[#193c1f]/60 font-medium leading-relaxed mb-10 line-clamp-3">
-                          {report.description}
-                        </p>
-
-                        <div className="flex justify-between items-center pt-8 border-t border-[#f7f3ed] mt-auto">
-                          <span className="text-[10px] font-black text-[#193c1f] uppercase flex items-center gap-2">
-                            <MapPin size={14} className="text-[#8ea087]" />{' '}
-                            {report.city}
-                          </span>
-                          <div className="flex items-center gap-2 text-[11px] font-black uppercase text-[#193c1f] group-hover:translate-x-2 transition-transform">
-                            View Details <ArrowRight size={18} />
+              <>
+                <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+                  {paginatedReports.map((report) => (
+                    <Link
+                      key={report.id}
+                      href={`/publicreports/${report.id}`}
+                      className="group block"
+                    >
+                      <Card className="flex h-full flex-col rounded-3xl transition-all duration-300 hover:border-[#193c1f] hover:shadow-xl">
+                        <div className="relative h-56 overflow-hidden bg-[#EBE6DE]">
+                          {report.coverImageUrl ? (
+                            <Image
+                              src={report.coverImageUrl}
+                              alt={report.title}
+                              fill
+                              className="object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                          ) : (
+                            <div className="flex h-full items-center justify-center text-[#8ea087]">
+                              <FileText size={52} />
+                            </div>
+                          )}
+                          <div className="absolute left-5 top-5 flex flex-wrap gap-2">
+                            <Badge>
+                              {categoryLabel[report.category] ||
+                                report.category}
+                            </Badge>
+                            <Badge status={getStatusBadge(report.status)}>
+                              {statusLabel[report.status] || report.status}
+                            </Badge>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
+
+                        <div className="flex flex-1 flex-col p-7">
+                          <span className="mb-3 text-[10px] font-black uppercase tracking-widest text-[#8ea087]">
+                            Case #{report.id.toString().slice(-5).toUpperCase()}
+                          </span>
+                          <h3 className="mb-3 text-2xl font-black leading-tight transition-colors group-hover:text-[#8ea087]">
+                            {report.title}
+                          </h3>
+                          <p className="mb-7 line-clamp-3 text-sm font-medium leading-relaxed text-[#193c1f]/60">
+                            {report.description}
+                          </p>
+
+                          <div className="mt-auto flex items-center justify-between gap-4 border-t border-[#f7f3ed] pt-5">
+                            <span className="flex min-w-0 items-center gap-2 text-[11px] font-black uppercase">
+                              <MapPin
+                                size={14}
+                                className="shrink-0 text-[#8ea087]"
+                              />
+                              <span className="truncate">{report.city}</span>
+                            </span>
+                            <span className="flex shrink-0 items-center gap-2 text-[11px] font-black uppercase transition-transform group-hover:translate-x-1">
+                              View Details
+                              <ArrowRight size={16} />
+                            </span>
+                          </div>
+                        </div>
+                      </Card>
+                    </Link>
+                  ))}
+                </div>
+
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              </>
             )}
-          </div>
+          </section>
         </div>
       </main>
     </div>
