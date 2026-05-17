@@ -10,7 +10,6 @@ export async function GET(req: Request) {
 
     const where: Record<string, unknown> = {
       isPublic: true,
-      status: 'RESOLVED',
     };
 
     if (category) {
