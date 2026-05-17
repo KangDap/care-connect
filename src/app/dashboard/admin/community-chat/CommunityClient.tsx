@@ -1,18 +1,19 @@
 'use client';
 
+import { ForumModal } from '@/components/ForumModal';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
-import { Input } from '@/components/input';
-import { Modal } from '@/components/modal';
 import { Toast } from '@/components/toast';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import React, { useState } from 'react';
 
 type Channel = {
   id: number;
   name: string;
   description: string | null;
   type: 'PUBLIC' | 'PRIVATE';
+  coverUrl: string | null;
   createdAt: Date;
   chats?: { id: number; timestamp: Date }[];
 };
@@ -27,25 +28,29 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
     type: 'success' | 'error';
   }>({ show: false, msg: '', type: 'success' });
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    name: string;
+    description: string;
+    type: string;
+    coverImage: File | null;
+  }>({
     name: '',
     description: '',
     type: 'PUBLIC',
+    coverImage: null,
   });
 
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [updateId, setUpdateId] = useState<number | null>(null);
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
-  const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [channelToDelete, setChannelToDelete] = useState<number | null>(null);
 
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleCreate = async (data: FormData) => {
     setLoading(true);
     try {
-      const res = await fetch('/api/dashboard/admin/community-chat', {
+      const res = await fetch('/api/community-chat', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: data,
       });
 
       if (!res.ok) throw new Error('Failed to create channel');
@@ -55,7 +60,12 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
         type: 'success',
       });
       setIsCreateModalOpen(false);
-      setFormData({ name: '', description: '', type: 'PUBLIC' });
+      setFormData({
+        name: '',
+        description: '',
+        type: 'PUBLIC',
+        coverImage: null,
+      });
       router.refresh();
     } catch (err) {
       setToastState({
@@ -74,19 +84,19 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
       name: ch.name,
       description: ch.description || '',
       type: ch.type,
+      coverImage: null,
     });
     setIsUpdateModalOpen(true);
   };
 
-  const handleUpdate = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleUpdate = async (data: FormData) => {
     if (!updateId) return;
     setLoading(true);
     try {
+      data.append('id', updateId.toString());
       const res = await fetch('/api/dashboard/admin/community-chat', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: updateId, ...formData }),
+        body: data,
       });
 
       if (!res.ok) throw new Error('Failed to update channel');
@@ -96,7 +106,12 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
         type: 'success',
       });
       setIsUpdateModalOpen(false);
-      setFormData({ name: '', description: '', type: 'PUBLIC' });
+      setFormData({
+        name: '',
+        description: '',
+        type: 'PUBLIC',
+        coverImage: null,
+      });
       setUpdateId(null);
       router.refresh();
     } catch (err) {
@@ -110,16 +125,11 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
     }
   };
 
-  const confirmDelete = (id: number) => {
-    setDeleteId(id);
-    setIsDeleteAlertOpen(true);
-  };
-
-  const executeDelete = async () => {
-    if (!deleteId) return;
+  const handleDelete = async () => {
+    if (!channelToDelete) return;
     try {
       const res = await fetch(
-        `/api/dashboard/admin/community-chat?id=${deleteId}`,
+        `/api/dashboard/admin/community-chat?id=${channelToDelete}`,
         {
           method: 'DELETE',
         },
@@ -131,7 +141,7 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
         type: 'success',
       });
       setIsDeleteAlertOpen(false);
-      setDeleteId(null);
+      setChannelToDelete(null);
       router.refresh();
     } catch (err) {
       setToastState({
@@ -156,6 +166,15 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
         msg={toastState.msg}
         type={toastState.type}
         onClose={() => setToastState({ ...toastState, show: false })}
+      />
+      <Alert
+        isOpen={isDeleteAlertOpen}
+        onClose={() => setIsDeleteAlertOpen(false)}
+        onConfirm={handleDelete}
+        title="Delete Channel?"
+        description="Are you sure you want to delete this channel? ALL messages will be deleted forever. This action cannot be undone."
+        type="danger"
+        confirmText="Delete Channel"
       />
       <div className="flex justify-between items-center">
         <div>
@@ -198,9 +217,30 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
                   className="hover:bg-[#f7f3ed]/50 transition-colors"
                 >
                   <td className="px-6 py-4">
-                    <div className="font-bold text-[#193c1f]">#{ch.name}</div>
-                    <div className="text-xs text-gray-500">
-                      {ch.description}
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl overflow-hidden bg-[#F7F3ED] flex items-center justify-center border border-[#D0D5CB] shrink-0 relative">
+                        {ch.coverUrl ? (
+                          <Image
+                            src={ch.coverUrl}
+                            alt={ch.name}
+                            fill
+                            className="object-cover"
+                            unoptimized
+                          />
+                        ) : (
+                          <span className="text-[#8EA087] font-black text-xs">
+                            #{ch.name.charAt(0)}
+                          </span>
+                        )}
+                      </div>
+                      <div>
+                        <div className="font-bold text-[#193C1F]">
+                          #{ch.name}
+                        </div>
+                        <div className="text-xs text-gray-500 line-clamp-1 max-w-[200px]">
+                          {ch.description}
+                        </div>
+                      </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 font-medium text-gray-600">
@@ -210,22 +250,21 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
                     {fmtDate(ch.createdAt)}
                   </td>
                   <td className="px-6 py-4 text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button
-                        variant="outline"
-                        onClick={() => openUpdateModal(ch)}
-                        className="text-xs px-4 py-1.5 min-h-0 h-auto"
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="outline"
-                        onClick={() => confirmDelete(ch.id)}
-                        className="text-xs px-4 py-1.5 min-h-0 h-auto text-red-600 border-red-600 hover:bg-red-50"
-                      >
-                        Delete
-                      </Button>
-                    </div>
+                    <button
+                      onClick={() => openUpdateModal(ch)}
+                      className="text-sm font-bold text-blue-600 hover:text-blue-700 transition"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => {
+                        setChannelToDelete(ch.id);
+                        setIsDeleteAlertOpen(true);
+                      }}
+                      className="text-sm font-bold text-red-600 hover:text-red-700 ml-4 transition"
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))
@@ -234,125 +273,33 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
         </table>
       </div>
 
-      <Modal
-        title="Create Channel"
+      <ForumModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
-      >
-        <form onSubmit={handleCreate} className="space-y-4">
-          <Input
-            label="Name"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            required
-            placeholder="e.g. stress-relief"
-          />
-          <div>
-            <label className="text-sm font-bold text-[#193c1f] mb-1.5 block">
-              Description
-            </label>
-            <textarea
-              className="w-full bg-[#ede4d8] border border-[#d0d5cb] rounded-xl px-4 py-3 text-sm text-[#193c1f] focus:outline-none focus:border-[#8ea087] focus:ring-1 focus:ring-[#8ea087] transition-shadow resize-none"
-              rows={3}
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-            />
-          </div>
-          <div>
-            <label className="text-sm font-bold text-[#193c1f] mb-1.5 block">
-              Type
-            </label>
-            <select
-              className="w-full bg-[#ede4d8] border border-[#d0d5cb] rounded-xl px-4 py-3 text-sm text-[#193c1f] focus:outline-none focus:border-[#8ea087] focus:ring-1 focus:ring-[#8ea087]"
-              value={formData.type}
-              onChange={(e) =>
-                setFormData({ ...formData, type: e.target.value })
-              }
-            >
-              <option value="PUBLIC">Public</option>
-              <option value="PRIVATE">Private</option>
-            </select>
-          </div>
-          <div className="pt-2 flex justify-end gap-2">
-            <Button
-              variant="ghost"
-              type="button"
-              onClick={() => setIsCreateModalOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button loading={loading} type="submit">
-              Create
-            </Button>
-          </div>
-        </form>
-      </Modal>
-      <Modal
+        onSubmit={handleCreate}
+        loading={loading}
+      />
+
+      <ForumModal
         title="Edit Channel"
         isOpen={isUpdateModalOpen}
-        onClose={() => setIsUpdateModalOpen(false)}
-      >
-        <form onSubmit={handleUpdate} className="space-y-4">
-          <Input
-            label="Name"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            required
-            placeholder="e.g. stress-relief"
-          />
-          <div>
-            <label className="text-sm font-bold text-[#193c1f] mb-1.5 block">
-              Description
-            </label>
-            <textarea
-              className="w-full bg-[#ede4d8] border border-[#d0d5cb] rounded-xl px-4 py-3 text-sm text-[#193c1f] focus:outline-none focus:border-[#8ea087] focus:ring-1 focus:ring-[#8ea087] transition-shadow resize-none"
-              rows={3}
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
+        onClose={() => {
+          setIsUpdateModalOpen(false);
+          setUpdateId(null);
+        }}
+        onSubmit={handleUpdate}
+        loading={loading}
+        initialData={
+          updateId
+            ? {
+                name: formData.name,
+                description: formData.description,
+                category: '', // Channels don't have category yet
+                type: formData.type,
+                coverUrl: channels.find((c) => c.id === updateId)?.coverUrl,
               }
-            />
-          </div>
-          <div>
-            <label className="text-sm font-bold text-[#193c1f] mb-1.5 block">
-              Type
-            </label>
-            <select
-              className="w-full bg-[#ede4d8] border border-[#d0d5cb] rounded-xl px-4 py-3 text-sm text-[#193c1f] focus:outline-none focus:border-[#8ea087] focus:ring-1 focus:ring-[#8ea087]"
-              value={formData.type}
-              onChange={(e) =>
-                setFormData({ ...formData, type: e.target.value })
-              }
-            >
-              <option value="PUBLIC">Public</option>
-              <option value="PRIVATE">Private</option>
-            </select>
-          </div>
-          <div className="pt-2 flex justify-end gap-2">
-            <Button
-              variant="ghost"
-              type="button"
-              onClick={() => setIsUpdateModalOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button loading={loading} type="submit">
-              Save
-            </Button>
-          </div>
-        </form>
-      </Modal>
-
-      <Alert
-        isOpen={isDeleteAlertOpen}
-        onClose={() => setIsDeleteAlertOpen(false)}
-        onConfirm={executeDelete}
-        title="Delete Channel"
-        description="Are you sure you want to delete this channel? ALL messages will be deleted forever."
-        confirmText="Delete"
-        type="danger"
+            : undefined
+        }
       />
     </div>
   );

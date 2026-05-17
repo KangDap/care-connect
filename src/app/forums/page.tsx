@@ -1,9 +1,11 @@
 'use client';
 
+import { ForumModal } from '@/components/ForumModal';
 import { PublicHeader } from '@/components/public-header';
 import { authClient } from '@/lib/auth/auth-client';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowRight, Loader2, MessageSquare, Plus, Users } from 'lucide-react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 
@@ -18,6 +20,7 @@ interface ForumRoom {
   _count?: {
     members: number;
   };
+  coverUrl?: string | null;
 }
 
 const SupportForumsPage = () => {
@@ -27,6 +30,8 @@ const SupportForumsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [joiningId, setJoiningId] = useState<number | null>(null);
   const [bannedNotice, setBannedNotice] = useState<string | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
   // 1. Ambil session untuk cek Role Admin
   const { data: session } = authClient.useSession();
@@ -102,6 +107,33 @@ const SupportForumsPage = () => {
       console.error('Error joining room:', error);
     } finally {
       setJoiningId(null);
+    }
+  };
+
+  const handleCreateForum = async (data: FormData) => {
+    try {
+      setIsCreating(true);
+
+      const response = await fetch('/api/community-chat', {
+        method: 'POST',
+        body: data,
+      });
+
+      if (response.ok) {
+        setIsCreateModalOpen(false);
+        router.refresh();
+        // Reload rooms manually since we use local state
+        const updatedRooms = await fetch('/api/community-chat?all=true').then(
+          (res) => res.json(),
+        );
+        setRooms(
+          Array.isArray(updatedRooms) ? updatedRooms : updatedRooms.data,
+        );
+      }
+    } catch (error) {
+      console.error('Error creating forum:', error);
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -184,11 +216,25 @@ const SupportForumsPage = () => {
                     >
                       <div className="h-44 bg-[#f7f3ed] flex items-center justify-center relative overflow-hidden transition-colors group-hover:bg-[#EBE6DE]">
                         <div className="absolute inset-0 bg-gradient-to-br from-[#f7f3ed] via-[#E6DED3] to-[#d0d5cb]" />
-                        <MessageSquare
-                          size={48}
-                          className="relative z-10 text-[#8ea087] opacity-40 group-hover:scale-110 transition-transform duration-500"
-                        />
-                        <span className="absolute bottom-6 left-8 z-10 text-[10px] font-black uppercase tracking-[0.2em] text-[#8ea087] bg-white/80 backdrop-blur-sm px-4 py-2 rounded-xl border border-[#d0d5cb]/50">
+                        {room.coverUrl ? (
+                          <Image
+                            src={room.coverUrl}
+                            alt={
+                              room.title ||
+                              (room as { name?: string }).name ||
+                              'Forum'
+                            }
+                            fill
+                            className="object-cover relative z-10 transition-transform duration-500 group-hover:scale-105"
+                            unoptimized
+                          />
+                        ) : (
+                          <MessageSquare
+                            size={48}
+                            className="relative z-10 text-[#8ea087] opacity-40 group-hover:scale-110 transition-transform duration-500"
+                          />
+                        )}
+                        <span className="absolute bottom-6 left-8 z-20 text-[10px] font-black uppercase tracking-[0.2em] text-[#8ea087] bg-white/80 backdrop-blur-sm px-4 py-2 rounded-xl border border-[#d0d5cb]/50">
                           ROOM #{room.id}
                         </span>
                         {banned && (
@@ -264,8 +310,11 @@ const SupportForumsPage = () => {
           )}
 
           {isAdmin && (
-            <div className="border-2 border-dashed border-[#d0d5cb] rounded-[40px] flex flex-col items-center justify-center p-12 text-center space-y-6 group cursor-pointer hover:bg-white/50 transition-all duration-500 h-full min-h-[400px]">
-              <div className="w-16 h-16 bg-[#EBE6DE] rounded-full flex items-center justify-center text-[#8ea087] group-hover:bg-[#193c1f] group-hover:text-white transition-all duration-500 shadow-sm">
+            <div
+              onClick={() => setIsCreateModalOpen(true)}
+              className="border-2 border-dashed border-[#D0D5CB] rounded-[40px] flex flex-col items-center justify-center p-12 text-center space-y-6 group cursor-pointer hover:bg-white/50 transition-all duration-500 h-full min-h-[400px]"
+            >
+              <div className="w-16 h-16 bg-[#EBE6DE] rounded-full flex items-center justify-center text-[#8EA087] group-hover:bg-[#193C1F] group-hover:text-white transition-all duration-500 shadow-sm">
                 <Plus size={32} strokeWidth={3} />
               </div>
               <div>
@@ -280,6 +329,13 @@ const SupportForumsPage = () => {
           )}
         </div>
       </main>
+
+      <ForumModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+        onSubmit={handleCreateForum}
+        loading={isCreating}
+      />
     </div>
   );
 };

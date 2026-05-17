@@ -3,6 +3,16 @@
 import { Alert } from '@/components/alert';
 import { Header } from '@/components/header';
 import { authClient } from '@/lib/auth/auth-client';
+import {
+  Calendar,
+  CreditCard,
+  FileText,
+  LayoutDashboard,
+  MessageSquare,
+  ShieldAlert,
+  User,
+  Users,
+} from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useState } from 'react';
@@ -10,72 +20,7 @@ import React, { useState } from 'react';
 // ==========================================
 // --- ICONS SIDEBAR (Dikelompokkan di sini) ---
 // ==========================================
-const DashboardIcon = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect x="3" y="3" width="7" height="7" />
-    <rect x="14" y="3" width="7" height="7" />
-    <rect x="14" y="14" width="7" height="7" />
-    <rect x="3" y="14" width="7" height="7" />
-  </svg>
-);
-const ConsultationIcon = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-    <circle cx="9" cy="7" r="4" />
-    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-  </svg>
-);
-const ReportsIcon = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-    <polyline points="14 2 14 8 20 8" />
-    <line x1="16" y1="13" x2="8" y2="13" />
-    <line x1="16" y1="17" x2="8" y2="17" />
-  </svg>
-);
-const DonationsIcon = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <line x1="12" y1="1" x2="12" y2="23" />
-    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-  </svg>
-);
+// Icons are now handled by Lucide-React components directly
 const LogoCareConnect = () => (
   <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
     <rect width="32" height="32" rx="6" fill="#193C1F" />
@@ -93,7 +38,7 @@ const LogoCareConnect = () => (
 // --- SUB-KOMPONEN SIDEBAR ITEM ---
 // ==========================================
 type SidebarItemProps = {
-  icon: React.ComponentType;
+  icon: React.ElementType;
   label: string;
   href: string;
   active: boolean;
@@ -107,7 +52,7 @@ const SidebarItem = ({ icon: Icon, label, href, active }: SidebarItemProps) => (
       <div
         className={`${active ? 'text-[#193c1f]' : 'group-hover:scale-110 transition-transform'}`}
       >
-        <Icon />
+        <Icon size={20} strokeWidth={active ? 2.5 : 2} />
       </div>
       <span className="text-[14px] tracking-wide">{label}</span>
     </div>
@@ -124,12 +69,18 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLogoutAlertOpen, setIsLogoutAlertOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // LOGIKA DETEKSI HALAMAN (Berdasarkan Folder)
   const isAtPsikologPage = pathname.startsWith('/dashboard/psikolog');
   const isAtAdminPage = pathname.startsWith('/dashboard/admin');
+
+  // Close sidebar on route change (mobile)
+  React.useEffect(() => {
+    setIsSidebarOpen(false);
+  }, [pathname]);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -139,9 +90,21 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="fixed inset-0 w-full h-full flex bg-[#f7f3ed] overflow-hidden m-0 p-0 z-0">
+    <div className="fixed inset-0 w-full h-full flex bg-[#F7F3ED] overflow-hidden m-0 p-0 z-0">
+      {/* OVERLAY FOR MOBILE */}
+      {isSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-[#193C1F]/40 backdrop-blur-sm z-[150] lg:hidden animate-in fade-in duration-300"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       {/* SIDEBAR */}
-      <aside className="w-[280px] bg-[#F2EDE4] border-r border-[#d0d5cb] flex flex-col shrink-0 h-full">
+      <aside
+        className={`fixed lg:relative top-0 bottom-0 left-0 w-[280px] bg-[#F2EDE4] border-r border-[#D0D5CB] flex flex-col shrink-0 h-full z-[200] transition-transform duration-300 ease-in-out ${
+          isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+        }`}
+      >
         <div className="p-10 flex flex-col gap-1 shrink-0">
           <Link
             href="/"
@@ -157,7 +120,7 @@ export default function DashboardLayout({
         <nav className="flex-1 mt-6 flex flex-col gap-1 overflow-y-auto">
           {/* Dashboard Home (Dinamis) */}
           <SidebarItem
-            icon={DashboardIcon}
+            icon={LayoutDashboard}
             label="Dashboard"
             href={
               isAtAdminPage
@@ -177,37 +140,37 @@ export default function DashboardLayout({
             /* --- MENU ADMIN --- */
             <>
               <SidebarItem
-                icon={ReportsIcon}
+                icon={ShieldAlert}
                 label="All Reports"
                 href="/dashboard/admin/reports"
                 active={pathname.startsWith('/dashboard/admin/reports')}
               />
               <SidebarItem
-                icon={ConsultationIcon}
+                icon={Users}
                 label="All Consultations"
                 href="/dashboard/admin/consultations"
                 active={pathname.startsWith('/dashboard/admin/consultations')}
               />
               <SidebarItem
-                icon={DonationsIcon}
+                icon={CreditCard}
                 label="All Donations"
                 href="/dashboard/admin/donations"
                 active={pathname.startsWith('/dashboard/admin/donations')}
               />
               <SidebarItem
-                icon={DashboardIcon}
+                icon={User}
                 label="Users"
                 href="/dashboard/admin/users"
                 active={pathname.startsWith('/dashboard/admin/users')}
               />
               <SidebarItem
-                icon={ReportsIcon}
+                icon={MessageSquare}
                 label="Community Chat"
                 href="/dashboard/admin/community-chat"
                 active={pathname.startsWith('/dashboard/admin/community-chat')}
               />
               <SidebarItem
-                icon={ConsultationIcon}
+                icon={Calendar}
                 label="Psikolog Schedules"
                 href="/dashboard/admin/schedules"
                 active={pathname.startsWith('/dashboard/admin/schedules')}
@@ -217,7 +180,7 @@ export default function DashboardLayout({
             /* --- MENU PSIKOLOG --- */
             <>
               <SidebarItem
-                icon={ConsultationIcon}
+                icon={Users}
                 label="All Consultations"
                 href="/dashboard/psikolog/consultations"
                 active={pathname.startsWith(
@@ -225,13 +188,13 @@ export default function DashboardLayout({
                 )}
               />
               <SidebarItem
-                icon={DonationsIcon}
+                icon={CreditCard}
                 label="Donation History"
                 href="/dashboard/psikolog/donations"
                 active={pathname.startsWith('/dashboard/psikolog/donations')}
               />
               <SidebarItem
-                icon={ConsultationIcon}
+                icon={Calendar}
                 label="My Schedule"
                 href="/dashboard/psikolog/schedule"
                 active={pathname.startsWith('/dashboard/psikolog/schedule')}
@@ -241,7 +204,7 @@ export default function DashboardLayout({
             /* --- MENU USER --- */
             <>
               <SidebarItem
-                icon={ConsultationIcon}
+                icon={Users}
                 label="My Consultations"
                 href="/dashboard/consultations"
                 active={
@@ -250,13 +213,13 @@ export default function DashboardLayout({
                 }
               />
               <SidebarItem
-                icon={ReportsIcon}
+                icon={FileText}
                 label="My Reports"
                 href="/dashboard/reports"
                 active={pathname.startsWith('/dashboard/reports')}
               />
               <SidebarItem
-                icon={DonationsIcon}
+                icon={CreditCard}
                 label="Donation History"
                 href="/dashboard/donations"
                 active={
@@ -272,11 +235,16 @@ export default function DashboardLayout({
       {/* MAIN CONTENT AREA */}
       <main className="flex-1 flex flex-col min-w-0 h-full overflow-hidden">
         <div className="shrink-0 w-full">
-          <Header onLogoutClick={() => setIsLogoutAlertOpen(true)} />
+          <Header
+            onLogoutClick={() => setIsLogoutAlertOpen(true)}
+            onMenuClick={() => setIsSidebarOpen(true)}
+          />
         </div>
 
-        <div className="flex-1 overflow-y-auto w-full bg-[#f7f3ed]">
-          <div className="p-10 w-full min-h-full box-border">{children}</div>
+        <div className="flex-1 overflow-y-auto w-full bg-[#F7F3ED]">
+          <div className="p-6 md:p-10 w-full min-h-full box-border">
+            {children}
+          </div>
         </div>
       </main>
 

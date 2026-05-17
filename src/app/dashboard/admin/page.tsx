@@ -1,5 +1,7 @@
+import { Card } from '@/components/card';
 import type { ApiFailure, ApiSuccess } from '@/lib/api-response';
 import type { AdminDashboardData } from '@/modules/dashboard/dashboard.types';
+import { Link, User } from 'lucide-react';
 import { headers } from 'next/headers';
 
 import {
@@ -80,25 +82,25 @@ export default async function AdminDashboardPage() {
       .join(' ');
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-[32px] font-black text-[#193c1f]">
+        <h1 className="text-2xl md:text-[32px] font-black text-[#193C1F] leading-tight">
           Admin Dashboard
         </h1>
-        <p className="text-[#8ea087] font-medium">
+        <p className="text-sm md:text-base text-[#8EA087] font-medium mt-1">
           Platform overview & moderation center.
         </p>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {/* Reports */}
-        <div className="bg-white border border-[#d0d5cb] rounded-2xl p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 bg-[#f7f3ed] rounded-xl flex items-center justify-center">
+        <Card className="p-5 md:p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-3 md:mb-4">
+            <div className="w-8 h-8 md:w-10 md:h-10 bg-[#F7F3ED] rounded-xl flex items-center justify-center">
               <svg
-                className="w-5 h-5 text-[#193c1f]"
+                className="w-4 h-4 md:w-5 md:h-5 text-[#193C1F]"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -111,22 +113,24 @@ export default async function AdminDashboardPage() {
                 />
               </svg>
             </div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-amber-600 bg-amber-50 px-2 py-1 rounded-full border border-amber-200">
+            <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-amber-600 bg-amber-50 px-2 py-0.5 md:py-1 rounded-full border border-amber-200">
               {pendingReports} pending
             </span>
           </div>
-          <p className="text-[#8ea087] text-sm font-medium">Total Reports</p>
-          <h3 className="text-4xl font-black text-[#193c1f] mt-1">
+          <p className="text-[#8EA087] text-xs md:text-sm font-medium">
+            Total Reports
+          </p>
+          <h3 className="text-2xl md:text-4xl font-black text-[#193C1F] mt-1 truncate">
             {totalReports}
           </h3>
-        </div>
+        </Card>
 
         {/* Consultations */}
-        <div className="bg-white border border-[#d0d5cb] rounded-2xl p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 bg-[#f7f3ed] rounded-xl flex items-center justify-center">
+        <Card className="p-5 md:p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-3 md:mb-4">
+            <div className="w-8 h-8 md:w-10 md:h-10 bg-[#F7F3ED] rounded-xl flex items-center justify-center">
               <svg
-                className="w-5 h-5 text-[#193c1f]"
+                className="w-4 h-4 md:w-5 md:h-5 text-[#193C1F]"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -139,24 +143,24 @@ export default async function AdminDashboardPage() {
                 />
               </svg>
             </div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-green-700 bg-green-50 px-2 py-1 rounded-full border border-green-200">
+            <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-green-700 bg-green-50 px-2 py-0.5 md:py-1 rounded-full border border-green-200">
               {activeConsultations} active
             </span>
           </div>
-          <p className="text-[#8ea087] text-sm font-medium">
+          <p className="text-[#8EA087] text-xs md:text-sm font-medium">
             Total Consultations
           </p>
-          <h3 className="text-4xl font-black text-[#193c1f] mt-1">
+          <h3 className="text-2xl md:text-4xl font-black text-[#193C1F] mt-1 truncate">
             {totalConsultations}
           </h3>
-        </div>
+        </Card>
 
         {/* Donations */}
-        <div className="bg-white border border-[#d0d5cb] rounded-2xl p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 bg-[#f7f3ed] rounded-xl flex items-center justify-center">
+        <Card className="p-5 md:p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-3 md:mb-4">
+            <div className="w-8 h-8 md:w-10 md:h-10 bg-[#F7F3ED] rounded-xl flex items-center justify-center">
               <svg
-                className="w-5 h-5 text-[#193c1f]"
+                className="w-4 h-4 md:w-5 md:h-5 text-[#193C1F]"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -169,24 +173,24 @@ export default async function AdminDashboardPage() {
                 />
               </svg>
             </div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-[#8ea087] bg-[#f7f3ed] px-2 py-1 rounded-full border border-[#d0d5cb]">
+            <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-[#8EA087] bg-[#F7F3ED] px-2 py-0.5 md:py-1 rounded-full border border-[#D0D5CB]">
               {totalDonationsCount} tx
             </span>
           </div>
-          <p className="text-[#8ea087] text-sm font-medium">
+          <p className="text-[#8EA087] text-xs md:text-sm font-medium">
             All-time Donations
           </p>
-          <h3 className="text-2xl font-black text-[#193c1f] mt-1">
+          <h3 className="text-xl md:text-2xl font-black text-[#193C1F] mt-1 truncate">
             {fmt(donationTotals.allTime)}
           </h3>
-        </div>
+        </Card>
 
         {/* Forum */}
-        <div className="bg-white border border-[#d0d5cb] rounded-2xl p-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <div className="w-10 h-10 bg-[#f7f3ed] rounded-xl flex items-center justify-center">
+        <Card className="p-5 md:p-6 shadow-sm">
+          <div className="flex items-center justify-between mb-3 md:mb-4">
+            <div className="w-8 h-8 md:w-10 md:h-10 bg-[#F7F3ED] rounded-xl flex items-center justify-center">
               <svg
-                className="w-5 h-5 text-[#193c1f]"
+                className="w-4 h-4 md:w-5 md:h-5 text-[#193C1F]"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -199,19 +203,21 @@ export default async function AdminDashboardPage() {
                 />
               </svg>
             </div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-[#8ea087] bg-[#f7f3ed] px-2 py-1 rounded-full border border-[#d0d5cb]">
+            <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-[#8EA087] bg-[#F7F3ED] px-2 py-0.5 md:py-1 rounded-full border border-[#D0D5CB]">
               Community
             </span>
           </div>
-          <p className="text-[#8ea087] text-sm font-medium">Forum Messages</p>
-          <h3 className="text-4xl font-black text-[#193c1f] mt-1">
+          <p className="text-[#8EA087] text-xs md:text-sm font-medium">
+            Forum Messages
+          </p>
+          <h3 className="text-2xl md:text-4xl font-black text-[#193C1F] mt-1 truncate">
             {totalChats}
           </h3>
-        </div>
+        </Card>
       </div>
 
       {/* Donation Summary Row */}
-      <div className="grid grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
         {[
           {
             label: "Today's Donations",
@@ -228,12 +234,14 @@ export default async function AdminDashboardPage() {
         ].map((item) => (
           <div
             key={item.label}
-            className="bg-[#193c1f] text-white rounded-2xl p-6"
+            className="bg-[#193C1F] text-white rounded-2xl p-5 md:p-6 shadow-md"
           >
-            <p className="text-[#8ea087] text-sm font-medium mb-2">
+            <p className="text-[#8EA087] text-xs md:text-sm font-medium mb-1 md:mb-2 opacity-80">
               {item.label}
             </p>
-            <p className="text-2xl font-black">{item.value}</p>
+            <p className="text-lg md:text-2xl font-black truncate">
+              {item.value}
+            </p>
           </div>
         ))}
       </div>
@@ -241,105 +249,132 @@ export default async function AdminDashboardPage() {
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Donations Line Chart */}
-        <div className="lg:col-span-1 bg-white border border-[#d0d5cb] rounded-2xl p-6 shadow-sm">
-          <h4 className="font-black text-[#193c1f] mb-1">Donations (7 Days)</h4>
-          <p className="text-[#8ea087] text-xs mb-4">Total amount per day</p>
-          <DonationLineChart data={donationChartData} />
-        </div>
+        <Card className="lg:col-span-1 p-5 md:p-6">
+          <h4 className="font-black text-[#193C1F] mb-1 text-sm md:text-base">
+            Donations (7 Days)
+          </h4>
+          <p className="text-[#8EA087] text-[10px] md:text-xs mb-4">
+            Total amount per day
+          </p>
+          <div className="h-[250px] md:h-[300px]">
+            <DonationLineChart data={donationChartData} />
+          </div>
+        </Card>
 
         {/* Reports Bar Chart */}
-        <div className="bg-white border border-[#d0d5cb] rounded-2xl p-6 shadow-sm">
-          <h4 className="font-black text-[#193c1f] mb-1">Reports by Status</h4>
-          <p className="text-[#8ea087] text-xs mb-4">
+        <Card className="p-5 md:p-6">
+          <h4 className="font-black text-[#193C1F] mb-1 text-sm md:text-base">
+            Reports by Status
+          </h4>
+          <p className="text-[#8EA087] text-[10px] md:text-xs mb-4">
             Distribution of all reports
           </p>
-          <ReportsBarChart data={reportsChartData} />
-        </div>
+          <div className="h-[250px] md:h-[300px]">
+            <ReportsBarChart data={reportsChartData} />
+          </div>
+        </Card>
 
         {/* Consultations Bar Chart */}
-        <div className="bg-white border border-[#d0d5cb] rounded-2xl p-6 shadow-sm">
-          <h4 className="font-black text-[#193c1f] mb-1">
+        <Card className="p-5 md:p-6">
+          <h4 className="font-black text-[#193C1F] mb-1 text-sm md:text-base">
             Consultations by Status
           </h4>
-          <p className="text-[#8ea087] text-xs mb-4">
+          <p className="text-[#8EA087] text-[10px] md:text-xs mb-4">
             Distribution of all consultations
           </p>
-          <ConsultationLineChart data={consultChartData} />
-        </div>
+          <div className="h-[250px] md:h-[300px]">
+            <ConsultationLineChart data={consultChartData} />
+          </div>
+        </Card>
       </div>
 
       {/* Recent Donations Table */}
-      <div className="bg-white border border-[#d0d5cb] rounded-2xl overflow-hidden shadow-sm">
-        <div className="p-6 border-b border-[#d0d5cb] flex justify-between items-center">
+      <Card>
+        <div className="p-5 md:p-6 border-b border-[#D0D5CB]/50 flex justify-between items-center bg-[#FDFCFB]">
           <div>
-            <h4 className="font-black text-[#193c1f]">Recent Donations</h4>
-            <p className="text-[#8ea087] text-xs mt-0.5">
+            <h4 className="font-black text-[#193C1F] text-sm md:text-base">
+              Recent Donations
+            </h4>
+            <p className="text-[#8EA087] text-[10px] md:text-xs mt-0.5">
               Latest successful transactions
             </p>
           </div>
-          <a
+          <Link
             href="/dashboard/admin/donations"
-            className="text-sm font-bold text-[#8ea087] hover:text-[#193c1f] transition-colors"
+            className="text-[11px] md:text-sm font-black text-[#193C1F] hover:opacity-70 transition-opacity bg-[#F7F3ED] px-3 py-1.5 md:px-4 md:py-2 rounded-xl border border-[#D0D5CB]"
           >
             View All →
-          </a>
+          </Link>
         </div>
-        <table className="w-full text-left">
-          <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
-            <tr>
-              <th className="px-6 py-4">Donor</th>
-              <th className="px-6 py-4">For</th>
-              <th className="px-6 py-4">Method</th>
-              <th className="px-6 py-4">Date</th>
-              <th className="px-6 py-4 text-right">Amount</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-[#f7f3ed] text-sm">
-            {recentDonations.length === 0 ? (
+        <div className="overflow-x-auto">
+          <table className="w-full text-left min-w-[700px]">
+            <thead className="bg-[#F7F3ED]/50 text-[10px] md:text-[11px] text-[#8EA087] font-black uppercase tracking-widest">
               <tr>
-                <td
-                  colSpan={5}
-                  className="px-6 py-10 text-center text-[#8ea087]"
-                >
-                  No donations yet.
-                </td>
+                <th className="px-6 py-4">Donor</th>
+                <th className="px-6 py-4">For</th>
+                <th className="px-6 py-4">Method</th>
+                <th className="px-6 py-4">Date</th>
+                <th className="px-6 py-4 text-right">Amount</th>
               </tr>
-            ) : (
-              recentDonations.map((d) => (
-                <tr
-                  key={d.id}
-                  className="hover:bg-[#f7f3ed]/50 transition-colors"
-                >
-                  <td className="px-6 py-4">
-                    <p className="font-bold text-[#193c1f]">{d.user.name}</p>
-                    <p className="text-[11px] text-[#8ea087]">{d.user.email}</p>
-                  </td>
-                  <td className="px-6 py-4 text-[#193c1f]">
-                    {d.donationType === 'PLATFORM' ? (
-                      <span className="text-xs font-bold text-[#8ea087] bg-[#f7f3ed] px-2 py-1 rounded-full">
-                        Platform
-                      </span>
-                    ) : (
-                      <span className="text-xs line-clamp-1">
-                        {d.report?.title || '—'}
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 text-[#8ea087] italic">
-                    {fmtMethod(d.paymentMethod)}
-                  </td>
-                  <td className="px-6 py-4 text-[#8ea087] text-xs">
-                    {fmtDate(d.timestamp)}
-                  </td>
-                  <td className="px-6 py-4 text-right font-black text-[#193c1f]">
-                    {fmt(Number(d.amount))}
+            </thead>
+            <tbody className="divide-y divide-[#F7F3ED] text-xs md:text-sm">
+              {recentDonations.length === 0 ? (
+                <tr>
+                  <td
+                    colSpan={5}
+                    className="px-6 py-12 text-center text-[#8EA087] font-medium italic"
+                  >
+                    No donations yet.
                   </td>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-      </div>
+              ) : (
+                recentDonations.map((d) => (
+                  <tr
+                    key={d.id}
+                    className="hover:bg-[#F7F3ED]/30 transition-colors group"
+                  >
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-[#F7F3ED] border border-[#D0D5CB] flex items-center justify-center shrink-0 overflow-hidden relative">
+                          <User size={14} className="text-[#8EA087]" />
+                        </div>
+                        <div>
+                          <p className="font-bold text-[#193C1F] group-hover:text-black transition-colors">
+                            {d.user.name}
+                          </p>
+                          <p className="text-[10px] text-[#8EA087] opacity-80">
+                            {d.user.email}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      {d.donationType === 'PLATFORM' ? (
+                        <span className="text-[10px] font-black text-[#193C1F] bg-[#193C1F]/5 px-2 py-1 rounded-lg border border-[#193C1F]/10">
+                          PLATFORM
+                        </span>
+                      ) : (
+                        <span className="text-[#193C1F] line-clamp-1 max-w-[150px] font-medium">
+                          {d.report?.title || '—'}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 text-[#8EA087] font-medium italic text-[11px]">
+                      {fmtMethod(d.paymentMethod)}
+                    </td>
+                    <td className="px-6 py-4 text-[#8EA087] text-[11px]">
+                      {fmtDate(d.timestamp)}
+                    </td>
+                    <td className="px-6 py-4 text-right font-black text-[#193C1F]">
+                      {fmt(Number(d.amount))}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </Card>
     </div>
   );
 }

@@ -1,19 +1,23 @@
 import Carousel from '@/components/carousel';
 import { PublicHeader } from '@/components/public-header';
-import { PaymentStatus } from '@/generated/prisma/enums';
+import { PaymentStatus, ReportStatus } from '@/generated/prisma/enums';
 import { auth } from '@/lib/auth/auth';
 import { prisma } from '@/lib/prisma';
 import { headers } from 'next/headers';
+import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
 export default async function LandingPage() {
   const session = await auth.api.getSession({ headers: await headers() });
   const isLoggedIn = !!session?.user;
+  const userRole = (session?.user as { role?: string })?.role;
 
   const [totalReports, totalConsultations, paidDonations, recentReports] =
     await Promise.all([
-      prisma.report.count(),
+      prisma.report.count({
+        where: { status: ReportStatus.RESOLVED },
+      }),
       prisma.consultation.count(),
       prisma.donation.aggregate({
         _sum: { amount: true },
@@ -22,7 +26,15 @@ export default async function LandingPage() {
       prisma.report.findMany({
         take: 3,
         orderBy: { createdAt: 'desc' },
-        where: { isPublic: true },
+        where: {
+          isPublic: true,
+          status: ReportStatus.RESOLVED,
+        },
+        include: {
+          evidences: {
+            take: 1,
+          },
+        },
       }),
     ]);
 
@@ -49,11 +61,21 @@ export default async function LandingPage() {
             healing starts with a single step.
           </p>
           <div className="flex gap-4">
-            <Link href={isLoggedIn ? '/consultation' : '/login'}>
-              <button className="bg-[#8ea087] text-[#f7f3ed] px-10 py-4 rounded-lg font-bold text-lg shadow-sm hover:bg-[#193c1f] transition-colors h-full">
+            {userRole === 'PSYCHOLOGIST' ? (
+              <button
+                disabled
+                className="bg-[#8ea087]/50 text-[#f7f3ed] px-10 py-4 rounded-lg font-bold text-lg shadow-sm cursor-not-allowed h-full"
+                title="Psychologists cannot create consultations"
+              >
                 Consult Now
               </button>
-            </Link>
+            ) : (
+              <Link href={isLoggedIn ? '/consultation' : '/login'}>
+                <button className="bg-[#8ea087] text-[#f7f3ed] px-10 py-4 rounded-lg font-bold text-lg shadow-sm hover:bg-[#193c1f] transition-colors h-full">
+                  Consult Now
+                </button>
+              </Link>
+            )}
             <Link href={isLoggedIn ? '/report' : '/login'}>
               <button className="bg-[#d0d5cb] text-[#193c1f] px-10 py-4 rounded-lg font-bold text-lg border border-[#8ea087] hover:bg-[#ede4d8] transition-colors">
                 Report Incident
@@ -75,7 +97,7 @@ export default async function LandingPage() {
         <div className="max-w-[1440px] mx-auto grid grid-cols-3 gap-8">
           <div className="bg-[#f7f3ed] p-12 rounded-2xl text-center shadow-sm border-b-4 border-[#8ea087]">
             <p className="text-[#193c1f] font-semibold mb-2 opacity-80">
-              Total Reports Handled
+              Reports Published
             </p>
             <h2 className="text-6xl font-black text-[#193c1f] mb-4">
               {totalReports}
@@ -84,7 +106,7 @@ export default async function LandingPage() {
           </div>
           <div className="bg-[#f7f3ed] p-12 rounded-2xl text-center shadow-sm border-b-4 border-[#8ea087]">
             <p className="text-[#193c1f] font-semibold mb-2 opacity-80">
-              Professional Consultations
+              Consultation Handled
             </p>
             <h2 className="text-6xl font-black text-[#193c1f] mb-4">
               {totalConsultations}
@@ -234,21 +256,31 @@ export default async function LandingPage() {
         <div className="grid grid-cols-3 gap-10">
           {recentReports.map((report) => (
             <div data-purpose="report-card" key={report.id}>
-              <div className="w-full aspect-video bg-[#d0d5cb] rounded-2xl mb-6 flex items-center justify-center text-[#8ea087]">
-                <svg
-                  className="w-12 h-12"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.744c0 5.578 4.5 10.13 10.125 10.13 5.625 0 10.125-4.552 10.125-10.13 0-1.494-.273-2.925-.77-4.244a11.959 11.959 0 0 1-8.355-3.212Z"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  ></path>
-                </svg>
+              <div className="w-full aspect-video bg-[#d0d5cb] rounded-2xl mb-6 flex items-center justify-center text-[#8ea087] overflow-hidden relative">
+                {report.evidences && report.evidences.length > 0 ? (
+                  <Image
+                    src={report.evidences[0].fileUrl}
+                    alt={`Report #${report.id} image`}
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                ) : (
+                  <svg
+                    className="w-12 h-12"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.744c0 5.578 4.5 10.13 10.125 10.13 5.625 0 10.125-4.552 10.125-10.13 0-1.494-.273-2.925-.77-4.244a11.959 11.959 0 0 1-8.355-3.212Z"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    ></path>
+                  </svg>
+                )}
               </div>
               <h3 className="text-2xl font-bold text-[#193c1f] mb-2">
                 Report #{report.id}

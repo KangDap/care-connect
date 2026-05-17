@@ -7,13 +7,20 @@ import { DonationClient } from './DonationClient';
 export default async function AdminDonationsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ month?: string; year?: string; status?: string }>;
+  searchParams: Promise<{
+    month?: string;
+    year?: string;
+    status?: string;
+    page?: string;
+  }>;
 }) {
   const params = await searchParams;
   const now = new Date();
   const currentMonth = Number(params.month) || now.getMonth() + 1;
   const currentYear = Number(params.year) || now.getFullYear();
   const status = params.status || 'ALL';
+  const page = Number(params.page) || 1;
+  const perPage = 10;
 
   const startDate = new Date(currentYear, currentMonth - 1, 1);
   const endDate = new Date(currentYear, currentMonth, 0, 23, 59, 59);
@@ -25,6 +32,7 @@ export default async function AdminDonationsPage({
 
   const [
     donations,
+    totalFilteredCount,
     platformDonations,
     allTimePlatformDonations,
     psychologists,
@@ -41,6 +49,8 @@ export default async function AdminDonationsPage({
     prisma.donation.findMany({
       where: whereDonation,
       orderBy: { timestamp: 'desc' },
+      skip: (page - 1) * perPage,
+      take: perPage,
       select: {
         id: true,
         reportId: true,
@@ -56,6 +66,7 @@ export default async function AdminDonationsPage({
         },
       },
     }),
+    prisma.donation.count({ where: whereDonation }),
     prisma.donation.aggregate({
       _sum: { amount: true },
       where: {
@@ -103,6 +114,7 @@ export default async function AdminDonationsPage({
     prisma.donation.count({ where: { paymentStatus: 'CANCELLED' } }),
   ]);
 
+  const totalPages = Math.ceil(totalFilteredCount / perPage);
   const totalPlatformAmount = Number(platformDonations._sum.amount || 0);
   const totalAllTimePlatformAmount = Number(
     allTimePlatformDonations._sum.amount || 0,
@@ -145,6 +157,10 @@ export default async function AdminDonationsPage({
         currentMonth={currentMonth}
         currentYear={currentYear}
         currentStatus={status}
+        page={page}
+        totalPages={totalPages}
+        perPage={perPage}
+        totalCount={totalFilteredCount}
         counts={{
           all: allDonationsCount,
           paid: paidDonationsCount,

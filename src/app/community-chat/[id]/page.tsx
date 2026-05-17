@@ -3,6 +3,7 @@
 import { Alert } from '@/components/alert';
 import { Header } from '@/components/header';
 import { authClient } from '@/lib/auth/auth-client';
+import type { ChatMessage } from '@/modules/community-chat/community-chat.types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   Loader2,
@@ -17,6 +18,23 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
+
+interface ChannelDetails {
+  id: number;
+  name: string;
+  title?: string;
+  description?: string;
+  coverUrl?: string;
+  type?: string;
+  myRole: string | null;
+  lastViewedAt?: string | null;
+  createdAt?: string | Date;
+  _count: { members: number };
+  messages: (ChatMessage & {
+    roleInChannel?: string;
+    replyTo?: { isAnonymous?: boolean } | null;
+  })[];
+}
 
 export default function CommunityChatContent() {
   const router = useRouter();
@@ -36,12 +54,9 @@ export default function CommunityChatContent() {
   const [isLeaveAlertOpen, setIsLeaveAlertOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [activeMenuId, setActiveMenuId] = useState<number | null>(null);
-  const [replyingTo, setReplyingTo] = useState<null | {
-    id: number;
-    isAnonymous: boolean;
-    user?: { name?: string; image?: string };
-    content: string;
-  }>(null);
+  const [replyingTo, setReplyingTo] = useState<
+    null | ChannelDetails['messages'][number]
+  >(null);
   const [inlineToast, setInlineToast] = useState<{
     message: string;
     type: 'info' | 'error';
@@ -76,13 +91,15 @@ export default function CommunityChatContent() {
   // Query: Channel Details & Messages
   const {
     data: chatData = {
+      id: 0,
       messages: [],
       name: '',
       _count: { members: 0 },
       myRole: null,
-    },
+      lastViewedAt: null,
+    } as ChannelDetails,
     isLoading: isLoadingMessages,
-  } = useQuery({
+  } = useQuery<ChannelDetails>({
     queryKey: ['community-messages', selectedChannelId],
     queryFn: async () => {
       const res = await fetch(`/api/community-chat/${selectedChannelId}`);
@@ -134,6 +151,9 @@ export default function CommunityChatContent() {
         queryKey: ['community-messages', selectedChannelId],
       });
       setActiveMenuId(null);
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 200);
     },
     onError: (error: Error) => {
       const msg = error.message.toLowerCase();
@@ -174,6 +194,9 @@ export default function CommunityChatContent() {
         queryKey: ['community-messages', selectedChannelId],
       });
       setActiveMenuId(null);
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      }, 200);
     },
     onError: (error: Error) => {
       const msg = error.message.toLowerCase();
@@ -217,14 +240,14 @@ export default function CommunityChatContent() {
       if (fileInputRef.current) fileInputRef.current.value = '';
       setTimeout(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-      }, 100);
+      }, 200);
     },
   });
 
   useEffect(() => {
     const timer = setTimeout(() => {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, 100);
+    }, 200);
     return () => clearTimeout(timer);
   }, [chatData.messages]);
 
@@ -325,6 +348,7 @@ export default function CommunityChatContent() {
                     isMember?: boolean;
                     unreadCount?: number;
                     _count?: { members: number };
+                    coverUrl?: string;
                   }) => (
                     <div
                       key={channel.id}
@@ -333,8 +357,18 @@ export default function CommunityChatContent() {
                       }
                       className={`rounded-xl p-3 flex items-start space-x-3 cursor-pointer transition ${selectedChannelId === channel.id ? 'bg-[#d0d5cb]' : 'hover:bg-[#ede4d8]'}`}
                     >
-                      <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shrink-0 border border-[#d0d5cb] text-[#8ea087]">
-                        <Users size={20} />
+                      <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shrink-0 border border-[#D0D5CB] text-[#8EA087] overflow-hidden relative">
+                        {channel.coverUrl ? (
+                          <Image
+                            src={channel.coverUrl}
+                            alt={channel.title || channel.name || 'Forum'}
+                            fill
+                            className="object-cover"
+                            unoptimized
+                          />
+                        ) : (
+                          <Users size={20} />
+                        )}
                       </div>
                       <div className="flex-1 min-w-0 flex items-center justify-between">
                         <div className="flex-1 min-w-0">
@@ -373,7 +407,20 @@ export default function CommunityChatContent() {
           <main className="flex-1 flex flex-col bg-white min-w-0">
             <header className="px-6 py-3 border-b border-[#d0d5cb] flex items-center justify-between bg-white shrink-0">
               <div className="flex items-center space-x-3">
-                <h3 className="font-bold text-[#193c1f]">
+                <div className="w-8 h-8 rounded-lg overflow-hidden bg-[#F7F3ED] flex items-center justify-center border border-[#D0D5CB] shrink-0 relative">
+                  {chatData.coverUrl ? (
+                    <Image
+                      src={chatData.coverUrl}
+                      alt={chatData.name || chatData.title || 'Forum'}
+                      fill
+                      className="object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    <Users size={16} className="text-[#8EA087]" />
+                  )}
+                </div>
+                <h3 className="font-bold text-[#193C1F]">
                   {chatData.name || chatData.title || 'Forum'}
                 </h3>
                 <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
@@ -411,87 +458,107 @@ export default function CommunityChatContent() {
                 <p className="text-center text-[#193c1f] text-xs opacity-50 py-4 animate-pulse">
                   Loading discussion...
                 </p>
+              ) : chatData.messages.length === 0 ? (
+                (() => {
+                  const roomDateRaw = chatData.createdAt;
+                  const roomDate = roomDateRaw
+                    ? new Date(roomDateRaw).toLocaleDateString([], {
+                        weekday: 'long',
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                      })
+                    : 'Unknown Date';
+                  return (
+                    <div className="space-y-4">
+                      <div className="flex justify-center my-6">
+                        <span className="bg-[#d0d5cb] bg-opacity-30 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full text-[#193c1f] opacity-60">
+                          {roomDate}
+                        </span>
+                      </div>
+                      <p className="text-center text-[#193c1f] text-xs opacity-50 py-4">
+                        No messages yet. Start the conversation!
+                      </p>
+                    </div>
+                  );
+                })()
               ) : (
-                chatData.messages.map(
-                  (chat: {
-                    id: number;
-                    user: { id: string; name?: string; image?: string };
-                    content: string;
-                    isAnonymous: boolean;
-                    isSystem?: boolean;
-                    timestamp: string | Date;
-                    roleInChannel?: string;
-                    replyTo?: {
-                      isAnonymous: boolean;
-                      user?: { name?: string };
-                      content: string;
-                    };
-                    mediaUrl?: string;
-                  }) => {
-                    const isMe = session?.user?.id === chat.user.id;
-                    const time = new Date(
-                      chat.timestamp ?? new Date(),
-                    ).toLocaleTimeString([], {
-                      hour: '2-digit',
-                      minute: '2-digit',
+                chatData.messages.map((chat, index) => {
+                  const isMe = session?.user?.id === chat.user.id;
+                  const time = new Date(
+                    chat.timestamp ?? new Date(),
+                  ).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  });
+
+                  const currentChatDate = new Date(
+                    chat.timestamp,
+                  ).toLocaleDateString([], {
+                    weekday: 'long',
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  });
+
+                  let showDatePill = false;
+                  if (index === 0) {
+                    showDatePill = true;
+                  } else {
+                    const prevChatDate = new Date(
+                      chatData.messages[index - 1].timestamp,
+                    ).toLocaleDateString([], {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
                     });
-                    const targetRoleInChannel = chat.roleInChannel || 'MEMBER';
-                    const targetIsBanned = targetRoleInChannel === 'BANNED';
+                    if (currentChatDate !== prevChatDate) {
+                      showDatePill = true;
+                    }
+                  }
+                  const targetRoleInChannel = chat.roleInChannel || 'MEMBER';
+                  const targetIsBanned = targetRoleInChannel === 'BANNED';
 
-                    // Can kick: not me, caller is owner or moderator kicking a plain member
-                    const canKick =
-                      !isMe &&
-                      (isOwner ||
-                        (isModerator && targetRoleInChannel === 'MEMBER'));
+                  // Can kick: not me, caller is owner or moderator kicking a plain member
+                  const canKick =
+                    !isMe &&
+                    (isOwner ||
+                      (isModerator && targetRoleInChannel === 'MEMBER'));
 
-                    // Can manage role: owner only, not me
-                    const canManageRole = isOwner && !isMe;
+                  // Can manage role: owner only, not me
+                  const canManageRole = isOwner && !isMe;
 
-                    // Determine if we need an unread divider
-                    let showUnreadDivider = false;
-                    const lastViewedAtStr = chatData.lastViewedAt || null;
-                    if (lastViewedAtStr && !isMe) {
-                      const chatTime = new Date(chat.timestamp).getTime();
-                      const lastViewedTime = new Date(
-                        lastViewedAtStr,
-                      ).getTime();
+                  // Determine if we need an unread divider
+                  let showUnreadDivider = false;
+                  const lastViewedAtStr = chatData.lastViewedAt || null;
+                  if (lastViewedAtStr && !isMe) {
+                    const chatTime = new Date(chat.timestamp).getTime();
+                    const lastViewedTime = new Date(lastViewedAtStr).getTime();
 
-                      if (chatTime > lastViewedTime) {
-                        // Check if this is the FIRST unread message
-                        const index = chatData.messages.findIndex(
-                          (m: { timestamp: string; user: { id: string } }) =>
-                            new Date(m.timestamp).getTime() > lastViewedTime &&
-                            m.user.id !== session?.user?.id,
-                        );
-                        if (chatData.messages[index]?.id === chat.id) {
-                          showUnreadDivider = true;
-                        }
+                    if (chatTime > lastViewedTime) {
+                      // Check if this is the FIRST unread message
+                      const index = chatData.messages.findIndex(
+                        (m) =>
+                          new Date(m.timestamp).getTime() > lastViewedTime &&
+                          m.user.id !== session?.user?.id,
+                      );
+                      if (chatData.messages[index]?.id === chat.id) {
+                        showUnreadDivider = true;
                       }
                     }
+                  }
 
-                    if (chat.isSystem) {
-                      return (
-                        <React.Fragment key={chat.id}>
-                          {showUnreadDivider && (
-                            <div className="flex items-center justify-center my-6">
-                              <div className="h-px bg-red-300 flex-1"></div>
-                              <span className="bg-red-50 text-red-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest mx-3 border border-red-200">
-                                Unread Messages
-                              </span>
-                              <div className="h-px bg-red-300 flex-1"></div>
-                            </div>
-                          )}
-                          <div className="flex justify-center my-4">
-                            <span className="bg-[#EBE6DE] text-[#193c1f] opacity-70 text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest text-center">
-                              {chat.content}
-                            </span>
-                          </div>
-                        </React.Fragment>
-                      );
-                    }
-
+                  if (chat.isSystem) {
                     return (
                       <React.Fragment key={chat.id}>
+                        {showDatePill && (
+                          <div className="flex justify-center my-6">
+                            <span className="bg-[#d0d5cb] bg-opacity-30 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full text-[#193c1f] opacity-60">
+                              {currentChatDate}
+                            </span>
+                          </div>
+                        )}
                         {showUnreadDivider && (
                           <div className="flex items-center justify-center my-6">
                             <div className="h-px bg-red-300 flex-1"></div>
@@ -501,202 +568,227 @@ export default function CommunityChatContent() {
                             <div className="h-px bg-red-300 flex-1"></div>
                           </div>
                         )}
-                        <div
-                          className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} group relative`}
-                        >
-                          <div
-                            className={`flex items-center space-x-2 ${isMe ? 'mr-10' : 'ml-10'} mb-1`}
-                          >
-                            <span className="text-xs font-bold text-[#193c1f] opacity-70">
-                              {chat.isAnonymous
-                                ? 'Anonymous'
-                                : chat.user.name || 'User'}
-                              {targetRoleInChannel === 'OWNER' && (
-                                <span className="ml-2 text-[9px] bg-[#193c1f] text-white px-1.5 py-0.5 rounded font-bold uppercase tracking-widest">
-                                  Owner
-                                </span>
-                              )}
-                              {targetRoleInChannel === 'MODERATOR' && (
-                                <span className="ml-2 text-[9px] bg-[#8ea087] text-white px-1.5 py-0.5 rounded font-bold uppercase tracking-widest">
-                                  Moderator
-                                </span>
-                              )}
-                            </span>
-                          </div>
-
-                          <div
-                            className={`flex items-start ${isMe ? 'flex-row-reverse' : 'space-x-3'}`}
-                          >
-                            <div className="w-8 h-8 rounded-full mt-1 flex items-center justify-center border border-[#d0d5cb] shrink-0 overflow-hidden">
-                              {chat.isAnonymous ? (
-                                <div className="bg-[#d0d5cb] w-full h-full flex items-center justify-center text-white text-[10px]">
-                                  ?
-                                </div>
-                              ) : (
-                                <Image
-                                  alt="Avatar"
-                                  width={32}
-                                  height={32}
-                                  className="object-cover w-full h-full"
-                                  unoptimized
-                                  src={
-                                    chat.user.image ||
-                                    'https://static.vecteezy.com/system/resources/previews/009/292/244/original/default-avatar-icon-of-social-media-user-vector.jpg'
-                                  }
-                                />
-                              )}
-                            </div>
-
-                            <div className="flex flex-col max-w-xl relative">
-                              {chat.replyTo && (
-                                <div
-                                  className={`${isMe ? 'bg-[#8ea087] bg-opacity-20 border-r-4 text-right rounded-tl-xl' : 'bg-[#ede4d8] bg-opacity-50 border-l-4 rounded-tr-xl'} border-[#8ea087] p-2 mb-1 text-[11px] text-[#193c1f] opacity-80 line-clamp-2`}
-                                >
-                                  <span className="font-bold block">
-                                    {chat.replyTo.isAnonymous
-                                      ? 'Anonymous'
-                                      : chat.replyTo.user?.name || 'User'}
-                                  </span>
-                                  {chat.replyTo.content}
-                                </div>
-                              )}
-                              <div
-                                className={`rounded-2xl p-4 text-sm shadow-sm border flex flex-col gap-2 ${isMe ? 'bg-[#8ea087] text-white rounded-tr-none border-transparent' : 'bg-[#ede4d8] text-[#193c1f] rounded-tl-none border-transparent'}`}
-                              >
-                                {chat.mediaUrl && (
-                                  <div className="overflow-hidden rounded-xl bg-black/5">
-                                    {chat.mediaUrl.match(
-                                      /\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i,
-                                    ) ? (
-                                      <Image
-                                        width={300}
-                                        height={300}
-                                        unoptimized
-                                        src={chat.mediaUrl}
-                                        alt="Attached media"
-                                        className="max-w-full h-auto max-h-64 object-contain"
-                                      />
-                                    ) : (
-                                      <a
-                                        href={chat.mediaUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center space-x-2 p-3 hover:bg-black/10 transition"
-                                      >
-                                        <Paperclip size={18} />
-                                        <span className="text-xs font-bold underline truncate">
-                                          View Attachment
-                                        </span>
-                                      </a>
-                                    )}
-                                  </div>
-                                )}
-                                {chat.content && <span>{chat.content}</span>}
-                              </div>
-
-                              {/* Message Actions (Reply & Moderation) */}
-                              <div
-                                className={`absolute top-0 ${isMe ? 'right-full mr-2' : 'left-full ml-2'} opacity-0 group-hover:opacity-100 transition-opacity z-50 flex items-center h-full space-x-1`}
-                              >
-                                <button
-                                  onClick={() => setReplyingTo(chat)}
-                                  className="w-8 h-8 flex items-center justify-center text-[#193c1f] opacity-40 hover:opacity-100 hover:bg-gray-200 rounded-full transition-all shrink-0"
-                                  title="Reply"
-                                >
-                                  <svg
-                                    className="w-5 h-5"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      strokeLinecap="round"
-                                      strokeLinejoin="round"
-                                      strokeWidth="2"
-                                      d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
-                                    />
-                                  </svg>
-                                </button>
-
-                                {/* Only show moderation menu if caller has permissions */}
-                                {(canKick || canManageRole) && (
-                                  <div className="relative">
-                                    <button
-                                      onClick={() =>
-                                        setActiveMenuId(
-                                          activeMenuId === chat.id
-                                            ? null
-                                            : chat.id,
-                                        )
-                                      }
-                                      className="w-8 h-8 flex items-center justify-center hover:bg-gray-200 rounded-full transition-colors shrink-0"
-                                    >
-                                      <MoreVertical size={16} />
-                                    </button>
-                                    {activeMenuId === chat.id && (
-                                      <div
-                                        className={`absolute z-[100] mt-1 w-40 bg-white border border-[#d0d5cb] shadow-2xl rounded-xl overflow-hidden py-1 ${isMe ? 'left-0' : 'right-0'}`}
-                                      >
-                                        {targetIsBanned ? (
-                                          <div className="px-4 py-3 text-[10px] font-black text-gray-400 flex items-center gap-2 uppercase tracking-tight italic">
-                                            <ShieldCheck size={14} /> Member
-                                            Removed
-                                          </div>
-                                        ) : (
-                                          <>
-                                            {canKick && (
-                                              <button
-                                                onClick={() =>
-                                                  kickMutation.mutate(
-                                                    chat.user.id,
-                                                  )
-                                                }
-                                                className="w-full text-left px-4 py-2.5 text-[11px] font-bold text-red-600 hover:bg-red-50 flex items-center gap-2 uppercase tracking-tight border-b border-gray-50"
-                                              >
-                                                <UserMinus size={14} /> Kick
-                                                User
-                                              </button>
-                                            )}
-                                            {canManageRole && (
-                                              <button
-                                                onClick={() =>
-                                                  changeRoleMutation.mutate({
-                                                    userId: chat.user.id,
-                                                    role:
-                                                      targetRoleInChannel ===
-                                                      'MODERATOR'
-                                                        ? 'MEMBER'
-                                                        : 'MODERATOR',
-                                                  })
-                                                }
-                                                className="w-full text-left px-4 py-2.5 text-[11px] font-bold text-[#193c1f] hover:bg-gray-50 flex items-center gap-2 uppercase tracking-tight"
-                                              >
-                                                <ShieldCheck size={14} />{' '}
-                                                {targetRoleInChannel ===
-                                                'MODERATOR'
-                                                  ? 'Demote to Member'
-                                                  : 'Make Moderator'}
-                                              </button>
-                                            )}
-                                          </>
-                                        )}
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                          <span
-                            className={`text-[10px] text-[#193c1f] opacity-40 ${isMe ? 'mr-11' : 'ml-11'} mt-1`}
-                          >
-                            {time}
+                        <div className="flex justify-center my-4">
+                          <span className="bg-[#EBE6DE] text-[#193C1F] opacity-70 text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest text-center">
+                            {chat.content}
                           </span>
                         </div>
                       </React.Fragment>
                     );
-                  },
-                )
+                  }
+
+                  return (
+                    <React.Fragment key={chat.id}>
+                      {showDatePill && (
+                        <div className="flex justify-center my-6">
+                          <span className="bg-[#d0d5cb] bg-opacity-30 text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full text-[#193c1f] opacity-60">
+                            {currentChatDate}
+                          </span>
+                        </div>
+                      )}
+                      {showUnreadDivider && (
+                        <div className="flex items-center justify-center my-6">
+                          <div className="h-px bg-red-300 flex-1"></div>
+                          <span className="bg-red-50 text-red-600 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest mx-3 border border-red-200">
+                            Unread Messages
+                          </span>
+                          <div className="h-px bg-red-300 flex-1"></div>
+                        </div>
+                      )}
+                      <div
+                        className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} group relative`}
+                      >
+                        <div
+                          className={`flex items-center space-x-2 ${isMe ? 'mr-10' : 'ml-10'} mb-1`}
+                        >
+                          <span className="text-xs font-bold text-[#193C1F] opacity-70">
+                            {chat.isAnonymous
+                              ? 'Anonymous'
+                              : chat.user.name || 'User'}
+                            {targetRoleInChannel === 'OWNER' && (
+                              <span className="ml-2 text-[9px] bg-[#193C1F] text-white px-1.5 py-0.5 rounded font-bold uppercase tracking-widest">
+                                Owner
+                              </span>
+                            )}
+                            {targetRoleInChannel === 'MODERATOR' && (
+                              <span className="ml-2 text-[9px] bg-[#8EA087] text-white px-1.5 py-0.5 rounded font-bold uppercase tracking-widest">
+                                Moderator
+                              </span>
+                            )}
+                          </span>
+                        </div>
+
+                        <div
+                          className={`flex items-start ${isMe ? 'flex-row-reverse' : 'space-x-3'}`}
+                        >
+                          <div className="w-8 h-8 rounded-full mt-1 flex items-center justify-center border border-[#D0D5CB] shrink-0 overflow-hidden">
+                            {chat.isAnonymous ? (
+                              <div className="bg-[#D0D5CB] w-full h-full flex items-center justify-center text-white text-[10px]">
+                                ?
+                              </div>
+                            ) : (
+                              <Image
+                                alt="Avatar"
+                                width={32}
+                                height={32}
+                                className="object-cover w-full h-full"
+                                unoptimized
+                                src={
+                                  chat.user.image ||
+                                  'https://static.vecteezy.com/system/resources/previews/009/292/244/original/default-avatar-icon-of-social-media-user-vector.jpg'
+                                }
+                              />
+                            )}
+                          </div>
+
+                          <div className="flex flex-col max-w-xl relative">
+                            {chat.replyTo && (
+                              <div
+                                className={`${isMe ? 'bg-[#8EA087] bg-opacity-20 border-r-4 text-right rounded-tl-xl' : 'bg-[#EDE4D8] bg-opacity-50 border-l-4 rounded-tr-xl'} border-[#8EA087] p-2 mb-1 text-[11px] text-[#193C1F] opacity-80 line-clamp-2`}
+                              >
+                                <span className="font-bold block">
+                                  {chat.replyTo.isAnonymous
+                                    ? 'Anonymous'
+                                    : chat.replyTo.user?.name || 'User'}
+                                </span>
+                                {chat.replyTo.content}
+                              </div>
+                            )}
+                            <div
+                              className={`rounded-2xl p-4 text-sm shadow-sm border flex flex-col gap-2 ${isMe ? 'bg-[#8EA087] text-white rounded-tr-none border-transparent' : 'bg-[#EDE4D8] text-[#193C1F] rounded-tl-none border-transparent'}`}
+                            >
+                              {chat.mediaUrl && (
+                                <div className="overflow-hidden rounded-xl bg-black/5">
+                                  {chat.mediaUrl.match(
+                                    /\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i,
+                                  ) ? (
+                                    <Image
+                                      width={300}
+                                      height={300}
+                                      unoptimized
+                                      src={chat.mediaUrl}
+                                      alt="Attached media"
+                                      className="max-w-full h-auto max-h-64 object-contain"
+                                    />
+                                  ) : (
+                                    <a
+                                      href={chat.mediaUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="flex items-center space-x-2 p-3 hover:bg-black/10 transition"
+                                    >
+                                      <Paperclip size={18} />
+                                      <span className="text-xs font-bold underline truncate">
+                                        View Attachment
+                                      </span>
+                                    </a>
+                                  )}
+                                </div>
+                              )}
+                              {chat.content && <span>{chat.content}</span>}
+                            </div>
+
+                            {/* Message Actions (Reply & Moderation) */}
+                            <div
+                              className={`absolute top-0 ${isMe ? 'right-full mr-2' : 'left-full ml-2'} opacity-0 group-hover:opacity-100 transition-opacity z-50 flex items-center h-full space-x-1`}
+                            >
+                              <button
+                                onClick={() => setReplyingTo(chat)}
+                                className="w-8 h-8 flex items-center justify-center text-[#193C1F] opacity-40 hover:opacity-100 hover:bg-gray-200 rounded-full transition-all shrink-0"
+                                title="Reply"
+                              >
+                                <svg
+                                  className="w-5 h-5"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+                                  />
+                                </svg>
+                              </button>
+
+                              {/* Only show moderation menu if caller has permissions */}
+                              {(canKick || canManageRole) && (
+                                <div className="relative">
+                                  <button
+                                    onClick={() =>
+                                      setActiveMenuId(
+                                        activeMenuId === chat.id
+                                          ? null
+                                          : chat.id,
+                                      )
+                                    }
+                                    className="w-8 h-8 flex items-center justify-center hover:bg-gray-200 rounded-full transition-colors shrink-0"
+                                  >
+                                    <MoreVertical size={16} />
+                                  </button>
+                                  {activeMenuId === chat.id && (
+                                    <div
+                                      className={`absolute z-[100] mt-1 w-40 bg-white border border-[#D0D5CB] shadow-2xl rounded-xl overflow-hidden py-1 ${isMe ? 'left-0' : 'right-0'}`}
+                                    >
+                                      {targetIsBanned ? (
+                                        <div className="px-4 py-3 text-[10px] font-black text-gray-400 flex items-center gap-2 uppercase tracking-tight italic">
+                                          <ShieldCheck size={14} /> Member
+                                          Removed
+                                        </div>
+                                      ) : (
+                                        <>
+                                          {canKick && (
+                                            <button
+                                              onClick={() =>
+                                                kickMutation.mutate(
+                                                  chat.user.id,
+                                                )
+                                              }
+                                              className="w-full text-left px-4 py-2.5 text-[11px] font-bold text-red-600 hover:bg-red-50 flex items-center gap-2 uppercase tracking-tight border-b border-gray-50"
+                                            >
+                                              <UserMinus size={14} /> Kick User
+                                            </button>
+                                          )}
+                                          {canManageRole && (
+                                            <button
+                                              onClick={() =>
+                                                changeRoleMutation.mutate({
+                                                  userId: chat.user.id,
+                                                  role:
+                                                    targetRoleInChannel ===
+                                                    'MODERATOR'
+                                                      ? 'MEMBER'
+                                                      : 'MODERATOR',
+                                                })
+                                              }
+                                              className="w-full text-left px-4 py-2.5 text-[11px] font-bold text-[#193C1F] hover:bg-gray-50 flex items-center gap-2 uppercase tracking-tight"
+                                            >
+                                              <ShieldCheck size={14} />{' '}
+                                              {targetRoleInChannel ===
+                                              'MODERATOR'
+                                                ? 'Demote to Member'
+                                                : 'Make Moderator'}
+                                            </button>
+                                          )}
+                                        </>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <span
+                          className={`text-[10px] text-[#193C1F] opacity-40 ${isMe ? 'mr-11' : 'ml-11'} mt-1`}
+                        >
+                          {time}
+                        </span>
+                      </div>
+                    </React.Fragment>
+                  );
+                })
               )}
               <div ref={messagesEndRef} />
             </section>

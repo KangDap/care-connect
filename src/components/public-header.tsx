@@ -9,6 +9,7 @@ import React, { Suspense } from 'react';
 function PublicHeaderContent() {
   const { data: session } = authClient.useSession();
   const isLoggedIn = !!session?.user;
+  const userRole = (session?.user as { role?: string })?.role;
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -75,12 +76,21 @@ function PublicHeaderContent() {
             >
               {t('header.home')}
             </Link>
-            <Link
-              href={isLoggedIn ? '/consultation' : '/login'}
-              className={`transition-colors ${isActive('/consultation') ? 'text-[#8ea087] font-bold border-b-2 border-[#8ea087] pb-1' : 'hover:text-[#8ea087]'}`}
-            >
-              Consultation
-            </Link>
+            {userRole === 'PSYCHOLOGIST' ? (
+              <span
+                className="text-[#193c1f] opacity-50 cursor-not-allowed transition-colors"
+                title="Psychologists cannot create consultations"
+              >
+                Consultation
+              </span>
+            ) : (
+              <Link
+                href={isLoggedIn ? '/consultation' : '/login'}
+                className={`transition-colors ${isActive('/consultation') ? 'text-[#8ea087] font-bold border-b-2 border-[#8ea087] pb-1' : 'hover:text-[#8ea087]'}`}
+              >
+                Consultation
+              </Link>
+            )}
             <Link
               href={isLoggedIn ? '/publicreports' : '/login'}
               className={`transition-colors ${isActive('/publicreports') ? 'text-[#8ea087] font-bold border-b-2 border-[#8ea087] pb-1' : 'hover:text-[#8ea087]'}`}

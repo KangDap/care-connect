@@ -19,7 +19,11 @@ export const CommunityChatRepository = {
           select: { timestamp: true, content: true },
         },
         _count: {
-          select: { members: true },
+          select: {
+            members: {
+              where: { role: { not: 'BANNED' } },
+            },
+          },
         },
       },
     });
@@ -31,7 +35,11 @@ export const CommunityChatRepository = {
       where: { id },
       include: {
         _count: {
-          select: { members: true },
+          select: {
+            members: {
+              where: { role: { not: 'BANNED' } },
+            },
+          },
         },
       },
     });
