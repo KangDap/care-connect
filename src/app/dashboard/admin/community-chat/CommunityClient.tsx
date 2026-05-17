@@ -6,6 +6,7 @@ import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Toast } from '@/components/toast';
+import { MessageSquarePlus, Pencil, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
@@ -188,6 +189,7 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
           </p>
         </div>
         <Button onClick={() => setIsCreateModalOpen(true)}>
+          <MessageSquarePlus size={16} />
           Create Channel
         </Button>
       </div>
@@ -251,24 +253,28 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
                   <td className="px-6 py-4 text-gray-500">
                     {fmtDate(ch.createdAt)}
                   </td>
-                  <td className="px-6 py-4 text-right">
-                    <Button
-                      onClick={() => openUpdateModal(ch)}
-                      variant="ghost"
-                      className="px-0 py-0 text-sm text-blue-600 hover:text-blue-700"
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        setChannelToDelete(ch.id);
-                        setIsDeleteAlertOpen(true);
-                      }}
-                      variant="ghost"
-                      className="ml-4 px-0 py-0 text-sm text-red-600 hover:text-red-700"
-                    >
-                      Delete
-                    </Button>
+                  <td className="px-6 py-4">
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        onClick={() => openUpdateModal(ch)}
+                        variant="outline"
+                        className="rounded-xl px-3 py-2 text-xs normal-case tracking-normal text-blue-700 shadow-none"
+                      >
+                        <Pencil size={14} />
+                        Edit
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setChannelToDelete(ch.id);
+                          setIsDeleteAlertOpen(true);
+                        }}
+                        variant="outline"
+                        className="rounded-xl border-red-200 px-3 py-2 text-xs normal-case tracking-normal text-red-600 shadow-none hover:bg-red-50"
+                      >
+                        <Trash2 size={14} />
+                        Delete
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ))

@@ -4,8 +4,9 @@ import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Logo } from '@/components/logo';
 import { useTranslation } from '@/components/providers/i18n-provider';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { authClient } from '@/lib/auth/auth-client';
-import { ArrowLeft, Menu, Moon } from 'lucide-react';
+import { ArrowLeft, Menu } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
@@ -152,7 +153,7 @@ export const Header = ({
             <Button
               onClick={onMenuClick}
               variant="outline"
-              className="shrink-0 p-2.5 lg:hidden"
+              className="h-11 w-11 shrink-0 rounded-full bg-white p-0 lg:hidden"
             >
               <Menu className="h-5 w-5 text-[#193C1F]" />
             </Button>
@@ -162,7 +163,8 @@ export const Header = ({
             <Button
               onClick={() => router.back()}
               variant="outline"
-              className="group shrink-0 p-2.5"
+              className="icon-button back-icon-button group h-11 w-11 shrink-0 rounded-full p-0"
+              aria-label="Back"
             >
               <ArrowLeft className="h-5 w-5 text-[#193C1F] transition-transform group-hover:-translate-x-1" />
             </Button>
@@ -200,14 +202,7 @@ export const Header = ({
               {language === 'en' ? 'ID' : 'EN'}
             </Button>
 
-            <Button
-              type="button"
-              variant="outline"
-              className="h-9 w-9 rounded-full border-[#d0d5cb] p-0 text-[#193c1f] hover:bg-[#d0d5cb]/50"
-              title="Dark Mode (Coming Soon)"
-            >
-              <Moon className="h-4 w-4" />
-            </Button>
+            <ThemeToggle />
           </div>
 
           <div className="relative" ref={dropdownRef}>

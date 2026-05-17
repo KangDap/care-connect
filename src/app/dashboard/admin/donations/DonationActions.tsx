@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/button';
 import { Modal } from '@/components/modal';
+import { Settings, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -77,8 +78,9 @@ export function DonationActions({
       <Button
         variant="outline"
         onClick={() => setIsEditModalOpen(true)}
-        className="text-xs px-4 py-1.5 min-h-0 h-auto"
+        className="h-auto min-h-0 rounded-xl px-3 py-2 text-xs normal-case tracking-normal shadow-none"
       >
+        <Settings size={14} />
         Manage
       </Button>
 
@@ -94,7 +96,7 @@ export function DonationActions({
               Donor & Amount
             </p>
             <p className="text-sm font-bold text-[#193c1f]">
-              {donor} — {fmt(amount)}
+              {donor} - {fmt(amount)}
             </p>
           </div>
 
@@ -116,6 +118,7 @@ export function DonationActions({
               }}
               className="w-full text-red-600 border-red-200 hover:bg-red-50"
             >
+              <Trash2 size={16} />
               Delete Record
             </Button>
           </div>

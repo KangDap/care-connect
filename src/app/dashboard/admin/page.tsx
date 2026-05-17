@@ -1,8 +1,9 @@
 import { Card } from '@/components/card';
 import type { ApiFailure, ApiSuccess } from '@/lib/api-response';
 import type { AdminDashboardData } from '@/modules/dashboard/dashboard.types';
-import { Link, User } from 'lucide-react';
+import { User } from 'lucide-react';
 import { headers } from 'next/headers';
+import Link from 'next/link';
 
 import {
   ConsultationLineChart,
@@ -301,9 +302,9 @@ export default async function AdminDashboardPage() {
           </div>
           <Link
             href="/dashboard/admin/donations"
-            className="text-[11px] md:text-sm font-black text-[#193C1F] hover:opacity-70 transition-opacity bg-[#F7F3ED] px-3 py-1.5 md:px-4 md:py-2 rounded-xl border border-[#D0D5CB]"
+            className="text-[11px] md:text-sm font-black text-[#8EA087] hover:text-[#193C1F] dark:hover:text-white transition-colors"
           >
-            View All →
+            View all
           </Link>
         </div>
         <div className="overflow-x-auto">

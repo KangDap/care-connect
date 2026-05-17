@@ -26,7 +26,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable}`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const storedTheme = localStorage.getItem('careconnect-theme');
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const theme = storedTheme || (prefersDark ? 'dark' : 'light');
+                document.documentElement.classList.toggle('dark', theme === 'dark');
+                document.documentElement.style.colorScheme = theme;
+              } catch (_) {}
+            `,
+          }}
+        />
+      </head>
       <body className="antialiased bg-[#f7f3ed] text-[#193c1f]">
         <I18nProvider>
           <QueryProvider>{children}</QueryProvider>

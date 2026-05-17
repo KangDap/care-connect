@@ -4,7 +4,7 @@ import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { PublicHeader } from '@/components/public-header';
-import { ArrowLeft, Calendar, Heart, MapPin, Tag } from 'lucide-react';
+import { ArrowLeft, Calendar, Heart, MapPin, Tag, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -86,9 +86,17 @@ export default function PublicReportDetailPage() {
           </p>
           <Link
             href="/publicreports"
-            className="text-[#8ea087] font-bold hover:underline"
+            className="inline-flex items-center gap-3 text-[#8ea087] font-bold hover:underline"
           >
-            ← Back to Reports
+            <Button
+              type="button"
+              variant="outline"
+              className="icon-button back-icon-button h-11 w-11 rounded-full p-0"
+              aria-label="Back to Reports"
+            >
+              <ArrowLeft size={18} />
+            </Button>
+            Back to Reports
           </Link>
         </div>
       </div>
@@ -121,10 +129,21 @@ export default function PublicReportDetailPage() {
 
       <main className="max-w-5xl mx-auto px-6 py-12">
         {/* Back */}
-        <Link href="/publicreports" className="mb-8 inline-block">
-          <Button variant="ghost" className="px-0">
-            <ArrowLeft size={16} /> Back to Public Reports
+        <Link
+          href="/publicreports"
+          className="mb-8 inline-flex items-center gap-3"
+        >
+          <Button
+            type="button"
+            variant="outline"
+            className="icon-button back-icon-button h-11 w-11 rounded-full p-0"
+            aria-label="Back to Public Reports"
+          >
+            <ArrowLeft size={18} />
           </Button>
+          <span className="text-sm font-bold text-[#8ea087]">
+            Back to Public Reports
+          </span>
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -375,10 +394,11 @@ export default function PublicReportDetailPage() {
             <Button
               type="button"
               variant="ghost"
-              className="absolute -top-10 right-0 text-white font-bold hover:opacity-70 transition-opacity"
+              className="absolute -top-10 right-0 text-white font-bold normal-case tracking-normal hover:opacity-70 transition-opacity"
               onClick={() => setSelectedImage(null)}
             >
-              ✕ Close
+              <X size={16} />
+              <span className="text-sm">Close</span>
             </Button>
             <div className="relative w-full h-[80vh] rounded-2xl overflow-hidden">
               <Image

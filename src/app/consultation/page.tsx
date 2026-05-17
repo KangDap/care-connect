@@ -7,7 +7,7 @@ import { Input } from '@/components/input';
 import { PublicHeader } from '@/components/public-header';
 import { authClient } from '@/lib/auth/auth-client';
 import type { ConsultationScheduleSlot } from '@/modules/consultation/consultation.types';
-import { Check, Info, Lock, Send, Upload } from 'lucide-react';
+import { Check, Info, Lock, Send, Upload, X } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -313,7 +313,7 @@ export default function ConsultationPage() {
               required
               id="inquiry-title"
               placeholder="Enter a brief title for your request"
-              className="bg-white"
+              className="bg-white border-2 border-[#d0d5cb]"
             />
 
             <Input
@@ -323,7 +323,7 @@ export default function ConsultationPage() {
               required
               id="consultation-nature"
               defaultValue=""
-              className="bg-white"
+              className="bg-white border-2 border-[#d0d5cb]"
             >
               <option disabled value="">
                 Select the type of assistance needed
@@ -353,7 +353,7 @@ export default function ConsultationPage() {
                     setSelectedTime(''); // Reset time when date changes
                   }}
                   required
-                  className="min-h-[58px] bg-white"
+                  className="min-h-[58px] bg-white border-2 border-[#d0d5cb]"
                 />
               </div>
 
@@ -409,7 +409,7 @@ export default function ConsultationPage() {
               id="detailed-description"
               placeholder="Please describe your situation here..."
               rows={5}
-              className="bg-white"
+              className="bg-white border-2 border-[#d0d5cb]"
             />
 
             <div>
@@ -447,9 +447,9 @@ export default function ConsultationPage() {
                     onClick={() => setFile(null)}
                     variant="ghost"
                     aria-label="Remove file"
-                    className="px-2 py-1 text-[0px] text-[#8ea087] after:text-sm after:content-['x'] hover:text-red-500"
+                    className="px-2 py-1 text-[#8ea087] hover:text-red-500"
                   >
-                    ✕
+                    <X size={16} />
                   </Button>
                 </div>
               </div>
@@ -627,9 +627,7 @@ export default function ConsultationPage() {
               Help Center
             </Link>
           </div>
-          <p className="text-sm text-[#193c1f]/40">
-            © 2024 CareConnect. All rights reserved.
-          </p>
+          <p className="text-sm text-[#193c1f]/40"></p>
         </div>
       </footer>
 

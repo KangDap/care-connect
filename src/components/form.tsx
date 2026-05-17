@@ -5,6 +5,7 @@ import { Input } from '@/components/input';
 import { Toast } from '@/components/toast';
 import {
   AlignLeft,
+  ArrowLeft,
   Calendar,
   Check,
   FileText,
@@ -525,13 +526,15 @@ export default function ReportForm({
         </div>
 
         <div className="mt-12 pt-8 border-t border-[#d0d5cb] flex justify-between items-center">
-          <button
+          <Button
             type="button"
             onClick={() => setCurrentStep(1)}
-            className={`text-[12px] font-black uppercase tracking-[0.2em] transition-all hover:translate-x-[-4px] ${currentStep === 1 ? 'invisible' : 'text-[#8ea087] hover:text-[#193c1f]'}`}
+            variant="outline"
+            className={`icon-button back-icon-button h-11 w-11 rounded-full p-0 ${currentStep === 1 ? 'invisible' : ''}`}
+            aria-label="Back to Edit"
           >
-            ← Back to Edit
-          </button>
+            <ArrowLeft size={18} />
+          </Button>
           <Button
             suppressHydrationWarning
             onClick={handleAction}

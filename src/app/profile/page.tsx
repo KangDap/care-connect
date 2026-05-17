@@ -6,6 +6,7 @@ import { Input } from '@/components/input';
 import { Modal } from '@/components/modal';
 import { Toast } from '@/components/toast';
 import { authClient } from '@/lib/auth/auth-client';
+import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
@@ -190,18 +191,12 @@ export default function ProfileManagement() {
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center gap-5 mb-10">
           <Link href="/dashboard" className="inline-block">
-            <Button variant="outline" className="h-12 w-12 rounded-2xl p-0">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-              >
-                <line x1="19" y1="12" x2="5" y2="12"></line>
-                <polyline points="12 19 5 12 12 5"></polyline>
-              </svg>
+            <Button
+              variant="outline"
+              className="icon-button back-icon-button h-11 w-11 rounded-full p-0"
+              aria-label="Back to Dashboard"
+            >
+              <ArrowLeft size={18} />
             </Button>
           </Link>
           <h1 className="text-2xl font-black tracking-tight">

@@ -251,12 +251,12 @@ export function DonationForm({
           {/* Back button */}
           <Button
             type="button"
-            variant="ghost"
             onClick={() => router.push(backHref)}
-            className="w-fit px-0"
+            variant="outline"
+            className="icon-button back-icon-button h-11 w-11 rounded-full p-0"
+            aria-label="Back"
           >
-            <ArrowLeft size={16} />
-            Back
+            <ArrowLeft size={18} />
           </Button>
 
           <section>

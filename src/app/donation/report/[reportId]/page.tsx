@@ -1,5 +1,7 @@
 'use client';
 
+import { Button } from '@/components/button';
+import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import { use, useEffect, useState } from 'react';
 
@@ -74,9 +76,17 @@ export default function DonationReportPage({ params }: Props) {
           </p>
           <Link
             href="/donation/report"
-            className="text-[#8ea087] font-bold hover:underline"
+            className="inline-flex items-center gap-3 text-[#8ea087] font-bold hover:underline"
           >
-            ← Back to Report List
+            <Button
+              type="button"
+              variant="outline"
+              className="icon-button back-icon-button h-11 w-11 rounded-full p-0"
+              aria-label="Back to Report List"
+            >
+              <ArrowLeft size={18} />
+            </Button>
+            Back to Report List
           </Link>
         </div>
       </div>

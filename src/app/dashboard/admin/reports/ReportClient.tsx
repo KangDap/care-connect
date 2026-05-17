@@ -1,12 +1,14 @@
 'use client';
 
 import { Alert } from '@/components/alert';
+import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Input } from '@/components/input';
 import { Modal } from '@/components/modal';
 import { Pagination } from '@/components/pagination';
 import { Toast } from '@/components/toast';
+import { FileText, Pencil, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -170,23 +172,27 @@ export function ReportClient({
         </p>
       </div>
 
-      <div className="flex gap-2 flex-wrap items-center">
+      <div className="flex flex-wrap items-center gap-2">
         {tabs.map((tab) => (
           <Link
             key={tab.value}
             href={`/dashboard/admin/reports?status=${tab.value}`}
-            className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border ${
-              activeTab === tab.value
-                ? 'bg-[#193c1f] text-white border-[#193c1f]'
-                : 'bg-white text-[#193c1f] border-[#d0d5cb] hover:border-[#193c1f]'
-            }`}
           >
-            {tab.label}
-            <span
-              className={`ml-2 px-2 py-0.5 rounded-full text-[10px] font-black ${activeTab === tab.value ? 'bg-white/20' : 'bg-[#f7f3ed]'}`}
+            <Button
+              variant={activeTab === tab.value ? 'primary' : 'outline'}
+              className="rounded-xl px-4 py-2 text-sm normal-case tracking-normal shadow-none"
             >
-              {tab.count}
-            </span>
+              {tab.label}
+              <Badge
+                className={`ml-1 px-2 py-0.5 ${
+                  activeTab === tab.value
+                    ? 'bg-white/20 text-white'
+                    : 'bg-[#f7f3ed]'
+                }`}
+              >
+                {tab.count}
+              </Badge>
+            </Button>
           </Link>
         ))}
       </div>
@@ -229,10 +235,20 @@ export function ReportClient({
                           {r.title}
                         </p>
                       </Link>
-                      <p className="text-[11px] text-[#8EA087] mt-0.5 truncate max-w-[300px]">
-                        {r.city}, {r.province} •{' '}
-                        {r.hasEvidence ? '📎 Has evidence' : 'No evidence'}
-                      </p>
+                      <div className="mt-0.5 flex max-w-[300px] items-center gap-2 truncate text-[11px] text-[#8EA087]">
+                        <span className="truncate">
+                          {r.city}, {r.province}
+                        </span>
+                        <span>/</span>
+                        {r.hasEvidence ? (
+                          <span className="inline-flex items-center gap-1">
+                            <FileText size={12} />
+                            Has evidence
+                          </span>
+                        ) : (
+                          <span>No evidence</span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       {r.isAnonymous ? (
@@ -265,16 +281,16 @@ export function ReportClient({
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-xs font-bold text-[#193C1F] bg-[#F7F3ED] border border-[#D0D5CB] px-2 py-1 rounded-full">
+                      <Badge className="border border-[#D0D5CB] bg-[#F7F3ED] text-[#193C1F]">
                         {CATEGORY_LABEL[r.category] || r.category}
-                      </span>
+                      </Badge>
                     </td>
                     <td className="px-6 py-4">
-                      <span
-                        className={`text-[10px] font-black uppercase tracking-wider px-3 py-1.5 rounded-full border ${STATUS_BADGE[r.status] || 'bg-gray-100 text-gray-600'}`}
+                      <Badge
+                        className={`border ${STATUS_BADGE[r.status] || 'bg-gray-100 text-gray-600'}`}
                       >
                         {r.status}
-                      </span>
+                      </Badge>
                     </td>
                     <td className="px-6 py-4">
                       {r.donationTotal > 0 ? (
@@ -285,26 +301,30 @@ export function ReportClient({
                         <span className="text-[#8EA087] text-xs">—</span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        onClick={() => openUpdateModal(r)}
-                        className="px-2 text-sm text-blue-600 hover:text-blue-700"
-                      >
-                        Update
-                      </Button>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        onClick={() => {
-                          setReportToDelete(r.id);
-                          setIsDeleteAlertOpen(true);
-                        }}
-                        className="ml-2 px-2 text-sm text-red-600 hover:text-red-700"
-                      >
-                        Delete
-                      </Button>
+                    <td className="px-6 py-4">
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => openUpdateModal(r)}
+                          className="rounded-xl px-3 py-2 text-xs normal-case tracking-normal text-blue-700 shadow-none"
+                        >
+                          <Pencil size={14} />
+                          Update
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            setReportToDelete(r.id);
+                            setIsDeleteAlertOpen(true);
+                          }}
+                          className="rounded-xl border-red-200 px-3 py-2 text-xs normal-case tracking-normal text-red-600 shadow-none hover:bg-red-50"
+                        >
+                          <Trash2 size={14} />
+                          Delete
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))

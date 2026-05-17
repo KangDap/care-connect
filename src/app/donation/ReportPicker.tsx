@@ -174,7 +174,7 @@ export function ReportPicker({ onSelect, onBack }: Props) {
             type="button"
             variant="outline"
             onClick={onBack}
-            className="h-11 w-11 shrink-0 rounded-full !p-0"
+            className="icon-button back-icon-button h-11 w-11 shrink-0 rounded-full !p-0"
             aria-label="Back to donation options"
           >
             <ArrowLeft size={20} />

@@ -8,6 +8,7 @@ import { authClient } from '@/lib/auth/auth-client';
 import type { ChatMessage } from '@/modules/community-chat/community-chat.types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  ArrowLeft,
   Loader2,
   MoreVertical,
   Paperclip,
@@ -375,7 +376,9 @@ export default function CommunityChatContent() {
                       </div>
                       <div className="flex-1 min-w-0 flex items-center justify-between">
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-semibold text-[#193c1f] truncate">
+                          <h3
+                            className={`text-sm truncate ${selectedChannelId === channel.id ? 'font-black text-[#193c1f]' : 'font-semibold text-[#193c1f]/60'}`}
+                          >
                             {channel.title || channel.name}
                           </h3>
                           <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-wider mt-1">
@@ -410,6 +413,16 @@ export default function CommunityChatContent() {
           <main className="flex-1 flex flex-col bg-white min-w-0">
             <header className="px-6 py-3 border-b border-[#d0d5cb] flex items-center justify-between bg-white shrink-0">
               <div className="flex items-center space-x-3">
+                <Link href="/forums" aria-label="Back to forums">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="icon-button back-icon-button h-11 w-11 rounded-full p-0"
+                    aria-label="Back to forums"
+                  >
+                    <ArrowLeft size={18} />
+                  </Button>
+                </Link>
                 <div className="w-8 h-8 rounded-lg overflow-hidden bg-[#F7F3ED] flex items-center justify-center border border-[#D0D5CB] shrink-0 relative">
                   {chatData.coverUrl ? (
                     <Image
@@ -910,7 +923,7 @@ export default function CommunityChatContent() {
                       <Button
                         onClick={() => fileInputRef.current?.click()}
                         variant="ghost"
-                        className="mr-3 p-0 text-[#193c1f] opacity-40 hover:opacity-70"
+                        className="icon-button mr-3 p-0 text-[#193c1f] opacity-40 hover:opacity-70"
                       >
                         <Paperclip size={20} />
                       </Button>
@@ -933,7 +946,8 @@ export default function CommunityChatContent() {
                       (!messageInput.trim() && !mediaFile)
                     }
                     variant="secondary"
-                    className="h-12 w-12 rounded-2xl p-0 shadow-sm hover:brightness-110"
+                    className="icon-button send-icon-button h-12 w-12 rounded-2xl p-0 shadow-sm hover:brightness-110"
+                    aria-label="Send message"
                   >
                     {sendMessageMutation.isPending ? (
                       <Loader2 className="animate-spin" />

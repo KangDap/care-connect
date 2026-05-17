@@ -2,6 +2,7 @@
 
 import { Alert } from '@/components/alert';
 import { Header } from '@/components/header';
+import { Logo } from '@/components/logo';
 import { authClient } from '@/lib/auth/auth-client';
 import {
   Calendar,
@@ -18,23 +19,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
 // ==========================================
-// --- ICONS SIDEBAR (Dikelompokkan di sini) ---
-// ==========================================
-// Icons are now handled by Lucide-React components directly
-const LogoCareConnect = () => (
-  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-    <rect width="32" height="32" rx="6" fill="#193C1F" />
-    <path
-      d="M13.5 15.9998L15.1667 17.6665L18.5 14.3331M23.1817 10.9865C20.5468 11.1264 17.9639 10.2153 16 8.45312C14.0361 10.2153 11.4533 11.1264 8.81834 10.9865C8.60628 11.8074 8.49931 12.6519 8.5 13.4998C8.5 18.159 11.6867 22.0748 16 23.1848C20.3133 22.0748 23.5 18.1598 23.5 13.4998C23.5 12.6315 23.3892 11.7898 23.1817 10.9865L13.5 15.9998"
-      stroke="#F7F3ED"
-      strokeWidth="1.66667"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
-// ==========================================
 // --- SUB-KOMPONEN SIDEBAR ITEM ---
 // ==========================================
 type SidebarItemProps = {
@@ -42,15 +26,36 @@ type SidebarItemProps = {
   label: string;
   href: string;
   active: boolean;
+  isDark: boolean;
 };
 
-const SidebarItem = ({ icon: Icon, label, href, active }: SidebarItemProps) => (
+const SidebarItem = ({
+  icon: Icon,
+  label,
+  href,
+  active,
+  isDark,
+}: SidebarItemProps) => (
   <Link href={href} className="no-underline">
     <div
-      className={`flex items-center gap-3 px-8 py-4 cursor-pointer transition-all duration-200 group ${active ? 'bg-[#EBE6DE] text-[#193c1f] font-bold border-r-4 border-[#193c1f]' : 'text-[#193c1f] opacity-60 hover:opacity-100 hover:bg-[#EBE6DE]/50'}`}
+      data-active={active}
+      className={`dashboard-sidebar-item flex items-center gap-3 px-8 py-4 cursor-pointer transition-all duration-200 group ${active ? 'font-bold border-r-4' : 'opacity-60 hover:opacity-100'}`}
+      style={{
+        backgroundColor: active
+          ? isDark
+            ? '#203026'
+            : '#EBE6DE'
+          : 'transparent',
+        borderRightColor: active
+          ? isDark
+            ? '#b9c8b1'
+            : '#193c1f'
+          : 'transparent',
+        color: isDark ? '#f7f3ed' : '#193c1f',
+      }}
     >
       <div
-        className={`${active ? 'text-[#193c1f]' : 'group-hover:scale-110 transition-transform'}`}
+        className={`dashboard-sidebar-icon ${active ? '' : 'group-hover:scale-110 transition-transform'}`}
       >
         <Icon size={20} strokeWidth={active ? 2.5 : 2} />
       </div>
@@ -69,6 +74,13 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    if (typeof window === 'undefined') return 'light';
+    return document.documentElement.classList.contains('dark') ||
+      localStorage.getItem('careconnect-theme') === 'dark'
+      ? 'dark'
+      : 'light';
+  });
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLogoutAlertOpen, setIsLogoutAlertOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -82,6 +94,17 @@ export default function DashboardLayout({
     setIsSidebarOpen(false);
   }, [pathname]);
 
+  React.useEffect(() => {
+    const handleThemeChange = (event: Event) => {
+      const nextTheme = (event as CustomEvent<'light' | 'dark'>).detail;
+      setTheme(nextTheme);
+    };
+
+    window.addEventListener('careconnect-theme-change', handleThemeChange);
+    return () =>
+      window.removeEventListener('careconnect-theme-change', handleThemeChange);
+  }, []);
+
   const handleLogout = async () => {
     setIsLoggingOut(true);
     await authClient.signOut();
@@ -90,7 +113,7 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="fixed inset-0 w-full h-full flex bg-[#F7F3ED] overflow-hidden m-0 p-0 z-0">
+    <div className="dashboard-shell fixed inset-0 w-full h-full flex bg-[#F7F3ED] overflow-hidden m-0 p-0 z-0">
       {/* OVERLAY FOR MOBILE */}
       {isSidebarOpen && (
         <div
@@ -101,20 +124,16 @@ export default function DashboardLayout({
 
       {/* SIDEBAR */}
       <aside
-        className={`fixed lg:relative top-0 bottom-0 left-0 w-[280px] bg-[#F2EDE4] border-r border-[#D0D5CB] flex flex-col shrink-0 h-full z-[200] transition-transform duration-300 ease-in-out ${
+        className={`dashboard-sidebar fixed lg:relative top-0 bottom-0 left-0 w-[280px] border-r flex flex-col shrink-0 h-full z-[200] transition-transform duration-300 ease-in-out ${
           isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
+        style={{
+          backgroundColor: theme === 'dark' ? '#131f17' : '#F2EDE4',
+          borderColor: theme === 'dark' ? '#334137' : '#D0D5CB',
+        }}
       >
         <div className="p-10 flex flex-col gap-1 shrink-0">
-          <Link
-            href="/"
-            className="flex items-center gap-3 no-underline hover:opacity-80 transition-opacity"
-          >
-            <LogoCareConnect />
-            <h1 className="text-[20px] font-black text-[#193c1f] tracking-tight">
-              CareConnect
-            </h1>
-          </Link>
+          <Logo />
         </div>
 
         <nav className="flex-1 mt-6 flex flex-col gap-1 overflow-y-auto">
@@ -134,6 +153,7 @@ export default function DashboardLayout({
               pathname === '/dashboard/psikolog' ||
               pathname === '/dashboard/admin'
             }
+            isDark={theme === 'dark'}
           />
 
           {isAtAdminPage ? (
@@ -144,36 +164,42 @@ export default function DashboardLayout({
                 label="All Reports"
                 href="/dashboard/admin/reports"
                 active={pathname.startsWith('/dashboard/admin/reports')}
+                isDark={theme === 'dark'}
               />
               <SidebarItem
                 icon={Users}
                 label="All Consultations"
                 href="/dashboard/admin/consultations"
                 active={pathname.startsWith('/dashboard/admin/consultations')}
+                isDark={theme === 'dark'}
               />
               <SidebarItem
                 icon={CreditCard}
                 label="All Donations"
                 href="/dashboard/admin/donations"
                 active={pathname.startsWith('/dashboard/admin/donations')}
+                isDark={theme === 'dark'}
               />
               <SidebarItem
                 icon={User}
                 label="Users"
                 href="/dashboard/admin/users"
                 active={pathname.startsWith('/dashboard/admin/users')}
+                isDark={theme === 'dark'}
               />
               <SidebarItem
                 icon={MessageSquare}
                 label="Community Chat"
                 href="/dashboard/admin/community-chat"
                 active={pathname.startsWith('/dashboard/admin/community-chat')}
+                isDark={theme === 'dark'}
               />
               <SidebarItem
                 icon={Calendar}
                 label="Psikolog Schedules"
                 href="/dashboard/admin/schedules"
                 active={pathname.startsWith('/dashboard/admin/schedules')}
+                isDark={theme === 'dark'}
               />
             </>
           ) : isAtPsikologPage ? (
@@ -186,18 +212,21 @@ export default function DashboardLayout({
                 active={pathname.startsWith(
                   '/dashboard/psikolog/consultations',
                 )}
+                isDark={theme === 'dark'}
               />
               <SidebarItem
                 icon={CreditCard}
                 label="Donation History"
                 href="/dashboard/psikolog/donations"
                 active={pathname.startsWith('/dashboard/psikolog/donations')}
+                isDark={theme === 'dark'}
               />
               <SidebarItem
                 icon={Calendar}
                 label="My Schedule"
                 href="/dashboard/psikolog/schedule"
                 active={pathname.startsWith('/dashboard/psikolog/schedule')}
+                isDark={theme === 'dark'}
               />
             </>
           ) : (
@@ -211,12 +240,14 @@ export default function DashboardLayout({
                   pathname.startsWith('/dashboard/consultations') &&
                   !isAtPsikologPage
                 }
+                isDark={theme === 'dark'}
               />
               <SidebarItem
                 icon={FileText}
                 label="My Reports"
                 href="/dashboard/reports"
                 active={pathname.startsWith('/dashboard/reports')}
+                isDark={theme === 'dark'}
               />
               <SidebarItem
                 icon={CreditCard}
@@ -226,6 +257,7 @@ export default function DashboardLayout({
                   pathname.startsWith('/dashboard/donations') &&
                   !isAtPsikologPage
                 }
+                isDark={theme === 'dark'}
               />
             </>
           )}
@@ -241,7 +273,7 @@ export default function DashboardLayout({
           />
         </div>
 
-        <div className="flex-1 overflow-y-auto w-full bg-[#F7F3ED]">
+        <div className="dashboard-main-scroll flex-1 overflow-y-auto w-full bg-[#F7F3ED]">
           <div className="p-6 md:p-10 w-full min-h-full box-border">
             {children}
           </div>
