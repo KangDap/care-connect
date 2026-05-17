@@ -13,6 +13,17 @@ interface AIAnalysisError {
   message: string;
 }
 
+function isAIAnalysisError(e: unknown): e is AIAnalysisError {
+  if (typeof e !== 'object' || e === null) return false;
+  const r = e as Record<string, unknown>;
+  return (
+    'status' in r &&
+    typeof r.status === 'number' &&
+    'message' in r &&
+    typeof r.message === 'string'
+  );
+}
+
 /**
  * Call the AI analysis endpoint
  * @param request - Optional request body with reports and parameters
@@ -50,7 +61,7 @@ export async function analyzeReports(
 
     return data.data;
   } catch (error) {
-    if (error instanceof AIAnalysisError) {
+    if (isAIAnalysisError(error)) {
       throw error;
     }
 
