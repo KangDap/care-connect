@@ -179,34 +179,34 @@ export default function PsychologistScheduleView() {
       </div>
 
       {/* Summary Pills */}
-      <div className="flex gap-4 flex-wrap">
-        <div className="bg-white border border-[#d0d5cb] rounded-2xl px-5 py-3 flex items-center gap-3 shadow-sm">
-          <Calendar size={18} className="text-[#8ea087]" />
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-[#8ea087]">
+      <div className="grid grid-cols-3 gap-2">
+        <div className="bg-white border border-[#d0d5cb] rounded-xl px-2 py-2 flex items-center gap-2 shadow-sm">
+          <Calendar size={14} className="text-[#8ea087] shrink-0" />
+          <div className="min-w-0">
+            <p className="text-[9px] font-black uppercase tracking-widest text-[#8ea087] truncate">
               Active Days
             </p>
-            <p className="text-lg font-black text-[#193c1f]">
+            <p className="text-base font-black text-[#193c1f]">
               {schedule.length}
             </p>
           </div>
         </div>
-        <div className="bg-white border border-[#d0d5cb] rounded-2xl px-5 py-3 flex items-center gap-3 shadow-sm">
-          <Clock size={18} className="text-[#8ea087]" />
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-[#8ea087]">
+        <div className="bg-white border border-[#d0d5cb] rounded-xl px-2 py-2 flex items-center gap-2 shadow-sm">
+          <Clock size={14} className="text-[#8ea087] shrink-0" />
+          <div className="min-w-0">
+            <p className="text-[9px] font-black uppercase tracking-widest text-[#8ea087] truncate">
               Total Slots
             </p>
-            <p className="text-lg font-black text-[#193c1f]">{totalSlots}</p>
+            <p className="text-base font-black text-[#193c1f]">{totalSlots}</p>
           </div>
         </div>
-        <div className="bg-white border border-[#d0d5cb] rounded-2xl px-5 py-3 flex items-center gap-3 shadow-sm">
-          <Clock size={18} className="text-[#8ea087]" />
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-[#8ea087]">
+        <div className="bg-white border border-[#d0d5cb] rounded-xl px-2 py-2 flex items-center gap-2 shadow-sm">
+          <Clock size={14} className="text-[#8ea087] shrink-0" />
+          <div className="min-w-0">
+            <p className="text-[9px] font-black uppercase tracking-widest text-[#8ea087] truncate">
               Hours/Week
             </p>
-            <p className="text-lg font-black text-[#193c1f]">
+            <p className="text-base font-black text-[#193c1f]">
               {Math.round(totalHours * 10) / 10}h
             </p>
           </div>

@@ -17,15 +17,30 @@ export const Pagination = ({
   // Jika hanya ada 1 halaman, tidak perlu menampilkan pagination
   if (totalPages <= 1) return null;
 
-  // Fungsi helper untuk menentukan angka halaman mana saja yang muncul (opsional jika data sangat banyak)
   const renderPageNumbers = () => {
     const pages = [];
-    for (let i = 1; i <= totalPages; i++) {
+    const maxVisible = 3;
+    let startPage = Math.max(1, currentPage - 1);
+    const endPage = Math.min(totalPages, startPage + maxVisible - 1);
+
+    if (endPage - startPage + 1 < maxVisible) {
+      startPage = Math.max(1, endPage - maxVisible + 1);
+    }
+
+    if (startPage > 1) {
+      pages.push(
+        <span key="start-ellipsis" className="text-[#8ea087] px-1">
+          ...
+        </span>,
+      );
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
       pages.push(
         <button
           key={i}
           onClick={() => onPageChange(i)}
-          className={`w-10 h-10 rounded-xl text-[13px] font-black transition-all duration-200 ${
+          className={`w-10 h-10 rounded-xl text-[13px] font-black transition-all duration-200 shrink-0 ${
             currentPage === i
               ? 'bg-[#193c1f] text-white shadow-md scale-105'
               : 'bg-white text-[#8ea087] border border-[#d0d5cb] hover:border-[#193c1f] hover:text-[#193c1f]'
@@ -35,6 +50,15 @@ export const Pagination = ({
         </button>,
       );
     }
+
+    if (endPage < totalPages) {
+      pages.push(
+        <span key="end-ellipsis" className="text-[#8ea087] px-1">
+          ...
+        </span>,
+      );
+    }
+
     return pages;
   };
 

@@ -60,7 +60,6 @@ const formatPaymentMethod = (value: string) =>
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 
-/** Simplify to 3 display statuses */
 const getDisplayStatus = (status: string): 'PENDING' | 'PAID' | 'CANCELED' => {
   const s = status.toUpperCase();
   if (s === 'PAID') return 'PAID';
@@ -77,13 +76,7 @@ const STATUS_BADGE: Record<
   CANCELED: { label: 'Canceled / Failed', cls: 'bg-red-100 text-red-600' },
 };
 
-type PaymentNoticeState =
-  | 'success'
-  | 'pending'
-  | 'failed'
-  | 'expired'
-  | 'cancelled'
-  | 'error';
+type PaymentNoticeState = 'success' | 'pending' | 'failed';
 
 const getPaymentNotice = (
   payment: PaymentNoticeState | null,
@@ -110,21 +103,6 @@ const getPaymentNotice = (
       title: 'Payment Failed',
       description: `Payment could not be completed${orderLabel}. Please try again.`,
     },
-    expired: {
-      containerClass: 'border border-red-200 bg-red-50 text-red-700',
-      title: 'Payment Expired',
-      description: `Payment expired${orderLabel}. Please create a new donation.`,
-    },
-    cancelled: {
-      containerClass: 'border border-red-200 bg-red-50 text-red-700',
-      title: 'Payment Cancelled',
-      description: `Payment was cancelled${orderLabel}. You can donate again anytime.`,
-    },
-    error: {
-      containerClass: 'border border-red-200 bg-red-50 text-red-700',
-      title: 'Payment Error',
-      description: `An unexpected error occurred${orderLabel}. Please try again.`,
-    },
   };
   return notices[payment] ?? null;
 };
@@ -136,8 +114,6 @@ const mapTransactionStatusToNotice = (
   const n = s.toLowerCase();
   if (n === 'pending') return 'pending';
   if (n === 'settlement' || n === 'capture') return 'success';
-  if (n === 'cancel') return 'cancelled';
-  if (n === 'expire') return 'expired';
   if (n === 'deny' || n === 'failure') return 'failed';
   return null;
 };
@@ -150,8 +126,6 @@ const mapDonationStatusToNotice = (
   if (n === 'PAID') return 'success';
   if (n === 'PENDING') return 'pending';
   if (n === 'FAILED') return 'failed';
-  if (n === 'EXPIRED') return 'expired';
-  if (n === 'CANCELLED') return 'cancelled';
   return null;
 };
 
@@ -216,14 +190,12 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
   const [cancelingId, setCancelingId] = useState<number | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
-  // --- PAGINATION ---
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   useEffect(() => {
     setCurrentPage(1);
   }, [query]);
 
-  // --- PAYMENT NOTICE from query params ---
   const initialNotice = useMemo<PaymentNoticeState | null>(
     () =>
       mapTransactionStatusToNotice(transactionStatus) ||
@@ -240,7 +212,6 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
     setResolvedPayment(initialNotice);
   }, [initialNotice]);
 
-  // Sync donation status from query params
   useEffect(() => {
     if (!payment && !orderId && !transactionStatus) return;
 
@@ -297,7 +268,6 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
     };
   }, [orderId, pathname, payment, router, searchParams, transactionStatus]);
 
-  // --- FILTERED + PAGINATED DATA ---
   const filteredData = donations.filter(
     (item) =>
       (item.report?.title || 'platform').toLowerCase().includes(query) ||
@@ -310,10 +280,8 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
     currentPage * itemsPerPage,
   );
 
-  // --- Complete Payment (use existing snapToken) ---
   const handleCompletePayment = (row: DonationItem) => {
     if (!row.snapToken) {
-      // Token missing → redirect to donation page with pre-filled data
       const params = new URLSearchParams();
       if (row.reportId) params.set('reportId', String(row.reportId));
       params.set('amount', String(row.amount));
@@ -358,7 +326,6 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
     });
   };
 
-  // --- Change Payment Method (cancel old → redirect to /donation) ---
   const handleChangePaymentMethod = async (row: DonationItem) => {
     setCancelingId(row.id);
     setActionError(null);
@@ -380,20 +347,14 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
       return;
     }
 
-    // After cancel, redirect to /donation/report/{id} or /donation/platform
     const redirectUrl = row.reportId
       ? `/donation/report/${row.reportId}`
       : '/donation/platform';
     router.push(redirectUrl);
   };
 
-  const toggleExpand = (id: number) => {
-    setExpandedRowId((prev) => (prev === id ? null : id));
-    setActionError(null);
-  };
-
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="w-full space-y-8 animate-fade-in">
       {/* Payment Notice Banner */}
       {paymentNotice && (
         <div
@@ -406,37 +367,37 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
         </div>
       )}
 
-      {/* Header */}
-      <div className="flex justify-between items-center">
+      {/* Sub-Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-[32px] font-black text-[#193c1f]">
-            Donation History
+          <h2 className="text-2xl sm:text-3xl font-black text-[#193c1f] tracking-tight">
+            Donation Records
           </h2>
-          <p className="text-[#8ea087] font-medium">
+          <p className="text-[#8ea087] text-sm font-medium mt-0.5">
             {query
               ? `Showing results for "${query}"`
-              : 'Your contributions to the community.'}
+              : 'Detailed history log of your donations.'}
           </p>
         </div>
         <Button
           onClick={() => router.push('/donation')}
           variant="secondary"
-          className="whitespace-nowrap shadow-lg"
+          className="whitespace-nowrap shadow-md bg-[#193c1f] text-white hover:bg-[#132e18] shrink-0"
         >
           + New Donation
         </Button>
       </div>
 
-      {/* Table */}
-      <Card className="overflow-hidden rounded-[32px] p-0">
-        <table className="w-full text-left">
+      {/* Table Section */}
+      <Card className="overflow-x-auto rounded-[32px] p-0 border border-[#f1ebe1] bg-white shadow-sm">
+        <table className="w-full text-left min-w-\[480px\]">
           <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
             <tr>
-              <th className="px-8 py-5">Source / Donor</th>
-              <th className="px-8 py-5">Date</th>
-              <th className="px-8 py-5">Via</th>
-              <th className="px-8 py-5">Status</th>
-              <th className="px-8 py-5 text-right">Amount</th>
+              <th className="px-2 sm:px-4 py-2">Source / Donor</th>
+              <th className="px-2 sm:px-4 py-2">Date</th>
+              <th className="px-2 sm:px-4 py-2">Via</th>
+              <th className="px-2 sm:px-4 py-2">Status</th>
+              <th className="px-2 sm:px-4 py-2 text-right">Amount</th>
             </tr>
           </thead>
 
@@ -445,7 +406,8 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
               const displayStatus = getDisplayStatus(row.paymentStatus);
               const badge = STATUS_BADGE[displayStatus];
               const isPending = displayStatus === 'PENDING';
-              const isExpanded = expandedRowId === row.id;
+              const isExpanded =
+                hoveredRowId === row.id || expandedRowId === row.id;
               const isProcessing = processingId === row.id;
               const isCanceling = cancelingId === row.id;
 
@@ -454,44 +416,43 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
                   key={row.id}
                   onMouseEnter={() => setHoveredRowId(row.id)}
                   onMouseLeave={() => setHoveredRowId(null)}
-                  className="group border-b border-[#f7f3ed] last:border-0"
+                  onClick={() =>
+                    setExpandedRowId((p) => (p === row.id ? null : row.id))
+                  }
+                  className="group border-b border-[#f7f3ed] last:border-0 cursor-pointer"
                 >
-                  {/* Main Row */}
                   <tr
-                    onClick={() => toggleExpand(row.id)}
-                    className={`transition-colors cursor-pointer ${
-                      hoveredRowId === row.id || isExpanded
-                        ? 'bg-[#FDFCFB]'
-                        : ''
+                    className={`transition-colors ${
+                      isExpanded ? 'bg-[#FDFCFB]' : 'hover:bg-[#FDFCFB]'
                     }`}
                   >
-                    <td className="px-8 py-6">
+                    <td className="px-2 sm:px-4 py-2">
                       <div className="flex items-center gap-2">
                         <div>
-                          <p className="font-bold text-[#193c1f]">
+                          <p className="font-bold text-[#193c1f] text-sm">
                             {row.report?.title || 'CareConnect Platform'}
                           </p>
-                          <p className="text-[12px] text-[#8ea087] font-medium opacity-60">
+                          <p className="text-[11px] text-[#8ea087] font-medium opacity-60">
                             Donation #{row.id}
                           </p>
                         </div>
                         {isPending && (
                           <Badge className="ml-2 whitespace-nowrap border border-amber-200 bg-amber-50 px-2 py-0.5 text-amber-600">
-                            Click to pay
+                            Pending
                           </Badge>
                         )}
                       </div>
                     </td>
-                    <td className="px-8 py-6 font-medium">
+                    <td className="px-2 sm:px-4 py-2 font-medium text-[#193c1f] text-sm">
                       {formatDateLabel(row.timestamp)}
                     </td>
-                    <td className="px-8 py-6 font-medium italic text-[#8ea087]">
+                    <td className="px-2 sm:px-4 py-2 font-medium italic text-[#8ea087] text-sm">
                       {formatPaymentMethod(row.paymentMethod)}
                     </td>
-                    <td className="px-8 py-6">
+                    <td className="px-2 sm:px-4 py-2">
                       <Badge className={badge.cls}>{badge.label}</Badge>
                     </td>
-                    <td className="px-8 py-6 text-right font-black text-[16px]">
+                    <td className="px-2 sm:px-4 py-2 text-right font-black text-sm text-[#193c1f]">
                       {formatRupiah(row.amount)}
                     </td>
                   </tr>
@@ -504,8 +465,8 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
                           isExpanded ? 'max-h-[900px]' : 'max-h-0'
                         }`}
                       >
-                        <div className="px-8 pb-8 pt-2">
-                          <div className="p-7 bg-white border border-[#d0d5cb]/40 rounded-[24px] shadow-sm">
+                        <div className="px-4 sm:px-6 pb-5 pt-1">
+                          <div className="p-4 sm:p-5 bg-white border border-[#d0d5cb]/40 rounded-[18px] shadow-sm">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                               {/* Left: Donation Summary */}
                               <div className="space-y-6">
@@ -517,7 +478,7 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
                                     <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
                                       Amount
                                     </p>
-                                    <p className="text-[20px] font-black text-[#d1b698]">
+                                    <p className="text-[20px] font-black text-[#193c1f]">
                                       {formatRupiah(row.amount)}
                                     </p>
                                   </div>
@@ -547,17 +508,14 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
                                   </div>
                                 </div>
 
-                                {/* Action Buttons for PENDING */}
                                 {isPending && (
                                   <div className="pt-2 space-y-3">
-                                    {actionError &&
-                                      expandedRowId === row.id && (
-                                        <p className="text-[12px] text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                                          {actionError}
-                                        </p>
-                                      )}
+                                    {actionError && hoveredRowId === row.id && (
+                                      <p className="text-[12px] text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                                        {actionError}
+                                      </p>
+                                    )}
 
-                                    {/* Complete Payment Button */}
                                     <Button
                                       onClick={(e) => {
                                         e.stopPropagation();
@@ -565,31 +523,13 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
                                       }}
                                       disabled={isProcessing || isCanceling}
                                       loading={isProcessing}
-                                      className="w-full rounded-xl px-4 py-3 text-[13px] hover:bg-[#8ea087]"
+                                      className="w-full rounded-xl px-4 py-3 text-[13px] bg-[#193c1f] text-white hover:bg-[#8ea087]"
                                     >
-                                      {isProcessing ? (
-                                        'Opening payment...'
-                                      ) : (
-                                        <>
-                                          <svg
-                                            className="w-4 h-4"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                          >
-                                            <path
-                                              strokeLinecap="round"
-                                              strokeLinejoin="round"
-                                              strokeWidth="2"
-                                              d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-                                            />
-                                          </svg>
-                                          Complete Payment
-                                        </>
-                                      )}
+                                      {isProcessing
+                                        ? 'Opening payment...'
+                                        : 'Complete Payment'}
                                     </Button>
 
-                                    {/* Change Payment Method Button */}
                                     <Button
                                       onClick={(e) => {
                                         e.stopPropagation();
@@ -600,26 +540,9 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
                                       variant="outline"
                                       className="w-full rounded-xl px-4 py-3 text-[13px]"
                                     >
-                                      {isCanceling ? (
-                                        'Canceling old donation...'
-                                      ) : (
-                                        <>
-                                          <svg
-                                            className="w-4 h-4"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                          >
-                                            <path
-                                              strokeLinecap="round"
-                                              strokeLinejoin="round"
-                                              strokeWidth="2"
-                                              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                                            />
-                                          </svg>
-                                          Change Payment Method
-                                        </>
-                                      )}
+                                      {isCanceling
+                                        ? 'Canceling old donation...'
+                                        : 'Change Payment Method'}
                                     </Button>
                                   </div>
                                 )}
@@ -640,28 +563,19 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
                                         'CareConnect Platform'}
                                     </p>
                                   </div>
-                                  {row.report?.description ? (
-                                    <div className="pt-2">
-                                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight mb-1">
-                                        Description
-                                      </p>
-                                      <div className="bg-[#f7f3ed]/30 p-4 rounded-xl border border-[#f7f3ed] max-h-[150px] overflow-y-auto custom-scrollbar">
-                                        <p className="text-[13px] leading-relaxed text-[#193c1f]/80 whitespace-pre-wrap font-medium italic">
-                                          &quot;{row.report.description}&quot;
-                                        </p>
-                                      </div>
-                                    </div>
-                                  ) : (
-                                    <div className="pt-2">
-                                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight mb-1">
-                                        Description
-                                      </p>
-                                      <p className="text-[13px] text-[#193c1f]/60 italic">
-                                        Donation to support the platform
-                                        infrastructure and operations.
+                                  <div className="pt-2">
+                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight mb-1">
+                                      Description
+                                    </p>
+                                    <div className="bg-[#f7f3ed]/30 p-4 rounded-xl border border-[#f7f3ed] max-h-[150px] overflow-y-auto custom-scrollbar">
+                                      <p className="text-[13px] leading-relaxed text-[#193c1f]/80 whitespace-pre-wrap font-medium italic">
+                                        &quot;
+                                        {row.report?.description ||
+                                          'Donation to support the platform infrastructure and operations.'}
+                                        &quot;
                                       </p>
                                     </div>
-                                  )}
+                                  </div>
                                 </div>
                               </div>
                             </div>

@@ -42,9 +42,6 @@ export default async function AdminDonationsPage({
     paidDonationsCount,
     pendingDonationsCount,
     failedDonationsCount,
-    expiredDonationsCount,
-    refundedDonationsCount,
-    cancelledDonationsCount,
   ] = await Promise.all([
     prisma.donation.findMany({
       where: whereDonation,
@@ -109,9 +106,6 @@ export default async function AdminDonationsPage({
     prisma.donation.count({ where: { paymentStatus: 'PAID' } }),
     prisma.donation.count({ where: { paymentStatus: 'PENDING' } }),
     prisma.donation.count({ where: { paymentStatus: 'FAILED' } }),
-    prisma.donation.count({ where: { paymentStatus: 'EXPIRED' } }),
-    prisma.donation.count({ where: { paymentStatus: 'REFUNDED' } }),
-    prisma.donation.count({ where: { paymentStatus: 'CANCELLED' } }),
   ]);
 
   const totalPages = Math.ceil(totalFilteredCount / perPage);
@@ -121,56 +115,51 @@ export default async function AdminDonationsPage({
   );
 
   return (
-    <div className="p-10 max-w-7xl mx-auto">
-      <DonationClient
-        donations={donations.map((d) => ({
-          id: d.id,
-          reportId: d.reportId || 0,
-          userName: d.user?.name || 'Anonymous',
-          amount: Number(d.amount),
-          message: '',
-          paymentStatus: d.paymentStatus,
-          createdAt: d.timestamp.toISOString(),
-          report: d.report || { title: 'Platform Donation', description: '' },
-        }))}
-        summary={{
-          platformTotal: totalPlatformAmount,
-          psychologistPool: totalPlatformAmount * 0.9,
-          totalSessions: totalCompletedConsultations,
-          allTimeTotal: totalAllTimePlatformAmount,
-          allTimeSessions: allTimeTotalSessions,
-        }}
-        psychologistBreakdown={psychologists.map((p) => {
-          const sessions = p._count.consultationsAsPsych;
-          const share =
-            totalCompletedConsultations > 0
-              ? (sessions / totalCompletedConsultations) *
-                (totalPlatformAmount * 0.9)
-              : 0;
-          return {
-            id: p.id,
-            name: p.name,
-            sessions,
-            earnings: share,
-          };
-        })}
-        currentMonth={currentMonth}
-        currentYear={currentYear}
-        currentStatus={status}
-        page={page}
-        totalPages={totalPages}
-        perPage={perPage}
-        totalCount={totalFilteredCount}
-        counts={{
-          all: allDonationsCount,
-          paid: paidDonationsCount,
-          pending: pendingDonationsCount,
-          failed: failedDonationsCount,
-          expired: expiredDonationsCount,
-          refunded: refundedDonationsCount,
-          cancelled: cancelledDonationsCount,
-        }}
-      />
-    </div>
+    <DonationClient
+      donations={donations.map((d) => ({
+        id: d.id,
+        reportId: d.reportId || 0,
+        userName: d.user?.name || 'Anonymous',
+        amount: Number(d.amount),
+        message: '',
+        paymentStatus: d.paymentStatus,
+        createdAt: d.timestamp.toISOString(),
+        report: d.report || { title: 'Platform Donation', description: '' },
+      }))}
+      summary={{
+        platformTotal: totalPlatformAmount,
+        psychologistPool: totalPlatformAmount * 0.9,
+        totalSessions: totalCompletedConsultations,
+        allTimeTotal: totalAllTimePlatformAmount,
+        allTimeSessions: allTimeTotalSessions,
+      }}
+      psychologistBreakdown={psychologists.map((p) => {
+        const sessions = p._count.consultationsAsPsych;
+        const share =
+          totalCompletedConsultations > 0
+            ? (sessions / totalCompletedConsultations) *
+              (totalPlatformAmount * 0.9)
+            : 0;
+        return {
+          id: p.id,
+          name: p.name,
+          sessions,
+          earnings: share,
+        };
+      })}
+      currentMonth={currentMonth}
+      currentYear={currentYear}
+      currentStatus={status}
+      page={page}
+      totalPages={totalPages}
+      perPage={perPage}
+      totalCount={totalFilteredCount}
+      counts={{
+        all: allDonationsCount,
+        paid: paidDonationsCount,
+        pending: pendingDonationsCount,
+        failed: failedDonationsCount,
+      }}
+    />
   );
 }

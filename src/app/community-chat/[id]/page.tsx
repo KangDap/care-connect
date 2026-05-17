@@ -938,7 +938,7 @@ export default function CommunityChatContent() {
                     {sendMessageMutation.isPending ? (
                       <Loader2 className="animate-spin" />
                     ) : (
-                      <Send className="h-6 w-6 rotate-45" />
+                      <Send className="h-6 w-6" />
                     )}
                   </Button>
                 </div>

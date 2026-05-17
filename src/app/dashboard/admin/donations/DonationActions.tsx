@@ -34,21 +34,24 @@ export function DonationActions({
       minimumFractionDigits: 0,
     }).format(v);
 
-  const handleMarkAsPaid = async () => {
+  const handlePatchStatus = async (
+    paymentStatus: string,
+    successMsg: string,
+    errorMsg: string,
+  ) => {
     setIsUpdating(true);
     try {
       const res = await fetch('/api/dashboard/admin/donations', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, paymentStatus: 'PAID' }),
+        body: JSON.stringify({ id, paymentStatus }),
       });
-
       if (!res.ok) throw new Error('Failed to update status');
       setIsEditModalOpen(false);
-      onSuccess('Donasi berhasil ditandai sebagai LUNAS!');
+      onSuccess(successMsg);
       router.refresh();
     } catch {
-      onError('Gagal memperbarui status donasi');
+      onError(errorMsg);
     } finally {
       setIsUpdating(false);
     }
@@ -60,7 +63,6 @@ export function DonationActions({
       const res = await fetch(`/api/dashboard/admin/donations?id=${id}`, {
         method: 'DELETE',
       });
-
       if (!res.ok) throw new Error('Failed to delete donation');
       setIsDeleteModalOpen(false);
       onSuccess('Data donasi berhasil dihapus!');
@@ -74,6 +76,7 @@ export function DonationActions({
 
   return (
     <div className="flex items-center justify-end gap-2">
+      {/* Single compact "Manage" trigger */}
       <Button
         variant="outline"
         onClick={() => setIsEditModalOpen(true)}
@@ -82,47 +85,110 @@ export function DonationActions({
         Manage
       </Button>
 
-      {/* Edit/Manage Modal */}
+      {/* ── Action Menu Modal ── */}
       <Modal
         title="Manage Donation"
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
       >
         <div className="space-y-6 text-left">
+          {/* Donor info */}
           <div>
             <p className="text-xs font-black text-[#8ea087] uppercase tracking-widest mb-1">
-              Donor & Amount
+              Donor &amp; Amount
             </p>
             <p className="text-sm font-bold text-[#193c1f]">
               {donor} — {fmt(amount)}
             </p>
+            <span
+              className={`inline-block mt-2 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                status === 'PAID'
+                  ? 'bg-green-100 text-green-700'
+                  : status === 'PENDING'
+                    ? 'bg-amber-100 text-amber-700'
+                    : 'bg-gray-100 text-gray-500'
+              }`}
+            >
+              {status}
+            </span>
           </div>
 
-          <div className="flex flex-col gap-3">
-            <Button
-              loading={isUpdating}
-              disabled={status === 'PAID'}
-              onClick={handleMarkAsPaid}
-              className="w-full"
+          {/* Action buttons (act as a dropdown-style menu) */}
+          <div className="flex flex-col gap-2">
+            {/* Mark as PAID */}
+            <button
+              disabled={status === 'PAID' || isUpdating}
+              onClick={() =>
+                handlePatchStatus(
+                  'PAID',
+                  'Donasi berhasil ditandai sebagai LUNAS!',
+                  'Gagal memperbarui status donasi.',
+                )
+              }
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-[#D0D5CB] bg-white hover:bg-[#f7f3ed] disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-left"
             >
-              Mark as PAID
-            </Button>
-            <Button
-              variant="outline"
-              loading={isUpdating}
+              <span className="w-7 h-7 rounded-lg bg-green-100 flex items-center justify-center shrink-0">
+                <svg
+                  className="w-4 h-4 text-green-700"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2.5"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </span>
+              <div>
+                <p className="text-sm font-bold text-[#193c1f]">Mark as PAID</p>
+                <p className="text-[11px] text-[#8ea087]">
+                  Manually confirm payment receipt
+                </p>
+              </div>
+            </button>
+
+            {/* Divider */}
+            <hr className="border-[#f7f3ed] my-1" />
+
+            {/* Delete Record */}
+            <button
+              disabled={isUpdating}
               onClick={() => {
                 setIsEditModalOpen(false);
                 setIsDeleteModalOpen(true);
               }}
-              className="w-full text-red-600 border-red-200 hover:bg-red-50"
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-red-100 bg-white hover:bg-red-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-left"
             >
-              Delete Record
-            </Button>
+              <span className="w-7 h-7 rounded-lg bg-red-100 flex items-center justify-center shrink-0">
+                <svg
+                  className="w-4 h-4 text-red-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2.5"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+              </span>
+              <div>
+                <p className="text-sm font-bold text-red-600">Delete Record</p>
+                <p className="text-[11px] text-[#8ea087]">
+                  Permanently remove this donation
+                </p>
+              </div>
+            </button>
           </div>
         </div>
       </Modal>
 
-      {/* Delete Confirmation Modal */}
+      {/* ── Delete Confirmation Modal ── */}
       <Modal
         title="Delete Donation"
         isOpen={isDeleteModalOpen}

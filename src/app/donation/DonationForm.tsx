@@ -249,15 +249,13 @@ export function DonationForm({
         {/* Left Column */}
         <div className="md:col-span-8 flex flex-col gap-8">
           {/* Back button */}
-          <Button
+          <button
             type="button"
-            variant="ghost"
             onClick={() => router.push(backHref)}
-            className="w-fit px-0"
+            className="p-2 sm:p-2.5 bg-white border border-[#D0D5CB] hover:bg-[#F7F3ED] rounded-xl sm:rounded-2xl transition-all shadow-sm flex items-center justify-center"
           >
-            <ArrowLeft size={16} />
-            Back
-          </Button>
+            <ArrowLeft size={18} className="text-[#193c1f]" />
+          </button>
 
           <section>
             <h1 className="text-4xl font-extrabold text-[#193c1f] mb-2">

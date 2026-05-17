@@ -303,7 +303,7 @@ export default function LoginPage() {
             </p>
 
             <div className="flex gap-6 w-full">
-              <FeatureCard icon={ShieldIcon} text="End-to-End Encrypted" />
+              <FeatureCard icon={ShieldIcon} text="Forum Chat Community" />
               <UserCheckIcon className="hidden" /> {/* Trigger layout only */}
               <FeatureCard icon={UserCheckIcon} text="Anonymous Options" />
             </div>
