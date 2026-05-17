@@ -1,3 +1,6 @@
+import { Badge } from '@/components/badge';
+import { Button } from '@/components/button';
+import { Card } from '@/components/card';
 import Carousel from '@/components/carousel';
 import { PublicHeader } from '@/components/public-header';
 import { PaymentStatus, ReportStatus } from '@/generated/prisma/enums';
@@ -62,29 +65,38 @@ export default async function LandingPage() {
           </p>
           <div className="flex gap-4">
             {userRole === 'PSYCHOLOGIST' ? (
-              <button
+              <Button
                 disabled
-                className="bg-[#8ea087]/50 text-[#f7f3ed] px-10 py-4 rounded-lg font-bold text-lg shadow-sm cursor-not-allowed h-full"
+                className="h-full rounded-lg bg-[#8ea087]/50 px-10 py-4 text-lg"
                 title="Psychologists cannot create consultations"
               >
                 Consult Now
-              </button>
+              </Button>
             ) : (
               <Link href={isLoggedIn ? '/consultation' : '/login'}>
-                <button className="bg-[#8ea087] text-[#f7f3ed] px-10 py-4 rounded-lg font-bold text-lg shadow-sm hover:bg-[#193c1f] transition-colors h-full">
+                <Button
+                  variant="secondary"
+                  className="h-full rounded-lg px-10 py-4 text-lg"
+                >
                   Consult Now
-                </button>
+                </Button>
               </Link>
             )}
             <Link href={isLoggedIn ? '/report' : '/login'}>
-              <button className="bg-[#d0d5cb] text-[#193c1f] px-10 py-4 rounded-lg font-bold text-lg border border-[#8ea087] hover:bg-[#ede4d8] transition-colors">
+              <Button
+                variant="outline"
+                className="rounded-lg border-[#8ea087] bg-[#d0d5cb] px-10 py-4 text-lg"
+              >
                 Report Incident
-              </button>
+              </Button>
             </Link>
             <Link href={isLoggedIn ? '/donation' : '/login'}>
-              <button className="bg-[#f7f3ed] text-[#193c1f] px-10 py-4 rounded-lg font-bold text-lg border border-[#d1b698] hover:bg-[#ede4d8] transition-colors h-full">
+              <Button
+                variant="outline"
+                className="h-full rounded-lg border-[#d1b698] bg-[#f7f3ed] px-10 py-4 text-lg"
+              >
                 Donate
-              </button>
+              </Button>
             </Link>
           </div>
         </div>
@@ -95,7 +107,7 @@ export default async function LandingPage() {
       {/* Stats Section */}
       <section className="bg-[#ede4d8] py-20 px-12">
         <div className="max-w-[1440px] mx-auto grid grid-cols-3 gap-8">
-          <div className="bg-[#f7f3ed] p-12 rounded-2xl text-center shadow-sm border-b-4 border-[#8ea087]">
+          <Card className="rounded-2xl border-b-4 border-[#8ea087] bg-[#f7f3ed] p-12 text-center">
             <p className="text-[#193c1f] font-semibold mb-2 opacity-80">
               Reports Published
             </p>
@@ -103,8 +115,8 @@ export default async function LandingPage() {
               {totalReports}
             </h2>
             <div className="w-16 h-1 bg-[#8ea087] mx-auto rounded-full"></div>
-          </div>
-          <div className="bg-[#f7f3ed] p-12 rounded-2xl text-center shadow-sm border-b-4 border-[#8ea087]">
+          </Card>
+          <Card className="rounded-2xl border-b-4 border-[#8ea087] bg-[#f7f3ed] p-12 text-center">
             <p className="text-[#193c1f] font-semibold mb-2 opacity-80">
               Consultation Handled
             </p>
@@ -112,8 +124,8 @@ export default async function LandingPage() {
               {totalConsultations}
             </h2>
             <div className="w-16 h-1 bg-[#d1b698] mx-auto rounded-full"></div>
-          </div>
-          <div className="bg-[#f7f3ed] p-12 rounded-2xl text-center shadow-sm border-b-4 border-[#8ea087]">
+          </Card>
+          <Card className="rounded-2xl border-b-4 border-[#8ea087] bg-[#f7f3ed] p-12 text-center">
             <p className="text-[#193c1f] font-semibold mb-2 opacity-80">
               Community Donations
             </p>
@@ -121,7 +133,7 @@ export default async function LandingPage() {
               {formattedDonations}
             </h2>
             <div className="w-16 h-1 bg-[#8ea087] mx-auto rounded-full"></div>
-          </div>
+          </Card>
         </div>
       </section>
 
@@ -135,7 +147,7 @@ export default async function LandingPage() {
           support in a confidential environment.
         </p>
         <div className="grid grid-cols-4 gap-8">
-          <div className="bg-[#f7f3ed] p-8 rounded-2xl border border-[#d0d5cb] text-left shadow-sm flex flex-col items-start gap-4">
+          <Card className="flex flex-col items-start gap-4 rounded-2xl bg-[#f7f3ed] p-8 text-left">
             <div className="w-12 h-12 bg-[#ede4d8] rounded-lg flex items-center justify-center text-[#8ea087]">
               <svg
                 className="w-6 h-6"
@@ -156,8 +168,8 @@ export default async function LandingPage() {
             <p className="text-[#193c1f] opacity-80">
               One-on-one sessions with certified mental health professionals.
             </p>
-          </div>
-          <div className="bg-[#f7f3ed] p-8 rounded-2xl border border-[#d0d5cb] text-left shadow-sm flex flex-col items-start gap-4">
+          </Card>
+          <Card className="flex flex-col items-start gap-4 rounded-2xl bg-[#f7f3ed] p-8 text-left">
             <div className="w-12 h-12 bg-[#ede4d8] rounded-lg flex items-center justify-center text-[#8ea087]">
               <svg
                 className="w-6 h-6"
@@ -178,8 +190,8 @@ export default async function LandingPage() {
             <p className="text-[#193c1f] opacity-80">
               Secure and anonymous incident reporting for community safety.
             </p>
-          </div>
-          <div className="bg-[#f7f3ed] p-8 rounded-2xl border border-[#d0d5cb] text-left shadow-sm flex flex-col items-start gap-4">
+          </Card>
+          <Card className="flex flex-col items-start gap-4 rounded-2xl bg-[#f7f3ed] p-8 text-left">
             <div className="w-12 h-12 bg-[#ede4d8] rounded-lg flex items-center justify-center text-[#8ea087]">
               <svg
                 className="w-6 h-6"
@@ -200,8 +212,8 @@ export default async function LandingPage() {
             <p className="text-[#193c1f] opacity-80">
               Peer-led discussions and shared experiences in a moderated space.
             </p>
-          </div>
-          <div className="bg-[#f7f3ed] p-8 rounded-2xl border border-[#d0d5cb] text-left shadow-sm flex flex-col items-start gap-4">
+          </Card>
+          <Card className="flex flex-col items-start gap-4 rounded-2xl bg-[#f7f3ed] p-8 text-left">
             <div className="w-12 h-12 bg-[#ede4d8] rounded-lg flex items-center justify-center text-[#8ea087]">
               <svg
                 className="w-6 h-6"
@@ -222,7 +234,7 @@ export default async function LandingPage() {
             <p className="text-[#193c1f] opacity-80">
               Fund mental health initiatives and support those in need.
             </p>
-          </div>
+          </Card>
         </div>
       </section>
 
@@ -255,7 +267,11 @@ export default async function LandingPage() {
         </div>
         <div className="grid grid-cols-3 gap-10">
           {recentReports.map((report) => (
-            <div data-purpose="report-card" key={report.id}>
+            <Card
+              data-purpose="report-card"
+              key={report.id}
+              className="bg-transparent border-0 shadow-none"
+            >
               <div className="w-full aspect-video bg-[#d0d5cb] rounded-2xl mb-6 flex items-center justify-center text-[#8ea087] overflow-hidden relative">
                 {report.evidences && report.evidences.length > 0 ? (
                   <Image
@@ -289,14 +305,14 @@ export default async function LandingPage() {
                 {report.description}
               </p>
               <div className="flex gap-2">
-                <span className="bg-[#ede4d8] text-[#8ea087] px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
+                <Badge className="rounded bg-[#ede4d8] px-3 py-1 text-[#8ea087]">
                   {report.status}
-                </span>
-                <span className="bg-[#d0d5cb] text-[#193c1f] px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
+                </Badge>
+                <Badge className="rounded bg-[#d0d5cb] px-3 py-1 text-[#193c1f]">
                   {report.category}
-                </span>
+                </Badge>
               </div>
-            </div>
+            </Card>
           ))}
         </div>
       </section>

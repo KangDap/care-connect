@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/button';
+import { Input } from '@/components/input';
 import { Modal } from '@/components/modal';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
@@ -79,68 +80,45 @@ export const ForumModal = ({
         </p>
 
         <div className="space-y-4 mt-4">
-          <div>
-            <label className="text-xs font-black uppercase tracking-widest text-[#193C1F] mb-2 block">
-              Forum Name
-            </label>
-            <input
-              type="text"
-              required
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-              placeholder="e.g., Mental Health Support"
-              className="w-full h-[48px] bg-[#F7F3ED] border border-[#D0D5CB] rounded-xl px-4 text-sm focus:border-[#8EA087] outline-none transition-all focus:bg-white"
-            />
-          </div>
+          <Input
+            label="Forum Name"
+            required
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            placeholder="e.g., Mental Health Support"
+          />
 
-          <div>
-            <label className="text-xs font-black uppercase tracking-widest text-[#193C1F] mb-2 block">
-              Category
-            </label>
-            <input
-              type="text"
-              required
-              value={formData.category}
-              onChange={(e) =>
-                setFormData({ ...formData, category: e.target.value })
-              }
-              placeholder="e.g., Depression, Anxiety, etc."
-              className="w-full h-[48px] bg-[#F7F3ED] border border-[#D0D5CB] rounded-xl px-4 text-sm focus:border-[#8EA087] outline-none transition-all focus:bg-white"
-            />
-          </div>
+          <Input
+            label="Category"
+            required
+            value={formData.category}
+            onChange={(e) =>
+              setFormData({ ...formData, category: e.target.value })
+            }
+            placeholder="e.g., Depression, Anxiety, etc."
+          />
 
-          <div>
-            <label className="text-xs font-black uppercase tracking-widest text-[#193C1F] mb-2 block">
-              Privacy Type
-            </label>
-            <select
-              value={formData.type}
-              onChange={(e) =>
-                setFormData({ ...formData, type: e.target.value })
-              }
-              className="w-full h-[48px] bg-[#F7F3ED] border border-[#D0D5CB] rounded-xl px-4 text-sm focus:border-[#8EA087] outline-none appearance-none cursor-pointer transition-all focus:bg-white"
-            >
-              <option value="PUBLIC">Public (Visible to everyone)</option>
-              <option value="PRIVATE">Private (Invite only)</option>
-            </select>
-          </div>
+          <Input
+            label="Privacy Type"
+            type="select"
+            value={formData.type}
+            onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+          >
+            <option value="PUBLIC">Public (Visible to everyone)</option>
+            <option value="PRIVATE">Private (Invite only)</option>
+          </Input>
 
-          <div>
-            <label className="text-xs font-black uppercase tracking-widest text-[#193C1F] mb-2 block">
-              Description
-            </label>
-            <textarea
-              required
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              placeholder="Describe what this forum is about..."
-              className="w-full h-[100px] bg-[#F7F3ED] border border-[#D0D5CB] rounded-xl p-4 text-sm focus:border-[#8EA087] outline-none resize-none transition-all focus:bg-white"
-            />
-          </div>
+          <Input
+            label="Description"
+            type="textarea"
+            required
+            rows={4}
+            value={formData.description}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
+            placeholder="Describe what this forum is about..."
+          />
 
           <div>
             <label className="text-xs font-black uppercase tracking-widest text-[#193C1F] mb-2 block">
@@ -171,13 +149,14 @@ export const ForumModal = ({
         </div>
 
         <div className="flex justify-end gap-3 pt-6 border-t border-[#F7F3ED] mt-6">
-          <button
+          <Button
+            variant="ghost"
             type="button"
             onClick={onClose}
-            className="text-[11px] font-black uppercase tracking-widest text-[#193C1F]/40 hover:text-[#193C1F] transition-colors px-4"
+            className="px-4"
           >
             Cancel
-          </button>
+          </Button>
           <Button loading={loading} type="submit" className="px-8">
             {initialData ? 'Save Changes' : 'Create Forum'}
           </Button>

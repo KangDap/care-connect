@@ -174,7 +174,7 @@ export function ReportPicker({ onSelect, onBack }: Props) {
             type="button"
             variant="outline"
             onClick={onBack}
-            className="h-11 w-11 shrink-0 rounded-full p-0"
+            className="h-11 w-11 shrink-0 rounded-full !p-0"
             aria-label="Back to donation options"
           >
             <ArrowLeft size={20} />
@@ -262,11 +262,12 @@ export function ReportPicker({ onSelect, onBack }: Props) {
                     );
 
                     return (
-                      <button
+                      <Button
                         key={category.value}
                         type="button"
                         onClick={() => handleCategoryToggle(category.value)}
-                        className="flex items-center gap-3 rounded-2xl px-2 py-2 text-left transition-colors hover:bg-[#f7f3ed]"
+                        variant="ghost"
+                        className="justify-start rounded-2xl px-2 py-2 text-left normal-case tracking-normal text-[#193c1f] hover:bg-[#f7f3ed]"
                       >
                         <span
                           className={`flex h-6 w-6 items-center justify-center rounded-lg border-2 transition-colors ${
@@ -280,7 +281,7 @@ export function ReportPicker({ onSelect, onBack }: Props) {
                         <span className="text-sm font-bold">
                           {category.label}
                         </span>
-                      </button>
+                      </Button>
                     );
                   })}
                 </div>
@@ -353,13 +354,18 @@ export function ReportPicker({ onSelect, onBack }: Props) {
                 {paginatedReports.map((report) => (
                   <Card
                     key={report.id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => onSelect(report)}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        onSelect(report);
+                      }
+                    }}
                     className="group flex h-full cursor-pointer flex-col rounded-3xl transition-all duration-300 hover:border-[#193c1f] hover:shadow-xl"
                   >
-                    <button
-                      type="button"
-                      onClick={() => onSelect(report)}
-                      className="flex h-full flex-col text-left"
-                    >
+                    <div className="flex h-full flex-col text-left">
                       <div className="relative h-48 w-full shrink-0 overflow-hidden bg-[#f7f3ed]">
                         {report.coverImageUrl ? (
                           <Image
@@ -409,7 +415,7 @@ export function ReportPicker({ onSelect, onBack }: Props) {
                           />
                         </div>
                       </div>
-                    </button>
+                    </div>
                   </Card>
                 ))}
               </div>

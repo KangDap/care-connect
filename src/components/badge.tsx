@@ -3,9 +3,14 @@ import React from 'react';
 interface BadgeProps {
   children: React.ReactNode;
   status?: 'UPCOMING' | 'PENDING' | 'SUCCESS' | 'DEFAULT';
+  className?: string;
 }
 
-export const Badge = ({ children, status = 'DEFAULT' }: BadgeProps) => {
+export const Badge = ({
+  children,
+  status = 'DEFAULT',
+  className = '',
+}: BadgeProps) => {
   const colors = {
     UPCOMING: 'bg-[#d1b698]/20 text-[#d1b698]',
     PENDING: 'bg-[#d1b698]/30 text-[#d1b698]',
@@ -15,7 +20,7 @@ export const Badge = ({ children, status = 'DEFAULT' }: BadgeProps) => {
 
   return (
     <span
-      className={`px-4 py-1.5 rounded-full text-[10px] font-black ${colors[status as keyof typeof colors] || colors.DEFAULT}`}
+      className={`px-4 py-1.5 rounded-full text-[10px] font-black ${colors[status as keyof typeof colors] || colors.DEFAULT} ${className}`}
     >
       {children}
     </span>

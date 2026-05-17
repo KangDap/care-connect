@@ -1,9 +1,13 @@
 'use client';
 
 import { Alert } from '@/components/alert';
+import { Button } from '@/components/button';
+import { Card } from '@/components/card';
+import { Input } from '@/components/input';
 import { PublicHeader } from '@/components/public-header';
 import { authClient } from '@/lib/auth/auth-client';
 import type { ConsultationScheduleSlot } from '@/modules/consultation/consultation.types';
+import { Check, Info, Lock, Send, Upload } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
@@ -214,27 +218,15 @@ export default function ConsultationPage() {
       {(isSubmitting || message.type === 'success') && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 backdrop-blur-sm transition-all duration-300">
           {message.type === 'success' ? (
-            <div className="bg-white p-10 rounded-2xl shadow-xl flex flex-col items-center gap-4 text-center max-w-sm w-full mx-4 transform transition-all scale-100">
+            <Card className="mx-4 flex w-full max-w-sm scale-100 transform flex-col items-center gap-4 rounded-2xl p-10 text-center shadow-xl transition-all">
               <div className="w-20 h-20 bg-[#8ea087]/10 rounded-full flex items-center justify-center mb-2">
-                <svg
-                  className="h-10 w-10 text-[#8ea087]"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M5 13l4 4L19 7"
-                  ></path>
-                </svg>
+                <Check className="h-10 w-10 text-[#8ea087]" />
               </div>
               <h3 className="text-2xl font-bold text-[#193c1f]">Success!</h3>
               <p className="text-[#193c1f]/70">{message.text}</p>
-            </div>
+            </Card>
           ) : (
-            <div className="bg-white p-10 rounded-2xl shadow-xl flex flex-col items-center gap-6 text-center max-w-sm w-full mx-4">
+            <Card className="mx-4 flex w-full max-w-sm flex-col items-center gap-6 rounded-2xl p-10 text-center shadow-xl">
               <svg
                 className="animate-spin h-12 w-12 text-[#8ea087]"
                 viewBox="0 0 24 24"
@@ -262,7 +254,7 @@ export default function ConsultationPage() {
                   Please wait while we secure your slot.
                 </p>
               </div>
-            </div>
+            </Card>
           )}
         </div>
       )}
@@ -272,24 +264,11 @@ export default function ConsultationPage() {
 
       {/* Main Content */}
       <main className="flex-grow flex items-center justify-center py-16 px-4">
-        <div className="bg-white rounded-2xl border border-[#d0d5cb] p-12 max-w-[800px] w-full shadow-sm">
+        <Card className="w-full max-w-[800px] rounded-2xl p-12">
           {/* Form Header */}
           <div className="text-center mb-10">
             <div className="w-14 h-14 bg-[#f7f3ed] rounded-full flex items-center justify-center mx-auto mb-6 border border-[#d0d5cb]">
-              <svg
-                className="h-6 w-6 text-[#8ea087]"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                ></path>
-              </svg>
+              <Lock className="h-6 w-6 text-[#8ea087]" />
             </div>
             <h1 className="text-3xl font-bold text-[#193c1f] mb-4">
               Consultation Form
@@ -328,67 +307,45 @@ export default function ConsultationPage() {
             className={step === 'review' ? 'hidden' : 'space-y-8'}
             onSubmit={handleReviewTrigger}
           >
-            <div>
-              <label
-                className="block text-sm font-semibold text-[#193c1f] mb-2"
-                htmlFor="inquiry-title"
-              >
-                Inquiry Title
-              </label>
-              <input
-                name="title"
-                required
-                className="w-full px-4 py-4 rounded-xl border border-[#d0d5cb] bg-white text-[#193c1f] focus:ring-[#8ea087] focus:border-[#8ea087] placeholder-[#193C1F]/30"
-                id="inquiry-title"
-                placeholder="Enter a brief title for your request"
-                type="text"
-              />
-            </div>
+            <Input
+              label="Inquiry Title"
+              name="title"
+              required
+              id="inquiry-title"
+              placeholder="Enter a brief title for your request"
+              className="bg-white"
+            />
 
-            <div>
-              <label
-                className="block text-sm font-semibold text-[#193c1f] mb-2"
-                htmlFor="consultation-nature"
-              >
-                Nature of Consultation
-              </label>
-              <div className="relative">
-                <select
-                  name="nature"
-                  required
-                  className="w-full px-4 py-4 rounded-xl border border-[#d0d5cb] bg-white text-[#193c1f]/90 focus:ring-[#8ea087] focus:border-[#8ea087] appearance-none"
-                  id="consultation-nature"
-                  defaultValue=""
-                >
-                  <option disabled value="">
-                    Select the type of assistance needed
-                  </option>
-                  <option value="Bullying">Bullying</option>
-                  <option value="Harassment">Harassment</option>
-                  <option value="Domestic Violence">Domestic Violence</option>
-                  <option value="Mental Health Support">
-                    Mental Health Support
-                  </option>
-                  <option value="Academic Stress">Academic Stress</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-            </div>
+            <Input
+              label="Nature of Consultation"
+              type="select"
+              name="nature"
+              required
+              id="consultation-nature"
+              defaultValue=""
+              className="bg-white"
+            >
+              <option disabled value="">
+                Select the type of assistance needed
+              </option>
+              <option value="Bullying">Bullying</option>
+              <option value="Harassment">Harassment</option>
+              <option value="Domestic Violence">Domestic Violence</option>
+              <option value="Mental Health Support">
+                Mental Health Support
+              </option>
+              <option value="Academic Stress">Academic Stress</option>
+              <option value="Other">Other</option>
+            </Input>
 
             {/* Date and Time Picker Section */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Date Column */}
               <div>
-                <label
-                  className="block text-sm font-semibold text-[#193c1f] mb-2"
-                  htmlFor="consultation-date"
-                >
-                  Preferred Date
-                </label>
-                <input
+                <Input
+                  label="Preferred Date"
                   type="date"
                   id="consultation-date"
-                  className="w-full px-4 py-4 rounded-xl border border-[#d0d5cb] bg-white text-[#193c1f] focus:ring-[#8ea087] focus:border-[#8ea087] min-h-[58px]"
                   min={getTodayWIB()}
                   value={selectedDate}
                   onChange={(e) => {
@@ -396,6 +353,7 @@ export default function ConsultationPage() {
                     setSelectedTime(''); // Reset time when date changes
                   }}
                   required
+                  className="min-h-[58px] bg-white"
                 />
               </div>
 
@@ -419,43 +377,40 @@ export default function ConsultationPage() {
                 ) : (
                   <div className="grid grid-cols-3 gap-2">
                     {timeSlots.map((slot) => (
-                      <button
+                      <Button
                         key={slot.time}
                         type="button"
                         onClick={() => setSelectedTime(slot.time)}
                         disabled={!slot.available}
-                        className={`py-2 px-1 rounded-lg border text-sm font-medium transition-colors ${
+                        variant={
+                          selectedTime === slot.time ? 'secondary' : 'outline'
+                        }
+                        className={`rounded-lg px-1 py-2 text-sm font-medium shadow-none ${
                           !slot.available
-                            ? 'bg-[#F3F4F6] border-[#E5E7EB] text-[#9CA3AF] cursor-not-allowed'
+                            ? 'cursor-not-allowed border-[#E5E7EB] bg-[#F3F4F6] text-[#9CA3AF]'
                             : selectedTime === slot.time
-                              ? 'bg-[#8ea087] border-[#8ea087] text-[#f7f3ed] shadow-sm'
-                              : 'bg-white border-[#d0d5cb] text-[#193c1f] hover:border-[#8ea087] hover:bg-[#f7f3ed]'
+                              ? 'border-[#8ea087] text-[#f7f3ed]'
+                              : 'border-[#d0d5cb] bg-white text-[#193c1f] hover:border-[#8ea087] hover:bg-[#f7f3ed]'
                         }`}
                       >
                         {slot.time}
-                      </button>
+                      </Button>
                     ))}
                   </div>
                 )}
               </div>
             </div>
 
-            <div>
-              <label
-                className="block text-sm font-semibold text-[#193c1f] mb-2"
-                htmlFor="detailed-description"
-              >
-                Detailed Description
-              </label>
-              <textarea
-                name="description"
-                required
-                className="w-full px-4 py-4 rounded-xl border border-[#d0d5cb] bg-white text-[#193c1f] focus:ring-[#8ea087] focus:border-[#8ea087] placeholder-[#193C1F]/30"
-                id="detailed-description"
-                placeholder="Please describe your situation here..."
-                rows={5}
-              ></textarea>
-            </div>
+            <Input
+              label="Detailed Description"
+              type="textarea"
+              name="description"
+              required
+              id="detailed-description"
+              placeholder="Please describe your situation here..."
+              rows={5}
+              className="bg-white"
+            />
 
             <div>
               <label className="block text-sm font-semibold text-[#193c1f] mb-2">
@@ -469,20 +424,7 @@ export default function ConsultationPage() {
                   accept=".png,.jpg,.jpeg,.pdf"
                   onChange={handleFileChange}
                 />
-                <svg
-                  className="h-10 w-10 text-[#d0d5cb] mb-3 group-hover:text-[#8ea087] transition-colors"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                  ></path>
-                </svg>
+                <Upload className="mb-3 h-10 w-10 text-[#d0d5cb] transition-colors group-hover:text-[#8ea087]" />
                 <p className="text-[#193c1f] font-medium">
                   Click to upload or drag and drop
                 </p>
@@ -500,13 +442,15 @@ export default function ConsultationPage() {
                       {file.name}
                     </span>
                   </div>
-                  <button
+                  <Button
                     type="button"
                     onClick={() => setFile(null)}
-                    className="text-[#8ea087] hover:text-red-500 text-sm transition"
+                    variant="ghost"
+                    aria-label="Remove file"
+                    className="px-2 py-1 text-[0px] text-[#8ea087] after:text-sm after:content-['x'] hover:text-red-500"
                   >
                     ✕
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
@@ -534,61 +478,25 @@ export default function ConsultationPage() {
               </div>
             </div>
 
-            <button
+            <Button
               disabled={isSubmitting}
-              className="w-full py-5 bg-[#8ea087] hover:bg-[#8ea087]/90 disabled:opacity-50 disabled:cursor-not-allowed text-[#193c1f] font-bold rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm"
+              loading={isSubmitting}
+              variant="secondary"
+              className="w-full rounded-xl py-5 text-[#193c1f]"
               type="submit"
             >
               {isSubmitting ? (
-                <span className="flex items-center gap-2">
-                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                      fill="none"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8v8H4z"
-                    ></path>
-                  </svg>
-                  Submitting Request...
-                </span>
+                'Submitting Request...'
               ) : (
                 <span className="flex items-center gap-2">
-                  <svg
-                    className="h-5 w-5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
-                  </svg>
+                  <Send className="h-5 w-5" />
                   Request Consultation
                 </span>
               )}
-            </button>
+            </Button>
 
-            <div className="bg-white border border-[#d0d5cb]/30 rounded-xl p-4 flex items-start gap-3">
-              <svg
-                className="h-5 w-5 text-[#8ea087] mt-0.5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                ></path>
-              </svg>
+            <Card className="flex items-start gap-3 rounded-xl border-[#d0d5cb]/30 p-4">
+              <Info className="mt-0.5 h-5 w-5 text-[#8ea087]" />
               <p className="text-sm text-[#193c1f]/70">
                 If you are in immediate danger, please contact your local
                 emergency services or use the{' '}
@@ -600,13 +508,13 @@ export default function ConsultationPage() {
                 </Link>{' '}
                 shortcut in the navigation.
               </p>
-            </div>
+            </Card>
           </form>
 
           {/* Review Section */}
           {step === 'review' && reviewData && (
             <div className="space-y-8">
-              <div className="bg-[#f7f3ed] p-8 rounded-xl border border-[#d0d5cb]">
+              <Card className="rounded-xl bg-[#f7f3ed] p-8">
                 <h3 className="text-xl font-bold text-[#193c1f] mb-6">
                   Review Your Request
                 </h3>
@@ -671,28 +579,29 @@ export default function ConsultationPage() {
                     </p>
                   </div>
                 </div>
-              </div>
+              </Card>
 
               <div className="flex gap-4 pt-4">
-                <button
+                <Button
                   type="button"
                   onClick={() => setStep('form')}
-                  className="flex-1 px-8 py-4 rounded-xl font-bold text-[#193c1f] bg-[#f7f3ed] border border-[#d0d5cb] hover:bg-[#EBE6DE] transition-colors"
+                  variant="outline"
+                  className="flex-1 rounded-xl px-8 py-4"
                 >
                   Back to Edit
-                </button>
-                <button
+                </Button>
+                <Button
                   type="button"
                   onClick={submitAfterReview}
                   disabled={isSubmitting}
-                  className="flex-1 px-8 py-4 rounded-xl font-bold text-[#f7f3ed] bg-[#193c1f] hover:bg-[#2d5a35] transition-colors shadow-lg shadow-[#193c1f]/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 rounded-xl px-8 py-4 shadow-lg shadow-[#193c1f]/20"
                 >
                   Confirm & Submit
-                </button>
+                </Button>
               </div>
             </div>
           )}
-        </div>
+        </Card>
       </main>
 
       {/* Footer */}

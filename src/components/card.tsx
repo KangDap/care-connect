@@ -3,12 +3,13 @@ import React from 'react';
 export const Card = ({
   children,
   className = '',
-}: {
+  ...props
+}: React.HTMLAttributes<HTMLDivElement> & {
   children: React.ReactNode;
-  className?: string;
 }) => (
   <div
     className={`bg-white border border-[#D0D5CB]/50 rounded-2xl md:rounded-3xl shadow-sm overflow-hidden ${className}`}
+    {...props}
   >
     {children}
   </div>

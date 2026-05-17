@@ -1,5 +1,8 @@
 'use client';
 
+import { Badge } from '@/components/badge';
+import { Button } from '@/components/button';
+import { Card } from '@/components/card';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -175,27 +178,30 @@ export default function DashboardContent({
           </p>
         </div>
         <div className="flex gap-4">
-          <button
+          <Button
             suppressHydrationWarning
             onClick={() => router.push('/consultation?from=dashboard')}
-            className="px-7 py-3.5 bg-[#8ea087] hover:bg-[#193c1f] text-white rounded-2xl font-bold text-[14px] transition-all shadow-lg"
+            variant="secondary"
+            className="shadow-lg"
           >
             + New Consultation
-          </button>
-          <button
+          </Button>
+          <Button
             suppressHydrationWarning
             onClick={() => router.push('/report?from=dashboard')}
-            className="px-7 py-3.5 bg-white border-2 border-[#d0d5cb] text-[#193c1f] rounded-2xl font-bold text-[14px] transition-all shadow-lg hover:bg-[#EBE6DE]"
+            variant="outline"
+            className="shadow-lg"
           >
             + New Report
-          </button>
-          <button
+          </Button>
+          <Button
             suppressHydrationWarning
             onClick={() => router.push('/donation?from=dashboard')}
-            className="px-7 py-3.5 bg-white border-2 border-[#d0d5cb] text-[#193c1f] rounded-2xl font-bold text-[14px] transition-all shadow-lg hover:bg-[#EBE6DE]"
+            variant="outline"
+            className="shadow-lg"
           >
             + New Donation
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -219,9 +225,9 @@ export default function DashboardContent({
             icon: <DonationsIcon />,
           },
         ].map((item, index) => (
-          <div
+          <Card
             key={index}
-            className="bg-[#f7f3ed] p-8 rounded-[28px] border border-[#d0d5cb] flex items-center gap-6 flex-1 shadow-sm"
+            className="flex flex-1 items-center gap-6 rounded-[28px] bg-[#f7f3ed] p-8"
           >
             <div className="w-14 h-14 bg-[#EBE6DE] rounded-2xl flex items-center justify-center">
               {item.icon}
@@ -236,20 +242,20 @@ export default function DashboardContent({
                 {item.val}
               </p>
             </div>
-          </div>
+          </Card>
         ))}
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-10">
-        <div className="bg-white border border-[#d0d5cb] rounded-[32px] overflow-hidden shadow-sm">
+        <Card className="overflow-hidden rounded-[32px] p-0">
           <div className="p-8 border-b border-[#f7f3ed] flex justify-between items-center bg-[#FDFCFB]">
             <h3 className="font-bold text-[18px] text-[#193c1f]">
               Recent Consultations
             </h3>
             <Link href="/dashboard/consultations">
-              <button className="text-[11px] font-black text-[#8ea087] tracking-[0.2em] uppercase">
+              <Button variant="ghost" className="px-0 py-0">
                 View All
-              </button>
+              </Button>
             </Link>
           </div>
           <table className="w-full text-left">
@@ -269,11 +275,13 @@ export default function DashboardContent({
                   <td className="px-8 py-5 font-bold">{row.doctor}</td>
                   <td className="px-8 py-5 opacity-70">{row.dateLabel}</td>
                   <td className="px-8 py-5">
-                    <span
-                      className={`px-4 py-1.5 rounded-full text-[10px] font-black ${row.status === 'SCHEDULED' ? 'bg-[#d1b698]/20 text-[#d1b698]' : 'bg-[#EBE6DE] text-[#193c1f]'}`}
+                    <Badge
+                      status={
+                        row.status === 'SCHEDULED' ? 'UPCOMING' : 'DEFAULT'
+                      }
                     >
                       {row.status}
-                    </span>
+                    </Badge>
                   </td>
                 </tr>
               ))}
@@ -284,17 +292,17 @@ export default function DashboardContent({
               No consultations found.
             </p>
           )}
-        </div>
+        </Card>
 
-        <div className="bg-white border border-[#d0d5cb] rounded-[32px] overflow-hidden shadow-sm">
+        <Card className="overflow-hidden rounded-[32px] p-0">
           <div className="p-8 border-b border-[#f7f3ed] flex justify-between items-center bg-[#FDFCFB]">
             <h3 className="font-bold text-[18px] text-[#193c1f]">
               Report Status
             </h3>
             <Link href="/dashboard/reports">
-              <button className="text-[11px] font-black text-[#8ea087] tracking-[0.2em] uppercase">
+              <Button variant="ghost" className="px-0 py-0">
                 View All
-              </button>
+              </Button>
             </Link>
           </div>
           <table className="w-full text-left">
@@ -314,11 +322,11 @@ export default function DashboardContent({
                   <td className="px-8 py-5 font-bold">{row.id}</td>
                   <td className="px-1 py-5 opacity-70">{row.type}</td>
                   <td className="px-8 py-5">
-                    <span
-                      className={`px-4 py-1.5 rounded-full text-[10px] font-black ${row.status === 'PENDING' ? 'bg-[#d1b698]/30 text-[#d1b698]' : 'bg-[#EBE6DE] text-[#193c1f]'}`}
+                    <Badge
+                      status={row.status === 'PENDING' ? 'PENDING' : 'DEFAULT'}
                     >
                       {row.status}
-                    </span>
+                    </Badge>
                   </td>
                 </tr>
               ))}
@@ -327,7 +335,7 @@ export default function DashboardContent({
           {filteredReports.length === 0 && (
             <p className="p-10 text-center text-[#8ea087]">No reports found.</p>
           )}
-        </div>
+        </Card>
       </div>
     </div>
   );

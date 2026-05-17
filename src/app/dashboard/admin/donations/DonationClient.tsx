@@ -1,6 +1,8 @@
 'use client';
 
 import { Badge } from '@/components/badge';
+import { Button } from '@/components/button';
+import { Input } from '@/components/input';
 import { Pagination } from '@/components/pagination';
 import { Toast } from '@/components/toast';
 import { useRouter } from 'next/navigation';
@@ -384,32 +386,34 @@ export function DonationClient({
           </div>
 
           <div className="flex gap-2 bg-[#f7f3ed] p-2 rounded-[24px]">
-            <select
+            <Input
+              type="select"
               value={currentMonth}
               onChange={(e) =>
                 handleTimeChange(Number(e.target.value), currentYear)
               }
-              className="bg-white text-[#193c1f] font-black text-xs px-5 py-3 rounded-2xl focus:outline-none cursor-pointer hover:bg-[#F1B166] transition-colors appearance-none"
+              className="rounded-2xl bg-white px-5 py-3 text-xs font-black text-[#193c1f] hover:bg-[#F1B166]"
             >
               {months.map((m, i) => (
                 <option key={m} value={i + 1}>
                   {m}
                 </option>
               ))}
-            </select>
-            <select
+            </Input>
+            <Input
+              type="select"
               value={currentYear}
               onChange={(e) =>
                 handleTimeChange(currentMonth, Number(e.target.value))
               }
-              className="bg-white text-[#193c1f] font-black text-xs px-5 py-3 rounded-2xl focus:outline-none cursor-pointer hover:bg-[#F1B166] transition-colors appearance-none"
+              className="rounded-2xl bg-white px-5 py-3 text-xs font-black text-[#193c1f] hover:bg-[#F1B166]"
             >
               {years.map((y) => (
                 <option key={y} value={y}>
                   {y}
                 </option>
               ))}
-            </select>
+            </Input>
           </div>
         </div>
 
@@ -478,13 +482,14 @@ export function DonationClient({
               { label: 'REFUNDED', count: counts.refunded },
               { label: 'CANCELLED', count: counts.cancelled },
             ].map((s) => (
-              <button
+              <Button
                 key={s.label}
                 onClick={() => handleStatusChange(s.label)}
-                className={`px-6 py-2.5 rounded-2xl text-xs font-bold transition-all flex items-center gap-2 border-2 ${
+                variant={currentStatus === s.label ? 'primary' : 'outline'}
+                className={`rounded-2xl px-6 py-2.5 text-xs ${
                   currentStatus === s.label
-                    ? 'bg-[#193c1f] text-white border-[#193c1f] shadow-lg'
-                    : 'bg-white text-[#193c1f] border-[#f7f3ed] hover:border-[#193c1f]'
+                    ? 'border-[#193c1f] shadow-lg'
+                    : 'border-[#f7f3ed] hover:border-[#193c1f]'
                 }`}
               >
                 <span>{s.label}</span>
@@ -497,7 +502,7 @@ export function DonationClient({
                 >
                   {s.count}
                 </span>
-              </button>
+              </Button>
             ))}
           </div>
         </div>

@@ -263,11 +263,12 @@ const PublicReportsPage = () => {
                       );
 
                       return (
-                        <button
+                        <Button
                           key={category.value}
                           type="button"
                           onClick={() => handleCategoryToggle(category.value)}
-                          className="flex items-center gap-3 rounded-2xl px-2 py-2 text-left transition-colors hover:bg-[#f7f3ed]"
+                          variant="ghost"
+                          className="justify-start rounded-2xl px-2 py-2 text-left normal-case tracking-normal text-[#193c1f] hover:bg-[#f7f3ed]"
                         >
                           <span
                             className={`flex h-6 w-6 items-center justify-center rounded-lg border-2 transition-colors ${
@@ -281,7 +282,7 @@ const PublicReportsPage = () => {
                           <span className="text-sm font-bold">
                             {category.label}
                           </span>
-                        </button>
+                        </Button>
                       );
                     })}
                   </div>

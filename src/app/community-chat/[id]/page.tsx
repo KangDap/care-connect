@@ -1,7 +1,9 @@
 'use client';
 
 import { Alert } from '@/components/alert';
+import { Button } from '@/components/button';
 import { Header } from '@/components/header';
+import { Input } from '@/components/input';
 import { authClient } from '@/lib/auth/auth-client';
 import type { ChatMessage } from '@/modules/community-chat/community-chat.types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -9,6 +11,7 @@ import {
   Loader2,
   MoreVertical,
   Paperclip,
+  Send,
   ShieldCheck,
   UserMinus,
   Users,
@@ -445,12 +448,13 @@ export default function CommunityChatContent() {
                       : 'Member'}
                 </span>
               </div>
-              <button
+              <Button
                 onClick={() => setIsLeaveAlertOpen(true)}
-                className="text-[10px] font-black text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-lg border border-red-100 transition-colors uppercase tracking-[0.15em]"
+                variant="outline"
+                className="rounded-lg border-red-100 px-3 py-1.5 text-[10px] text-red-600 hover:bg-red-50"
               >
                 Leave Forum
-              </button>
+              </Button>
             </header>
 
             <section className="flex-1 overflow-y-auto p-6 space-y-8 bg-[#f7f3ed]">
@@ -692,9 +696,10 @@ export default function CommunityChatContent() {
                             <div
                               className={`absolute top-0 ${isMe ? 'right-full mr-2' : 'left-full ml-2'} opacity-0 group-hover:opacity-100 transition-opacity z-50 flex items-center h-full space-x-1`}
                             >
-                              <button
+                              <Button
                                 onClick={() => setReplyingTo(chat)}
-                                className="w-8 h-8 flex items-center justify-center text-[#193C1F] opacity-40 hover:opacity-100 hover:bg-gray-200 rounded-full transition-all shrink-0"
+                                variant="ghost"
+                                className="h-8 w-8 shrink-0 rounded-full p-0 text-[#193C1F] opacity-40 hover:bg-gray-200 hover:opacity-100"
                                 title="Reply"
                               >
                                 <svg
@@ -710,12 +715,12 @@ export default function CommunityChatContent() {
                                     d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
                                   />
                                 </svg>
-                              </button>
+                              </Button>
 
                               {/* Only show moderation menu if caller has permissions */}
                               {(canKick || canManageRole) && (
                                 <div className="relative">
-                                  <button
+                                  <Button
                                     onClick={() =>
                                       setActiveMenuId(
                                         activeMenuId === chat.id
@@ -723,10 +728,11 @@ export default function CommunityChatContent() {
                                           : chat.id,
                                       )
                                     }
-                                    className="w-8 h-8 flex items-center justify-center hover:bg-gray-200 rounded-full transition-colors shrink-0"
+                                    variant="ghost"
+                                    className="h-8 w-8 shrink-0 rounded-full p-0 hover:bg-gray-200"
                                   >
                                     <MoreVertical size={16} />
-                                  </button>
+                                  </Button>
                                   {activeMenuId === chat.id && (
                                     <div
                                       className={`absolute z-[100] mt-1 w-40 bg-white border border-[#D0D5CB] shadow-2xl rounded-xl overflow-hidden py-1 ${isMe ? 'left-0' : 'right-0'}`}
@@ -739,19 +745,20 @@ export default function CommunityChatContent() {
                                       ) : (
                                         <>
                                           {canKick && (
-                                            <button
+                                            <Button
                                               onClick={() =>
                                                 kickMutation.mutate(
                                                   chat.user.id,
                                                 )
                                               }
-                                              className="w-full text-left px-4 py-2.5 text-[11px] font-bold text-red-600 hover:bg-red-50 flex items-center gap-2 uppercase tracking-tight border-b border-gray-50"
+                                              variant="ghost"
+                                              className="w-full justify-start border-b border-gray-50 px-4 py-2.5 text-left text-[11px] text-red-600 hover:bg-red-50"
                                             >
                                               <UserMinus size={14} /> Kick User
-                                            </button>
+                                            </Button>
                                           )}
                                           {canManageRole && (
-                                            <button
+                                            <Button
                                               onClick={() =>
                                                 changeRoleMutation.mutate({
                                                   userId: chat.user.id,
@@ -762,14 +769,15 @@ export default function CommunityChatContent() {
                                                       : 'MODERATOR',
                                                 })
                                               }
-                                              className="w-full text-left px-4 py-2.5 text-[11px] font-bold text-[#193C1F] hover:bg-gray-50 flex items-center gap-2 uppercase tracking-tight"
+                                              variant="ghost"
+                                              className="w-full justify-start px-4 py-2.5 text-left text-[11px] text-[#193C1F] hover:bg-gray-50"
                                             >
                                               <ShieldCheck size={14} />{' '}
                                               {targetRoleInChannel ===
                                               'MODERATOR'
                                                 ? 'Demote to Member'
                                                 : 'Make Moderator'}
-                                            </button>
+                                            </Button>
                                           )}
                                         </>
                                       )}
@@ -806,12 +814,13 @@ export default function CommunityChatContent() {
                   {inlineToast.type === 'info' ? 'ℹ️' : '⚠️'}
                 </span>
                 <span className="flex-1">{inlineToast.message}</span>
-                <button
+                <Button
                   onClick={() => setInlineToast(null)}
-                  className="opacity-50 hover:opacity-100"
+                  variant="ghost"
+                  className="p-0 opacity-50 hover:opacity-100"
                 >
                   <X size={14} />
-                </button>
+                </Button>
               </div>
             )}
 
@@ -845,12 +854,13 @@ export default function CommunityChatContent() {
                         {replyingTo.content}
                       </p>
                     </div>
-                    <button
+                    <Button
                       onClick={() => setReplyingTo(null)}
-                      className="opacity-40 hover:opacity-100"
+                      variant="ghost"
+                      className="p-0 opacity-40 hover:opacity-100"
                     >
                       <X size={16} />
-                    </button>
+                    </Button>
                   </div>
                 )}
 
@@ -859,24 +869,26 @@ export default function CommunityChatContent() {
                     <span className="text-xs text-[#193c1f] font-semibold">
                       {mediaFile.name} ({(mediaFile.size / 1024).toFixed(1)}KB)
                     </span>
-                    <button
+                    <Button
                       onClick={() => setMediaFile(null)}
-                      className="ml-4 text-red-500 bg-red-100 p-1 rounded-full"
+                      variant="ghost"
+                      className="ml-4 rounded-full bg-red-100 p-1 text-red-500"
                     >
                       <X size={12} />
-                    </button>
+                    </Button>
                   </div>
                 )}
 
                 <div className="flex items-center space-x-4">
                   <div className="flex-1 relative flex flex-col bg-[#f7f3ed] border border-[#d0d5cb] rounded-2xl p-1 focus-within:border-[#8ea087]">
                     <div className="flex items-center px-3 py-1 border-b border-[#d0d5cb] mb-1 justify-between">
-                      <button
+                      <Button
                         onClick={() => setIsAnonymous(!isAnonymous)}
-                        className={`text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded ${isAnonymous ? 'bg-[#193c1f] text-white' : 'text-[#8ea087]'}`}
+                        variant={isAnonymous ? 'primary' : 'ghost'}
+                        className={`rounded px-2 py-1 text-[9px] ${isAnonymous ? 'bg-[#193c1f] text-white' : 'text-[#8ea087]'}`}
                       >
                         {isAnonymous ? 'Anonymous ON' : 'Public Mode'}
-                      </button>
+                      </Button>
                       <span className="text-[8px] font-bold opacity-40 uppercase tracking-tighter">
                         Posting as:{' '}
                         {ChannelRole === 'OWNER'
@@ -895,13 +907,14 @@ export default function CommunityChatContent() {
                         }
                         className="hidden"
                       />
-                      <button
+                      <Button
                         onClick={() => fileInputRef.current?.click()}
-                        className="text-[#193c1f] opacity-40 hover:opacity-70 mr-3"
+                        variant="ghost"
+                        className="mr-3 p-0 text-[#193c1f] opacity-40 hover:opacity-70"
                       >
                         <Paperclip size={20} />
-                      </button>
-                      <input
+                      </Button>
+                      <Input
                         className="bg-transparent border-none focus:ring-0 text-sm text-[#193c1f] w-full outline-none"
                         placeholder="Share your thoughts..."
                         type="text"
@@ -913,26 +926,21 @@ export default function CommunityChatContent() {
                       />
                     </div>
                   </div>
-                  <button
+                  <Button
                     onClick={handleSendMessage}
                     disabled={
                       sendMessageMutation.isPending ||
                       (!messageInput.trim() && !mediaFile)
                     }
-                    className="w-12 h-12 bg-[#8ea087] text-white rounded-2xl flex items-center justify-center shadow-sm hover:brightness-110 disabled:opacity-50"
+                    variant="secondary"
+                    className="h-12 w-12 rounded-2xl p-0 shadow-sm hover:brightness-110"
                   >
                     {sendMessageMutation.isPending ? (
                       <Loader2 className="animate-spin" />
                     ) : (
-                      <svg
-                        className="w-6 h-6 transform rotate-90"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                      >
-                        <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-                      </svg>
+                      <Send className="h-6 w-6 rotate-45" />
                     )}
-                  </button>
+                  </Button>
                 </div>
               </footer>
             )}
