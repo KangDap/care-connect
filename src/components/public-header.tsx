@@ -1,12 +1,15 @@
 'use client';
 
 import { Button } from '@/components/button';
+import { LanguageToggle } from '@/components/language-toggle';
+import { Logo } from '@/components/logo';
 import { useTranslation } from '@/components/providers/i18n-provider';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { authClient } from '@/lib/auth/auth-client';
-import { ChevronLeft, Moon } from 'lucide-react';
+import { ChevronLeft, Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import React, { Suspense } from 'react';
+import React, { Suspense, useState } from 'react';
 
 function PublicHeaderContent() {
   const { data: session } = authClient.useSession();
@@ -15,7 +18,8 @@ function PublicHeaderContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const { t, language, setLanguage } = useTranslation();
+  const { t } = useTranslation();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const fromDashboard = searchParams.get('from') === 'dashboard';
 
@@ -25,124 +29,149 @@ function PublicHeaderContent() {
     return pathname.startsWith(path);
   };
 
-  return (
-    <header className="sticky top-0 z-[100] w-full bg-[#f7f3ed]/90 backdrop-blur-md py-6 px-12 flex justify-between items-center border-b border-[#d0d5cb]">
-      <Link
-        href="/"
-        className="flex items-center gap-2 transition-opacity hover:opacity-80"
-      >
-        <div className="w-10 h-10 bg-[#193c1f] rounded-lg flex items-center justify-center text-[#f7f3ed]">
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.744c0 5.578 4.5 10.13 10.125 10.13 5.625 0 10.125-4.552 10.125-10.13 0-1.494-.273-2.925-.77-4.244a11.959 11.959 0 0 1-8.355-3.212Z"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            ></path>
-          </svg>
-        </div>
-        <span className="text-2xl font-bold text-[#193c1f]">CareConnect</span>
-      </Link>
+  const navLinkClass = (path: string) =>
+    `transition-colors ${
+      isActive(path)
+        ? 'text-[#8ea087] font-bold border-b-2 border-[#8ea087] pb-1'
+        : 'hover:text-[#8ea087]'
+    }`;
 
-      {fromDashboard ? (
-        <Button
-          onClick={() => router.back()}
-          variant="ghost"
-          className="text-[#193c1f] hover:text-[#8ea087]"
-        >
-          <ChevronLeft size={20} />
-          Back to Dashboard
-        </Button>
-      ) : (
-        <>
-          <nav className="flex items-center gap-12 text-[#193c1f] font-medium hidden md:flex">
-            <Link
-              href="/"
-              className={`transition-colors ${isActive('/') ? 'text-[#8ea087] font-bold border-b-2 border-[#8ea087] pb-1' : 'hover:text-[#8ea087]'}`}
+  const protectedHref = (path: string) => (isLoggedIn ? path : '/login');
+  const navLinks = [
+    { href: '/', activePath: '/', label: t('header.home') },
+    {
+      href: protectedHref('/publicreports'),
+      activePath: '/publicreports',
+      label: t('header.publicReports'),
+    },
+    {
+      href: protectedHref('/report'),
+      activePath: '/report',
+      label: t('header.report'),
+    },
+    {
+      href: protectedHref('/forums'),
+      activePath: '/forums',
+      label: t('header.forum'),
+    },
+    {
+      href: protectedHref('/donation'),
+      activePath: '/donation',
+      label: t('header.donate'),
+    },
+  ];
+
+  return (
+    <header className="sticky top-0 z-[100] w-full border-b border-[#d0d5cb] bg-[#f7f3ed]/90 px-4 py-4 backdrop-blur-md sm:px-6 lg:px-12">
+      <div className="flex items-center justify-between gap-3">
+        <Logo size={40} />
+
+        {fromDashboard ? (
+          <div className="flex items-center gap-3">
+            <span className="hidden text-sm font-bold text-[#193c1f] md:inline">
+              Back to Dashboard
+            </span>
+            <Button
+              onClick={() => router.back()}
+              variant="outline"
+              className="icon-button back-icon-button h-11 w-11 rounded-full p-0"
+              aria-label="Back to Dashboard"
             >
-              {t('header.home')}
-            </Link>
-            {userRole === 'PSYCHOLOGIST' ? (
-              <span
-                className="text-[#193c1f] opacity-50 cursor-not-allowed transition-colors"
-                title="Psychologists cannot create consultations"
-              >
-                Consultation
-              </span>
-            ) : (
+              <ChevronLeft size={20} />
+            </Button>
+          </div>
+        ) : (
+          <>
+            <nav className="hidden items-center gap-8 text-[#193c1f] font-medium lg:flex xl:gap-12">
+              <Link href="/" className={navLinkClass('/')}>
+                {t('header.home')}
+              </Link>
+              {userRole === 'PSYCHOLOGIST' ? (
+                <span
+                  className="text-[#193c1f] opacity-50 cursor-not-allowed transition-colors"
+                  title="Psychologists cannot create consultations"
+                >
+                  Consultation
+                </span>
+              ) : (
+                <Link
+                  href={isLoggedIn ? '/consultation' : '/login'}
+                  className={navLinkClass('/consultation')}
+                >
+                  {t('header.consultation')}
+                </Link>
+              )}
+              {navLinks.slice(1).map((link) => (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  className={navLinkClass(link.activePath)}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </nav>
+
+            <div className="flex items-center gap-2 sm:gap-3">
+              <LanguageToggle compact />
+              <ThemeToggle />
+
               <Link
-                href={isLoggedIn ? '/consultation' : '/login'}
-                className={`transition-colors ${isActive('/consultation') ? 'text-[#8ea087] font-bold border-b-2 border-[#8ea087] pb-1' : 'hover:text-[#8ea087]'}`}
+                href={isLoggedIn ? '/dashboard' : '/login'}
+                className="hidden sm:block"
               >
-                Consultation
+                <Button
+                  variant="secondary"
+                  className="rounded-lg px-5 py-2.5 md:px-8"
+                >
+                  {isLoggedIn ? t('header.dashboard') : t('header.login')}
+                </Button>
+              </Link>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsMobileMenuOpen((value) => !value)}
+                className="icon-button h-10 w-10 rounded-full p-0 lg:hidden"
+                aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+              >
+                {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+              </Button>
+            </div>
+          </>
+        )}
+      </div>
+
+      {!fromDashboard && isMobileMenuOpen && (
+        <div className="mt-4 rounded-2xl border border-[#d0d5cb] bg-white p-3 shadow-xl lg:hidden">
+          <nav className="flex flex-col gap-1 text-sm font-bold text-[#193c1f]">
+            {userRole !== 'PSYCHOLOGIST' && (
+              <Link
+                href={protectedHref('/consultation')}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="rounded-xl px-4 py-3 hover:bg-[#f7f3ed]"
+              >
+                {t('header.consultation')}
               </Link>
             )}
+            {navLinks.map((link) => (
+              <Link
+                key={link.label}
+                href={link.href}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="rounded-xl px-4 py-3 hover:bg-[#f7f3ed]"
+              >
+                {link.label}
+              </Link>
+            ))}
             <Link
-              href={isLoggedIn ? '/publicreports' : '/login'}
-              className={`transition-colors ${isActive('/publicreports') ? 'text-[#8ea087] font-bold border-b-2 border-[#8ea087] pb-1' : 'hover:text-[#8ea087]'}`}
+              href={isLoggedIn ? '/dashboard' : '/login'}
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="rounded-xl bg-[#193c1f] px-4 py-3 text-center text-[#f7f3ed]"
             >
-              {t('header.publicReports')}
-            </Link>
-            <Link
-              href={isLoggedIn ? '/report' : '/login'}
-              className={`transition-colors ${isActive('/report') ? 'text-[#8ea087] font-bold border-b-2 border-[#8ea087] pb-1' : 'hover:text-[#8ea087]'}`}
-            >
-              Report
-            </Link>
-            <Link
-              href={isLoggedIn ? '/forums' : '/login'}
-              className={`transition-colors ${
-                isActive('/forums')
-                  ? 'text-[#8ea087] font-bold border-b-2 border-[#8ea087] pb-1'
-                  : 'hover:text-[#8ea087]'
-              }`}
-            >
-              Forum
-            </Link>
-
-            <Link
-              href={isLoggedIn ? '/donation' : '/login'}
-              className={`transition-colors ${
-                isActive('/donation')
-                  ? 'text-[#8ea087] font-bold border-b-2 border-[#8ea087] pb-1'
-                  : 'hover:text-[#8ea087]'
-              }`}
-            >
-              {t('header.donate')}
+              {isLoggedIn ? t('header.dashboard') : t('header.login')}
             </Link>
           </nav>
-
-          <div className="flex items-center gap-4">
-            <Button
-              onClick={() => setLanguage(language === 'en' ? 'id' : 'en')}
-              variant="outline"
-              className="rounded-md border-[#193c1f] px-2 py-1 text-xs text-[#193c1f] hover:bg-[#193c1f] hover:text-[#f7f3ed]"
-            >
-              {language === 'en' ? 'ID' : 'EN'}
-            </Button>
-
-            <Button
-              type="button"
-              variant="outline"
-              className="h-9 w-9 rounded-full border-[#d0d5cb] p-0 text-[#193c1f] hover:bg-[#d0d5cb]/50"
-              title="Dark Mode (Coming Soon)"
-            >
-              <Moon className="h-4 w-4" />
-            </Button>
-
-            <Link href={isLoggedIn ? '/dashboard' : '/login'}>
-              <Button variant="secondary" className="rounded-lg px-8 py-2.5">
-                {isLoggedIn ? t('header.dashboard') : t('header.login')}
-              </Button>
-            </Link>
-          </div>
-        </>
+        </div>
       )}
     </header>
   );

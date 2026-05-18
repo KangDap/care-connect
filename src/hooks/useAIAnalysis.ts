@@ -41,7 +41,14 @@ export function useAIAnalysis(): UseAIAnalysisState & UseAIAnalysisActions {
       setState({ data: result, loading: false, error: null });
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : 'An unknown error occurred';
+        err instanceof Error
+          ? err.message
+          : typeof err === 'object' &&
+              err !== null &&
+              'message' in err &&
+              typeof err.message === 'string'
+            ? err.message
+            : 'An unknown error occurred';
       setState({ data: null, loading: false, error: errorMessage });
       throw err;
     }

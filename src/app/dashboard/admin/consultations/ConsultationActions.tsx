@@ -4,6 +4,7 @@ import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Modal } from '@/components/modal';
+import { Pencil, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -68,7 +69,7 @@ export function ConsultationActions({
   };
 
   return (
-    <div className="flex items-center justify-end gap-2">
+    <div className="flex flex-wrap items-center justify-end gap-2">
       <Button
         variant="outline"
         onClick={() => {
@@ -77,14 +78,16 @@ export function ConsultationActions({
         }}
         className="text-[10px] sm:text-xs px-2 py-0.5 min-h-0 h-7"
       >
+        <Pencil size={14} />
         Edit
       </Button>
       <Button
         type="button"
-        variant="ghost"
+        variant="outline"
         onClick={() => setIsDeleteAlertOpen(true)}
         className="px-2 py-0.5 text-[10px] sm:text-xs h-7 min-h-0 text-red-600 hover:text-red-700 bg-red-50/50 hover:bg-red-50"
       >
+        <Trash2 size={14} />
         Delete
       </Button>
 

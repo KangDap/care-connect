@@ -4,6 +4,7 @@ import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Modal } from '@/components/modal';
 import { Toast } from '@/components/toast';
+import { Pencil, ShieldCheck, ShieldOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -126,7 +127,7 @@ export function UserActions({ id, role, banned, name }: UserProps) {
   };
 
   return (
-    <div className="flex items-center justify-end gap-4">
+    <div className="flex flex-wrap items-center justify-end gap-2">
       <Toast
         show={toastState.show}
         msg={toastState.msg}
@@ -141,6 +142,7 @@ export function UserActions({ id, role, banned, name }: UserProps) {
           setIsModalOpen(true);
         }}
       >
+        <Pencil size={14} />
         Edit
       </Button>
 
@@ -154,6 +156,7 @@ export function UserActions({ id, role, banned, name }: UserProps) {
             : 'text-red-600 border-red-600 hover:bg-red-50'
         }`}
       >
+        {banned ? <ShieldCheck size={14} /> : <ShieldOff size={14} />}
         {banned ? 'Unban' : 'Ban'}
       </Button>
 
