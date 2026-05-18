@@ -15,7 +15,7 @@ export interface AnalyzeRequest {
 }
 
 export interface Itemset {
-  itemset: string[];
+  itemsets: string[];
   support: number;
 }
 
@@ -27,15 +27,17 @@ export interface Rule {
   lift: number;
 }
 
-export interface CategoryInsights {
-  itemsets: Itemset[];
-  rules: Rule[];
-}
+export type CategoryInsights =
+  | Itemset[]
+  | {
+      frequent_itemsets?: Itemset[];
+      association_rules?: Rule[];
+    };
 
 export interface ApiPayload {
   global: {
-    itemsets: Itemset[];
-    rules: Rule[];
+    frequent_itemsets: Itemset[];
+    association_rules: Rule[];
   };
   by_category: Record<string, CategoryInsights>;
 }

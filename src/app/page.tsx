@@ -506,7 +506,7 @@ export default async function LandingPage() {
           </div>
         </div>
         <div className="text-center text-[#193c1f] opacity-50 border-t border-[#d0d5cb] pt-12">
-          © 2024 CareConnect. All rights reserved. A HealHub Initiative.
+          © 2026 CareConnect. All rights reserved. A HealHub Initiative.
         </div>
       </footer>
     </div>

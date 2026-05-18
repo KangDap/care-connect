@@ -1,5 +1,6 @@
 import { I18nProvider } from '@/components/providers/i18n-provider';
 import QueryProvider from '@/components/providers/query-provider';
+import { ThemeInit } from '@/components/theme-init';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 
@@ -31,22 +32,8 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `
-              try {
-                const storedTheme = localStorage.getItem('careconnect-theme');
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                const theme = storedTheme || (prefersDark ? 'dark' : 'light');
-                document.documentElement.classList.toggle('dark', theme === 'dark');
-                document.documentElement.style.colorScheme = theme;
-              } catch (_) {}
-            `,
-          }}
-        />
-      </head>
       <body className="antialiased bg-[#f7f3ed] text-[#193c1f]">
+        <ThemeInit />
         <I18nProvider>
           <QueryProvider>{children}</QueryProvider>
         </I18nProvider>

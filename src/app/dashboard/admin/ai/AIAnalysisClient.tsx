@@ -17,7 +17,7 @@ import {
   Sparkles,
   Tags,
 } from 'lucide-react';
-import type { ElementType } from 'react';
+import type { ElementType, ReactNode } from 'react';
 
 const formatDuration = (durationMs: number) =>
   durationMs >= 1000
@@ -74,11 +74,11 @@ function ItemsetList({ itemsets }: { itemsets: Itemset[] }) {
     <div className="divide-y divide-[#F7F3ED]">
       {itemsets.map((item, index) => (
         <div
-          key={`${item.itemset.join('-')}-${index}`}
+          key={`${item.itemsets.join('-')}-${index}`}
           className="flex flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
         >
           <div className="flex min-w-0 flex-wrap gap-2">
-            {item.itemset.map((label) => (
+            {item.itemsets.map((label) => (
               <span
                 key={label}
                 className="rounded-full border border-[#D0D5CB] bg-[#F7F3ED] px-3 py-1 text-[11px] font-black uppercase tracking-wider text-[#193C1F]"
@@ -174,7 +174,13 @@ function CategoryPanel({
   category: string;
   insights: CategoryInsights;
 }) {
-  const firstRule = insights.rules[0];
+  const categoryItemsets = Array.isArray(insights)
+    ? insights
+    : (insights.frequent_itemsets ?? []);
+  const categoryRules = Array.isArray(insights)
+    ? []
+    : (insights.association_rules ?? []);
+  const firstRule = categoryRules[0];
 
   return (
     <Card className="p-5">
@@ -187,7 +193,7 @@ function CategoryPanel({
         </div>
         <div className="flex items-center gap-2 text-[11px] font-black text-[#8EA087]">
           <Tags size={14} />
-          {insights.itemsets.length} itemsets
+          {categoryItemsets.length} itemsets
         </div>
       </div>
 
@@ -209,12 +215,24 @@ function CategoryPanel({
               value={formatPercent(firstRule.confidence)}
             />
             <MiniMetric label="Lift" value={firstRule.lift.toFixed(2)} />
-            <MiniMetric label="Rules" value={insights.rules.length} />
+            <MiniMetric label="Rules" value={categoryRules.length} />
           </div>
         </div>
       ) : (
-        <div className="rounded-2xl border border-dashed border-[#D0D5CB] px-4 py-8 text-center text-sm font-medium text-[#8EA087]">
-          No strong category rule yet.
+        <div className="rounded-2xl border border-dashed border-[#D0D5CB] px-4 py-6">
+          <p className="mb-3 text-center text-sm font-medium text-[#8EA087]">
+            No category rule returned yet.
+          </p>
+          <div className="flex flex-wrap justify-center gap-2">
+            {topItems(categoryItemsets, 5).map((itemset, index) => (
+              <span
+                key={`${category}-${itemset.itemsets.join('-')}-${index}`}
+                className="rounded-full bg-[#F7F3ED] px-3 py-1 text-[11px] font-bold text-[#193C1F]"
+              >
+                {itemset.itemsets.join(', ')}
+              </span>
+            ))}
+          </div>
         </div>
       )}
     </Card>
@@ -238,15 +256,38 @@ function MiniMetric({
   );
 }
 
-export function AIAnalysisClient() {
+type AIAnalysisClientProps = {
+  badgeLabel?: string;
+  title?: string;
+  description?: string;
+  emptyTitle?: string;
+  emptyDescription?: string;
+  canRunAnalysis?: boolean;
+  unavailableNotice?: ReactNode;
+};
+
+export function AIAnalysisClient({
+  badgeLabel = 'Admin AI',
+  title = 'AI Pattern Analysis',
+  description = 'Run association analysis on incident reports and surface patterns that can guide moderation, outreach, and support planning.',
+  emptyTitle = 'Ready to analyze report patterns',
+  emptyDescription = 'Click run analysis to ask the backend AI service for frequent itemsets, association rules, and category-level insights.',
+  canRunAnalysis = true,
+  unavailableNotice,
+}: AIAnalysisClientProps) {
   const { data, loading, error, analyze, reset } = useAIAnalysis();
-  const globalItemsets = topItems(data?.api_payload.global.itemsets, 10);
-  const globalRules = topItems(data?.api_payload.global.rules, 10);
+  const globalItemsets = topItems(
+    data?.api_payload.global.frequent_itemsets,
+    10,
+  );
+  const globalRules = topItems(data?.api_payload.global.association_rules, 10);
   const categoryEntries = Object.entries(data?.api_payload.by_category ?? {});
 
   const handleAnalyze = async () => {
+    if (!canRunAnalysis) return;
+
     try {
-      await analyze({});
+      await analyze({ reports: [], text_columns: ['title', 'description'] });
     } catch {
       // Error state is handled by the hook.
     }
@@ -258,39 +299,42 @@ export function AIAnalysisClient() {
         <div>
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-[#D0D5CB] bg-white px-3 py-1 text-[11px] font-black uppercase tracking-widest text-[#8EA087]">
             <Sparkles size={14} />
-            Admin AI
+            {badgeLabel}
           </div>
           <h1 className="text-2xl font-black leading-tight text-[#193C1F] md:text-[32px]">
-            AI Pattern Analysis
+            {title}
           </h1>
           <p className="mt-1 max-w-3xl text-sm font-medium text-[#8EA087] md:text-base">
-            Run association analysis on incident reports and surface patterns
-            that can guide moderation, outreach, and support planning.
+            {description}
           </p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Button
-            type="button"
-            onClick={handleAnalyze}
-            loading={loading}
-            disabled={loading}
-            className="rounded-xl px-4 py-3 text-sm"
-          >
-            <Play size={16} />
-            Run Analysis
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={reset}
-            disabled={loading || !data}
-            className="rounded-xl px-4 py-3 text-sm"
-          >
-            <RotateCcw size={16} />
-            Reset
-          </Button>
-        </div>
+        {canRunAnalysis && (
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              onClick={handleAnalyze}
+              loading={loading}
+              disabled={loading}
+              className="rounded-xl px-4 py-3 text-sm"
+            >
+              <Play size={16} />
+              Run Analysis
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={reset}
+              disabled={loading || !data}
+              className="rounded-xl px-4 py-3 text-sm"
+            >
+              <RotateCcw size={16} />
+              Reset
+            </Button>
+          </div>
+        )}
       </div>
+
+      {!canRunAnalysis && unavailableNotice}
 
       {error && (
         <Card className="border-red-200 bg-red-50 p-4">
@@ -312,12 +356,9 @@ export function AIAnalysisClient() {
             <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#193C1F] text-white">
               <BrainCircuit size={30} />
             </div>
-            <h2 className="text-xl font-black text-[#193C1F]">
-              Ready to analyze report patterns
-            </h2>
+            <h2 className="text-xl font-black text-[#193C1F]">{emptyTitle}</h2>
             <p className="mt-2 text-sm font-medium leading-relaxed text-[#8EA087]">
-              Click run analysis to ask the backend AI service for frequent
-              itemsets, association rules, and category-level insights.
+              {emptyDescription}
             </p>
           </div>
         </Card>

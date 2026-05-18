@@ -52,5 +52,6 @@ __pycache__/
 *.egg
 .mypy_cache/
 .venv/
+.venv-ai/
 venv/
 *.log
