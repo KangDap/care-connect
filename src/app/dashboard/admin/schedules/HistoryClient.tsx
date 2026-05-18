@@ -40,7 +40,9 @@ export default function HistoryClient() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
         <Loader2 className="animate-spin text-[#193c1f]" size={40} />
-        <p className="text-[#8ea087] font-medium">Memuat daftar psikolog...</p>
+        <p className="text-[#8ea087] font-medium">
+          Loading psychologist list...
+        </p>
       </div>
     );
   }
