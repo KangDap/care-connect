@@ -52,7 +52,9 @@ export function Table<T>({
 
   return (
     <Card
-      className={`overflow-hidden rounded-2xl md:rounded-3xl shadow-sm ${className} p-0`}
+      className={`overflow-hidden rounded-2xl md:rounded-3xl shadow-sm ${
+        className.includes('rounded-t-none') ? 'md:rounded-t-none' : ''
+      } ${className} p-0`}
     >
       <div className="overflow-x-auto w-full">
         <table className={`w-full text-left ${minWidth}`}>
