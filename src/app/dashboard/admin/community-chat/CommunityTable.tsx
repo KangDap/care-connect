@@ -87,14 +87,14 @@ export function CommunityTable({
               <Button
                 onClick={() => onEdit(ch)}
                 variant="ghost"
-                className="px-2 py-1 text-xs md:text-sm text-blue-600 hover:text-blue-700 bg-blue-50/50 hover:bg-blue-50"
+                className="px-2 py-0.5 text-[10px] sm:text-xs h-7 min-h-0 text-blue-600 hover:text-blue-700 bg-blue-50/50 hover:bg-blue-50"
               >
                 Edit
               </Button>
               <Button
                 onClick={() => onDelete(ch.id)}
                 variant="ghost"
-                className="px-2 py-1 text-xs md:text-sm text-red-600 hover:text-red-700 bg-red-50/50 hover:bg-red-50"
+                className="px-2 py-0.5 text-[10px] sm:text-xs h-7 min-h-0 text-red-600 hover:text-red-700 bg-red-50/50 hover:bg-red-50"
               >
                 Delete
               </Button>

@@ -184,18 +184,42 @@ export default function ProfileManagement() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const [backHref, setBackHref] = useState('/dashboard');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const prev = localStorage.getItem('prevPath');
+      if (prev && (prev.startsWith('/dashboard') || prev === '/forums')) {
+        setBackHref(prev);
+      } else if (session?.user) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const role = (session.user as any).role?.toUpperCase();
+        if (role === 'ADMIN') {
+          setBackHref('/dashboard/admin');
+        } else if (role === 'PSYCHOLOGIST') {
+          setBackHref('/dashboard/psikolog');
+        } else {
+          setBackHref('/dashboard');
+        }
+      }
+    }
+  }, [session]);
+
   return (
     <div className="min-h-screen bg-[#f7f3ed] text-[#193c1f] p-6 md:p-12">
       <Toast {...toast} onClose={() => setToast({ ...toast, show: false })} />
 
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center gap-5 mb-10">
-          <Link href="/dashboard" className="inline-block">
+          <Link href={backHref} className="inline-block">
             <Button
               variant="outline"
               className="h-10 w-10 md:h-12 md:w-12 rounded-xl md:rounded-2xl p-0 flex items-center justify-center text-[#193c1f]"
             >
-              <ChevronLeft size={24} strokeWidth={2.5} />
+              <ChevronLeft
+                className="w-5 h-5 md:w-6 md:h-6 text-[#193c1f]"
+                strokeWidth={2.5}
+              />
             </Button>
           </Link>
           <h1 className="text-2xl font-black tracking-tight">

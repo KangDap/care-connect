@@ -416,14 +416,9 @@ export function DonationClient({
             {
               header: 'Psychologist Name',
               cell: (p) => (
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#f7f3ed] border border-[#D0D5CB] flex items-center justify-center text-[#193c1f] font-black text-xs shrink-0">
-                    {p.name.charAt(0)}
-                  </div>
-                  <span className="font-bold text-[#193c1f] text-sm md:text-base">
-                    {p.name}
-                  </span>
-                </div>
+                <span className="font-bold text-[#193c1f] text-sm md:text-base">
+                  {p.name}
+                </span>
               ),
             },
             {
@@ -574,16 +569,11 @@ export function DonationClient({
           )}
           columns={[
             {
-              header: 'Donor & Amount',
+              header: 'Donor',
               cell: (d) => (
-                <>
-                  <p className="font-black text-[#193c1f] text-base md:text-lg leading-tight">
-                    {fmt(d.amount)}
-                  </p>
-                  <p className="text-[10px] md:text-xs font-bold text-[#8ea087] mt-1 uppercase tracking-wider">
-                    {d.userName}
-                  </p>
-                </>
+                <span className="font-medium text-xs md:text-sm text-[#193C1F]">
+                  {d.userName}
+                </span>
               ),
             },
             {
@@ -611,8 +601,14 @@ export function DonationClient({
             },
             {
               header: 'Date',
-              className: 'text-[#8ea087] text-[10px] md:text-xs font-bold',
+              className: 'text-[#8ea087] text-xs font-medium',
               cell: (d) => fmtDate(d.createdAt),
+            },
+            {
+              header: 'Amount',
+              headerClassName: 'text-right',
+              className: 'text-right font-black text-[#193C1F]',
+              cell: (d) => fmt(d.amount),
             },
             {
               header: 'Actions',

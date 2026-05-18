@@ -22,7 +22,7 @@ interface HeaderProps {
   showBackButton?: boolean;
 }
 
-export const Header = ({
+const HeaderInner = ({
   withSearch = true,
   withLogo = false,
   onProfileClick,
@@ -199,7 +199,10 @@ export const Header = ({
               className="h-5 w-5 sm:h-6 sm:w-6 md:h-9 md:w-9 rounded-full border-[#d0d5cb] p-0 flex items-center justify-center text-[#193c1f] hover:bg-[#d0d5cb]/50 min-w-0 shrink-0"
               title="Dark Mode (Coming Soon)"
             >
-              <Moon size={16} strokeWidth={2.5} className="text-[#193c1f]" />
+              <Moon
+                className="w-3 h-3 sm:w-4 sm:h-4 text-[#193c1f]"
+                strokeWidth={2.5}
+              />
             </Button>
           </div>
 
@@ -264,3 +267,13 @@ export const Header = ({
     </>
   );
 };
+
+export const Header = (props: HeaderProps) => (
+  <React.Suspense
+    fallback={
+      <div className="h-[70px] md:h-[90px] w-full sticky top-0 border-b border-[#D0D5CB] bg-[#F7F3ED]/80 backdrop-blur-md shrink-0 z-[100]"></div>
+    }
+  >
+    <HeaderInner {...props} />
+  </React.Suspense>
+);

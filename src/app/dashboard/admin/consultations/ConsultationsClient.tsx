@@ -267,49 +267,28 @@ export function ConsultationsClient({
             header: 'User',
             cell: (c) =>
               c.isAnonymous ? (
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#F7F3ED] border border-[#D0D5CB] flex items-center justify-center shrink-0">
-                    <span className="text-[10px] text-[#8EA087]">?</span>
-                  </div>
-                  <span className="text-[#8EA087] italic text-xs">
-                    Anonymous
-                  </span>
-                </div>
+                <span className="text-[#8EA087] italic text-xs">Anonymous</span>
               ) : (
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#F7F3ED] border border-[#D0D5CB] flex items-center justify-center shrink-0 overflow-hidden relative">
-                    <div className="text-[10px] font-bold text-[#193C1F]">
-                      {c.user.name.charAt(0)}
-                    </div>
-                  </div>
-                  <div>
-                    <p className="font-medium text-[#193C1F] text-xs md:text-sm">
-                      {c.user.name}
-                    </p>
-                    <p className="text-[10px] md:text-[11px] text-[#8EA087]">
-                      {c.user.email}
-                    </p>
-                  </div>
+                <div>
+                  <p className="font-medium text-[#193C1F] text-xs md:text-sm">
+                    {c.user.name}
+                  </p>
+                  <p className="text-[10px] md:text-[11px] text-[#8EA087]">
+                    {c.user.email}
+                  </p>
                 </div>
               ),
           },
           {
             header: 'Psychologist',
             cell: (c) => (
-              <div className="flex items-center gap-3 text-[#193C1F]">
-                <div className="w-8 h-8 rounded-lg bg-[#193C1F]/5 border border-[#193C1F]/10 flex items-center justify-center shrink-0">
-                  <div className="text-[10px] font-bold text-[#193C1F]">
-                    {c.psychologist?.name.charAt(0) || 'P'}
-                  </div>
-                </div>
-                <span className="font-medium text-xs md:text-sm">
-                  {c.psychologist?.name ?? (
-                    <span className="text-[#8EA087] italic text-xs">
-                      Unassigned
-                    </span>
-                  )}
-                </span>
-              </div>
+              <span className="font-medium text-xs md:text-sm text-[#193C1F]">
+                {c.psychologist?.name ?? (
+                  <span className="text-[#8EA087] italic text-xs">
+                    Unassigned
+                  </span>
+                )}
+              </span>
             ),
           },
           {

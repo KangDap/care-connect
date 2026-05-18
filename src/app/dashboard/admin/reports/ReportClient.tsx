@@ -301,29 +301,17 @@ export function ReportClient({
             header: 'Reporter',
             cell: (r) =>
               r.isAnonymous ? (
-                <div className="flex items-center gap-2 md:gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#F7F3ED] border border-[#D0D5CB] flex items-center justify-center shrink-0">
-                    <span className="text-[10px] text-[#8EA087]">?</span>
-                  </div>
-                  <span className="text-[#8EA087] italic text-[10px] md:text-xs">
-                    Anonymous
-                  </span>
-                </div>
+                <span className="text-[#8EA087] italic text-[10px] md:text-xs">
+                  Anonymous
+                </span>
               ) : (
-                <div className="flex items-center gap-2 md:gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#F7F3ED] border border-[#D0D5CB] flex items-center justify-center shrink-0 overflow-hidden relative">
-                    <div className="text-[10px] font-bold text-[#193C1F]">
-                      {r.user.name.charAt(0)}
-                    </div>
-                  </div>
-                  <div>
-                    <p className="font-medium text-[#193C1F] text-xs md:text-sm">
-                      {r.user.name}
-                    </p>
-                    <p className="text-[10px] md:text-[11px] text-[#8EA087]">
-                      {r.user.email}
-                    </p>
-                  </div>
+                <div>
+                  <p className="font-medium text-[#193C1F] text-xs md:text-sm">
+                    {r.user.name}
+                  </p>
+                  <p className="text-[10px] md:text-[11px] text-[#8EA087]">
+                    {r.user.email}
+                  </p>
                 </div>
               ),
           },
@@ -361,12 +349,12 @@ export function ReportClient({
             headerClassName: 'text-right',
             className: 'text-right',
             cell: (r) => (
-              <div className="flex items-center justify-end gap-2 md:gap-3">
+              <div className="flex items-center justify-end gap-1.5 sm:gap-2">
                 <Button
                   type="button"
                   variant="ghost"
                   onClick={() => openUpdateModal(r)}
-                  className="px-2 py-1 text-xs md:text-sm text-blue-600 hover:text-blue-700 bg-blue-50/50 hover:bg-blue-50"
+                  className="px-2 py-0.5 text-[10px] sm:text-xs h-7 min-h-0 text-blue-600 hover:text-blue-700 bg-blue-50/50 hover:bg-blue-50"
                 >
                   Update
                 </Button>
@@ -377,7 +365,7 @@ export function ReportClient({
                     setReportToDelete(r.id);
                     setIsDeleteAlertOpen(true);
                   }}
-                  className="px-2 py-1 text-xs md:text-sm text-red-600 hover:text-red-700 bg-red-50/50 hover:bg-red-50"
+                  className="px-2 py-0.5 text-[10px] sm:text-xs h-7 min-h-0 text-red-600 hover:text-red-700 bg-red-50/50 hover:bg-red-50"
                 >
                   Delete
                 </Button>

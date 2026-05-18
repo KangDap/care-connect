@@ -212,8 +212,8 @@ export default function DashboardContent({
       {/* Tables Row */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 md:gap-8">
         {/* Recent Consultations */}
-        <div className="space-y-0">
-          <div className="flex items-center justify-between mb-3">
+        <Card className="p-0 space-y-0">
+          <div className="flex items-center justify-between p-4 sm:p-5 md:p-6 border-b border-[#D0D5CB]/50 bg-[#FDFCFB]">
             <div>
               <h3 className="text-lg sm:text-xl font-black text-[#193c1f] tracking-tight">
                 Recent Consultations
@@ -230,6 +230,7 @@ export default function DashboardContent({
             </Link>
           </div>
           <Table
+            className="rounded-t-none border-t-0 shadow-none"
             data={recentConsultations.slice(0, 5)}
             keyExtractor={(row) => row.id}
             emptyMessage="No consultations found."
@@ -258,11 +259,11 @@ export default function DashboardContent({
               },
             ]}
           />
-        </div>
+        </Card>
 
         {/* Report Status */}
-        <div className="space-y-0">
-          <div className="flex items-center justify-between mb-3">
+        <Card className="p-0 space-y-0">
+          <div className="flex items-center justify-between p-4 sm:p-5 md:p-6 border-b border-[#D0D5CB]/50 bg-[#FDFCFB]">
             <div>
               <h3 className="text-lg sm:text-xl font-black text-[#193c1f] tracking-tight">
                 Report Status
@@ -279,6 +280,7 @@ export default function DashboardContent({
             </Link>
           </div>
           <Table
+            className="rounded-t-none border-t-0 shadow-none"
             data={filteredReports.slice(0, 5)}
             keyExtractor={(row) => row.id}
             emptyMessage="No reports found."
@@ -311,7 +313,7 @@ export default function DashboardContent({
               },
             ]}
           />
-        </div>
+        </Card>
       </div>
     </div>
   );

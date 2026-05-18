@@ -80,7 +80,7 @@ export function DonationActions({
       <Button
         variant="outline"
         onClick={() => setIsEditModalOpen(true)}
-        className="text-xs px-4 py-1.5 min-h-0 h-auto"
+        className="text-[10px] sm:text-xs px-2 py-0.5 min-h-0 h-7"
       >
         Manage
       </Button>

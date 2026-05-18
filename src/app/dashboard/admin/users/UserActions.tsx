@@ -135,7 +135,7 @@ export function UserActions({ id, role, banned, name }: UserProps) {
       />
       <Button
         variant="outline"
-        className="text-xs px-4 py-1.5 min-h-0 h-auto"
+        className="text-[10px] sm:text-xs px-2 py-0.5 min-h-0 h-7"
         onClick={() => {
           setNewRole(role);
           setIsModalOpen(true);
@@ -148,7 +148,7 @@ export function UserActions({ id, role, banned, name }: UserProps) {
         variant="outline"
         onClick={handleBanToggle}
         disabled={isUpdating}
-        className={`text-xs px-4 py-1.5 min-h-0 h-auto ${
+        className={`text-[10px] sm:text-xs px-2 py-0.5 min-h-0 h-7 ${
           banned
             ? 'text-green-600 border-green-600 hover:bg-green-50'
             : 'text-red-600 border-red-600 hover:bg-red-50'

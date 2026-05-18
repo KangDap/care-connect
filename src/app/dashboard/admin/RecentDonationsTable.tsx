@@ -61,18 +61,13 @@ export function RecentDonationsTable({
         {
           header: 'Donor',
           cell: (d) => (
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[#F7F3ED] border border-[#D0D5CB] flex items-center justify-center shrink-0 overflow-hidden relative">
-                <User size={14} className="text-[#8EA087]" />
-              </div>
-              <div>
-                <p className="font-bold text-[#193C1F] group-hover:text-black transition-colors">
-                  {d.user.name}
-                </p>
-                <p className="text-[10px] text-[#8EA087] opacity-80">
-                  {d.user.email}
-                </p>
-              </div>
+            <div>
+              <p className="font-bold text-[#193C1F] group-hover:text-black transition-colors">
+                {d.user.name}
+              </p>
+              <p className="text-[10px] text-[#8EA087] opacity-80">
+                {d.user.email}
+              </p>
             </div>
           ),
         },

@@ -75,7 +75,7 @@ export function ConsultationActions({
           setNewStatus(status);
           setIsEditModalOpen(true);
         }}
-        className="text-xs px-4 py-1.5 min-h-0 h-auto"
+        className="text-[10px] sm:text-xs px-2 py-0.5 min-h-0 h-7"
       >
         Edit
       </Button>
@@ -83,7 +83,7 @@ export function ConsultationActions({
         type="button"
         variant="ghost"
         onClick={() => setIsDeleteAlertOpen(true)}
-        className="px-2 text-xs text-red-600 hover:text-red-700"
+        className="px-2 py-0.5 text-[10px] sm:text-xs h-7 min-h-0 text-red-600 hover:text-red-700 bg-red-50/50 hover:bg-red-50"
       >
         Delete
       </Button>
