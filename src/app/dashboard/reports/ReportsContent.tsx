@@ -2,8 +2,7 @@
 
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
-import { Card } from '@/components/card';
-import { Pagination } from '@/components/pagination';
+import { Table } from '@/components/table';
 import { FileText } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -67,8 +66,6 @@ export default function ReportsContent({ reports }: ReportsContentProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const query = searchParams.get('search')?.toLowerCase() || '';
-  const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
-  const [expandedRowId, setExpandedRowId] = useState<number | null>(null);
 
   // --- LOGIKA PAGINATION ---
   const [currentPage, setCurrentPage] = useState(1);
@@ -119,180 +116,138 @@ export default function ReportsContent({ reports }: ReportsContentProps) {
         </Button>
       </div>
 
-      <Card className="overflow-hidden rounded-2xl md:rounded-[32px] p-0">
-        <div className="overflow-x-auto w-full">
-          <table className="w-full text-left border-collapse min-w-\[480px\]">
-            <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
-              <tr>
-                <th className="px-2 sm:px-4 py-2">Report ID</th>
-                <th className="px-2 sm:px-4 py-2">Type</th>
-                <th className="px-2 sm:px-4 py-2">Date</th>
-                <th className="px-2 sm:px-4 py-2">Status</th>
-              </tr>
-            </thead>
-            {currentItems.length > 0 ? (
-              currentItems.map((row) => (
-                <tbody
-                  key={row.id}
-                  onMouseEnter={() => setHoveredRowId(row.id)}
-                  onMouseLeave={() => setHoveredRowId(null)}
-                  onClick={() =>
-                    setExpandedRowId((p) => (p === row.id ? null : row.id))
-                  }
-                  className="group border-b border-[#f7f3ed] last:border-0 cursor-pointer"
-                >
-                  <tr
-                    className={`transition-colors ${
-                      hoveredRowId === row.id || expandedRowId === row.id
-                        ? 'bg-[#FDFCFB]'
-                        : 'hover:bg-[#FDFCFB]'
-                    }`}
-                  >
-                    <td className="px-2 sm:px-4 py-2 font-bold text-[#193c1f] text-sm">
-                      #REP-{String(row.id).padStart(4, '0')}
-                    </td>
-                    <td className="px-2 sm:px-4 py-2 font-medium text-[#193c1f]/80 text-sm">
-                      {row.title}
-                    </td>
-                    <td className="px-2 sm:px-4 py-2 text-[#193c1f]/60 text-sm">
-                      {formatDateLabel(row.createdAt)}
-                    </td>
-                    <td className="px-2 sm:px-4 py-2">
-                      <Badge className={getStatusBadgeClass(row.status)}>
-                        {getStatusLabel(row.status)}
-                      </Badge>
-                    </td>
-                  </tr>
-                  {/* Detail Dropdown Row */}
-                  <tr>
-                    <td colSpan={4} className="p-0">
-                      <div
-                        className={`overflow-hidden transition-all duration-500 ease-in-out bg-[#FDFCFB] ${
-                          hoveredRowId === row.id ? 'max-h-[800px]' : 'max-h-0'
-                        }`}
-                      >
-                        <div className="px-4 sm:px-6 pb-5 pt-1">
-                          <div className="p-4 sm:p-5 bg-white border border-[#d0d5cb]/40 rounded-[18px] shadow-sm">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                              {/* Left Side: Summary Fields */}
-                              <div className="space-y-6">
-                                <div>
-                                  <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087] mb-4">
-                                    Report Details (Form Summary)
-                                  </h4>
-                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                                    <div className="space-y-1">
-                                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
-                                        Category
-                                      </p>
-                                      <p className="text-[14px] font-bold text-[#193c1f]">
-                                        {row.category}
-                                      </p>
-                                    </div>
-                                    <div className="space-y-1">
-                                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
-                                        Incident Date
-                                      </p>
-                                      <p className="text-[14px] font-bold text-[#193c1f]">
-                                        {formatDateLabel(row.incidentDate)}
-                                      </p>
-                                    </div>
-                                    <div className="space-y-1">
-                                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
-                                        Location
-                                      </p>
-                                      <p className="text-[14px] font-bold text-[#193c1f]">
-                                        {row.district}, {row.city},{' '}
-                                        {row.province}
-                                      </p>
-                                    </div>
-                                    <div className="space-y-1">
-                                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
-                                        Anonymity
-                                      </p>
-                                      <p className="text-[14px] font-bold text-[#193c1f]">
-                                        {row.isAnonymous
-                                          ? 'Anonymous'
-                                          : 'Public'}
-                                      </p>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              {/* Right Side: Description & Evidences */}
-                              <div className="flex flex-col border-l border-[#f7f3ed] pl-10">
-                                <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087] mb-4">
-                                  Description & Evidences
-                                </h4>
-                                <div className="bg-[#f7f3ed]/30 p-5 rounded-2xl border border-[#f7f3ed] max-h-[200px] overflow-y-auto custom-scrollbar">
-                                  <p className="text-[14px] leading-relaxed text-[#193c1f]/80 whitespace-pre-wrap">
-                                    {row.description ||
-                                      'No description provided.'}
-                                  </p>
-                                </div>
-                                {row.evidences.length > 0 && (
-                                  <div className="mt-6 space-y-3">
-                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
-                                      Attached Evidences ({row.evidences.length}
-                                      )
-                                    </p>
-                                    <div className="grid grid-cols-1 gap-2">
-                                      {row.evidences.map((file) => (
-                                        <Link
-                                          key={file.id}
-                                          href={file.fileUrl}
-                                          target="_blank"
-                                          className="flex items-center justify-between p-3 bg-[#f7f3ed] rounded-xl border border-[#d0d5cb]/30 hover:bg-[#EBE6DE] transition-colors group/file"
-                                        >
-                                          <div className="flex items-center gap-3">
-                                            <div className="text-[#8ea087] group-hover/file:text-[#193c1f]">
-                                              <FileIcon />
-                                            </div>
-                                            <span className="text-[12px] font-bold text-[#193c1f] truncate max-w-[150px]">
-                                              {file.fileName}
-                                            </span>
-                                          </div>
-                                          <span className="text-[10px] font-black text-[#8ea087] uppercase tracking-widest">
-                                            View
-                                          </span>
-                                        </Link>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              ))
-            ) : (
-              <tbody className="text-[14px] text-[#193c1f]">
-                <tr>
-                  <td
-                    colSpan={4}
-                    className="p-20 text-center text-[#8ea087] font-bold"
-                  >
-                    No reports found.
-                  </td>
-                </tr>
-              </tbody>
-            )}
-          </table>
-        </div>
-      </Card>
-
-      {/* RENDER KOMPONEN PAGINATION DI SINI */}
-      <Pagination
+      <Table
+        data={currentItems}
+        keyExtractor={(row) => row.id}
+        emptyMessage="No reports found."
         currentPage={currentPage}
         totalPages={totalPages}
-        onPageChange={(page) => {
+        onPageChange={(page: number) => {
           setCurrentPage(page);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
+        renderExpandedRow={(row) => (
+          <div className="p-4 sm:p-5 bg-white border border-[#d0d5cb]/40 rounded-[18px] shadow-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              {/* Left Side: Summary Fields */}
+              <div className="space-y-6">
+                <div>
+                  <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087] mb-4">
+                    Report Details (Form Summary)
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                        Category
+                      </p>
+                      <p className="text-[14px] font-bold text-[#193c1f]">
+                        {row.category}
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                        Incident Date
+                      </p>
+                      <p className="text-[14px] font-bold text-[#193c1f]">
+                        {formatDateLabel(row.incidentDate)}
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                        Location
+                      </p>
+                      <p className="text-[14px] font-bold text-[#193c1f]">
+                        {row.district}, {row.city}, {row.province}
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                        Anonymity
+                      </p>
+                      <p className="text-[14px] font-bold text-[#193c1f]">
+                        {row.isAnonymous ? 'Anonymous' : 'Public'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* Right Side: Description & Evidences */}
+              <div className="flex flex-col border-l border-[#f7f3ed] pl-10">
+                <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087] mb-4">
+                  Description & Evidences
+                </h4>
+                <div className="bg-[#f7f3ed]/30 p-5 rounded-2xl border border-[#f7f3ed] max-h-[200px] overflow-y-auto custom-scrollbar">
+                  <p className="text-[14px] leading-relaxed text-[#193c1f]/80 whitespace-pre-wrap">
+                    {row.description || 'No description provided.'}
+                  </p>
+                </div>
+                {row.evidences.length > 0 && (
+                  <div className="mt-6 space-y-3">
+                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                      Attached Evidences ({row.evidences.length})
+                    </p>
+                    <div className="grid grid-cols-1 gap-2">
+                      {row.evidences.map((file) => (
+                        <Link
+                          key={file.id}
+                          href={file.fileUrl}
+                          target="_blank"
+                          className="flex items-center justify-between p-3 bg-[#f7f3ed] rounded-xl border border-[#d0d5cb]/30 hover:bg-[#EBE6DE] transition-colors group/file"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="text-[#8ea087] group-hover/file:text-[#193c1f]">
+                              <FileIcon />
+                            </div>
+                            <span className="text-[12px] font-bold text-[#193c1f] truncate max-w-[150px]">
+                              {file.fileName}
+                            </span>
+                          </div>
+                          <span className="text-[10px] font-black text-[#8ea087] uppercase tracking-widest">
+                            View
+                          </span>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+        columns={[
+          {
+            header: 'Report ID',
+            cell: (row) => (
+              <p className="font-bold text-[#193c1f] text-sm">
+                #REP-{String(row.id).padStart(4, '0')}
+              </p>
+            ),
+          },
+          {
+            header: 'Type',
+            cell: (row) => (
+              <p className="font-medium text-[#193c1f]/80 text-sm">
+                {row.title}
+              </p>
+            ),
+          },
+          {
+            header: 'Date',
+            cell: (row) => (
+              <p className="text-[#193c1f]/60 text-sm">
+                {formatDateLabel(row.createdAt)}
+              </p>
+            ),
+          },
+          {
+            header: 'Status',
+            cell: (row) => (
+              <Badge className={getStatusBadgeClass(row.status)}>
+                {getStatusLabel(row.status)}
+              </Badge>
+            ),
+          },
+        ]}
       />
     </div>
   );

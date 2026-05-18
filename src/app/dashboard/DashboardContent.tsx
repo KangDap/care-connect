@@ -231,6 +231,7 @@ export default function DashboardContent({
           </div>
           <Table
             className="rounded-t-none border-t-0 shadow-none"
+            minWidth="min-w-[450px]"
             data={recentConsultations.slice(0, 5)}
             keyExtractor={(row) => row.id}
             emptyMessage="No consultations found."
@@ -281,6 +282,7 @@ export default function DashboardContent({
           </div>
           <Table
             className="rounded-t-none border-t-0 shadow-none"
+            minWidth="min-w-[450px]"
             data={filteredReports.slice(0, 5)}
             keyExtractor={(row) => row.id}
             emptyMessage="No reports found."

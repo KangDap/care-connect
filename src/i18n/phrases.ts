@@ -699,7 +699,6 @@ export const phraseTranslations = {
   'Track the status of your submitted reports.':
     'Pantau status laporan yang telah Anda kirim.',
   'Report Details (Form Summary)': 'Detail Laporan (Ringkasan Formulir)',
-  'Description & Evidences': 'Deskripsi & Bukti',
   'Attached Evidences': 'Bukti Terlampir',
 
   // Consultation form page
@@ -721,158 +720,12 @@ export const phraseTranslations = {
   'Snap is not available. Please refresh.':
     'Snap tidak tersedia. Silakan muat ulang.',
 
-  // ======= PLACEHOLDER & FORM TEXT TRANSLATIONS =======
-  // (Discovered via browser visual scan 2026-05-18)
-
-  // Login / Register page placeholders
-  'Enter your username': 'Masukkan nama pengguna Anda',
+  // Unique keys preserved from visual scans
   'Invalid email or password': 'Email atau kata sandi tidak valid',
   'Enter your email address': 'Masukkan alamat email Anda',
   'Create a password': 'Buat kata sandi',
   'Enter your password': 'Masukkan kata sandi Anda',
-
-  // Public Reports page placeholders & filter labels
-  'Search reports...': 'Cari laporan...',
-  'City or province...': 'Kota atau provinsi...',
-  'All Statuses': 'Semua Status',
-  'Most Recent': 'Terbaru',
-  Oldest: 'Terlama',
-  Showing: 'Menampilkan',
-  of: 'dari',
-  reports: 'laporan',
-  'No reports found.': 'Tidak ada laporan ditemukan.',
-  'Try adjusting your filters.': 'Coba sesuaikan filter Anda.',
-  'View Details': 'Lihat Detail',
-  'Loading reports...': 'Memuat laporan...',
-
-  // Donation form placeholders
-  'Enter custom amount': 'Masukkan nominal khusus',
-  'Credit or Debit Card': 'Kartu Kredit atau Debit',
-  'Bank Transfer': 'Transfer Bank',
-  'Other QRIS': 'QRIS Lainnya',
-  'Please enter a valid amount.': 'Silakan masukkan nominal yang valid.',
-  'Processing Payment...': 'Memproses Pembayaran...',
-  'Securely completing your transaction.':
-    'Menyelesaikan transaksi Anda dengan aman.',
-  'Thank you for your donation!': 'Terima kasih atas donasi Anda!',
-  'Donation Summary': 'Ringkasan Donasi',
-  Type: 'Tipe',
-  Platform: 'Platform',
-  Case: 'Kasus',
-  Amount: 'Nominal',
-  'Processing Fee': 'Biaya Proses',
-  Total: 'Total',
-  '256-bit Secure SSL Connection': 'Koneksi SSL 256-bit Aman',
-  'Report Target': 'Target Laporan',
-
-  // Violence Report form placeholders & labels
-  'Summarize the incident': 'Ringkaskan insiden',
-  'St. Name, Floor, or Landmark': 'Nama Jl., Lantai, atau Patokan',
-  'Insert description (20 - 2000 characters)':
-    'Masukkan deskripsi (20 - 2000 karakter)',
-  'Select Category': 'Pilih Kategori',
-  'Select Province': 'Pilih Provinsi',
-  'Select City': 'Pilih Kota',
-  'Select District': 'Pilih Kecamatan',
-  'Report Anonymously': 'Laporkan Secara Anonim',
-  'Violence Report Form': 'Formulir Laporan Kekerasan',
-  'Fill in the details below. Your safety and privacy are our top priority.':
-    'Isi detail di bawah ini. Keamanan dan privasi Anda adalah prioritas utama kami.',
-
-  // Consultation form placeholders & labels
-  'Enter a brief title for your request':
-    'Masukkan judul singkat untuk permintaan Anda',
-  'Please describe your situation here...':
-    'Silakan jelaskan situasi Anda di sini...',
-  'Select the type of assistance needed': 'Pilih jenis bantuan yang dibutuhkan',
-  'Select a date to view available times':
-    'Pilih tanggal untuk melihat waktu tersedia',
-  'Consultation Form': 'Formulir Konsultasi',
-  'Your safety and privacy are our top priorities. Share your details securely and privately with our certified counselors.':
-    'Keamanan dan privasi Anda adalah prioritas utama kami. Bagikan detail Anda secara aman dan rahasia dengan konselor bersertifikasi kami.',
-  'Inquiry Title': 'Judul Permintaan',
-  'Nature of Consultation': 'Jenis Konsultasi',
-  'Preferred Date': 'Tanggal Pilihan',
-  'Available Time Slots': 'Slot Waktu Tersedia',
-  'Detailed Description': 'Deskripsi Detail',
-
-  // Forums page placeholders
-  'Search forums...': 'Cari forum...',
-  'Fetching Forums...': 'Mengambil Forum...',
-  'Connect with community members and certified professionals.':
-    'Terhubung dengan anggota komunitas dan profesional bersertifikasi.',
-  'Join Room': 'Gabung Ruangan',
-  'Joining...': 'Bergabung...',
-  Joined: 'Bergabung',
-  'Create a Room': 'Buat Ruangan',
-  'Admin only: Add a new topic.': 'Khusus Admin: Tambah topik baru.',
-  Members: 'Anggota',
-  Removed: 'Dihapus',
-
-  // Profile page
-  'Profile Settings': 'Pengaturan Profil',
-  'Public Profile': 'Profil Publik',
-  Username: 'Nama Pengguna',
-  'Short Bio': 'Bio Singkat',
-  'Personal Details': 'Detail Pribadi',
-  'Email Address': 'Alamat Email',
-  'Phone Number': 'Nomor Telepon',
-  'Birth Date': 'Tanggal Lahir',
-  Gender: 'Jenis Kelamin',
-  Male: 'Laki-laki',
-  Female: 'Perempuan',
-  Other: 'Lainnya',
-  'Prefer not to say': 'Tidak ingin menyebutkan',
-  'Account Security': 'Keamanan Akun',
-  'Update password to keep account safe.':
-    'Perbarui kata sandi untuk menjaga keamanan akun.',
-  'Change Password': 'Ubah Kata Sandi',
-  'Save All Changes': 'Simpan Semua Perubahan',
-  'Current Password': 'Kata Sandi Saat Ini',
-  'New Password': 'Kata Sandi Baru',
-  'Confirm New Password': 'Konfirmasi Kata Sandi Baru',
-  Cancel: 'Batal',
-  Update: 'Perbarui',
-  'Updating...': 'Memperbarui...',
-  'Profile updated successfully!': 'Profil berhasil diperbarui!',
-  'Username is required.': 'Nama pengguna wajib diisi.',
-  'Username is already taken. Please try another.':
-    'Nama pengguna sudah digunakan. Silakan coba yang lain.',
-  'Passwords do not match': 'Kata sandi tidak cocok',
-  'Password updated successfully!': 'Kata sandi berhasil diperbarui!',
-
-  // Dashboard content
-  'Welcome back,': 'Selamat datang kembali,',
-  'No pending reports right now.': 'Tidak ada laporan tertunda saat ini.',
-  'Recent Consultations': 'Konsultasi Terbaru',
-  'Your latest session history': 'Riwayat sesi terbaru Anda',
-  'Report Status': 'Status Laporan',
-  'Track your submitted reports': 'Pantau laporan yang telah Anda kirim',
   'View All →': 'Lihat Semua →',
-  'Total Consultations': 'Total Konsultasi',
-  'Reports Filed': 'Laporan Terkirim',
-  'Donations Given': 'Donasi Diberikan',
-  'No consultations found.': 'Tidak ada konsultasi ditemukan.',
-  'Waiting for psychologist...': 'Menunggu psikolog...',
-
-  // Dashboard sidebar labels
-  'AI Analysis': 'Analisis AI',
-  'All Reports': 'Semua Laporan',
-  'All Consultations': 'Semua Konsultasi',
-  'All Donations': 'Semua Donasi',
-  Users: 'Pengguna',
-  'Community Chat': 'Chat Komunitas',
-  'Psikolog Schedules': 'Jadwal Psikolog',
-  'My Consultations': 'Konsultasi Saya',
-  'My Reports': 'Laporan Saya',
-  'Donation History': 'Riwayat Donasi',
-  'My Schedule': 'Jadwal Saya',
-
-  // Dashboard logout
-  'End Session?': 'Akhiri Sesi?',
-  'Are you sure you want to log out?': 'Apakah Anda yakin ingin keluar?',
-  'Log Out': 'Keluar',
-  'Logging out...': 'Sedang keluar...',
 } as const;
 
 export type PhraseKey = keyof typeof phraseTranslations;

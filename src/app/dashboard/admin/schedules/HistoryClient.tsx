@@ -3,7 +3,7 @@
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Table } from '@/components/table';
-import { Calendar, Loader2, User } from 'lucide-react';
+import { Calendar, Loader2, Pencil, User } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useState } from 'react';
@@ -118,16 +118,19 @@ export default function HistoryClient() {
           {
             header: 'Actions',
             headerClassName: 'text-right',
-            className: 'text-right w-24',
+            className: 'text-right',
             cell: (psy) => (
-              <Link href={`/dashboard/admin/schedules/form?id=${psy.id}`}>
-                <Button
-                  variant="outline"
-                  className="rounded-xl bg-[#F7F3ED] px-4 py-2 text-xs text-[#193C1F] hover:bg-white"
-                >
-                  Edit
-                </Button>
-              </Link>
+              <div className="flex items-center justify-end gap-2">
+                <Link href={`/dashboard/admin/schedules/form?id=${psy.id}`}>
+                  <Button
+                    variant="outline"
+                    className="h-7 text-[10px] sm:text-xs px-2 py-0.5 min-h-0 flex items-center gap-1 border-[#d0d5cb]"
+                  >
+                    <Pencil size={14} />
+                    Edit
+                  </Button>
+                </Link>
+              </div>
             ),
           },
         ]}

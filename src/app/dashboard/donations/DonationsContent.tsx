@@ -2,8 +2,7 @@
 
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
-import { Card } from '@/components/card';
-import { Pagination } from '@/components/pagination';
+import { Table } from '@/components/table';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
@@ -184,11 +183,10 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
   const orderId = searchParams.get('orderId') || searchParams.get('order_id');
   const transactionStatus = searchParams.get('transaction_status');
 
-  const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
-  const [expandedRowId, setExpandedRowId] = useState<number | null>(null);
   const [processingId, setProcessingId] = useState<number | null>(null);
   const [cancelingId, setCancelingId] = useState<number | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [errorRowId, setErrorRowId] = useState<number | null>(null);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -293,6 +291,7 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
 
     setProcessingId(row.id);
     setActionError(null);
+    setErrorRowId(null);
 
     loadSnapAndPay(row.snapToken, undefined, {
       onSuccess: async () => {
@@ -318,6 +317,7 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
         setActionError(
           'Payment failed. Please try changing payment method or try again.',
         );
+        setErrorRowId(row.id);
         setProcessingId(null);
       },
       onClose: () => {
@@ -329,6 +329,7 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
   const handleChangePaymentMethod = async (row: DonationItem) => {
     setCancelingId(row.id);
     setActionError(null);
+    setErrorRowId(null);
 
     try {
       const res = await fetch(`/api/donation/${row.id}`, { method: 'PATCH' });
@@ -338,11 +339,13 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
           body?.error?.message ||
             'Failed to cancel donation. Please try again.',
         );
+        setErrorRowId(row.id);
         setCancelingId(null);
         return;
       }
     } catch {
       setActionError('Network error. Please try again.');
+      setErrorRowId(row.id);
       setCancelingId(null);
       return;
     }
@@ -389,226 +392,196 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
       </div>
 
       {/* Table Section */}
-      <Card className="overflow-x-auto rounded-[32px] p-0 border border-[#f1ebe1] bg-white shadow-sm">
-        <table className="w-full text-left min-w-\[480px\]">
-          <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
-            <tr>
-              <th className="px-2 sm:px-4 py-2">Source / Donor</th>
-              <th className="px-2 sm:px-4 py-2">Date</th>
-              <th className="px-2 sm:px-4 py-2">Via</th>
-              <th className="px-2 sm:px-4 py-2">Status</th>
-              <th className="px-2 sm:px-4 py-2 text-right">Amount</th>
-            </tr>
-          </thead>
-
-          {currentItems.length > 0 ? (
-            currentItems.map((row) => {
-              const displayStatus = getDisplayStatus(row.paymentStatus);
-              const badge = STATUS_BADGE[displayStatus];
-              const isPending = displayStatus === 'PENDING';
-              const isExpanded =
-                hoveredRowId === row.id || expandedRowId === row.id;
-              const isProcessing = processingId === row.id;
-              const isCanceling = cancelingId === row.id;
-
-              return (
-                <tbody
-                  key={row.id}
-                  onMouseEnter={() => setHoveredRowId(row.id)}
-                  onMouseLeave={() => setHoveredRowId(null)}
-                  onClick={() =>
-                    setExpandedRowId((p) => (p === row.id ? null : row.id))
-                  }
-                  className="group border-b border-[#f7f3ed] last:border-0 cursor-pointer"
-                >
-                  <tr
-                    className={`transition-colors ${
-                      isExpanded ? 'bg-[#FDFCFB]' : 'hover:bg-[#FDFCFB]'
-                    }`}
-                  >
-                    <td className="px-2 sm:px-4 py-2">
-                      <div className="flex items-center gap-2">
-                        <div>
-                          <p className="font-bold text-[#193c1f] text-sm">
-                            {row.report?.title || 'CareConnect Platform'}
-                          </p>
-                          <p className="text-[11px] text-[#8ea087] font-medium opacity-60">
-                            Donation #{row.id}
-                          </p>
-                        </div>
-                        {isPending && (
-                          <Badge className="ml-2 whitespace-nowrap border border-amber-200 bg-amber-50 px-2 py-0.5 text-amber-600">
-                            Pending
-                          </Badge>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-2 sm:px-4 py-2 font-medium text-[#193c1f] text-sm">
-                      {formatDateLabel(row.timestamp)}
-                    </td>
-                    <td className="px-2 sm:px-4 py-2 font-medium italic text-[#8ea087] text-sm">
-                      {formatPaymentMethod(row.paymentMethod)}
-                    </td>
-                    <td className="px-2 sm:px-4 py-2">
-                      <Badge className={badge.cls}>{badge.label}</Badge>
-                    </td>
-                    <td className="px-2 sm:px-4 py-2 text-right font-black text-sm text-[#193c1f]">
-                      {formatRupiah(row.amount)}
-                    </td>
-                  </tr>
-
-                  {/* Expanded Detail Row */}
-                  <tr>
-                    <td colSpan={5} className="p-0">
-                      <div
-                        className={`overflow-hidden transition-all duration-500 ease-in-out bg-[#FDFCFB] ${
-                          isExpanded ? 'max-h-[900px]' : 'max-h-0'
-                        }`}
-                      >
-                        <div className="px-4 sm:px-6 pb-5 pt-1">
-                          <div className="p-4 sm:p-5 bg-white border border-[#d0d5cb]/40 rounded-[18px] shadow-sm">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                              {/* Left: Donation Summary */}
-                              <div className="space-y-6">
-                                <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087]">
-                                  Donation Summary
-                                </h4>
-                                <div className="grid grid-cols-2 gap-6">
-                                  <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
-                                      Amount
-                                    </p>
-                                    <p className="text-[20px] font-black text-[#193c1f]">
-                                      {formatRupiah(row.amount)}
-                                    </p>
-                                  </div>
-                                  <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
-                                      Payment Method
-                                    </p>
-                                    <p className="text-[14px] font-bold text-[#193c1f]">
-                                      {formatPaymentMethod(row.paymentMethod)}
-                                    </p>
-                                  </div>
-                                  <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
-                                      Status
-                                    </p>
-                                    <Badge className={badge.cls}>
-                                      {badge.label}
-                                    </Badge>
-                                  </div>
-                                  <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
-                                      Date
-                                    </p>
-                                    <p className="text-[14px] font-bold text-[#193c1f]">
-                                      {formatDateLabel(row.timestamp)}
-                                    </p>
-                                  </div>
-                                </div>
-
-                                {isPending && (
-                                  <div className="pt-2 space-y-3">
-                                    {actionError && hoveredRowId === row.id && (
-                                      <p className="text-[12px] text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
-                                        {actionError}
-                                      </p>
-                                    )}
-
-                                    <Button
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleCompletePayment(row);
-                                      }}
-                                      disabled={isProcessing || isCanceling}
-                                      loading={isProcessing}
-                                      className="w-full rounded-xl px-4 py-3 text-[13px] bg-[#193c1f] text-white hover:bg-[#8ea087]"
-                                    >
-                                      {isProcessing
-                                        ? 'Opening payment...'
-                                        : 'Complete Payment'}
-                                    </Button>
-
-                                    <Button
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        void handleChangePaymentMethod(row);
-                                      }}
-                                      disabled={isProcessing || isCanceling}
-                                      loading={isCanceling}
-                                      variant="outline"
-                                      className="w-full rounded-xl px-4 py-3 text-[13px]"
-                                    >
-                                      {isCanceling
-                                        ? 'Canceling old donation...'
-                                        : 'Change Payment Method'}
-                                    </Button>
-                                  </div>
-                                )}
-                              </div>
-
-                              {/* Right: Target Report */}
-                              <div className="border-l border-[#f7f3ed] pl-10 space-y-6">
-                                <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087]">
-                                  Target Report
-                                </h4>
-                                <div className="space-y-4">
-                                  <div className="space-y-1">
-                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
-                                      Case Title
-                                    </p>
-                                    <p className="text-[16px] font-bold text-[#193c1f]">
-                                      {row.report?.title ||
-                                        'CareConnect Platform'}
-                                    </p>
-                                  </div>
-                                  <div className="pt-2">
-                                    <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight mb-1">
-                                      Description
-                                    </p>
-                                    <div className="bg-[#f7f3ed]/30 p-4 rounded-xl border border-[#f7f3ed] max-h-[150px] overflow-y-auto custom-scrollbar">
-                                      <p className="text-[13px] leading-relaxed text-[#193c1f]/80 whitespace-pre-wrap font-medium italic">
-                                        &quot;
-                                        {row.report?.description ||
-                                          'Donation to support the platform infrastructure and operations.'}
-                                        &quot;
-                                      </p>
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              );
-            })
-          ) : (
-            <tbody className="text-[14px] text-[#193c1f]">
-              <tr>
-                <td
-                  colSpan={5}
-                  className="p-20 text-center text-[#8ea087] font-bold"
-                >
-                  No donations found.
-                </td>
-              </tr>
-            </tbody>
-          )}
-        </table>
-      </Card>
-
-      <Pagination
+      <Table
+        data={currentItems}
+        keyExtractor={(row) => row.id}
+        emptyMessage="No donations found."
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={(page: number) => {
           setCurrentPage(page);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
+        renderExpandedRow={(row) => {
+          const displayStatus = getDisplayStatus(row.paymentStatus);
+          const badge = STATUS_BADGE[displayStatus];
+          const isPending = displayStatus === 'PENDING';
+          const isProcessing = processingId === row.id;
+          const isCanceling = cancelingId === row.id;
+          return (
+            <div className="p-4 sm:p-5 bg-white border border-[#d0d5cb]/40 rounded-[18px] shadow-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+                {/* Left: Donation Summary */}
+                <div className="space-y-6">
+                  <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087]">
+                    Donation Summary
+                  </h4>
+                  <div className="grid grid-cols-2 gap-6">
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                        Amount
+                      </p>
+                      <p className="text-[20px] font-black text-[#193c1f]">
+                        {formatRupiah(row.amount)}
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                        Payment Method
+                      </p>
+                      <p className="text-[14px] font-bold text-[#193c1f]">
+                        {formatPaymentMethod(row.paymentMethod)}
+                      </p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                        Status
+                      </p>
+                      <Badge className={badge.cls}>{badge.label}</Badge>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                        Date
+                      </p>
+                      <p className="text-[14px] font-bold text-[#193c1f]">
+                        {formatDateLabel(row.timestamp)}
+                      </p>
+                    </div>
+                  </div>
+
+                  {isPending && (
+                    <div className="pt-2 space-y-3">
+                      {actionError && errorRowId === row.id && (
+                        <p className="text-[12px] text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2">
+                          {actionError}
+                        </p>
+                      )}
+
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCompletePayment(row);
+                        }}
+                        disabled={isProcessing || isCanceling}
+                        loading={isProcessing}
+                        className="w-full rounded-xl px-4 py-3 text-[13px] bg-[#193c1f] text-white hover:bg-[#8ea087]"
+                      >
+                        {isProcessing
+                          ? 'Opening payment...'
+                          : 'Complete Payment'}
+                      </Button>
+
+                      <Button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          void handleChangePaymentMethod(row);
+                        }}
+                        disabled={isProcessing || isCanceling}
+                        loading={isCanceling}
+                        variant="outline"
+                        className="w-full rounded-xl px-4 py-3 text-[13px]"
+                      >
+                        {isCanceling
+                          ? 'Canceling old donation...'
+                          : 'Change Payment Method'}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Right: Target Report */}
+                <div className="border-l border-[#f7f3ed] pl-10 space-y-6">
+                  <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087]">
+                    Target Report
+                  </h4>
+                  <div className="space-y-4">
+                    <div className="space-y-1">
+                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight">
+                        Case Title
+                      </p>
+                      <p className="text-[16px] font-bold text-[#193c1f]">
+                        {row.report?.title || 'CareConnect Platform'}
+                      </p>
+                    </div>
+                    <div className="pt-2">
+                      <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-tight mb-1">
+                        Description
+                      </p>
+                      <div className="bg-[#f7f3ed]/30 p-4 rounded-xl border border-[#f7f3ed] max-h-[150px] overflow-y-auto custom-scrollbar">
+                        <p className="text-[13px] leading-relaxed text-[#193c1f]/80 whitespace-pre-wrap font-medium italic">
+                          &quot;
+                          {row.report?.description ||
+                            'Donation to support the platform infrastructure and operations.'}
+                          &quot;
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }}
+        columns={[
+          {
+            header: 'Source / Donor',
+            cell: (row) => {
+              const displayStatus = getDisplayStatus(row.paymentStatus);
+              const isPending = displayStatus === 'PENDING';
+              return (
+                <div className="flex items-center gap-2">
+                  <div>
+                    <p className="font-bold text-[#193c1f] text-sm">
+                      {row.report?.title || 'CareConnect Platform'}
+                    </p>
+                    <p className="text-[11px] text-[#8ea087] font-medium opacity-60">
+                      Donation #{row.id}
+                    </p>
+                  </div>
+                  {isPending && (
+                    <Badge className="ml-2 whitespace-nowrap border border-amber-200 bg-amber-50 px-2 py-0.5 text-amber-600">
+                      Pending
+                    </Badge>
+                  )}
+                </div>
+              );
+            },
+          },
+          {
+            header: 'Date',
+            cell: (row) => (
+              <p className="font-medium text-[#193c1f] text-sm">
+                {formatDateLabel(row.timestamp)}
+              </p>
+            ),
+          },
+          {
+            header: 'Via',
+            cell: (row) => (
+              <p className="font-medium italic text-[#8ea087] text-sm">
+                {formatPaymentMethod(row.paymentMethod)}
+              </p>
+            ),
+          },
+          {
+            header: 'Status',
+            cell: (row) => {
+              const displayStatus = getDisplayStatus(row.paymentStatus);
+              const badge = STATUS_BADGE[displayStatus];
+              return <Badge className={badge.cls}>{badge.label}</Badge>;
+            },
+          },
+          {
+            header: 'Amount',
+            headerClassName: 'text-right',
+            className: 'text-right',
+            cell: (row) => (
+              <p className="font-black text-sm text-[#193c1f]">
+                {formatRupiah(row.amount)}
+              </p>
+            ),
+          },
+        ]}
       />
     </div>
   );

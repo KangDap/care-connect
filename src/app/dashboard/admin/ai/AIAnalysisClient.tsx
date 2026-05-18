@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
+import { Table } from '@/components/table';
 import { useAIAnalysis } from '@/hooks/useAIAnalysis';
 import type { CategoryInsights, Itemset, Rule } from '@/types/ai-analysis';
 import {
@@ -106,49 +107,48 @@ function ItemsetList({ itemsets }: { itemsets: Itemset[] }) {
 }
 
 function RuleList({ rules }: { rules: Rule[] }) {
-  if (rules.length === 0) {
-    return (
-      <div className="py-10 text-center text-sm font-medium text-[#8EA087]">
-        No association rules returned yet.
-      </div>
-    );
-  }
-
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full min-w-[760px] text-left text-sm">
-        <thead className="border-b border-[#D0D5CB]/40 bg-[#F7F3ED]/40 text-[10px] font-black uppercase tracking-widest text-[#8EA087]">
-          <tr>
-            <th className="px-4 py-3">If</th>
-            <th className="px-4 py-3">Then</th>
-            <th className="px-4 py-3">Confidence</th>
-            <th className="px-4 py-3">Lift</th>
-            <th className="px-4 py-3">Support</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-[#F7F3ED]">
-          {rules.map((rule, index) => (
-            <tr key={`${rule.antecedents.join('-')}-${index}`}>
-              <td className="px-4 py-4">
-                <TagGroup items={rule.antecedents} />
-              </td>
-              <td className="px-4 py-4">
-                <TagGroup items={rule.consequents} />
-              </td>
-              <td className="px-4 py-4 font-black text-[#193C1F]">
-                {formatPercent(rule.confidence)}
-              </td>
-              <td className="px-4 py-4 font-black text-[#193C1F]">
-                {rule.lift.toFixed(2)}
-              </td>
-              <td className="px-4 py-4 font-bold text-[#8EA087]">
-                {formatPercent(rule.support)}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Table
+      className="shadow-none border-0 rounded-t-none"
+      minWidth="min-w-[760px]"
+      data={rules}
+      keyExtractor={(row) =>
+        row.antecedents.join('-') + '->' + row.consequents.join('-')
+      }
+      emptyMessage="No association rules returned yet."
+      columns={[
+        {
+          header: 'If',
+          cell: (row) => <TagGroup items={row.antecedents} />,
+        },
+        {
+          header: 'Then',
+          cell: (row) => <TagGroup items={row.consequents} />,
+        },
+        {
+          header: 'Confidence',
+          cell: (row) => (
+            <p className="font-black text-[#193C1F]">
+              {formatPercent(row.confidence)}
+            </p>
+          ),
+        },
+        {
+          header: 'Lift',
+          cell: (row) => (
+            <p className="font-black text-[#193C1F]">{row.lift.toFixed(2)}</p>
+          ),
+        },
+        {
+          header: 'Support',
+          cell: (row) => (
+            <p className="font-bold text-[#8EA087]">
+              {formatPercent(row.support)}
+            </p>
+          ),
+        },
+      ]}
+    />
   );
 }
 

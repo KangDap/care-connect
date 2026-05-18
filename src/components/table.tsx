@@ -18,6 +18,7 @@ export interface TableProps<T> {
   keyExtractor: (item: T) => string | number;
   emptyMessage?: string;
   className?: string;
+  minWidth?: string; // Optional custom min-width class for horizontal scroll behavior
 
   // Pagination Props
   currentPage?: number;
@@ -34,6 +35,7 @@ export function Table<T>({
   keyExtractor,
   emptyMessage = 'No data available.',
   className = '',
+  minWidth = 'min-w-[640px]',
   currentPage,
   totalPages,
   onPageChange,
@@ -53,13 +55,13 @@ export function Table<T>({
       className={`overflow-hidden rounded-2xl md:rounded-3xl shadow-sm ${className} p-0`}
     >
       <div className="overflow-x-auto w-full">
-        <table className="w-full text-left">
+        <table className={`w-full text-left ${minWidth}`}>
           <thead className="bg-[#F7F3ED]/30 md:bg-[#F7F3ED]/50 text-[10px] md:text-[11px] text-[#8EA087] font-black uppercase tracking-widest border-b border-[#D0D5CB]/30">
             <tr>
               {columns.map((col, idx) => (
                 <th
                   key={idx}
-                  className={`px-2 sm:px-4 py-2 md:py-2.5 ${col.headerClassName || ''}`}
+                  className={`px-4 sm:px-6 py-3.5 md:py-4 ${col.headerClassName || ''}`}
                 >
                   {col.header}
                 </th>
@@ -110,7 +112,7 @@ export function Table<T>({
                     {columns.map((col, idx) => (
                       <td
                         key={idx}
-                        className={`px-2 sm:px-4 py-2 md:py-2.5 ${col.className || ''}`}
+                        className={`px-4 sm:px-6 py-4 md:py-5 ${col.className || ''}`}
                       >
                         {col.cell
                           ? col.cell(row)

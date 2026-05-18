@@ -1,8 +1,8 @@
 'use client';
 
 import { Table } from '@/components/table';
-import { User } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 const fmtDate = (d: Date | string) => {
   const date = typeof d === 'string' ? new Date(d) : d;
@@ -33,8 +33,19 @@ export function RecentDonationsTable({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   recentDonations: any[];
 }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const handle = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(handle);
+  }, []);
+
   const searchParams = useSearchParams();
   const searchBarQuery = searchParams.get('search')?.toLowerCase() || '';
+
+  if (!mounted) {
+    return <div className="h-[200px] w-full bg-transparent animate-pulse" />;
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const filteredData = recentDonations.filter((d: any) => {

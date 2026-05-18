@@ -155,7 +155,7 @@ export default function PsychologistDashboardContent({
       </div>
 
       {/* Tables Row */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 md:gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 md:gap-8 items-start">
         {/* Upcoming Consultations */}
         <Card className="p-0 space-y-0">
           <div className="flex items-center justify-between p-4 sm:p-5 md:p-6 border-b border-[#D0D5CB]/50 bg-[#FDFCFB]">
@@ -176,6 +176,7 @@ export default function PsychologistDashboardContent({
           </div>
           <Table
             className="rounded-t-none border-t-0 shadow-none"
+            minWidth="min-w-[450px]"
             data={pendingData.slice(0, 5)}
             keyExtractor={(row) => row.id}
             emptyMessage="No upcoming consultations found."
@@ -228,6 +229,7 @@ export default function PsychologistDashboardContent({
           </div>
           <Table
             className="rounded-t-none border-t-0 shadow-none"
+            minWidth="min-w-[450px]"
             data={completedData.slice(0, 5)}
             keyExtractor={(row) => row.id}
             emptyMessage="No completed sessions yet."
