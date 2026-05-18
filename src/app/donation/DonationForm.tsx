@@ -175,6 +175,7 @@ export function DonationForm({
             text: 'Payment is pending. Please complete it.',
           });
           setIsSubmitting(false);
+          setTimeout(() => router.push('/dashboard/donations'), 1000);
         },
         onError: () => {
           setMessage({
@@ -182,9 +183,11 @@ export function DonationForm({
             text: 'Payment failed. Please try again.',
           });
           setIsSubmitting(false);
+          setTimeout(() => router.push('/dashboard/donations'), 1000);
         },
         onClose: () => {
           setIsSubmitting(false);
+          setTimeout(() => router.push('/dashboard/donations'), 1000);
         },
       });
     } catch {
