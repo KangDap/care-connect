@@ -1,6 +1,5 @@
 'use client';
 
-import { Card } from '@/components/card';
 import { Pagination } from '@/components/pagination';
 import React, { ReactNode } from 'react';
 
@@ -51,8 +50,8 @@ export function Table<T>({
   >(null);
 
   return (
-    <Card
-      className={`overflow-hidden rounded-2xl md:rounded-3xl shadow-sm ${className} p-0`}
+    <div
+      className={`min-w-0 bg-white border border-[#D0D5CB]/50 shadow-sm overflow-hidden p-0 ${className || ''}`}
     >
       <div className="overflow-x-auto w-full">
         <table className={`w-full text-left ${minWidth}`}>
@@ -167,6 +166,6 @@ export function Table<T>({
           </div>
         </div>
       )}
-    </Card>
+    </div>
   );
 }

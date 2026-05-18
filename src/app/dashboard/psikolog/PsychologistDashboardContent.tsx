@@ -155,9 +155,9 @@ export default function PsychologistDashboardContent({
       </div>
 
       {/* Tables Row */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 md:gap-8 items-start">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 md:gap-8 items-start w-full">
         {/* Upcoming Consultations */}
-        <Card className="p-0 space-y-0">
+        <Card className="p-0 space-y-0 overflow-hidden flex flex-col min-w-0 w-full">
           <div className="flex items-center justify-between p-4 sm:p-5 md:p-6 border-b border-[#D0D5CB]/50 bg-[#FDFCFB]">
             <div>
               <h3 className="text-lg sm:text-xl font-black text-[#193c1f] tracking-tight">
@@ -210,7 +210,7 @@ export default function PsychologistDashboardContent({
         </Card>
 
         {/* Completed Sessions */}
-        <Card className="p-0 space-y-0">
+        <Card className="p-0 space-y-0 overflow-hidden flex flex-col min-w-0 w-full">
           <div className="flex items-center justify-between p-4 sm:p-5 md:p-6 border-b border-[#D0D5CB]/50 bg-[#FDFCFB]">
             <div>
               <h3 className="text-lg sm:text-xl font-black text-[#193c1f] tracking-tight">

@@ -10,7 +10,7 @@ import { authClient } from '@/lib/auth/auth-client';
 import { ChevronLeft, LogOut, Menu, Search, User } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { startTransition, useEffect, useRef, useState } from 'react';
 
 const SILHOUETTE_AVATAR = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23e5e7eb'/%3E%3Ccircle cx='100' cy='70' r='35' fill='%239ca3af'/%3E%3Cpath d='M40 140c0-30 27-50 60-50s60 20 60 50v50H40z' fill='%239ca3af'/%3E%3C/svg%3E`;
 
@@ -46,12 +46,21 @@ const HeaderInner = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Synchronize internal state when URL changes externally
-  useEffect(() => {
-    // eslint-disable-next-line
-    setSearchQuery(searchParams.get('search') || '');
-  }, [searchParams]);
+  const isUpdatingFromUrl = React.useRef(false);
 
   useEffect(() => {
+    isUpdatingFromUrl.current = true;
+    startTransition(() => {
+      setSearchQuery(searchParams.get('search') || '');
+    });
+  }, [searchParams, pathname]);
+
+  useEffect(() => {
+    if (isUpdatingFromUrl.current) {
+      isUpdatingFromUrl.current = false;
+      return;
+    }
+
     const handler = setTimeout(() => {
       const currentSearch = searchParams.get('search') || '';
       if (currentSearch !== searchQuery) {

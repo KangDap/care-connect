@@ -87,16 +87,16 @@ export function CommunityTable({
             <div className="flex flex-wrap items-center justify-end gap-2">
               <Button
                 onClick={() => onEdit(ch)}
-                variant="ghost"
-                className="px-2 py-0.5 text-[10px] sm:text-xs h-7 min-h-0 text-blue-600 hover:text-blue-700 bg-blue-50/50 hover:bg-blue-50"
+                variant="outline"
+                className="text-[10px] sm:text-xs px-2 py-0.5 min-h-0 h-7"
               >
                 <Pencil size={14} />
                 Edit
               </Button>
               <Button
                 onClick={() => onDelete(ch.id)}
-                variant="ghost"
-                className="px-2 py-0.5 text-[10px] sm:text-xs h-7 min-h-0 text-red-600 hover:text-red-700 bg-red-50/50 hover:bg-red-50"
+                variant="outline"
+                className="text-[10px] sm:text-xs px-2 py-0.5 min-h-0 h-7 text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50 hover:border-red-300"
               >
                 <Trash2 size={14} />
                 Delete

@@ -3,6 +3,7 @@ import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import Carousel from '@/components/carousel';
 import { PublicHeader } from '@/components/public-header';
+import { Prisma } from '@/generated/prisma/client';
 import { PaymentStatus, ReportStatus } from '@/generated/prisma/enums';
 import { auth } from '@/lib/auth/auth';
 import { prisma } from '@/lib/prisma';
@@ -11,37 +12,66 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
+export const dynamic = 'force-dynamic';
+
 export default async function LandingPage() {
-  const session = await auth.api.getSession({ headers: await headers() });
+  let session = null;
+  try {
+    session = await auth.api.getSession({ headers: await headers() });
+  } catch (e) {
+    const err = e as { message?: string; digest?: string };
+    if (
+      err?.message?.includes('Dynamic server usage') ||
+      err?.digest === 'DYNAMIC_SERVER_USAGE'
+    ) {
+      throw e;
+    }
+    console.error('Failed to get session:', e);
+  }
   const isLoggedIn = !!session?.user;
   const userRole = (session?.user as { role?: string })?.role;
 
-  const [totalReports, totalConsultations, paidDonations, recentReports] =
-    await Promise.all([
-      prisma.report.count({
-        where: { status: ReportStatus.RESOLVED, isPublic: true },
-      }),
-      prisma.consultation.count(),
-      prisma.donation.aggregate({
-        _sum: { amount: true },
-        where: { paymentStatus: PaymentStatus.PAID },
-      }),
-      prisma.report.findMany({
-        take: 3,
-        orderBy: { createdAt: 'desc' },
-        where: {
-          isPublic: true,
-          status: ReportStatus.RESOLVED,
-        },
-        include: {
-          evidences: {
-            take: 1,
-          },
-        },
-      }),
-    ]);
+  let totalReports = 0;
+  let totalConsultations = 0;
+  let totalDonationAmount = 0;
+  let recentReports: Prisma.ReportGetPayload<{
+    include: { evidences: true };
+  }>[] = [];
 
-  const totalDonationAmount = Number(paidDonations._sum.amount || 0);
+  try {
+    const [reportsCount, consultationsCount, paidDonations, latestReports] =
+      await Promise.all([
+        prisma.report.count({
+          where: { status: ReportStatus.RESOLVED, isPublic: true },
+        }),
+        prisma.consultation.count(),
+        prisma.donation.aggregate({
+          _sum: { amount: true },
+          where: { paymentStatus: PaymentStatus.PAID },
+        }),
+        prisma.report.findMany({
+          take: 3,
+          orderBy: { createdAt: 'desc' },
+          where: {
+            isPublic: true,
+            status: ReportStatus.RESOLVED,
+          },
+          include: {
+            evidences: {
+              take: 1,
+            },
+          },
+        }),
+      ]);
+
+    totalReports = reportsCount;
+    totalConsultations = consultationsCount;
+    totalDonationAmount = Number(paidDonations._sum.amount || 0);
+    recentReports = latestReports;
+  } catch (e) {
+    console.error('Failed to fetch landing page data:', e);
+  }
+
   const formattedDonations = new Intl.NumberFormat('id-ID', {
     style: 'currency',
     currency: 'IDR',

@@ -361,7 +361,7 @@ export function DonationClient({
       </div>
 
       {/* Psychologist Breakdown Section */}
-      <Card className="rounded-[24px] md:rounded-[40px] p-0 md:p-0">
+      <Card className="rounded-[24px] md:rounded-[40px] p-0 md:p-0 overflow-hidden flex flex-col min-w-0 w-full">
         <div className="p-5 sm:p-6 md:p-8 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#D0D5CB]/50 bg-[#FDFCFB]">
           <div>
             <h2 className="text-xl md:text-2xl font-black text-[#193c1f] tracking-tight">

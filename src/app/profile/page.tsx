@@ -214,12 +214,9 @@ export default function ProfileManagement() {
           <Link href={backHref} className="inline-block">
             <Button
               variant="outline"
-              className="h-10 w-10 md:h-12 md:w-12 rounded-xl md:rounded-2xl p-0 flex items-center justify-center text-[#193c1f]"
+              className="icon-button back-icon-button h-11 w-11 rounded-full p-0 flex items-center justify-center shrink-0"
             >
-              <ChevronLeft
-                className="w-5 h-5 md:w-6 md:h-6 text-[#193c1f]"
-                strokeWidth={2.5}
-              />
+              <ChevronLeft size={20} strokeWidth={2.5} />
             </Button>
           </Link>
           <h1 className="text-2xl font-black tracking-tight">
