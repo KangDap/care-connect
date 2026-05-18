@@ -180,7 +180,10 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
             Manage community channel topics.
           </p>
         </div>
-        <Button onClick={() => setIsCreateModalOpen(true)}>
+        <Button
+          onClick={() => setIsCreateModalOpen(true)}
+          className="rounded-2xl px-5 sm:px-6 py-2.5 sm:py-3 text-sm shadow-sm"
+        >
           <MessageSquarePlus size={16} />
           Create Channel
         </Button>

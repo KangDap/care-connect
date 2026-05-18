@@ -408,7 +408,7 @@ export function DonationClient({
         </div>
 
         <Table
-          className="rounded-t-none border-t-0 shadow-none"
+          className="rounded-t-none md:rounded-t-none border-t-0 shadow-none"
           data={psychologistBreakdown}
           keyExtractor={(p) => p.id}
           emptyMessage="No payout data for this period."

@@ -64,7 +64,7 @@ export function RecentDonationsTable({
 
   return (
     <Table
-      className="rounded-t-none border-t-0 shadow-none"
+      className="rounded-t-none md:rounded-t-none border-t-0 shadow-none"
       data={filteredData}
       keyExtractor={(d) => d.id}
       emptyMessage="No donations yet."

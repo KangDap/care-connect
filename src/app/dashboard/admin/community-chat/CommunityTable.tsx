@@ -82,7 +82,7 @@ export function CommunityTable({
         {
           header: 'Actions',
           headerClassName: 'text-right',
-          className: 'text-right',
+          className: 'text-right w-40',
           cell: (ch) => (
             <div className="flex flex-wrap items-center justify-end gap-2">
               <Button

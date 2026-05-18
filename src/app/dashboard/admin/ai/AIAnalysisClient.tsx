@@ -109,7 +109,7 @@ function ItemsetList({ itemsets }: { itemsets: Itemset[] }) {
 function RuleList({ rules }: { rules: Rule[] }) {
   return (
     <Table
-      className="shadow-none border-0 rounded-t-none"
+      className="shadow-none border-0 rounded-t-none md:rounded-t-none"
       minWidth="min-w-[760px]"
       data={rules}
       keyExtractor={(row) =>
