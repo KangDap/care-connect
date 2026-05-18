@@ -6,6 +6,7 @@ import { Input } from '@/components/input';
 import { LanguageToggle } from '@/components/language-toggle';
 import { Logo } from '@/components/logo';
 import { Modal } from '@/components/modal';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { authClient } from '@/lib/auth/auth-client';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
@@ -280,6 +281,7 @@ export default function LoginPage() {
         <Logo />
         <div className="flex items-center gap-2">
           <LanguageToggle compact />
+          <ThemeToggle />
           <Button variant="outline" className="h-[44px] px-3 sm:px-7">
             <HelpIcon />
             <span className="hidden sm:inline">Help Center</span>
