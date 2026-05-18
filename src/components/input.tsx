@@ -25,14 +25,14 @@ export const Input = ({
   const inputType = isPassword ? (showPassword ? 'text' : 'password') : type;
 
   const baseStyles =
-    'w-full bg-[#EBE6DE]/30 border border-transparent focus:border-[#8ea087] focus:bg-white p-4 rounded-2xl text-sm font-medium outline-none transition-all';
+    'min-w-0 w-full bg-[#EBE6DE]/30 border border-[#d0d5cb] focus:border-[#8ea087] focus:bg-white p-4 rounded-2xl text-sm font-medium outline-none transition-all';
 
   const inputStyles = `${baseStyles} ${className} ${icon ? 'pl-14' : ''} ${isPassword ? 'pr-14' : ''}`;
 
   return (
     <div className="flex flex-col gap-2 w-full text-left">
       {label && (
-        <label className="text-[11px] font-black uppercase tracking-widest text-[#8ea087]">
+        <label className="text-[11px] font-black uppercase tracking-widest text-[#8ea087] break-words">
           {label}
         </label>
       )}
