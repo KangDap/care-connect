@@ -252,7 +252,7 @@ export function DonationForm({
           <button
             type="button"
             onClick={() => router.push(backHref)}
-            className="p-2 sm:p-2.5 bg-white border border-[#D0D5CB] hover:bg-[#F7F3ED] rounded-xl sm:rounded-2xl transition-all shadow-sm flex items-center justify-center"
+            className="w-10 h-10 bg-white border border-[#D0D5CB] hover:bg-[#F7F3ED] rounded-xl transition-all shadow-sm flex items-center justify-center shrink-0"
           >
             <ArrowLeft size={18} className="text-[#193c1f]" />
           </button>
@@ -339,7 +339,7 @@ export function DonationForm({
                   variant={amount === val ? 'primary' : 'outline'}
                   key={val}
                   onClick={() => setAmount(val)}
-                  className={`rounded-lg py-4 ${amount === val ? '' : 'text-[#193c1f]'}`}
+                  className={`rounded-lg py-4 whitespace-nowrap text-sm ${amount === val ? '' : 'text-[#193c1f]'}`}
                 >
                   {fmt(val)}
                 </Button>

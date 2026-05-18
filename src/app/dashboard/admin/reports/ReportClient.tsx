@@ -362,24 +362,24 @@ export function ReportClient({
             headerClassName: 'text-right',
             className: 'text-right',
             cell: (r) => (
-              <div className="flex items-center justify-end gap-2 md:gap-3">
+              <div className="flex items-center justify-end gap-2">
                 <Button
                   type="button"
-                  variant="ghost"
+                  variant="outline"
                   onClick={() => openUpdateModal(r)}
-                  className="px-2 py-1 text-xs md:text-sm text-blue-600 hover:text-blue-700 bg-blue-50/50 hover:bg-blue-50"
+                  className="h-auto min-h-0 rounded-xl px-3 py-2 text-xs normal-case tracking-normal shadow-none"
                 >
                   <Pencil size={14} />
                   Update
                 </Button>
                 <Button
                   type="button"
-                  variant="ghost"
+                  variant="outline"
                   onClick={() => {
                     setReportToDelete(r.id);
                     setIsDeleteAlertOpen(true);
                   }}
-                  className="px-2 py-1 text-xs md:text-sm text-red-600 hover:text-red-700 bg-red-50/50 hover:bg-red-50"
+                  className="h-auto min-h-0 rounded-xl px-3 py-2 text-xs normal-case tracking-normal shadow-none text-red-600 border-red-600 hover:bg-red-50"
                 >
                   <Trash2 size={14} />
                   Delete
