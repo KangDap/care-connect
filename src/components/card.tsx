@@ -8,7 +8,7 @@ export const Card = ({
   children: React.ReactNode;
 }) => (
   <div
-    className={`bg-white border border-[#D0D5CB]/50 rounded-2xl md:rounded-3xl shadow-sm overflow-hidden ${className}`}
+    className={`min-w-0 bg-white border border-[#D0D5CB]/50 rounded-2xl md:rounded-3xl shadow-sm overflow-hidden ${className}`}
     {...props}
   >
     {children}

@@ -3,6 +3,7 @@
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Input } from '@/components/input';
+import { LanguageToggle } from '@/components/language-toggle';
 import { Logo } from '@/components/logo';
 import { Modal } from '@/components/modal';
 import { authClient } from '@/lib/auth/auth-client';
@@ -275,15 +276,18 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      <header className="h-[80px] bg-[#f7f3ed] border-b border-[#d0d5cb] flex items-center justify-between px-[48px] sticky top-0 z-50">
+      <header className="sticky top-0 z-50 flex min-h-[72px] items-center justify-between gap-3 border-b border-[#d0d5cb] bg-[#f7f3ed] px-4 py-3 sm:px-6 lg:h-[80px] lg:px-12">
         <Logo />
-        <Button variant="outline" className="h-[44px]">
-          <HelpIcon />
-          <span>Help Center</span>
-        </Button>
+        <div className="flex items-center gap-2">
+          <LanguageToggle compact />
+          <Button variant="outline" className="h-[44px] px-3 sm:px-7">
+            <HelpIcon />
+            <span className="hidden sm:inline">Help Center</span>
+          </Button>
+        </div>
       </header>
 
-      <main className="flex-1 flex overflow-hidden">
+      <main className="flex flex-1 flex-col overflow-visible lg:flex-row lg:overflow-hidden">
         <div className="hidden lg:flex w-1/2 bg-[#ede4d8] flex flex-col items-center justify-center p-16 relative overflow-hidden">
           <div className="absolute w-[600px] h-[600px] rounded-full bg-[#f7f3ed] opacity-60 top-[-150px] right-[-100px]" />
           <div className="absolute w-[500px] h-[500px] rounded-full bg-[#f7f3ed] opacity-40 bottom-[-200px] left-[-150px]" />
@@ -310,9 +314,9 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <div className="w-full lg:w-1/2 flex flex-col items-center justify-center p-8 lg:p-16 bg-white animate-fade-in">
+        <div className="flex w-full flex-col items-center justify-center bg-white p-4 py-8 animate-fade-in sm:p-8 lg:w-1/2 lg:p-16">
           <div className="w-full max-w-[400px]">
-            <div className="flex border-b border-[#d0d5cb] mb-12 relative h-[56px]">
+            <div className="relative mb-8 flex h-[56px] border-b border-[#d0d5cb] sm:mb-12">
               {(['login', 'register'] as const).map((tab) => (
                 <Button
                   key={tab}
@@ -551,9 +555,9 @@ export default function LoginPage() {
         </div>
       </main>
 
-      <footer className="h-[64px] bg-[#f7f3ed] border-t border-[#d0d5cb] flex items-center justify-between px-[48px] opacity-60 text-[#193c1f] text-[12px]">
+      <footer className="flex min-h-[64px] flex-col items-center justify-between gap-3 border-t border-[#d0d5cb] bg-[#f7f3ed] px-4 py-4 text-center text-[12px] text-[#193c1f] opacity-60 sm:px-6 md:flex-row md:text-left lg:px-12">
         <p>© 2026 CareConnect. Supporting resilience and safety.</p>
-        <nav className="flex gap-8">
+        <nav className="flex flex-wrap justify-center gap-4 sm:gap-8">
           {['Privacy Guide', 'Community Standards', 'Contact'].map((link) => (
             <a key={link} href="#" className="hover:underline no-underline">
               {link}

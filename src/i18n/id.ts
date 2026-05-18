@@ -7,6 +7,9 @@ export const id: Dictionary = {
     donate: 'Donasi',
     psychologist: 'Psikolog',
     community: 'Komunitas',
+    consultation: 'Konsultasi',
+    report: 'Laporan',
+    forum: 'Forum',
     profile: 'Profil',
     dashboard: 'Dasbor',
     login: 'Masuk',
@@ -49,5 +52,8 @@ export const id: Dictionary = {
     update: 'Perbarui',
     success: 'Berhasil',
     error: 'Kesalahan',
+    switchLanguage: 'Ganti bahasa',
+    useIndonesian: 'Gunakan Bahasa Indonesia',
+    useEnglish: 'Gunakan Bahasa Inggris',
   },
 };

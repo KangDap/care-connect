@@ -3,6 +3,7 @@
 import { Alert } from '@/components/alert';
 import { Header } from '@/components/header';
 import { Logo } from '@/components/logo';
+import { useTranslation } from '@/components/providers/i18n-provider';
 import { authClient } from '@/lib/auth/auth-client';
 import {
   BrainCircuit,
@@ -75,6 +76,7 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { t } = useTranslation();
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     if (typeof window === 'undefined') return 'light';
     return document.documentElement.classList.contains('dark') ||
@@ -141,7 +143,7 @@ export default function DashboardLayout({
           {/* Dashboard Home (Dinamis) */}
           <SidebarItem
             icon={LayoutDashboard}
-            label="Dashboard"
+            label={t('header.dashboard')}
             href={
               isAtAdminPage
                 ? '/dashboard/admin'

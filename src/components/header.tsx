@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
+import { LanguageToggle } from '@/components/language-toggle';
 import { Logo } from '@/components/logo';
 import { useTranslation } from '@/components/providers/i18n-provider';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -35,7 +36,7 @@ export const Header = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { data: session } = authClient.useSession();
-  const { t, language, setLanguage } = useTranslation();
+  const { t } = useTranslation();
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
@@ -186,14 +187,7 @@ export const Header = ({
           )}
 
           <div className="flex items-center gap-1 sm:gap-2 md:gap-3 shrink-0">
-            <Button
-              onClick={() => setLanguage(language === 'en' ? 'id' : 'en')}
-              variant="outline"
-              className="rounded-md border-[#193c1f] px-1.5 sm:px-2 py-0.5 sm:py-1 text-[9px] sm:text-[10px] md:text-xs text-[#193c1f] hover:bg-[#193c1f] hover:text-[#f7f3ed] h-5 sm:h-6 md:h-9 min-w-0 shrink-0 font-bold"
-            >
-              {language === 'en' ? 'ID' : 'EN'}
-            </Button>
-
+            <LanguageToggle compact />
             <ThemeToggle />
           </div>
 

@@ -214,9 +214,9 @@ export default function ReportForm({
         onClose={() => setToast({ ...toast, show: false })}
       />
 
-      <div className="bg-white border border-[#d0d5cb] rounded-[40px] shadow-sm p-12 flex flex-col">
-        <div className="mb-10 text-center border-b border-[#d0d5cb] pb-8">
-          <h1 className="text-[32px] font-black text-[#193c1f] leading-tight tracking-tighter mb-2">
+      <div className="flex flex-col rounded-3xl border border-[#d0d5cb] bg-white p-4 shadow-sm sm:p-8 lg:rounded-[40px] lg:p-12">
+        <div className="mb-8 border-b border-[#d0d5cb] pb-6 text-center lg:mb-10 lg:pb-8">
+          <h1 className="mb-2 text-2xl font-black leading-tight tracking-tighter text-[#193c1f] sm:text-[32px]">
             {currentStep === 1 ? formTitle : 'Review Your Report'}
           </h1>
           <p className="text-[#8ea087] font-bold text-sm mx-auto max-w-md">
@@ -230,7 +230,7 @@ export default function ReportForm({
           {currentStep === 1 ? (
             <div className="space-y-8">
               {!isConsultation && (
-                <div className="flex justify-between items-center bg-[#f7f3ed] p-6 rounded-[24px] border border-[#d0d5cb]">
+                <div className="flex items-center justify-between gap-4 rounded-[24px] border border-[#d0d5cb] bg-[#f7f3ed] p-4 sm:p-6">
                   <p className="text-[13px] font-black text-[#193c1f] uppercase tracking-wide">
                     Report Anonymously
                   </p>
@@ -351,7 +351,7 @@ export default function ReportForm({
                 <p className="text-[11px] font-black text-[#193c1f] uppercase tracking-widest mb-4">
                   Evidence (Multiple Allowed)
                 </p>
-                <div className="w-full border-2 border-dashed border-[#d0d5cb] rounded-[24px] p-8 bg-[#f7f3ed]/50 text-center">
+                <div className="w-full rounded-[24px] border-2 border-dashed border-[#d0d5cb] bg-[#f7f3ed]/50 p-4 text-center sm:p-8">
                   <input
                     type="file"
                     ref={fileInputRef}
@@ -525,7 +525,7 @@ export default function ReportForm({
           )}
         </div>
 
-        <div className="mt-12 pt-8 border-t border-[#d0d5cb] flex justify-between items-center">
+        <div className="mt-8 flex items-center justify-between gap-3 border-t border-[#d0d5cb] pt-6 sm:mt-12 sm:pt-8">
           <Button
             type="button"
             onClick={() => setCurrentStep(1)}
@@ -538,7 +538,7 @@ export default function ReportForm({
           <Button
             suppressHydrationWarning
             onClick={handleAction}
-            className={`px-12 py-5 rounded-[20px] text-[13px] font-bold shadow-md transition-all active:scale-95 ${getButtonStyles()}`}
+            className={`rounded-[20px] px-5 py-4 text-[12px] font-bold shadow-md transition-all active:scale-95 sm:px-12 sm:py-5 sm:text-[13px] ${getButtonStyles()}`}
           >
             {currentStep === 1 ? 'Next to Review' : 'Send Report'}
           </Button>
