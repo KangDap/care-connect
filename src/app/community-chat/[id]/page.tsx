@@ -4,6 +4,7 @@ import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Header } from '@/components/header';
 import { Input } from '@/components/input';
+import { useTranslation } from '@/components/providers/i18n-provider';
 import { authClient } from '@/lib/auth/auth-client';
 import type { ChatMessage } from '@/modules/community-chat/community-chat.types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -45,6 +46,7 @@ export default function CommunityChatContent() {
   const params = useParams();
   const idParam = params?.id ? Number(params.id) : null;
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   // Authentication
   const { data: session, isPending } = authClient.useSession();
@@ -401,9 +403,10 @@ export default function CommunityChatContent() {
           <div className="p-4 border-t border-[#d0d5cb] shrink-0">
             <Link
               href="/forums"
-              className="w-full py-2.5 bg-[#8ea087] text-white font-semibold rounded-xl flex items-center justify-center space-x-2 transition hover:brightness-110 shadow-sm"
+              className="w-full py-2.5 bg-white text-[#193c1f] border border-[#d0d5cb] font-semibold rounded-xl flex items-center justify-center space-x-2 transition hover:bg-[#f7f3ed] shadow-sm"
             >
-              <span>Discover New Forums</span>
+              <ArrowLeft size={16} />
+              <span>{t('Back to All Forums')}</span>
             </Link>
           </div>
         </aside>
@@ -413,16 +416,6 @@ export default function CommunityChatContent() {
           <main className="flex-1 flex flex-col bg-white min-w-0">
             <header className="px-6 py-3 border-b border-[#d0d5cb] flex items-center justify-between bg-white shrink-0">
               <div className="flex items-center space-x-3">
-                <Link href="/forums" aria-label="Back to forums">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="icon-button back-icon-button h-11 w-11 rounded-full p-0"
-                    aria-label="Back to forums"
-                  >
-                    <ArrowLeft size={18} />
-                  </Button>
-                </Link>
                 <div className="w-8 h-8 rounded-lg overflow-hidden bg-[#F7F3ED] flex items-center justify-center border border-[#D0D5CB] shrink-0 relative">
                   {chatData.coverUrl ? (
                     <Image
@@ -898,7 +891,7 @@ export default function CommunityChatContent() {
                       <Button
                         onClick={() => setIsAnonymous(!isAnonymous)}
                         variant={isAnonymous ? 'primary' : 'ghost'}
-                        className={`rounded px-2 py-1 text-[9px] ${isAnonymous ? 'bg-[#193c1f] text-white' : 'text-[#8ea087]'}`}
+                        className={`rounded px-2 py-1 font-black uppercase tracking-widest text-[11px] ${isAnonymous ? 'bg-[#193c1f] text-white' : 'text-[#8ea087]'}`}
                       >
                         {isAnonymous ? 'Anonymous ON' : 'Public Mode'}
                       </Button>

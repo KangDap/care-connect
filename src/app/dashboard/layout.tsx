@@ -243,13 +243,6 @@ export default function DashboardLayout({
             /* --- MENU USER --- */
             <>
               <SidebarItem
-                icon={BrainCircuit}
-                label="AI Analysis"
-                href="/dashboard/ai"
-                active={pathname.startsWith('/dashboard/ai')}
-                isDark={theme === 'dark'}
-              />
-              <SidebarItem
                 icon={Users}
                 label="My Consultations"
                 href="/dashboard/consultations"

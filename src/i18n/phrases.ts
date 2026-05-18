@@ -15,6 +15,7 @@ export const phraseTranslations = {
   Back: 'Kembali',
   'Back to Dashboard': 'Kembali ke Dasbor',
   'Back to forums': 'Kembali ke forum',
+  'Back to All Forums': 'Kembali ke Semua Forum',
   'Back to Reports': 'Kembali ke Laporan',
   'Back to Public Reports': 'Kembali ke Laporan Publik',
   'Back to Report List': 'Kembali ke Daftar Laporan',

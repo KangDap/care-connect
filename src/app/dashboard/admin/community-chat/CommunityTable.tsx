@@ -84,7 +84,7 @@ export function CommunityTable({
           headerClassName: 'text-right',
           className: 'text-right',
           cell: (ch) => (
-            <div className="flex items-center justify-end gap-2">
+            <div className="flex flex-wrap items-center justify-end gap-2">
               <Button
                 onClick={() => onEdit(ch)}
                 variant="outline"
