@@ -214,8 +214,7 @@ export default function ProfileManagement() {
           <Link href={backHref} className="inline-block">
             <Button
               variant="outline"
-              className="icon-button back-icon-button h-11 w-11 rounded-full p-0 flex items-center justify-center shrink-0"
-              className="h-10 w-10 md:h-12 md:w-12 rounded-xl md:rounded-2xl !p-0 shrink-0 flex items-center justify-center text-[#193c1f]"
+              className="icon-button back-icon-button h-10 w-10 md:h-12 md:w-12 rounded-xl md:rounded-2xl !p-0 shrink-0 flex items-center justify-center text-[#193c1f]"
             >
               <ArrowLeft size={20} strokeWidth={2.5} />
             </Button>

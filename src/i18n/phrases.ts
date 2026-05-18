@@ -720,7 +720,10 @@ export const phraseTranslations = {
   'Snap is not available. Please refresh.':
     'Snap tidak tersedia. Silakan muat ulang.',
 
-  // Unique keys preserved from visual scans
+  // ======= PLACEHOLDER & FORM TEXT TRANSLATIONS =======
+  // (Discovered via browser visual scan 2026-05-18)
+
+  // Login / Register page placeholders
   'Invalid email or password': 'Email atau kata sandi tidak valid',
   'Enter your email address': 'Masukkan alamat email Anda',
   'Create a password': 'Buat kata sandi',
