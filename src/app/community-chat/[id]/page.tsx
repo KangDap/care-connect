@@ -4,10 +4,12 @@ import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Header } from '@/components/header';
 import { Input } from '@/components/input';
+import { useTranslation } from '@/components/providers/i18n-provider';
 import { authClient } from '@/lib/auth/auth-client';
 import type { ChatMessage } from '@/modules/community-chat/community-chat.types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
+  ArrowLeft,
   Loader2,
   MoreVertical,
   Paperclip,
@@ -44,6 +46,7 @@ export default function CommunityChatContent() {
   const params = useParams();
   const idParam = params?.id ? Number(params.id) : null;
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   // Authentication
   const { data: session, isPending } = authClient.useSession();
@@ -375,7 +378,9 @@ export default function CommunityChatContent() {
                       </div>
                       <div className="flex-1 min-w-0 flex items-center justify-between">
                         <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-semibold text-[#193c1f] truncate">
+                          <h3
+                            className={`text-sm truncate ${selectedChannelId === channel.id ? 'font-black text-[#193c1f]' : 'font-semibold text-[#193c1f]/60'}`}
+                          >
                             {channel.title || channel.name}
                           </h3>
                           <p className="text-[10px] text-[#8ea087] font-bold uppercase tracking-wider mt-1">
@@ -398,9 +403,10 @@ export default function CommunityChatContent() {
           <div className="p-4 border-t border-[#d0d5cb] shrink-0">
             <Link
               href="/forums"
-              className="w-full py-2.5 bg-[#8ea087] text-white font-semibold rounded-xl flex items-center justify-center space-x-2 transition hover:brightness-110 shadow-sm"
+              className="w-full py-2.5 bg-white text-[#193c1f] border border-[#d0d5cb] font-semibold rounded-xl flex items-center justify-center space-x-2 transition hover:bg-[#f7f3ed] shadow-sm"
             >
-              <span>Discover New Forums</span>
+              <ArrowLeft size={16} />
+              <span>{t('Back to All Forums')}</span>
             </Link>
           </div>
         </aside>
@@ -885,7 +891,7 @@ export default function CommunityChatContent() {
                       <Button
                         onClick={() => setIsAnonymous(!isAnonymous)}
                         variant={isAnonymous ? 'primary' : 'ghost'}
-                        className={`rounded px-2 py-1 text-[9px] ${isAnonymous ? 'bg-[#193c1f] text-white' : 'text-[#8ea087]'}`}
+                        className={`rounded px-2 py-1 font-black uppercase tracking-widest text-[11px] ${isAnonymous ? 'bg-[#193c1f] text-white' : 'text-[#8ea087]'}`}
                       >
                         {isAnonymous ? 'Anonymous ON' : 'Public Mode'}
                       </Button>
@@ -910,7 +916,7 @@ export default function CommunityChatContent() {
                       <Button
                         onClick={() => fileInputRef.current?.click()}
                         variant="ghost"
-                        className="mr-3 p-0 text-[#193c1f] opacity-40 hover:opacity-70"
+                        className="icon-button mr-3 p-0 text-[#193c1f] opacity-40 hover:opacity-70"
                       >
                         <Paperclip size={20} />
                       </Button>
@@ -933,7 +939,8 @@ export default function CommunityChatContent() {
                       (!messageInput.trim() && !mediaFile)
                     }
                     variant="secondary"
-                    className="h-12 w-12 rounded-2xl p-0 shadow-sm hover:brightness-110"
+                    className="icon-button send-icon-button h-12 w-12 rounded-2xl p-0 shadow-sm hover:brightness-110"
+                    aria-label="Send message"
                   >
                     {sendMessageMutation.isPending ? (
                       <Loader2 className="animate-spin" />

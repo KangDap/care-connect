@@ -6,6 +6,7 @@ import { Input } from '@/components/input';
 import { Modal } from '@/components/modal';
 import { Table } from '@/components/table';
 import { Toast } from '@/components/toast';
+import { FileText, Pencil, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
@@ -259,7 +260,7 @@ export function ReportClient({
                     </p>
                     <div className="bg-white border border-[#d0d5cb]/60 rounded-xl px-4 py-3 flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-[#f7f3ed] flex items-center justify-center shrink-0">
-                        <span className="text-lg">📎</span>
+                        <FileText size={16} className="text-[#8ea087]" />
                       </div>
                       <div>
                         <p className="text-sm font-bold text-[#193c1f]">
@@ -291,8 +292,8 @@ export function ReportClient({
                   </p>
                 </Link>
                 <p className="text-[11px] text-[#8EA087] mt-0.5 truncate max-w-[200px] md:max-w-[300px]">
-                  {r.city}, {r.province} •{' '}
-                  {r.hasEvidence ? '📎 Has evidence' : 'No evidence'}
+                  {r.city}, {r.province} -{' '}
+                  {r.hasEvidence ? 'Has evidence' : 'No evidence'}
                 </p>
               </>
             ),
@@ -361,24 +362,26 @@ export function ReportClient({
             headerClassName: 'text-right',
             className: 'text-right',
             cell: (r) => (
-              <div className="flex items-center justify-end gap-2 md:gap-3">
+              <div className="flex flex-wrap items-center justify-end gap-2">
                 <Button
                   type="button"
-                  variant="ghost"
+                  variant="outline"
                   onClick={() => openUpdateModal(r)}
-                  className="px-2 py-1 text-xs md:text-sm text-blue-600 hover:text-blue-700 bg-blue-50/50 hover:bg-blue-50"
+                  className="h-auto min-h-0 rounded-xl px-3 py-2 text-xs normal-case tracking-normal shadow-none"
                 >
+                  <Pencil size={14} />
                   Update
                 </Button>
                 <Button
                   type="button"
-                  variant="ghost"
+                  variant="outline"
                   onClick={() => {
                     setReportToDelete(r.id);
                     setIsDeleteAlertOpen(true);
                   }}
-                  className="px-2 py-1 text-xs md:text-sm text-red-600 hover:text-red-700 bg-red-50/50 hover:bg-red-50"
+                  className="h-auto min-h-0 rounded-xl px-3 py-2 text-xs normal-case tracking-normal shadow-none text-red-600 border-red-600 hover:bg-red-50"
                 >
+                  <Trash2 size={14} />
                   Delete
                 </Button>
               </div>

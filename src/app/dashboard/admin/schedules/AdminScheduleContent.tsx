@@ -130,7 +130,7 @@ export default function AdminSchedulePage() {
         }
       } catch (err) {
         console.error('Failed to fetch psychologists:', err);
-        setError('Gagal memuat daftar psikolog.');
+        setError('Failed to load psychologists.');
       } finally {
         setLoading(false);
       }
@@ -175,7 +175,7 @@ export default function AdminSchedulePage() {
         }
       } catch (err) {
         console.error('Failed to fetch schedule:', err);
-        setError('Gagal memuat jadwal.');
+        setError('Failed to load schedule.');
       } finally {
         setLoading(false);
       }
@@ -274,11 +274,11 @@ export default function AdminSchedulePage() {
         setSaveSuccess(true);
         setTimeout(() => setSaveSuccess(false), 3000);
       } else {
-        setError(data.message || 'Gagal menyimpan jadwal.');
+        setError(data.message || 'Failed to save schedule.');
       }
     } catch (err) {
       console.error('Save error:', err);
-      setError('Terjadi kesalahan saat menyimpan.');
+      setError('An error occurred while saving.');
     } finally {
       setSaveLoading(false);
     }
@@ -290,7 +290,7 @@ export default function AdminSchedulePage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
         <Loader2 className="animate-spin text-[#193c1f]" size={40} />
-        <p className="text-[#8ea087] font-medium">Memuat data...</p>
+        <p className="text-[#8ea087] font-medium">Loading data...</p>
       </div>
     );
   }
@@ -388,7 +388,7 @@ export default function AdminSchedulePage() {
               </div>
               <div className="text-left">
                 <p className="text-sm font-bold text-[#193c1f]">
-                  {selectedPsy?.name || 'Pilih Psikolog'}
+                  {selectedPsy?.name || 'Select Psychologist'}
                 </p>
               </div>
             </div>
@@ -407,7 +407,7 @@ export default function AdminSchedulePage() {
                     className="mx-auto text-[#d0d5cb] mb-2 opacity-20"
                   />
                   <p className="text-xs text-[#8ea087] font-medium">
-                    Tidak ada psikolog aktif ditemukan
+                    No active psychologists found
                   </p>
                 </div>
               ) : (

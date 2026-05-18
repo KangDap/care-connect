@@ -746,7 +746,7 @@ export default function ConsultationChatContent() {
                     <Button
                       onClick={() => fileInputRef.current?.click()}
                       variant="ghost"
-                      className="mr-3 p-0 text-[#193c1f] opacity-40 hover:opacity-70"
+                      className="icon-button mr-3 p-0 text-[#193c1f] opacity-40 hover:opacity-70"
                     >
                       <Paperclip className="h-6 w-6" />
                     </Button>
@@ -769,7 +769,8 @@ export default function ConsultationChatContent() {
                     }
                     variant="secondary"
                     loading={sendMessageMutation.isPending}
-                    className="h-12 w-12 shrink-0 rounded-2xl p-0 shadow-sm hover:brightness-110 disabled:hover:brightness-100"
+                    className="icon-button send-icon-button h-12 w-12 shrink-0 rounded-2xl p-0 shadow-sm hover:brightness-110 disabled:hover:brightness-100"
+                    aria-label="Send message"
                   >
                     {sendMessageMutation.isPending ? (
                       ''

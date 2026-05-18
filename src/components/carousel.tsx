@@ -27,7 +27,7 @@ export default function Carousel() {
   }, []);
 
   return (
-    <div className="w-[600px] h-[400px] rounded-3xl overflow-hidden relative shadow-lg">
+    <div className="relative h-[240px] w-full max-w-[600px] overflow-hidden rounded-3xl shadow-lg sm:h-[320px] lg:h-[400px] lg:w-[600px]">
       {images.map((image, index) => (
         <div
           key={index}
@@ -41,7 +41,7 @@ export default function Carousel() {
             fill
             className="object-cover"
             priority={index === 0}
-            sizes="600px"
+            sizes="(max-width: 1024px) 100vw, 600px"
           />
         </div>
       ))}

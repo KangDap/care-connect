@@ -5,6 +5,9 @@ export const en = {
     donate: 'Donate',
     psychologist: 'Psychologist',
     community: 'Community',
+    consultation: 'Consultation',
+    report: 'Report',
+    forum: 'Forum',
     profile: 'Profile',
     dashboard: 'Dashboard',
     login: 'Login',
@@ -47,6 +50,9 @@ export const en = {
     update: 'Update',
     success: 'Success',
     error: 'Error',
+    switchLanguage: 'Switch language',
+    useIndonesian: 'Use Indonesian',
+    useEnglish: 'Use English',
   },
 };
 

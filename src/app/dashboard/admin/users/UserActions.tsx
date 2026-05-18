@@ -4,6 +4,7 @@ import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Modal } from '@/components/modal';
 import { Toast } from '@/components/toast';
+import { Pencil, ShieldCheck, ShieldOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
@@ -126,7 +127,7 @@ export function UserActions({ id, role, banned, name }: UserProps) {
   };
 
   return (
-    <div className="flex items-center justify-end gap-4">
+    <div className="flex flex-wrap items-center justify-end gap-2">
       <Toast
         show={toastState.show}
         msg={toastState.msg}
@@ -135,12 +136,13 @@ export function UserActions({ id, role, banned, name }: UserProps) {
       />
       <Button
         variant="outline"
-        className="text-xs px-4 py-1.5 min-h-0 h-auto"
+        className="h-auto min-h-0 rounded-xl px-3 py-2 text-xs normal-case tracking-normal shadow-none"
         onClick={() => {
           setNewRole(role);
           setIsModalOpen(true);
         }}
       >
+        <Pencil size={14} />
         Edit
       </Button>
 
@@ -148,12 +150,13 @@ export function UserActions({ id, role, banned, name }: UserProps) {
         variant="outline"
         onClick={handleBanToggle}
         disabled={isUpdating}
-        className={`text-xs px-4 py-1.5 min-h-0 h-auto ${
+        className={`h-auto min-h-0 rounded-xl px-3 py-2 text-xs normal-case tracking-normal shadow-none ${
           banned
             ? 'text-green-600 border-green-600 hover:bg-green-50'
             : 'text-red-600 border-red-600 hover:bg-red-50'
         }`}
       >
+        {banned ? <ShieldCheck size={14} /> : <ShieldOff size={14} />}
         {banned ? 'Unban' : 'Ban'}
       </Button>
 

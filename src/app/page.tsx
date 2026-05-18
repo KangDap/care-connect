@@ -53,21 +53,21 @@ export default async function LandingPage() {
       <PublicHeader />
 
       {/* Hero Section */}
-      <section className="max-w-[1440px] mx-auto py-24 px-12 flex items-center justify-between">
-        <div className="w-1/2">
-          <h1 className="text-[88px] leading-[1.1] font-black text-[#193c1f] mb-8 bg-gradient-to-r from-[#193c1f] to-[#d1b698] text-transparent bg-clip-text">
+      <section className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-10 px-4 py-12 sm:px-6 md:py-16 lg:flex-row lg:px-12 lg:py-24">
+        <div className="w-full lg:w-1/2">
+          <h1 className="mb-6 bg-gradient-to-r from-[#193c1f] to-[#d1b698] bg-clip-text text-4xl font-black leading-[1.08] text-transparent sm:text-6xl lg:mb-8 lg:text-[88px]">
             You are <span className="text-[#d1b698]">not alone</span>
           </h1>
-          <p className="text-xl text-[#193c1f] mb-12">
+          <p className="mb-8 text-base text-[#193c1f] sm:text-lg lg:mb-12 lg:text-xl">
             Connecting individuals with professional help, reporting resources,
             and a supportive community to ensure safety and well-being. Your
             healing starts with a single step.
           </p>
-          <div className="flex gap-4">
+          <div className="grid gap-3 sm:grid-cols-3 lg:flex lg:flex-wrap lg:gap-4">
             {userRole === 'PSYCHOLOGIST' ? (
               <Button
                 disabled
-                className="h-full rounded-lg bg-[#8ea087]/50 px-10 py-4 text-lg"
+                className="h-full rounded-lg bg-[#8ea087]/50 px-5 py-3 text-sm sm:px-6 sm:text-base lg:px-10 lg:py-4 lg:text-lg"
                 title="Psychologists cannot create consultations"
               >
                 Consult Now
@@ -76,7 +76,7 @@ export default async function LandingPage() {
               <Link href={isLoggedIn ? '/consultation' : '/login'}>
                 <Button
                   variant="secondary"
-                  className="h-full rounded-lg px-10 py-4 text-lg"
+                  className="h-full w-full rounded-lg px-5 py-3 text-sm sm:px-6 sm:text-base lg:w-auto lg:px-10 lg:py-4 lg:text-lg"
                 >
                   Consult Now
                 </Button>
@@ -85,7 +85,7 @@ export default async function LandingPage() {
             <Link href={isLoggedIn ? '/report' : '/login'}>
               <Button
                 variant="outline"
-                className="rounded-lg border-[#8ea087] bg-[#d0d5cb] px-10 py-4 text-lg"
+                className="w-full rounded-lg border-[#8ea087] bg-[#d0d5cb] px-5 py-3 text-sm sm:px-6 sm:text-base lg:w-auto lg:px-10 lg:py-4 lg:text-lg"
               >
                 Report Incident
               </Button>
@@ -93,7 +93,7 @@ export default async function LandingPage() {
             <Link href={isLoggedIn ? '/donation' : '/login'}>
               <Button
                 variant="outline"
-                className="h-full rounded-lg border-[#d1b698] bg-[#f7f3ed] px-10 py-4 text-lg"
+                className="h-full w-full rounded-lg border-[#d1b698] bg-[#f7f3ed] px-5 py-3 text-sm sm:px-6 sm:text-base lg:w-auto lg:px-10 lg:py-4 lg:text-lg"
               >
                 Donate
               </Button>
@@ -105,32 +105,32 @@ export default async function LandingPage() {
       </section>
 
       {/* Stats Section */}
-      <section className="bg-[#ede4d8] py-20 px-12">
-        <div className="max-w-[1440px] mx-auto grid grid-cols-3 gap-8">
-          <Card className="rounded-2xl border-b-4 border-[#8ea087] bg-[#f7f3ed] p-12 text-center">
+      <section className="bg-[#ede4d8] px-4 py-12 sm:px-6 md:px-12 md:py-20">
+        <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-4 md:grid-cols-3 md:gap-8">
+          <Card className="rounded-2xl border-b-4 border-[#8ea087] bg-[#f7f3ed] p-6 text-center md:p-12">
             <p className="text-[#193c1f] font-semibold mb-2 opacity-80">
               Reports Published
             </p>
-            <h2 className="text-6xl font-black text-[#193c1f] mb-4">
+            <h2 className="mb-4 text-4xl font-black text-[#193c1f] md:text-6xl">
               {totalReports}
             </h2>
             <div className="w-16 h-1 bg-[#8ea087] mx-auto rounded-full"></div>
           </Card>
-          <Card className="rounded-2xl border-b-4 border-[#8ea087] bg-[#f7f3ed] p-12 text-center">
+          <Card className="rounded-2xl border-b-4 border-[#8ea087] bg-[#f7f3ed] p-6 text-center md:p-12">
             <p className="text-[#193c1f] font-semibold mb-2 opacity-80">
               Consultation Handled
             </p>
-            <h2 className="text-6xl font-black text-[#193c1f] mb-4">
+            <h2 className="mb-4 text-4xl font-black text-[#193c1f] md:text-6xl">
               {totalConsultations}
             </h2>
             <div className="w-16 h-1 bg-[#d1b698] mx-auto rounded-full"></div>
           </Card>
-          <Card className="rounded-2xl border-b-4 border-[#8ea087] bg-[#f7f3ed] p-12 text-center">
+          <Card className="rounded-2xl border-b-4 border-[#8ea087] bg-[#f7f3ed] p-6 text-center md:p-12">
             <p className="text-[#193c1f] font-semibold mb-2 opacity-80">
               Community Donations
             </p>
             <h2
-              className="text-3xl lg:text-4xl xl:text-5xl font-black text-[#193c1f] mb-4 truncate"
+              className="mb-4 text-3xl font-black text-[#193c1f] md:text-4xl xl:text-5xl"
               title={formattedDonations}
             >
               {formattedDonations}
@@ -141,16 +141,16 @@ export default async function LandingPage() {
       </section>
 
       {/* Support Methods Section */}
-      <section className="max-w-[1440px] mx-auto pt-32 pb-16 px-12 text-center">
-        <h2 className="text-5xl font-black text-[#193c1f] mb-6">
+      <section className="mx-auto max-w-[1440px] px-4 pb-12 pt-16 text-center sm:px-6 md:px-12 md:pb-16 md:pt-32">
+        <h2 className="mb-4 text-3xl font-black text-[#193c1f] sm:text-4xl md:mb-6 md:text-5xl">
           How we support you
         </h2>
-        <p className="text-[#193c1f] max-w-2xl mx-auto mb-20 opacity-80">
+        <p className="mx-auto mb-10 max-w-2xl text-sm text-[#193c1f] opacity-80 sm:text-base md:mb-20">
           Comprehensive tools designed to provide safety, healing, and community
           support in a confidential environment.
         </p>
-        <div className="grid grid-cols-4 gap-8">
-          <Card className="flex flex-col items-start gap-4 rounded-2xl bg-[#f7f3ed] p-8 text-left">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+          <Card className="flex flex-col items-start gap-4 rounded-2xl bg-[#f7f3ed] p-6 text-left md:p-8">
             <div className="w-12 h-12 bg-[#ede4d8] rounded-lg flex items-center justify-center text-[#8ea087]">
               <svg
                 className="w-6 h-6"
@@ -172,7 +172,7 @@ export default async function LandingPage() {
               One-on-one sessions with certified mental health professionals.
             </p>
           </Card>
-          <Card className="flex flex-col items-start gap-4 rounded-2xl bg-[#f7f3ed] p-8 text-left">
+          <Card className="flex flex-col items-start gap-4 rounded-2xl bg-[#f7f3ed] p-6 text-left md:p-8">
             <div className="w-12 h-12 bg-[#ede4d8] rounded-lg flex items-center justify-center text-[#8ea087]">
               <svg
                 className="w-6 h-6"
@@ -194,7 +194,7 @@ export default async function LandingPage() {
               Secure and anonymous incident reporting for community safety.
             </p>
           </Card>
-          <Card className="flex flex-col items-start gap-4 rounded-2xl bg-[#f7f3ed] p-8 text-left">
+          <Card className="flex flex-col items-start gap-4 rounded-2xl bg-[#f7f3ed] p-6 text-left md:p-8">
             <div className="w-12 h-12 bg-[#ede4d8] rounded-lg flex items-center justify-center text-[#8ea087]">
               <svg
                 className="w-6 h-6"
@@ -216,7 +216,7 @@ export default async function LandingPage() {
               Peer-led discussions and shared experiences in a moderated space.
             </p>
           </Card>
-          <Card className="flex flex-col items-start gap-4 rounded-2xl bg-[#f7f3ed] p-8 text-left">
+          <Card className="flex flex-col items-start gap-4 rounded-2xl bg-[#f7f3ed] p-6 text-left md:p-8">
             <div className="w-12 h-12 bg-[#ede4d8] rounded-lg flex items-center justify-center text-[#8ea087]">
               <svg
                 className="w-6 h-6"
@@ -242,9 +242,11 @@ export default async function LandingPage() {
       </section>
 
       {/* Recent Reports Section */}
-      <section className="max-w-[1440px] mx-auto pt-16 pb-32 px-12">
-        <div className="flex justify-between items-end mb-12">
-          <h2 className="text-4xl font-black text-[#193c1f]">Recent Reports</h2>
+      <section className="mx-auto max-w-[1440px] px-4 pb-20 pt-10 sm:px-6 md:px-12 md:pb-32 md:pt-16">
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between md:mb-12">
+          <h2 className="text-3xl font-black text-[#193c1f] md:text-4xl">
+            Recent Reports
+          </h2>
           <Link
             className="text-[#8ea087] font-bold flex items-center gap-2 hover:text-[#193c1f] transition-colors"
             href={isLoggedIn ? '/publicreports' : '/login'}
@@ -355,9 +357,9 @@ export default async function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#f7f3ed] pt-24 pb-12 px-12 border-t border-[#d0d5cb]">
-        <div className="max-w-[1440px] mx-auto grid grid-cols-12 gap-12 mb-20">
-          <div className="col-span-4">
+      <footer className="border-t border-[#d0d5cb] bg-[#f7f3ed] px-4 pb-10 pt-14 sm:px-6 md:px-12 md:pb-12 md:pt-24">
+        <div className="mx-auto mb-12 grid max-w-[1440px] grid-cols-1 gap-10 md:mb-20 lg:grid-cols-12 lg:gap-12">
+          <div className="lg:col-span-4">
             <div className="flex items-center gap-2 mb-8">
               <div className="w-8 h-8 bg-[#d0d5cb] rounded flex items-center justify-center text-[#193c1f]">
                 <svg
@@ -418,7 +420,7 @@ export default async function LandingPage() {
               </div>
             </div>
           </div>
-          <div className="col-span-4">
+          <div className="lg:col-span-4">
             <h4 className="text-xl font-bold text-[#193c1f] mb-8">Resources</h4>
             <ul className="space-y-4 text-[#193c1f] opacity-80">
               <li>
@@ -443,7 +445,7 @@ export default async function LandingPage() {
               </li>
             </ul>
           </div>
-          <div className="col-span-4">
+          <div className="lg:col-span-4">
             <h4 className="text-xl font-bold text-[#193c1f] mb-8">Contact</h4>
             <ul className="space-y-4 text-[#193c1f] opacity-80">
               <li className="flex items-center gap-3">
@@ -506,7 +508,7 @@ export default async function LandingPage() {
           </div>
         </div>
         <div className="text-center text-[#193c1f] opacity-50 border-t border-[#d0d5cb] pt-12">
-          © 2024 CareConnect. All rights reserved. A HealHub Initiative.
+          © 2026 CareConnect. All rights reserved. A HealHub Initiative.
         </div>
       </footer>
     </div>

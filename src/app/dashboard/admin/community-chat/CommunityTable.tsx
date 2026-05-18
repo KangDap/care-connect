@@ -1,6 +1,7 @@
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Table } from '@/components/table';
+import { Pencil, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import React from 'react';
 
@@ -83,19 +84,21 @@ export function CommunityTable({
           headerClassName: 'text-right',
           className: 'text-right',
           cell: (ch) => (
-            <div className="flex items-center justify-end gap-2 md:gap-4">
+            <div className="flex flex-wrap items-center justify-end gap-2">
               <Button
                 onClick={() => onEdit(ch)}
-                variant="ghost"
-                className="px-2 py-1 text-xs md:text-sm text-blue-600 hover:text-blue-700 bg-blue-50/50 hover:bg-blue-50"
+                variant="outline"
+                className="h-auto min-h-0 rounded-xl px-3 py-2 text-xs normal-case tracking-normal shadow-none"
               >
+                <Pencil size={14} />
                 Edit
               </Button>
               <Button
                 onClick={() => onDelete(ch.id)}
-                variant="ghost"
-                className="px-2 py-1 text-xs md:text-sm text-red-600 hover:text-red-700 bg-red-50/50 hover:bg-red-50"
+                variant="outline"
+                className="h-auto min-h-0 rounded-xl px-3 py-2 text-xs normal-case tracking-normal shadow-none text-red-600 border-red-600 hover:bg-red-50"
               >
+                <Trash2 size={14} />
                 Delete
               </Button>
             </div>

@@ -40,7 +40,9 @@ export default function HistoryClient() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
         <Loader2 className="animate-spin text-[#193c1f]" size={40} />
-        <p className="text-[#8ea087] font-medium">Memuat daftar psikolog...</p>
+        <p className="text-[#8ea087] font-medium">
+          Loading psychologist list...
+        </p>
       </div>
     );
   }
@@ -118,15 +120,12 @@ export default function HistoryClient() {
           {
             header: 'Actions',
             headerClassName: 'text-right',
-            className: 'text-right w-24',
+            className: 'text-right w-32',
             cell: (psy) => (
               <Link href={`/dashboard/admin/schedules/form?id=${psy.id}`}>
-                <Button
-                  variant="outline"
-                  className="rounded-xl bg-[#F7F3ED] px-4 py-2 text-xs text-[#193C1F] hover:bg-white"
-                >
+                <div className="text-[11px] md:text-sm font-black text-[#193C1F] hover:opacity-70 transition-opacity bg-[#F7F3ED] px-3 py-1.5 md:px-4 md:py-2 rounded-xl border border-[#D0D5CB] inline-block whitespace-nowrap">
                   Edit
-                </Button>
+                </div>
               </Link>
             ),
           },

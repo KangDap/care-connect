@@ -2,10 +2,12 @@
 
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
+import { LanguageToggle } from '@/components/language-toggle';
 import { Logo } from '@/components/logo';
 import { useTranslation } from '@/components/providers/i18n-provider';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { authClient } from '@/lib/auth/auth-client';
-import { ChevronLeft, LogOut, Menu, Moon, Search, User } from 'lucide-react';
+import { ChevronLeft, LogOut, Menu, Search, User } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useRef, useState } from 'react';
@@ -34,7 +36,7 @@ export const Header = ({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { data: session } = authClient.useSession();
-  const { t, language, setLanguage } = useTranslation();
+  const { t } = useTranslation();
 
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isSearchExpanded, setIsSearchExpanded] = useState(false);
@@ -185,22 +187,8 @@ export const Header = ({
           )}
 
           <div className="flex items-center gap-1 sm:gap-2 md:gap-3 shrink-0">
-            <Button
-              onClick={() => setLanguage(language === 'en' ? 'id' : 'en')}
-              variant="outline"
-              className="rounded-md border-[#193c1f] px-1.5 sm:px-2 py-0.5 sm:py-1 text-[9px] sm:text-[10px] md:text-xs text-[#193c1f] hover:bg-[#193c1f] hover:text-[#f7f3ed] h-5 sm:h-6 md:h-9 min-w-0 shrink-0 font-bold"
-            >
-              {language === 'en' ? 'ID' : 'EN'}
-            </Button>
-
-            <Button
-              type="button"
-              variant="outline"
-              className="h-5 w-5 sm:h-6 sm:w-6 md:h-9 md:w-9 rounded-full border-[#d0d5cb] p-0 flex items-center justify-center text-[#193c1f] hover:bg-[#d0d5cb]/50 min-w-0 shrink-0"
-              title="Dark Mode (Coming Soon)"
-            >
-              <Moon size={16} strokeWidth={2.5} className="text-[#193c1f]" />
-            </Button>
+            <LanguageToggle compact />
+            <ThemeToggle />
           </div>
 
           <div className="relative shrink-0" ref={dropdownRef}>

@@ -4,6 +4,7 @@ import { ForumModal } from '@/components/ForumModal';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Toast } from '@/components/toast';
+import { MessageSquarePlus } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 
@@ -180,6 +181,7 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
           </p>
         </div>
         <Button onClick={() => setIsCreateModalOpen(true)}>
+          <MessageSquarePlus size={16} />
           Create Channel
         </Button>
       </div>
