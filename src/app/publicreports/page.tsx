@@ -271,23 +271,6 @@ const PublicReportsContent = () => {
                   <option value="oldest">Oldest</option>
                 </Input>
 
-                <Input
-                  label="Status"
-                  type="select"
-                  value={selectedStatus}
-                  onChange={(event) => {
-                    setSelectedStatus(event.target.value);
-                    setCurrentPage(1);
-                  }}
-                >
-                  <option value="ALL">All Statuses</option>
-                  {statusOptions.map((status) => (
-                    <option key={status.value} value={status.value}>
-                      {status.label}
-                    </option>
-                  ))}
-                </Input>
-
                 <div>
                   <p className="mb-3 text-[11px] font-black uppercase tracking-widest text-[#8ea087]">
                     Category
