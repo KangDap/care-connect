@@ -6,6 +6,7 @@ import { Input } from '@/components/input';
 import { LanguageToggle } from '@/components/language-toggle';
 import { Logo } from '@/components/logo';
 import { Modal } from '@/components/modal';
+import { useTranslation } from '@/components/providers/i18n-provider';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { authClient } from '@/lib/auth/auth-client';
 import { useRouter } from 'next/navigation';
@@ -154,6 +155,7 @@ const FeatureCard = ({
 
 export default function LoginPage() {
   const router = useRouter();
+  const { language } = useTranslation();
   const [activeTab, setActiveTab] = useState<
     'login' | 'register' | 'forgot_password'
   >('register');
@@ -453,14 +455,13 @@ export default function LoginPage() {
                     />
                     {activeTab === 'login' && (
                       <div className="flex justify-end">
-                        <Button
+                        <button
                           type="button"
-                          variant="ghost"
-                          className="mt-2 px-0 py-0 text-xs normal-case tracking-normal shadow-none bg-transparent hover:bg-transparent"
+                          className="mt-2 text-xs font-semibold text-[#8ea087] hover:text-[#193c1f] hover:underline bg-transparent border-none p-0 cursor-pointer transition-colors"
                           onClick={() => setActiveTab('forgot_password')}
                         >
                           Forgot password?
-                        </Button>
+                        </button>
                       </div>
                     )}
                   </div>
@@ -531,6 +532,44 @@ export default function LoginPage() {
                     </svg>
                     {googleLoading ? 'Connecting...' : 'Continue with Google'}
                   </Button>
+
+                  <div className="text-center text-[12px] text-[#193c1f] opacity-60 mt-4 leading-relaxed font-medium">
+                    {activeTab === 'login' ? (
+                      <>
+                        {language === 'en'
+                          ? "Don't have an account? "
+                          : 'Belum punya akun? '}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setActiveTab('register');
+                            setError('');
+                            setSuccess('');
+                          }}
+                          className="text-[#8ea087] font-bold hover:underline bg-transparent border-none p-0 cursor-pointer transition-all duration-200"
+                        >
+                          {language === 'en' ? 'Register' : 'Daftar'}
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        {language === 'en'
+                          ? 'Already have an account? '
+                          : 'Sudah punya akun? '}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setActiveTab('login');
+                            setError('');
+                            setSuccess('');
+                          }}
+                          className="text-[#8ea087] font-bold hover:underline bg-transparent border-none p-0 cursor-pointer transition-all duration-200"
+                        >
+                          {language === 'en' ? 'Login' : 'Masuk'}
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </div>
               )}
 

@@ -123,7 +123,7 @@ export default function PsychologistScheduleView() {
       <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
         <Loader2 className="animate-spin text-[#193c1f]" size={40} />
         <p className="text-[#8ea087] font-medium animate-pulse">
-          Memuat jadwal Anda...
+          Loading your schedule...
         </p>
       </div>
     );
@@ -134,7 +134,7 @@ export default function PsychologistScheduleView() {
       <div className="bg-red-50 border border-red-100 rounded-3xl p-8 text-center max-w-2xl mx-auto">
         <AlertCircle size={40} className="text-red-500 mx-auto mb-4" />
         <h3 className="text-red-900 font-bold text-lg mb-2">
-          Terjadi Kesalahan
+          An Error Occurred
         </h3>
         <p className="text-red-700 text-sm">{error}</p>
       </div>
@@ -172,7 +172,7 @@ export default function PsychologistScheduleView() {
             My Consultation Schedule
           </h2>
           <p className="text-sm text-[#8ea087] mt-1 font-medium">
-            Jadwal ketersediaan Anda yang diatur oleh Admin.
+            Your availability schedule configured by Admin.
           </p>
         </div>
         <div className="text-right">
@@ -223,11 +223,11 @@ export default function PsychologistScheduleView() {
         <div className="bg-white rounded-3xl border-2 border-dashed border-[#d0d5cb] p-12 text-center">
           <Calendar size={40} className="text-[#d0d5cb] mx-auto mb-4" />
           <p className="font-bold text-[#193c1f] opacity-40">
-            Belum ada jadwal yang diatur
+            No schedule has been configured yet
           </p>
           <p className="text-xs text-[#8ea087] mt-1">
-            Admin akan mengatur jadwal ketersediaan Anda. Silakan cek kembali
-            nanti.
+            Admin will configure your availability schedule. Please check again
+            later.
           </p>
         </div>
       ) : (
@@ -260,7 +260,7 @@ export default function PsychologistScheduleView() {
                   </div>
                   {isToday && (
                     <span className="text-[9px] font-black uppercase tracking-widest bg-white/20 text-white px-3 py-1 rounded-full">
-                      Hari Ini
+                      Today
                     </span>
                   )}
                   {!isToday && (
