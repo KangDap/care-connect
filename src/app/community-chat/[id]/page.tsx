@@ -700,12 +700,11 @@ export default function CommunityChatContent() {
 
                             {/* Message Actions (Reply & Moderation) */}
                             <div
-                              className={`absolute top-0 ${isMe ? 'right-full mr-2' : 'left-full ml-2'} opacity-0 group-hover:opacity-100 transition-opacity z-50 flex items-center h-full space-x-1`}
+                              className={`absolute top-0 ${isMe ? 'right-full mr-2' : 'left-full ml-2'} opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 z-50 flex items-center h-full space-x-1`}
                             >
-                              <Button
+                              <button
                                 onClick={() => setReplyingTo(chat)}
-                                variant="ghost"
-                                className="h-8 w-8 shrink-0 rounded-full p-0 text-[#193C1F] opacity-40 hover:bg-gray-200 hover:opacity-100"
+                                className="h-8 w-8 shrink-0 rounded-full p-0 flex items-center justify-center text-[#193c1f] opacity-40 hover:bg-gray-200 hover:opacity-100 transition-all duration-200"
                                 title="Reply"
                               >
                                 <svg
@@ -721,12 +720,12 @@ export default function CommunityChatContent() {
                                     d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
                                   />
                                 </svg>
-                              </Button>
+                              </button>
 
                               {/* Only show moderation menu if caller has permissions */}
                               {(canKick || canManageRole) && (
                                 <div className="relative">
-                                  <Button
+                                  <button
                                     onClick={() =>
                                       setActiveMenuId(
                                         activeMenuId === chat.id
@@ -734,11 +733,10 @@ export default function CommunityChatContent() {
                                           : chat.id,
                                       )
                                     }
-                                    variant="ghost"
-                                    className="h-8 w-8 shrink-0 rounded-full p-0 hover:bg-gray-200"
+                                    className="h-8 w-8 shrink-0 rounded-full p-0 flex items-center justify-center text-[#193c1f] opacity-40 hover:bg-gray-200 hover:opacity-100 transition-all duration-200"
                                   >
                                     <MoreVertical size={16} />
-                                  </Button>
+                                  </button>
                                   {activeMenuId === chat.id && (
                                     <div
                                       className={`absolute z-[100] mt-1 w-40 bg-white border border-[#D0D5CB] shadow-2xl rounded-xl overflow-hidden py-1 ${isMe ? 'left-0' : 'right-0'}`}
@@ -820,13 +818,12 @@ export default function CommunityChatContent() {
                   {inlineToast.type === 'info' ? 'ℹ️' : '⚠️'}
                 </span>
                 <span className="flex-1">{inlineToast.message}</span>
-                <Button
+                <button
                   onClick={() => setInlineToast(null)}
-                  variant="ghost"
-                  className="p-0 opacity-50 hover:opacity-100"
+                  className="p-0 opacity-50 hover:opacity-100 flex items-center justify-center"
                 >
                   <X size={14} />
-                </Button>
+                </button>
               </div>
             )}
 
@@ -860,13 +857,12 @@ export default function CommunityChatContent() {
                         {replyingTo.content}
                       </p>
                     </div>
-                    <Button
+                    <button
                       onClick={() => setReplyingTo(null)}
-                      variant="ghost"
-                      className="p-0 opacity-40 hover:opacity-100"
+                      className="p-0 opacity-40 hover:opacity-100 flex items-center justify-center"
                     >
                       <X size={16} />
-                    </Button>
+                    </button>
                   </div>
                 )}
 
@@ -875,13 +871,12 @@ export default function CommunityChatContent() {
                     <span className="text-xs text-[#193c1f] font-semibold">
                       {mediaFile.name} ({(mediaFile.size / 1024).toFixed(1)}KB)
                     </span>
-                    <Button
+                    <button
                       onClick={() => setMediaFile(null)}
-                      variant="ghost"
-                      className="ml-4 rounded-full bg-red-100 p-1 text-red-500"
+                      className="ml-4 rounded-full bg-red-100 p-1 text-red-500 flex items-center justify-center hover:bg-red-200 transition-all"
                     >
                       <X size={12} />
-                    </Button>
+                    </button>
                   </div>
                 )}
 
@@ -913,13 +908,12 @@ export default function CommunityChatContent() {
                         }
                         className="hidden"
                       />
-                      <Button
+                      <button
                         onClick={() => fileInputRef.current?.click()}
-                        variant="ghost"
-                        className="icon-button mr-3 p-0 text-[#193c1f] opacity-40 hover:opacity-70"
+                        className="icon-button mr-3 p-0 text-[#193c1f] opacity-40 hover:opacity-70 flex items-center justify-center"
                       >
                         <Paperclip size={20} />
-                      </Button>
+                      </button>
                       <Input
                         className="bg-transparent border-none focus:ring-0 text-sm text-[#193c1f] w-full outline-none"
                         placeholder="Share your thoughts..."
@@ -932,14 +926,13 @@ export default function CommunityChatContent() {
                       />
                     </div>
                   </div>
-                  <Button
+                  <button
                     onClick={handleSendMessage}
                     disabled={
                       sendMessageMutation.isPending ||
                       (!messageInput.trim() && !mediaFile)
                     }
-                    variant="secondary"
-                    className="icon-button send-icon-button h-12 w-12 rounded-2xl p-0 shadow-sm hover:brightness-110"
+                    className="icon-button send-icon-button h-12 w-12 rounded-2xl p-0 shadow-sm hover:brightness-110 flex items-center justify-center bg-[#8ea087] text-white disabled:opacity-50 disabled:cursor-not-allowed"
                     aria-label="Send message"
                   >
                     {sendMessageMutation.isPending ? (
@@ -947,7 +940,7 @@ export default function CommunityChatContent() {
                     ) : (
                       <Send className="h-6 w-6" />
                     )}
-                  </Button>
+                  </button>
                 </div>
               </footer>
             )}
