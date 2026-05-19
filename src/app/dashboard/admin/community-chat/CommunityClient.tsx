@@ -5,8 +5,8 @@ import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Toast } from '@/components/toast';
 import { MessageSquarePlus } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import React, { useMemo, useState } from 'react';
 
 import { CommunityTable } from './CommunityTable';
 
@@ -22,6 +22,8 @@ type Channel = {
 
 export function CommunityClient({ channels }: { channels: Channel[] }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const searchQuery = (searchParams.get('search') || '').trim().toLowerCase();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [toastState, setToastState] = useState<{
@@ -154,6 +156,19 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
     }
   };
 
+  const filteredChannels = useMemo(() => {
+    if (!searchQuery) return channels;
+
+    return channels.filter((channel) =>
+      [
+        channel.name,
+        channel.description,
+        channel.type,
+        String(channel.id),
+      ].some((value) => (value ?? '').toLowerCase().includes(searchQuery)),
+    );
+  }, [channels, searchQuery]);
+
   return (
     <div className="space-y-6">
       <Toast
@@ -171,23 +186,26 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
         type="danger"
         confirmText="Delete Channel"
       />
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-[32px] font-black text-[#193c1f]">
+          <h1 className="text-2xl font-black text-[#193c1f] sm:text-[32px]">
             Community Channels
           </h1>
           <p className="text-[#8ea087] font-medium">
             Manage community channel topics.
           </p>
         </div>
-        <Button onClick={() => setIsCreateModalOpen(true)}>
-          <MessageSquarePlus size={16} />
+        <Button
+          onClick={() => setIsCreateModalOpen(true)}
+          className="h-11 w-full shrink-0 whitespace-nowrap rounded-xl px-4 py-0 text-xs font-black uppercase tracking-[0.08em] shadow-sm sm:w-auto"
+        >
+          <MessageSquarePlus size={16} className="shrink-0" />
           Create Channel
         </Button>
       </div>
 
       <CommunityTable
-        channels={channels}
+        channels={filteredChannels}
         onEdit={openUpdateModal}
         onDelete={(id) => {
           setChannelToDelete(id);

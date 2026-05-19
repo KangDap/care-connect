@@ -1,7 +1,7 @@
 'use client';
 
-import { Card } from '@/components/card';
-import { Pagination } from '@/components/pagination';
+import { Badge } from '@/components/badge';
+import { Table } from '@/components/table';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -57,8 +57,6 @@ export default function PsychologistConsultationsContent({
 }) {
   const searchParams = useSearchParams();
   const query = searchParams.get('search')?.toLowerCase() || '';
-  const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
-  const [expandedRowId, setExpandedRowId] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -132,197 +130,160 @@ export default function PsychologistConsultationsContent({
             : 'Manage your upcoming and history of patient sessions.'}
         </p>
       </div>
-
-      <Card className="overflow-hidden rounded-2xl md:rounded-[32px] p-0 border border-[#d0d5cb]">
-        <div className="overflow-x-auto w-full">
-          <table className="w-full text-left border-collapse min-w-\[480px\]">
-            <thead className="bg-[#f7f3ed] text-[11px] text-[#8ea087] font-black uppercase tracking-widest">
-              <tr>
-                <th className="px-2 sm:px-4 py-2">Patient & Case</th>
-                <th className="px-2 sm:px-4 py-2">Date & Time</th>
-                <th className="px-2 sm:px-4 py-2">Status</th>
-                <th className="px-2 sm:px-4 py-2 text-right">Action</th>
-              </tr>
-            </thead>
-            {currentItems.length > 0 ? (
-              currentItems.map((row) => {
-                const statusStr = String(row.status);
-                const isCompleted = statusStr === 'COMPLETED';
-
-                return (
-                  <tbody
-                    key={row.id}
-                    onMouseEnter={() => setHoveredRowId(row.id)}
-                    onMouseLeave={() => setHoveredRowId(null)}
-                    onClick={() =>
-                      setExpandedRowId((p) => (p === row.id ? null : row.id))
-                    }
-                    className="group border-b border-[#f7f3ed] last:border-0 cursor-pointer"
-                  >
-                    <tr
-                      className={`transition-colors ${
-                        hoveredRowId === row.id || expandedRowId === row.id
-                          ? 'bg-[#FDFCFB]'
-                          : 'hover:bg-[#FDFCFB]'
-                      }`}
-                    >
-                      <td className="px-2 sm:px-4 py-2">
-                        <div className="flex items-center gap-2">
-                          <p className="font-bold text-sm">
-                            {row.isAnonymous
-                              ? 'Anonymous Patient'
-                              : row.user?.name || 'User'}
-                          </p>
-                          {row.isAnonymous && (
-                            <span className="px-2 py-0.5 bg-[#EBE6DE] text-[#193c1f]/60 text-[10px] font-bold rounded-md uppercase">
-                              Anon
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-[12px] opacity-60 font-medium">
-                          {row.title}
-                        </p>
-                      </td>
-                      <td className="px-2 sm:px-4 py-2 font-bold text-[#193c1f] text-sm">
-                        {formatDateTimeLabel(row.date, row.time)}
-                      </td>
-                      <td className="px-2 sm:px-4 py-2">
-                        <span
-                          className={`px-4 py-1.5 rounded-full text-[10px] font-black ${
-                            isCompleted
-                              ? 'bg-[#EBE6DE] text-[#193c1f]/40'
-                              : 'bg-[#d1b698]/20 text-[#d1b698]'
-                          }`}
-                        >
-                          {statusStr}
-                        </span>
-                      </td>
-                      <td className="px-2 sm:px-4 py-2 text-right">
-                        <div className="flex justify-end items-center gap-3">
-                          {isCompleted ? (
-                            <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#EBE6DE] text-[#8ea087] border border-[#d0d5cb] cursor-not-allowed opacity-50">
-                              <ChatIcon />
-                            </div>
-                          ) : (
-                            <Link
-                              href={`/consultation-chat/${row.id}`}
-                              className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all shadow-sm border ${
-                                statusStr === 'ONGOING'
-                                  ? 'bg-[#193c1f] text-white border-[#193c1f] hover:bg-[#122d17]'
-                                  : 'bg-white text-[#8ea087] border-[#d0d5cb] hover:bg-[#f7f3ed] hover:text-[#193c1f]'
-                              }`}
-                            >
-                              <ChatIcon />
-                            </Link>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-
-                    {/* ACCORDION DETAIL */}
-                    <tr>
-                      <td colSpan={4} className="p-0">
-                        <div
-                          className={`overflow-hidden transition-all duration-500 bg-[#FDFCFB] ${hoveredRowId === row.id ? 'max-h-[800px]' : 'max-h-0'}`}
-                        >
-                          <div className="px-4 sm:px-6 pb-5 pt-1">
-                            <div className="p-4 sm:p-5 bg-white border border-[#d0d5cb]/40 rounded-[18px] shadow-sm">
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                <div className="space-y-6">
-                                  <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087] mb-4">
-                                    Case Summary
-                                  </h4>
-                                  <div className="grid grid-cols-2 gap-6">
-                                    <div className="space-y-1">
-                                      <p className="text-[10px] text-[#8ea087] font-bold uppercase">
-                                        Patient Name
-                                      </p>
-                                      <p className="text-[14px] font-bold text-[#193c1f]">
-                                        {row.isAnonymous
-                                          ? 'Anonymous Patient'
-                                          : row.user?.name || 'Anonymous'}
-                                      </p>
-                                    </div>
-                                    <div className="space-y-1">
-                                      <p className="text-[10px] text-[#8ea087] font-bold uppercase">
-                                        Category
-                                      </p>
-                                      <p className="text-[14px] font-bold text-[#193c1f]">
-                                        {row.category}
-                                      </p>
-                                    </div>
-                                    <div className="space-y-1">
-                                      <p className="text-[10px] text-[#8ea087] font-bold uppercase">
-                                        Identity
-                                      </p>
-                                      <p className="text-[14px] font-bold text-[#193c1f]">
-                                        {row.isAnonymous
-                                          ? 'Anonymous'
-                                          : 'Public'}
-                                      </p>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                <div className="flex flex-col border-l border-[#f7f3ed] pl-10">
-                                  <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087] mb-4">
-                                    Description & Documents
-                                  </h4>
-                                  <div className="bg-[#f7f3ed]/30 p-5 rounded-2xl border border-[#f7f3ed] max-h-[200px] overflow-y-auto font-medium mb-4">
-                                    <p className="text-[13px] leading-relaxed text-[#193c1f]/80 italic">
-                                      &quot;
-                                      {row.description ||
-                                        'No description provided.'}
-                                      &quot;
-                                    </p>
-                                  </div>
-                                  {row.attachmentUrl && (
-                                    <div className="flex items-center justify-between p-3 bg-[#f7f3ed] rounded-xl border border-[#d0d5cb]/30">
-                                      <span className="text-[12px] font-bold text-[#193c1f]">
-                                        Attached Document
-                                      </span>
-                                      <Link
-                                        href={row.attachmentUrl}
-                                        target="_blank"
-                                        className="text-[10px] font-black text-[#8ea087] uppercase hover:text-[#193c1f]"
-                                      >
-                                        View
-                                      </Link>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  </tbody>
-                );
-              })
-            ) : (
-              <tbody>
-                <tr>
-                  <td
-                    colSpan={4}
-                    className="p-20 text-center text-[#8ea087] font-bold"
-                  >
-                    No consultations found.
-                  </td>
-                </tr>
-              </tbody>
-            )}
-          </table>
-        </div>
-      </Card>
-
-      <Pagination
+      <Table
+        data={currentItems}
+        keyExtractor={(row) => row.id}
+        emptyMessage="No consultations found."
         currentPage={currentPage}
         totalPages={totalPages}
-        onPageChange={(page) => {
+        onPageChange={(page: number) => {
           setCurrentPage(page);
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
+        renderExpandedRow={(row) => (
+          <div className="p-4 sm:p-5 bg-white border border-[#d0d5cb]/40 rounded-[18px] shadow-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
+              <div className="space-y-6">
+                <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087] mb-4">
+                  Case Summary
+                </h4>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-1">
+                    <p className="text-[10px] text-[#8ea087] font-bold uppercase">
+                      Patient Name
+                    </p>
+                    <p className="text-[14px] font-bold text-[#193c1f]">
+                      {row.isAnonymous
+                        ? 'Anonymous Patient'
+                        : row.user?.name || 'Anonymous'}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-[10px] text-[#8ea087] font-bold uppercase">
+                      Category
+                    </p>
+                    <p className="text-[14px] font-bold text-[#193c1f]">
+                      {row.category}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-[10px] text-[#8ea087] font-bold uppercase">
+                      Identity
+                    </p>
+                    <p className="text-[14px] font-bold text-[#193c1f]">
+                      {row.isAnonymous ? 'Anonymous' : 'Public'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col border-l border-[#f7f3ed] pl-10">
+                <h4 className="text-[11px] font-black uppercase tracking-wider text-[#8ea087] mb-4">
+                  Description & Documents
+                </h4>
+                <div className="bg-[#f7f3ed]/30 p-5 rounded-2xl border border-[#f7f3ed] max-h-[200px] overflow-y-auto font-medium mb-4">
+                  <p className="text-[13px] leading-relaxed text-[#193c1f]/80 italic">
+                    &quot;{row.description || 'No description provided.'}&quot;
+                  </p>
+                </div>
+                {row.attachmentUrl && (
+                  <div className="flex items-center justify-between p-3 bg-[#f7f3ed] rounded-xl border border-[#d0d5cb]/30">
+                    <span className="text-[12px] font-bold text-[#193c1f]">
+                      Attached Document
+                    </span>
+                    <Link
+                      href={row.attachmentUrl}
+                      target="_blank"
+                      className="text-[10px] font-black text-[#8ea087] uppercase hover:text-[#193c1f]"
+                    >
+                      View
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+        columns={[
+          {
+            header: 'Patient & Case',
+            cell: (row) => (
+              <div>
+                <div className="flex items-center gap-2">
+                  <p className="font-bold text-sm">
+                    {row.isAnonymous
+                      ? 'Anonymous Patient'
+                      : row.user?.name || 'User'}
+                  </p>
+                  {row.isAnonymous && (
+                    <Badge className="bg-[#EBE6DE] text-[#193c1f]/60 hover:bg-[#EBE6DE] border-0">
+                      Anon
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-[12px] opacity-60 font-medium">
+                  {row.title}
+                </p>
+              </div>
+            ),
+          },
+          {
+            header: 'Date & Time',
+            cell: (row) => (
+              <p className="font-bold text-[#193c1f] text-sm">
+                {formatDateTimeLabel(row.date, row.time)}
+              </p>
+            ),
+          },
+          {
+            header: 'Status',
+            cell: (row) => {
+              const statusStr = String(row.status);
+              const isCompleted = statusStr === 'COMPLETED';
+              return (
+                <Badge
+                  className={
+                    isCompleted
+                      ? 'bg-[#EBE6DE] text-[#193c1f]/40 hover:bg-[#EBE6DE] border-0'
+                      : 'bg-[#d1b698]/20 text-[#d1b698] hover:bg-[#d1b698]/20 border-0'
+                  }
+                >
+                  {statusStr}
+                </Badge>
+              );
+            },
+          },
+          {
+            header: 'Action',
+            headerClassName: 'text-right',
+            className: 'text-right',
+            cell: (row) => {
+              const statusStr = String(row.status);
+              const isCompleted = statusStr === 'COMPLETED';
+              return (
+                <div className="flex justify-end items-center gap-3">
+                  {isCompleted ? (
+                    <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#EBE6DE] text-[#8ea087] border border-[#d0d5cb] cursor-not-allowed opacity-50">
+                      <ChatIcon />
+                    </div>
+                  ) : (
+                    <Link
+                      href={`/consultation-chat/${row.id}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all shadow-sm border ${
+                        statusStr === 'ONGOING'
+                          ? 'bg-[#193c1f] text-white border-[#193c1f] hover:bg-[#122d17]'
+                          : 'bg-white text-[#8ea087] border-[#d0d5cb] hover:bg-[#f7f3ed] hover:text-[#193c1f]'
+                      }`}
+                    >
+                      <ChatIcon />
+                    </Link>
+                  )}
+                </div>
+              );
+            },
+          },
+        ]}
       />
     </div>
   );

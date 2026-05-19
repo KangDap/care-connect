@@ -6,8 +6,8 @@ import { Card } from '@/components/card';
 import { Input } from '@/components/input';
 import { Table } from '@/components/table';
 import { Toast } from '@/components/toast';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useMemo, useState } from 'react';
 
 import { DonationActions } from './DonationActions';
 
@@ -77,24 +77,42 @@ export function DonationClient({
   counts,
 }: DonationClientProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const searchQuery = (searchParams.get('search') || '').trim().toLowerCase();
   const [toast, setToast] = useState<{
     show: boolean;
     msg: string;
     type: 'success' | 'error';
   }>({ show: false, msg: '', type: 'success' });
 
+  const buildDonationHref = (updates: {
+    month?: number;
+    year?: number;
+    status?: string;
+    page?: number;
+  }) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('month', String(updates.month ?? currentMonth));
+    params.set('year', String(updates.year ?? currentYear));
+    params.set('status', updates.status ?? currentStatus);
+
+    if (updates.page && updates.page > 1) {
+      params.set('page', String(updates.page));
+    } else {
+      params.delete('page');
+    }
+
+    return `/dashboard/admin/donations?${params.toString()}`;
+  };
+
   const handleTimeChange = (month: number, year: number) => {
-    router.push(
-      `/dashboard/admin/donations?month=${month}&year=${year}&status=${currentStatus}`,
-      { scroll: false },
-    );
+    router.push(buildDonationHref({ month, year, status: currentStatus }), {
+      scroll: false,
+    });
   };
 
   const handleStatusChange = (status: string) => {
-    router.push(
-      `/dashboard/admin/donations?month=${currentMonth}&year=${currentYear}&status=${status}`,
-      { scroll: false },
-    );
+    router.push(buildDonationHref({ status }), { scroll: false });
   };
 
   const months = [
@@ -127,6 +145,35 @@ export function DonationClient({
       month: 'short',
       year: 'numeric',
     }).format(new Date(d));
+
+  const filteredPsychologistBreakdown = useMemo(() => {
+    if (!searchQuery) return psychologistBreakdown;
+
+    return psychologistBreakdown.filter((psychologist) =>
+      [
+        psychologist.name,
+        String(psychologist.sessions),
+        String(psychologist.earnings),
+        psychologist.id,
+      ].some((value) => value.toLowerCase().includes(searchQuery)),
+    );
+  }, [psychologistBreakdown, searchQuery]);
+
+  const filteredDonations = useMemo(() => {
+    if (!searchQuery) return donations;
+
+    return donations.filter((donation) =>
+      [
+        donation.userName,
+        donation.paymentStatus,
+        donation.message,
+        donation.report.title,
+        donation.report.description,
+        String(donation.id),
+        String(donation.amount),
+      ].some((value) => (value ?? '').toLowerCase().includes(searchQuery)),
+    );
+  }, [donations, searchQuery]);
 
   return (
     <div className="space-y-6 md:space-y-10">
@@ -361,7 +408,7 @@ export function DonationClient({
       </div>
 
       {/* Psychologist Breakdown Section */}
-      <Card className="rounded-[24px] md:rounded-[40px] p-0 md:p-0">
+      <Card className="rounded-[24px] md:rounded-[40px] p-0 md:p-0 overflow-hidden flex flex-col min-w-0 w-full">
         <div className="p-5 sm:p-6 md:p-8 flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-[#D0D5CB]/50 bg-[#FDFCFB]">
           <div>
             <h2 className="text-xl md:text-2xl font-black text-[#193c1f] tracking-tight">
@@ -408,22 +455,17 @@ export function DonationClient({
         </div>
 
         <Table
-          className="rounded-t-none border-t-0 shadow-none"
-          data={psychologistBreakdown}
+          className="rounded-t-none md:rounded-t-none border-t-0 shadow-none"
+          data={filteredPsychologistBreakdown}
           keyExtractor={(p) => p.id}
           emptyMessage="No payout data for this period."
           columns={[
             {
               header: 'Psychologist Name',
               cell: (p) => (
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#f7f3ed] border border-[#D0D5CB] flex items-center justify-center text-[#193c1f] font-black text-xs shrink-0">
-                    {p.name.charAt(0)}
-                  </div>
-                  <span className="font-bold text-[#193c1f] text-sm md:text-base">
-                    {p.name}
-                  </span>
-                </div>
+                <span className="font-bold text-[#193c1f] text-sm md:text-base">
+                  {p.name}
+                </span>
               ),
             },
             {
@@ -501,18 +543,19 @@ export function DonationClient({
 
         {/* Donations Table */}
         <Table
-          data={donations}
+          data={filteredDonations}
           keyExtractor={(d) => d.id}
           emptyMessage="No donations found."
           currentPage={page}
           totalPages={totalPages}
           onPageChange={(p) => {
-            router.push(
-              `/dashboard/admin/donations?month=${currentMonth}&year=${currentYear}&status=${currentStatus}&page=${p}`,
-              { scroll: false },
-            );
+            router.push(buildDonationHref({ page: p }), { scroll: false });
           }}
-          paginationInfo={`Showing ${(page - 1) * perPage + 1}–${Math.min(page * perPage, totalCount)} of ${totalCount}`}
+          paginationInfo={
+            searchQuery
+              ? `Showing ${filteredDonations.length} of ${donations.length} donations on this page`
+              : `Showing ${(page - 1) * perPage + 1}–${Math.min(page * perPage, totalCount)} of ${totalCount}`
+          }
           renderExpandedRow={(d) => (
             <div className="p-4 sm:p-5 bg-white border border-[#d0d5cb]/40 rounded-[18px] shadow-sm cursor-default">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -574,16 +617,11 @@ export function DonationClient({
           )}
           columns={[
             {
-              header: 'Donor & Amount',
+              header: 'Donor',
               cell: (d) => (
-                <>
-                  <p className="font-black text-[#193c1f] text-base md:text-lg leading-tight">
-                    {fmt(d.amount)}
-                  </p>
-                  <p className="text-[10px] md:text-xs font-bold text-[#8ea087] mt-1 uppercase tracking-wider">
-                    {d.userName}
-                  </p>
-                </>
+                <span className="font-medium text-xs md:text-sm text-[#193C1F]">
+                  {d.userName}
+                </span>
               ),
             },
             {
@@ -611,8 +649,14 @@ export function DonationClient({
             },
             {
               header: 'Date',
-              className: 'text-[#8ea087] text-[10px] md:text-xs font-bold',
+              className: 'text-[#8ea087] text-xs font-medium',
               cell: (d) => fmtDate(d.createdAt),
+            },
+            {
+              header: 'Amount',
+              headerClassName: 'text-right',
+              className: 'text-right font-black text-[#193C1F]',
+              cell: (d) => fmt(d.amount),
             },
             {
               header: 'Actions',

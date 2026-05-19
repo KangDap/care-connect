@@ -67,6 +67,7 @@ export default function ReportForm({
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAnonymous, setIsAnonymous] = useState(false);
+  const [todayDate, setTodayDate] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
@@ -92,6 +93,10 @@ export default function ReportForm({
     description: '',
     agreement: false,
   });
+
+  useEffect(() => {
+    setTodayDate(new Date().toISOString().split('T')[0]);
+  }, []);
 
   useEffect(() => {
     if (isSubmitting) {
@@ -274,11 +279,7 @@ export default function ReportForm({
                   type="date"
                   value={formData.date}
                   onChange={handleInputChange}
-                  max={
-                    !isConsultation
-                      ? new Date().toISOString().split('T')[0]
-                      : undefined
-                  }
+                  max={!isConsultation && todayDate ? todayDate : undefined}
                 />
               </div>
 

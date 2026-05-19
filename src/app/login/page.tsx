@@ -329,7 +329,7 @@ export default function LoginPage() {
                     setSuccess('');
                   }}
                   variant="ghost"
-                  className={`flex-1 justify-center rounded-none py-0 text-lg normal-case tracking-normal ${
+                  className={`flex-1 justify-center py-0 text-lg normal-case tracking-normal ${
                     activeTab === tab ||
                     (activeTab === 'forgot_password' && tab === 'login')
                       ? 'text-[#193c1f]'
@@ -456,7 +456,7 @@ export default function LoginPage() {
                         <Button
                           type="button"
                           variant="ghost"
-                          className="mt-2 px-0 py-0 text-xs normal-case tracking-normal"
+                          className="mt-2 px-0 py-0 text-xs normal-case tracking-normal shadow-none bg-transparent hover:bg-transparent"
                           onClick={() => setActiveTab('forgot_password')}
                         >
                           Forgot password?

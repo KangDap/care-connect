@@ -81,7 +81,7 @@ export function DonationActions({
       <Button
         variant="outline"
         onClick={() => setIsEditModalOpen(true)}
-        className="h-auto min-h-0 rounded-xl px-3 py-2 text-xs normal-case tracking-normal shadow-none"
+        className="text-[10px] sm:text-xs px-2 py-0.5 min-h-0 h-7"
       >
         <Settings size={14} />
         Manage

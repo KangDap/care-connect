@@ -3,8 +3,8 @@
 import { Table } from '@/components/table';
 import { Toast } from '@/components/toast';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useMemo, useState } from 'react';
 
 import { ConsultationActions } from './ConsultationActions';
 
@@ -54,6 +54,8 @@ export function ConsultationsClient({
   perPage,
 }: ConsultationsClientProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const searchQuery = (searchParams.get('search') || '').trim().toLowerCase();
   const [toast, setToast] = useState<{
     show: boolean;
     msg: string;
@@ -70,6 +72,36 @@ export function ConsultationsClient({
       month: 'short',
       year: 'numeric',
     }).format(new Date(d));
+
+  const buildConsultationsHref = (tabValue: string, pageValue?: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', tabValue);
+    if (pageValue && pageValue > 1) {
+      params.set('page', String(pageValue));
+    } else {
+      params.delete('page');
+    }
+
+    const queryString = params.toString();
+    return `/dashboard/admin/consultations${queryString ? `?${queryString}` : ''}`;
+  };
+
+  const filteredConsultations = useMemo(() => {
+    if (!searchQuery) return consultations;
+
+    return consultations.filter((consultation) =>
+      [
+        consultation.title,
+        consultation.category,
+        consultation.status,
+        consultation.description,
+        consultation.user?.name,
+        consultation.user?.email,
+        consultation.psychologist?.name,
+        String(consultation.id),
+      ].some((value) => (value ?? '').toLowerCase().includes(searchQuery)),
+    );
+  }, [consultations, searchQuery]);
 
   return (
     <div className="space-y-6">
@@ -125,7 +157,7 @@ export function ConsultationsClient({
       {/* Tabs */}
       <div className="flex gap-3 flex-wrap">
         <Link
-          href="/dashboard/admin/consultations?tab=all"
+          href={buildConsultationsHref('all')}
           className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${
             tab === 'all'
               ? 'bg-[#193c1f] text-white border-[#193c1f]'
@@ -138,7 +170,7 @@ export function ConsultationsClient({
           </span>
         </Link>
         <Link
-          href="/dashboard/admin/consultations?tab=active"
+          href={buildConsultationsHref('active')}
           className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${
             tab === 'active'
               ? 'bg-[#193c1f] text-white border-[#193c1f]'
@@ -149,7 +181,7 @@ export function ConsultationsClient({
           <span className="ml-1.5 text-[10px] font-black">{activeCount}</span>
         </Link>
         <Link
-          href="/dashboard/admin/consultations?tab=history"
+          href={buildConsultationsHref('history')}
           className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${
             tab === 'history'
               ? 'bg-[#193c1f] text-white border-[#193c1f]'
@@ -163,18 +195,18 @@ export function ConsultationsClient({
 
       {/* Table */}
       <Table
-        data={consultations}
+        data={filteredConsultations}
         keyExtractor={(c) => c.id}
         emptyMessage="No consultations found."
         currentPage={page}
         totalPages={totalPages}
-        onPageChange={(p) =>
-          router.push(`/dashboard/admin/consultations?tab=${tab}&page=${p}`)
-        }
+        onPageChange={(p) => router.push(buildConsultationsHref(tab, p))}
         paginationInfo={
-          totalPages > 1
-            ? `Showing ${(page - 1) * perPage + 1}–${Math.min(page * perPage, totalCount)} of ${totalCount}`
-            : undefined
+          searchQuery
+            ? `Showing ${filteredConsultations.length} of ${consultations.length} consultations on this page`
+            : totalPages > 1
+              ? `Showing ${(page - 1) * perPage + 1}–${Math.min(page * perPage, totalCount)} of ${totalCount}`
+              : undefined
         }
         renderExpandedRow={(c) => (
           <div className="p-4 sm:p-5 bg-white border border-[#d0d5cb]/40 rounded-[18px] shadow-sm cursor-default">
@@ -267,49 +299,28 @@ export function ConsultationsClient({
             header: 'User',
             cell: (c) =>
               c.isAnonymous ? (
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#F7F3ED] border border-[#D0D5CB] flex items-center justify-center shrink-0">
-                    <span className="text-[10px] text-[#8EA087]">?</span>
-                  </div>
-                  <span className="text-[#8EA087] italic text-xs">
-                    Anonymous
-                  </span>
-                </div>
+                <span className="text-[#8EA087] italic text-xs">Anonymous</span>
               ) : (
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-[#F7F3ED] border border-[#D0D5CB] flex items-center justify-center shrink-0 overflow-hidden relative">
-                    <div className="text-[10px] font-bold text-[#193C1F]">
-                      {c.user.name.charAt(0)}
-                    </div>
-                  </div>
-                  <div>
-                    <p className="font-medium text-[#193C1F] text-xs md:text-sm">
-                      {c.user.name}
-                    </p>
-                    <p className="text-[10px] md:text-[11px] text-[#8EA087]">
-                      {c.user.email}
-                    </p>
-                  </div>
+                <div>
+                  <p className="font-medium text-[#193C1F] text-xs md:text-sm">
+                    {c.user.name}
+                  </p>
+                  <p className="text-[10px] md:text-[11px] text-[#8EA087]">
+                    {c.user.email}
+                  </p>
                 </div>
               ),
           },
           {
             header: 'Psychologist',
             cell: (c) => (
-              <div className="flex items-center gap-3 text-[#193C1F]">
-                <div className="w-8 h-8 rounded-lg bg-[#193C1F]/5 border border-[#193C1F]/10 flex items-center justify-center shrink-0">
-                  <div className="text-[10px] font-bold text-[#193C1F]">
-                    {c.psychologist?.name.charAt(0) || 'P'}
-                  </div>
-                </div>
-                <span className="font-medium text-xs md:text-sm">
-                  {c.psychologist?.name ?? (
-                    <span className="text-[#8EA087] italic text-xs">
-                      Unassigned
-                    </span>
-                  )}
-                </span>
-              </div>
+              <span className="font-medium text-xs md:text-sm text-[#193C1F]">
+                {c.psychologist?.name ?? (
+                  <span className="text-[#8EA087] italic text-xs">
+                    Unassigned
+                  </span>
+                )}
+              </span>
             ),
           },
           {

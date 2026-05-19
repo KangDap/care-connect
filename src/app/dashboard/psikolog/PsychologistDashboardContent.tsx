@@ -155,10 +155,10 @@ export default function PsychologistDashboardContent({
       </div>
 
       {/* Tables Row */}
-      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 md:gap-8">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 md:gap-8 items-start w-full">
         {/* Upcoming Consultations */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
+        <Card className="p-0 space-y-0 overflow-hidden flex flex-col min-w-0 w-full">
+          <div className="flex items-center justify-between p-4 sm:p-5 md:p-6 border-b border-[#D0D5CB]/50 bg-[#FDFCFB]">
             <div>
               <h3 className="text-lg sm:text-xl font-black text-[#193c1f] tracking-tight">
                 Upcoming Consultations
@@ -175,6 +175,8 @@ export default function PsychologistDashboardContent({
             </Link>
           </div>
           <Table
+            className="rounded-t-none border-t-0 shadow-none"
+            minWidth="min-w-[450px]"
             data={pendingData.slice(0, 5)}
             keyExtractor={(row) => row.id}
             emptyMessage="No upcoming consultations found."
@@ -205,11 +207,11 @@ export default function PsychologistDashboardContent({
               },
             ]}
           />
-        </div>
+        </Card>
 
         {/* Completed Sessions */}
-        <div>
-          <div className="flex items-center justify-between mb-3">
+        <Card className="p-0 space-y-0 overflow-hidden flex flex-col min-w-0 w-full">
+          <div className="flex items-center justify-between p-4 sm:p-5 md:p-6 border-b border-[#D0D5CB]/50 bg-[#FDFCFB]">
             <div>
               <h3 className="text-lg sm:text-xl font-black text-[#193c1f] tracking-tight">
                 Completed Sessions
@@ -226,6 +228,8 @@ export default function PsychologistDashboardContent({
             </Link>
           </div>
           <Table
+            className="rounded-t-none border-t-0 shadow-none"
+            minWidth="min-w-[450px]"
             data={completedData.slice(0, 5)}
             keyExtractor={(row) => row.id}
             emptyMessage="No completed sessions yet."
@@ -256,7 +260,7 @@ export default function PsychologistDashboardContent({
               },
             ]}
           />
-        </div>
+        </Card>
       </div>
     </div>
   );

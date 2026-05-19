@@ -15,28 +15,51 @@ const applyTheme = (theme: 'light' | 'dark') => {
 };
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    if (typeof window === 'undefined') return 'light';
-
-    const storedTheme = localStorage.getItem('careconnect-theme');
-    const prefersDark = window.matchMedia(
-      '(prefers-color-scheme: dark)',
-    ).matches;
-
-    return storedTheme === 'dark' || (!storedTheme && prefersDark)
-      ? 'dark'
-      : 'light';
-  });
+  const [mounted, setMounted] = useState(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
   useEffect(() => {
-    applyTheme(theme);
-  }, [theme]);
+    const handle = requestAnimationFrame(() => {
+      const storedTheme = localStorage.getItem('careconnect-theme');
+      const prefersDark = window.matchMedia(
+        '(prefers-color-scheme: dark)',
+      ).matches;
+
+      const initialTheme =
+        storedTheme === 'dark' || (!storedTheme && prefersDark)
+          ? 'dark'
+          : 'light';
+      setTheme(initialTheme);
+      setMounted(true);
+    });
+    return () => cancelAnimationFrame(handle);
+  }, []);
+
+  useEffect(() => {
+    if (mounted) {
+      applyTheme(theme);
+    }
+  }, [theme, mounted]);
 
   const toggleTheme = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(nextTheme);
     localStorage.setItem('careconnect-theme', nextTheme);
   };
+
+  if (!mounted) {
+    return (
+      <Button
+        type="button"
+        variant="outline"
+        className="icon-button theme-toggle-button h-9 w-9 rounded-full !p-0"
+        title="Switch theme"
+        aria-label="Switch theme"
+      >
+        <Moon className="theme-toggle-icon h-4 w-4 opacity-50" />
+      </Button>
+    );
+  }
 
   return (
     <Button

@@ -17,8 +17,8 @@ import {
   Users,
 } from 'lucide-react';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import React, { startTransition, useEffect, useMemo, useState } from 'react';
 
 // --- TYPES ---
 interface ForumRoom {
@@ -34,9 +34,14 @@ interface ForumRoom {
   coverUrl?: string | null;
 }
 
-const SupportForumsPage = () => {
+const SupportForumsContent = () => {
   const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState('');
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const searchParamValue = searchParams.get('search') || '';
+  const searchParamsString = searchParams.toString();
+
+  const [searchQuery, setSearchQuery] = useState(searchParamValue);
   const [rooms, setRooms] = useState<ForumRoom[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [joiningId, setJoiningId] = useState<number | null>(null);
@@ -78,6 +83,34 @@ const SupportForumsPage = () => {
     };
     fetchRooms();
   }, []);
+
+  useEffect(() => {
+    startTransition(() => {
+      setSearchQuery(searchParamValue);
+    });
+  }, [searchParamValue]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      const normalizedSearch = searchQuery.trim();
+      if (searchParamValue === normalizedSearch) return;
+
+      const params = new URLSearchParams(searchParamsString);
+      if (normalizedSearch) {
+        params.set('search', normalizedSearch);
+      } else {
+        params.delete('search');
+      }
+      params.delete('page');
+
+      const queryString = params.toString();
+      router.replace(queryString ? `${pathname}?${queryString}` : pathname, {
+        scroll: false,
+      });
+    }, 300);
+
+    return () => clearTimeout(handler);
+  }, [pathname, router, searchParamValue, searchParamsString, searchQuery]);
 
   // Fungsi cek apakah sudah join (non-banned)
   const isAlreadyJoined = (roomId: number) => {
@@ -148,6 +181,21 @@ const SupportForumsPage = () => {
     }
   };
 
+  const filteredRooms = useMemo(() => {
+    const normalizedSearch = searchQuery.trim().toLowerCase();
+    if (!normalizedSearch) return rooms;
+
+    return rooms.filter((room) =>
+      [
+        room.title,
+        (room as { name?: string }).name,
+        room.description,
+        room.category,
+        String(room.id),
+      ].some((value) => (value ?? '').toLowerCase().includes(normalizedSearch)),
+    );
+  }, [rooms, searchQuery]);
+
   return (
     <div className="min-h-screen bg-[#f7f3ed]">
       <PublicHeader />
@@ -196,119 +244,109 @@ const SupportForumsPage = () => {
               <p className="text-[#8ea087] font-bold">Fetching Forums...</p>
             </div>
           ) : (
-            rooms
-              .filter((room) =>
-                (room.title || (room as { name?: string }).name || '')
-                  .toLowerCase()
-                  .includes(searchQuery.toLowerCase()),
-              )
-              .map((room) => {
-                const banned = room.myRole === 'BANNED';
-                return (
-                  <div key={room.id} className="group">
-                    <Card
-                      className={`flex h-full flex-col rounded-[40px] transition-all duration-500 ${
-                        banned
-                          ? 'border-red-200 opacity-80'
-                          : 'hover:shadow-2xl'
-                      }`}
-                    >
-                      <div className="h-44 bg-[#f7f3ed] flex items-center justify-center relative overflow-hidden transition-colors group-hover:bg-[#EBE6DE]">
-                        <div className="absolute inset-0 bg-gradient-to-br from-[#f7f3ed] via-[#E6DED3] to-[#d0d5cb]" />
-                        {room.coverUrl ? (
-                          <Image
-                            src={room.coverUrl}
-                            alt={
-                              room.title ||
-                              (room as { name?: string }).name ||
-                              'Forum'
-                            }
-                            fill
-                            className="object-cover relative z-10 transition-transform duration-500 group-hover:scale-105"
-                            unoptimized
-                          />
-                        ) : (
-                          <MessageSquare
-                            size={48}
-                            className="relative z-10 text-[#8ea087] opacity-40 group-hover:scale-110 transition-transform duration-500"
-                          />
-                        )}
-                        <Badge className="absolute bottom-6 left-8 z-20 rounded-xl bg-white/80 tracking-[0.2em] backdrop-blur-sm">
-                          ROOM #{room.id}
-                        </Badge>
-                        {banned && (
-                          <Badge className="absolute right-4 top-4 z-10 rounded-xl bg-red-500 text-white shadow">
-                            Removed
-                          </Badge>
-                        )}
-                      </div>
-
-                      <div className="p-8 flex flex-col flex-1">
-                        <h3 className="font-black text-xl text-[#193c1f] mb-3 group-hover:text-[#8ea087] transition-colors italic tracking-tight line-clamp-2 leading-tight">
-                          {room.title ||
+            filteredRooms.map((room) => {
+              const banned = room.myRole === 'BANNED';
+              return (
+                <div key={room.id} className="group">
+                  <Card
+                    className={`flex h-full flex-col rounded-[40px] transition-all duration-500 ${
+                      banned ? 'border-red-200 opacity-80' : 'hover:shadow-2xl'
+                    }`}
+                  >
+                    <div className="h-44 bg-[#f7f3ed] flex items-center justify-center relative overflow-hidden transition-colors group-hover:bg-[#EBE6DE]">
+                      <div className="absolute inset-0 bg-gradient-to-br from-[#f7f3ed] via-[#E6DED3] to-[#d0d5cb]" />
+                      {room.coverUrl ? (
+                        <Image
+                          src={room.coverUrl}
+                          alt={
+                            room.title ||
                             (room as { name?: string }).name ||
-                            'Untitled Room'}
-                        </h3>
-                        <p className="text-sm text-[#193c1f]/60 font-medium leading-relaxed mb-8 flex-1 line-clamp-3">
-                          {room.description ||
-                            'No description available for this room.'}
-                        </p>
+                            'Forum'
+                          }
+                          fill
+                          className="object-cover relative z-10 transition-transform duration-500 group-hover:scale-105"
+                          unoptimized
+                        />
+                      ) : (
+                        <MessageSquare
+                          size={48}
+                          className="relative z-10 text-[#8ea087] opacity-40 group-hover:scale-110 transition-transform duration-500"
+                        />
+                      )}
+                      <Badge className="absolute bottom-6 left-8 z-20 rounded-xl bg-white/80 tracking-[0.2em] backdrop-blur-sm">
+                        ROOM #{room.id}
+                      </Badge>
+                      {banned && (
+                        <Badge className="absolute right-4 top-4 z-10 rounded-xl bg-red-500 text-white shadow">
+                          Removed
+                        </Badge>
+                      )}
+                    </div>
 
-                        <div className="flex justify-between items-center pt-6 border-t border-[#f7f3ed]">
-                          <span className="text-[10px] font-black text-[#8ea087] uppercase flex items-center gap-2 tracking-widest">
-                            <Users size={14} strokeWidth={3} />{' '}
-                            {room._count?.members || 0} Members
-                          </span>
+                    <div className="p-8 flex flex-col flex-1">
+                      <h3 className="font-black text-xl text-[#193c1f] mb-3 group-hover:text-[#8ea087] transition-colors italic tracking-tight line-clamp-2 leading-tight">
+                        {room.title ||
+                          (room as { name?: string }).name ||
+                          'Untitled Room'}
+                      </h3>
+                      <p className="text-sm text-[#193c1f]/60 font-medium leading-relaxed mb-8 flex-1 line-clamp-3">
+                        {room.description ||
+                          'No description available for this room.'}
+                      </p>
 
-                          {banned ? (
-                            <Button
-                              type="button"
-                              variant="outline"
-                              onClick={triggerBannedNotice}
-                              className="text-[10px] font-black uppercase flex items-center gap-1.5 text-red-500 border border-red-200 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-xl transition-all tracking-[0.1em]"
-                            >
-                              🚫 Removed
-                            </Button>
-                          ) : isAlreadyJoined(room.id) ? (
-                            <Button
-                              type="button"
-                              variant="secondary"
-                              onClick={() =>
-                                router.push(`/community-chat/${room.id}`)
-                              }
-                              className="text-[11px] font-black uppercase flex items-center gap-2 text-white bg-[#8ea087] hover:bg-[#193c1f] hover:scale-105 px-4 py-2 rounded-xl transition-all tracking-[0.1em] shadow-sm"
-                            >
-                              Joined{' '}
-                              <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                            </Button>
-                          ) : (
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              onClick={() => handleJoinRoom(room.id)}
-                              disabled={joiningId === room.id}
-                              className="text-[11px] font-black uppercase flex items-center gap-1 text-[#193c1f] group-hover:gap-3 transition-all tracking-[0.1em] disabled:opacity-50"
-                            >
-                              {joiningId === room.id
-                                ? 'Joining...'
-                                : 'Join Room'}{' '}
-                              <ArrowRight size={16} strokeWidth={3} />
-                            </Button>
-                          )}
-                        </div>
+                      <div className="flex justify-between items-center pt-6 border-t border-[#f7f3ed]">
+                        <span className="text-[10px] font-black text-[#8ea087] uppercase flex items-center gap-2 tracking-widest">
+                          <Users size={14} strokeWidth={3} />{' '}
+                          {room._count?.members || 0} Members
+                        </span>
 
-                        {/* Inline banned notice below the card footer */}
-                        {banned && (
-                          <p className="text-[10px] text-red-400 font-semibold mt-3 text-center leading-snug">
-                            You cannot join this forum because you have been
-                            removed from it.
-                          </p>
+                        {banned ? (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={triggerBannedNotice}
+                            className="text-[10px] font-black uppercase flex items-center gap-1.5 text-red-500 border border-red-200 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-xl transition-all tracking-[0.1em]"
+                          >
+                            🚫 Removed
+                          </Button>
+                        ) : isAlreadyJoined(room.id) ? (
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            onClick={() =>
+                              router.push(`/community-chat/${room.id}`)
+                            }
+                            className="text-[11px] font-black uppercase flex items-center gap-2 text-white bg-[#8ea087] hover:bg-[#193c1f] hover:scale-105 px-4 py-2 rounded-xl transition-all tracking-[0.1em] shadow-sm"
+                          >
+                            Joined{' '}
+                            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                          </Button>
+                        ) : (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            onClick={() => handleJoinRoom(room.id)}
+                            disabled={joiningId === room.id}
+                            className="text-[11px] font-black uppercase flex items-center gap-1 text-[#193c1f] group-hover:gap-3 transition-all tracking-[0.1em] disabled:opacity-50"
+                          >
+                            {joiningId === room.id ? 'Joining...' : 'Join Room'}{' '}
+                            <ArrowRight size={16} strokeWidth={3} />
+                          </Button>
                         )}
                       </div>
-                    </Card>
-                  </div>
-                );
-              })
+
+                      {/* Inline banned notice below the card footer */}
+                      {banned && (
+                        <p className="text-[10px] text-red-400 font-semibold mt-3 text-center leading-snug">
+                          You cannot join this forum because you have been
+                          removed from it.
+                        </p>
+                      )}
+                    </div>
+                  </Card>
+                </div>
+              );
+            })
           )}
 
           {isAdmin && (
@@ -342,4 +380,20 @@ const SupportForumsPage = () => {
   );
 };
 
-export default SupportForumsPage;
+export default function SupportForumsPage() {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="min-h-screen bg-[#f7f3ed]">
+          <PublicHeader />
+          <main className="max-w-7xl mx-auto p-6 md:p-12 text-center">
+            <Loader2 className="inline-block animate-spin h-8 w-8 text-[#193c1f] mb-4" />
+            <p className="text-[#8ea087] font-bold">Fetching Forums...</p>
+          </main>
+        </div>
+      }
+    >
+      <SupportForumsContent />
+    </React.Suspense>
+  );
+}

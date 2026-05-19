@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/prisma';
 
-import { UsersTable } from './UsersTable';
+import { UsersClient } from './UsersClient';
 
 type PageProps = {
   searchParams: Promise<{ page?: string }>;
@@ -29,10 +29,6 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
   ]);
 
   const totalPages = Math.ceil(totalCount / perPage);
-  const userRows = users.map((user) => ({
-    ...user,
-    createdAt: user.createdAt.toISOString(),
-  }));
 
   return (
     <div className="space-y-6">
@@ -45,8 +41,8 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
         </p>
       </div>
 
-      <UsersTable
-        users={userRows}
+      <UsersClient
+        users={users}
         page={page}
         perPage={perPage}
         totalCount={totalCount}

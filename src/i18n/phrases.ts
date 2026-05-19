@@ -728,6 +728,7 @@ export const phraseTranslations = {
   'Enter your email address': 'Masukkan alamat email Anda',
   'Create a password': 'Buat kata sandi',
   'Enter your password': 'Masukkan kata sandi Anda',
+  'View All →': 'Lihat Semua →',
 } as const;
 
 export type PhraseKey = keyof typeof phraseTranslations;

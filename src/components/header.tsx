@@ -10,7 +10,7 @@ import { authClient } from '@/lib/auth/auth-client';
 import { ChevronLeft, LogOut, Menu, Search, User } from 'lucide-react';
 import Image from 'next/image';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { startTransition, useEffect, useRef, useState } from 'react';
 
 const SILHOUETTE_AVATAR = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect width='200' height='200' fill='%23e5e7eb'/%3E%3Ccircle cx='100' cy='70' r='35' fill='%239ca3af'/%3E%3Cpath d='M40 140c0-30 27-50 60-50s60 20 60 50v50H40z' fill='%239ca3af'/%3E%3C/svg%3E`;
 
@@ -24,7 +24,7 @@ interface HeaderProps {
   showBackButton?: boolean;
 }
 
-export const Header = ({
+const HeaderInner = ({
   withSearch = true,
   withLogo = false,
   onProfileClick,
@@ -46,22 +46,34 @@ export const Header = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Synchronize internal state when URL changes externally
-  useEffect(() => {
-    // eslint-disable-next-line
-    setSearchQuery(searchParams.get('search') || '');
-  }, [searchParams]);
+  const isUpdatingFromUrl = React.useRef(false);
 
   useEffect(() => {
+    isUpdatingFromUrl.current = true;
+    startTransition(() => {
+      setSearchQuery(searchParams.get('search') || '');
+    });
+  }, [searchParams, pathname]);
+
+  useEffect(() => {
+    if (isUpdatingFromUrl.current) {
+      isUpdatingFromUrl.current = false;
+      return;
+    }
+
     const handler = setTimeout(() => {
       const currentSearch = searchParams.get('search') || '';
       if (currentSearch !== searchQuery) {
         const params = new URLSearchParams(searchParams.toString());
         if (searchQuery) {
           params.set('search', searchQuery);
+          params.delete('page');
         } else {
           params.delete('search');
         }
-        router.push(`${pathname}?${params.toString()}`);
+
+        const queryString = params.toString();
+        router.push(queryString ? `${pathname}?${queryString}` : pathname);
       }
     }, 300);
     return () => clearTimeout(handler);
@@ -252,3 +264,13 @@ export const Header = ({
     </>
   );
 };
+
+export const Header = (props: HeaderProps) => (
+  <React.Suspense
+    fallback={
+      <div className="h-[70px] md:h-[90px] w-full sticky top-0 border-b border-[#D0D5CB] bg-[#F7F3ED]/80 backdrop-blur-md shrink-0 z-[100]"></div>
+    }
+  >
+    <HeaderInner {...props} />
+  </React.Suspense>
+);

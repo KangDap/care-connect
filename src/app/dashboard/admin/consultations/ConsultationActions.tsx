@@ -76,7 +76,7 @@ export function ConsultationActions({
           setNewStatus(status);
           setIsEditModalOpen(true);
         }}
-        className="h-auto min-h-0 rounded-xl px-3 py-2 text-xs normal-case tracking-normal shadow-none"
+        className="text-[10px] sm:text-xs px-2 py-0.5 min-h-0 h-7"
       >
         <Pencil size={14} />
         Edit
@@ -85,7 +85,7 @@ export function ConsultationActions({
         type="button"
         variant="outline"
         onClick={() => setIsDeleteAlertOpen(true)}
-        className="h-auto min-h-0 rounded-xl border-red-200 px-3 py-2 text-xs normal-case tracking-normal text-red-600 shadow-none hover:bg-red-50 hover:text-red-700"
+        className="px-2 py-0.5 text-[10px] sm:text-xs h-7 min-h-0 text-red-600 hover:text-red-700 bg-red-50/50 hover:bg-red-50"
       >
         <Trash2 size={14} />
         Delete

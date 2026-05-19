@@ -52,10 +52,6 @@ const REV_DAY_MAP: Record<number, Day> = {
   7: 'Sunday',
 };
 
-const today = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(
-  new Date(),
-) as Day;
-
 function formatTime(t: string) {
   const [h, m] = t.split(':').map(Number);
   const ampm = h >= 12 ? 'PM' : 'AM';
@@ -69,6 +65,15 @@ export default function PsychologistScheduleView() {
   const [schedule, setSchedule] = useState<DaySchedule[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [today, setToday] = useState<Day | null>(null);
+
+  useEffect(() => {
+    setToday(
+      new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(
+        new Date(),
+      ) as Day,
+    );
+  }, []);
 
   useEffect(() => {
     const fetchMySchedule = async () => {
@@ -174,7 +179,7 @@ export default function PsychologistScheduleView() {
           <p className="text-[10px] font-black uppercase tracking-widest text-[#8ea087]">
             Today
           </p>
-          <p className="text-sm font-bold text-[#193c1f]">{today}</p>
+          <p className="text-sm font-bold text-[#193c1f]">{today ?? '-'}</p>
         </div>
       </div>
 
@@ -228,7 +233,7 @@ export default function PsychologistScheduleView() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {orderedSchedule.map((daySchedule) => {
-            const isToday = daySchedule.day === today;
+            const isToday = today ? daySchedule.day === today : false;
             return (
               <div
                 key={daySchedule.day}

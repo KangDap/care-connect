@@ -3,10 +3,11 @@
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Table } from '@/components/table';
-import { Calendar, Loader2, User } from 'lucide-react';
+import { Calendar, Loader2, Pencil, User } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import React, { useEffect, useMemo, useState } from 'react';
 
 interface PsychologistSummary {
   id: string;
@@ -16,6 +17,8 @@ interface PsychologistSummary {
 }
 
 export default function HistoryClient() {
+  const searchParams = useSearchParams();
+  const searchQuery = (searchParams.get('search') || '').trim().toLowerCase();
   const [psychologists, setPsychologists] = useState<PsychologistSummary[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -35,6 +38,18 @@ export default function HistoryClient() {
     };
     fetchPsychologists();
   }, []);
+
+  const filteredPsychologists = useMemo(() => {
+    if (!searchQuery) return psychologists;
+
+    return psychologists.filter((psychologist) =>
+      [
+        psychologist.name,
+        psychologist.id,
+        ...(psychologist.activeDays ?? []),
+      ].some((value) => value.toLowerCase().includes(searchQuery)),
+    );
+  }, [psychologists, searchQuery]);
 
   if (loading) {
     return (
@@ -68,7 +83,7 @@ export default function HistoryClient() {
 
       {/* Table of Psychologists */}
       <Table
-        data={psychologists}
+        data={filteredPsychologists}
         keyExtractor={(psy) => psy.id}
         emptyMessage="No psychologists found in database."
         columns={[
@@ -120,13 +135,19 @@ export default function HistoryClient() {
           {
             header: 'Actions',
             headerClassName: 'text-right',
-            className: 'text-right w-32',
+            className: 'text-right',
             cell: (psy) => (
-              <Link href={`/dashboard/admin/schedules/form?id=${psy.id}`}>
-                <div className="text-[11px] md:text-sm font-black text-[#193C1F] hover:opacity-70 transition-opacity bg-[#F7F3ED] px-3 py-1.5 md:px-4 md:py-2 rounded-xl border border-[#D0D5CB] inline-block whitespace-nowrap">
-                  Edit
-                </div>
-              </Link>
+              <div className="flex items-center justify-end gap-2">
+                <Link href={`/dashboard/admin/schedules/form?id=${psy.id}`}>
+                  <Button
+                    variant="outline"
+                    className="h-7 text-[10px] sm:text-xs px-2 py-0.5 min-h-0 flex items-center gap-1 border-[#d0d5cb]"
+                  >
+                    <Pencil size={14} />
+                    Edit
+                  </Button>
+                </Link>
+              </div>
             ),
           },
         ]}

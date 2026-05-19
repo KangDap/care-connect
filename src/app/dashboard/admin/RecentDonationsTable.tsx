@@ -1,8 +1,8 @@
 'use client';
 
 import { Table } from '@/components/table';
-import { User } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 const fmtDate = (d: Date | string) => {
   const date = typeof d === 'string' ? new Date(d) : d;
@@ -33,8 +33,19 @@ export function RecentDonationsTable({
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   recentDonations: any[];
 }) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const handle = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(handle);
+  }, []);
+
   const searchParams = useSearchParams();
   const searchBarQuery = searchParams.get('search')?.toLowerCase() || '';
+
+  if (!mounted) {
+    return <div className="h-[200px] w-full bg-transparent animate-pulse" />;
+  }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const filteredData = recentDonations.filter((d: any) => {
@@ -53,7 +64,7 @@ export function RecentDonationsTable({
 
   return (
     <Table
-      className="rounded-t-none border-t-0 shadow-none"
+      className="rounded-t-none md:rounded-t-none border-t-0 shadow-none"
       data={filteredData}
       keyExtractor={(d) => d.id}
       emptyMessage="No donations yet."
@@ -61,18 +72,13 @@ export function RecentDonationsTable({
         {
           header: 'Donor',
           cell: (d) => (
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-[#F7F3ED] border border-[#D0D5CB] flex items-center justify-center shrink-0 overflow-hidden relative">
-                <User size={14} className="text-[#8EA087]" />
-              </div>
-              <div>
-                <p className="font-bold text-[#193C1F] group-hover:text-black transition-colors">
-                  {d.user.name}
-                </p>
-                <p className="text-[10px] text-[#8EA087] opacity-80">
-                  {d.user.email}
-                </p>
-              </div>
+            <div>
+              <p className="font-bold text-[#193C1F] group-hover:text-black transition-colors">
+                {d.user.name}
+              </p>
+              <p className="text-[10px] text-[#8EA087] opacity-80">
+                {d.user.email}
+              </p>
             </div>
           ),
         },

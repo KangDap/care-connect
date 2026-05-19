@@ -17,7 +17,8 @@ import {
   Search,
 } from 'lucide-react';
 import Image from 'next/image';
-import { useEffect, useMemo, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { startTransition, useEffect, useMemo, useState } from 'react';
 
 type ReportOption = {
   id: number;
@@ -69,10 +70,16 @@ const getStatusBadge = (status: string) => {
 const reportsPerPage = 6;
 
 export function ReportPicker({ onSelect, onBack }: Props) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const searchParamValue = searchParams.get('search') || '';
+  const searchParamsString = searchParams.toString();
+
   const [reports, setReports] = useState<ReportOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(searchParamValue);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedStatus, setSelectedStatus] = useState('ALL');
   const [locationFilter, setLocationFilter] = useState('');
@@ -90,6 +97,35 @@ export function ReportPicker({ onSelect, onBack }: Props) {
       .catch(() => setReports([]))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    startTransition(() => {
+      setSearchQuery(searchParamValue);
+      setCurrentPage(1);
+    });
+  }, [searchParamValue]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      const normalizedSearch = searchQuery.trim();
+      if (searchParamValue === normalizedSearch) return;
+
+      const params = new URLSearchParams(searchParamsString);
+      if (normalizedSearch) {
+        params.set('search', normalizedSearch);
+      } else {
+        params.delete('search');
+      }
+      params.delete('page');
+
+      const queryString = params.toString();
+      router.replace(queryString ? `${pathname}?${queryString}` : pathname, {
+        scroll: false,
+      });
+    }, 300);
+
+    return () => clearTimeout(handler);
+  }, [pathname, router, searchParamValue, searchParamsString, searchQuery]);
 
   const handleCategoryToggle = (category: string) => {
     setCurrentPage(1);
@@ -114,7 +150,7 @@ export function ReportPicker({ onSelect, onBack }: Props) {
   const filteredReports = useMemo(() => {
     return reports
       .filter((report) => {
-        const normalizedSearch = searchQuery.toLowerCase();
+        const normalizedSearch = searchQuery.trim().toLowerCase();
         const matchesSearch =
           report.title.toLowerCase().includes(normalizedSearch) ||
           report.description.toLowerCase().includes(normalizedSearch);

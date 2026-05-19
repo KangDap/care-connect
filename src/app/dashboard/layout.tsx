@@ -77,13 +77,11 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const router = useRouter();
   const { t } = useTranslation();
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    if (typeof window === 'undefined') return 'light';
-    return document.documentElement.classList.contains('dark') ||
-      localStorage.getItem('careconnect-theme') === 'dark'
-      ? 'dark'
-      : 'light';
-  });
+  const [themeState, setThemeState] = useState<'light' | 'dark'>('light');
+  const [mounted, setMounted] = useState(false);
+
+  const theme = mounted ? themeState : 'light';
+
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLogoutAlertOpen, setIsLogoutAlertOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -98,14 +96,24 @@ export default function DashboardLayout({
   }, [pathname]);
 
   React.useEffect(() => {
+    const handle = requestAnimationFrame(() => {
+      const isDark =
+        document.documentElement.classList.contains('dark') ||
+        localStorage.getItem('careconnect-theme') === 'dark';
+      setThemeState(isDark ? 'dark' : 'light');
+      setMounted(true);
+    });
+
     const handleThemeChange = (event: Event) => {
       const nextTheme = (event as CustomEvent<'light' | 'dark'>).detail;
-      setTheme(nextTheme);
+      setThemeState(nextTheme);
     };
 
     window.addEventListener('careconnect-theme-change', handleThemeChange);
-    return () =>
+    return () => {
+      cancelAnimationFrame(handle);
       window.removeEventListener('careconnect-theme-change', handleThemeChange);
+    };
   }, []);
 
   const handleLogout = async () => {
