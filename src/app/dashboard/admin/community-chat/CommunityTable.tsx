@@ -38,7 +38,6 @@ export function CommunityTable({
       data={channels}
       keyExtractor={(ch) => ch.id}
       emptyMessage="No channels found."
-      minWidth="min-w-[780px]"
       columns={[
         {
           header: 'Channel Name',
@@ -72,37 +71,36 @@ export function CommunityTable({
         },
         {
           header: 'Type',
-          className: 'font-medium text-gray-600',
+          className: 'font-medium text-gray-600 whitespace-nowrap',
           cell: (ch) => <Badge>{ch.type}</Badge>,
         },
         {
           header: 'Created At',
-          className: 'text-gray-500 text-xs md:text-sm',
+          className: 'text-gray-500 text-xs md:text-sm whitespace-nowrap',
           cell: (ch) => fmtDate(ch.createdAt),
         },
         {
           header: 'Actions',
-          headerClassName: 'w-[196px] min-w-[196px] text-right',
-          className:
-            'w-[196px] min-w-[196px] text-right align-middle whitespace-nowrap',
+          headerClassName: 'text-right',
+          className: 'text-right whitespace-nowrap',
           cell: (ch) => (
-            <div className="grid w-full grid-cols-2 gap-2">
+            <div className="flex items-center justify-end gap-2 whitespace-nowrap">
               <Button
                 type="button"
                 onClick={() => onEdit(ch)}
                 variant="outline"
-                className="h-9 min-h-0 w-full shrink-0 whitespace-nowrap rounded-xl border-[#d0d5cb] bg-white px-2 py-0 text-[11px] font-black text-[#193c1f] shadow-none hover:bg-[#f7f3ed]"
+                className="text-[10px] sm:text-xs px-2 py-0.5 min-h-0 h-7 whitespace-nowrap flex items-center gap-1 shrink-0"
               >
-                <Pencil size={13} className="shrink-0" />
+                <Pencil size={14} />
                 Edit
               </Button>
               <Button
                 type="button"
                 onClick={() => onDelete(ch.id)}
                 variant="outline"
-                className="h-9 min-h-0 w-full shrink-0 whitespace-nowrap rounded-xl border-red-200 bg-red-50 px-2 py-0 text-[11px] font-black text-red-600 shadow-none hover:border-red-300 hover:bg-red-100 hover:text-red-700"
+                className="px-2 py-0.5 text-[10px] sm:text-xs h-7 min-h-0 text-red-600 hover:text-red-700 bg-red-50/50 hover:bg-red-50 whitespace-nowrap flex items-center gap-1 shrink-0"
               >
-                <Trash2 size={13} className="shrink-0" />
+                <Trash2 size={14} />
                 Delete
               </Button>
             </div>

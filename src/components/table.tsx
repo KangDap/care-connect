@@ -35,7 +35,7 @@ export function Table<T>({
   keyExtractor,
   emptyMessage = 'No data available.',
   className = '',
-  minWidth = 'min-w-[640px]',
+  minWidth = 'min-w-[1000px]',
   currentPage,
   totalPages,
   onPageChange,
@@ -63,7 +63,7 @@ export function Table<T>({
               {columns.map((col, idx) => (
                 <th
                   key={idx}
-                  className={`px-4 sm:px-6 py-3.5 md:py-4 ${col.headerClassName || ''}`}
+                  className={`px-4 sm:px-6 py-3.5 md:py-4 whitespace-nowrap ${col.headerClassName || ''}`}
                 >
                   {col.header}
                 </th>

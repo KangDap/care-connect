@@ -49,7 +49,7 @@ export const Alert = ({
       />
 
       {/* Alert Box */}
-      <div className="relative bg-white w-full max-w-[400px] rounded-[40px] p-10 shadow-2xl animate-in zoom-in duration-300 text-center">
+      <div className="relative bg-white w-full max-w-[400px] rounded-[40px] p-10 shadow-2xl animate-in zoom-in duration-300 text-center whitespace-normal break-words">
         {/* Icon Header */}
         <div
           className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl ${typeStyles[type]}`}

@@ -17,6 +17,14 @@ const STATUS_BADGE: Record<string, 'PENDING' | 'SUCCESS' | 'DEFAULT'> = {
   FAILED: 'DEFAULT',
 };
 
+const normalizeStatus = (status: string) => {
+  const s = (status || '').toUpperCase();
+  if (s === 'EXPIRED' || s === 'CANCELLED' || s === 'FAILED') {
+    return 'FAILED';
+  }
+  return s;
+};
+
 type DonationType = {
   id: number;
   reportId: number;
@@ -165,7 +173,7 @@ export function DonationClient({
     return donations.filter((donation) =>
       [
         donation.userName,
-        donation.paymentStatus,
+        normalizeStatus(donation.paymentStatus),
         donation.message,
         donation.report.title,
         donation.report.description,
@@ -596,7 +604,7 @@ export function DonationClient({
                           Status
                         </p>
                         <p className="text-[14px] font-bold text-[#193c1f]">
-                          {d.paymentStatus}
+                          {normalizeStatus(d.paymentStatus)}
                         </p>
                       </div>
                     </div>
@@ -618,6 +626,7 @@ export function DonationClient({
           columns={[
             {
               header: 'Donor',
+              className: 'whitespace-nowrap',
               cell: (d) => (
                 <span className="font-medium text-xs md:text-sm text-[#193C1F]">
                   {d.userName}
@@ -626,8 +635,9 @@ export function DonationClient({
             },
             {
               header: 'For Report / Platform',
+              className: 'whitespace-nowrap',
               cell: (d) => (
-                <>
+                <div>
                   <p className="font-bold text-[#193c1f] line-clamp-1 max-w-[150px] md:max-w-[250px] text-xs md:text-sm">
                     {d.report.title}
                   </p>
@@ -636,36 +646,41 @@ export function DonationClient({
                       ? 'PLATFORM'
                       : 'REPORT'}
                   </p>
-                </>
+                </div>
               ),
             },
             {
               header: 'Status',
-              cell: (d) => (
-                <Badge status={STATUS_BADGE[d.paymentStatus] || 'DEFAULT'}>
-                  {d.paymentStatus}
-                </Badge>
-              ),
+              className: 'whitespace-nowrap',
+              cell: (d) => {
+                const normalized = normalizeStatus(d.paymentStatus);
+                return (
+                  <Badge status={STATUS_BADGE[normalized] || 'DEFAULT'}>
+                    {normalized}
+                  </Badge>
+                );
+              },
             },
             {
               header: 'Date',
-              className: 'text-[#8ea087] text-xs font-medium',
+              className: 'text-[#8ea087] text-xs font-medium whitespace-nowrap',
               cell: (d) => fmtDate(d.createdAt),
             },
             {
               header: 'Amount',
               headerClassName: 'text-right',
-              className: 'text-right font-black text-[#193C1F]',
+              className:
+                'text-right font-black text-[#193C1F] whitespace-nowrap',
               cell: (d) => fmt(d.amount),
             },
             {
               header: 'Actions',
               headerClassName: 'text-right',
-              className: 'text-right',
+              className: 'text-right whitespace-nowrap',
               cell: (d) => (
                 <DonationActions
                   id={d.id}
-                  status={d.paymentStatus}
+                  status={normalizeStatus(d.paymentStatus)}
                   amount={d.amount}
                   donor={d.userName}
                   onSuccess={(msg) =>

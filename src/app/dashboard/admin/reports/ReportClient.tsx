@@ -315,7 +315,8 @@ export function ReportClient({
         columns={[
           {
             header: 'Report',
-            className: 'align-top',
+            headerClassName: 'w-[30%] min-w-[240px]',
+            className: 'w-[30%] min-w-[240px] align-top',
             cell: (r) => (
               <>
                 <Link
@@ -335,24 +336,30 @@ export function ReportClient({
           },
           {
             header: 'Reporter',
-            cell: (r) =>
-              r.isAnonymous ? (
-                <span className="text-[#8EA087] italic text-[10px] md:text-xs">
-                  Anonymous
-                </span>
-              ) : (
-                <div>
+            headerClassName: 'w-[22%] min-w-[180px]',
+            className: 'w-[22%] min-w-[180px] align-top whitespace-nowrap',
+            cell: (r) => (
+              <div>
+                <div className="flex items-center gap-1.5">
                   <p className="font-medium text-[#193C1F] text-xs md:text-sm">
                     {r.user.name}
                   </p>
-                  <p className="text-[10px] md:text-[11px] text-[#8EA087]">
-                    {r.user.email}
-                  </p>
+                  {r.isAnonymous && (
+                    <span className="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200 whitespace-nowrap">
+                      Anon
+                    </span>
+                  )}
                 </div>
-              ),
+                <p className="text-[10px] md:text-[11px] text-[#8EA087]">
+                  {r.user.email}
+                </p>
+              </div>
+            ),
           },
           {
             header: 'Category',
+            headerClassName: 'w-[12%] min-w-[100px]',
+            className: 'w-[12%] min-w-[100px] align-middle whitespace-nowrap',
             cell: (r) => (
               <span className="text-[10px] md:text-xs font-bold text-[#193C1F] bg-[#F7F3ED] border border-[#D0D5CB] px-2 py-1 rounded-full whitespace-nowrap">
                 {CATEGORY_LABEL[r.category] || r.category}
@@ -361,6 +368,8 @@ export function ReportClient({
           },
           {
             header: 'Status',
+            headerClassName: 'w-[11%] min-w-[90px]',
+            className: 'w-[11%] min-w-[90px] align-middle whitespace-nowrap',
             cell: (r) => (
               <span
                 className={`text-[9px] md:text-[10px] font-black uppercase tracking-wider px-2 md:px-3 py-1 md:py-1.5 rounded-full border whitespace-nowrap ${STATUS_BADGE[r.status] || 'bg-gray-100 text-gray-600'}`}
@@ -371,6 +380,8 @@ export function ReportClient({
           },
           {
             header: 'Donations',
+            headerClassName: 'w-[10%] min-w-[90px]',
+            className: 'w-[10%] min-w-[90px] align-middle whitespace-nowrap',
             cell: (r) =>
               r.donationTotal > 0 ? (
                 <span className="text-green-700 font-bold text-[10px] md:text-xs whitespace-nowrap">
@@ -382,17 +393,18 @@ export function ReportClient({
           },
           {
             header: 'Actions',
-            headerClassName: 'text-right',
-            className: 'text-right',
+            headerClassName: 'w-[15%] min-w-[130px] text-right',
+            className:
+              'w-[15%] min-w-[130px] text-right align-middle whitespace-nowrap',
             cell: (r) => (
-              <div className="flex items-center justify-end gap-1.5 sm:gap-2">
+              <div className="flex items-center justify-end gap-2 whitespace-nowrap">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => openUpdateModal(r)}
-                  className="h-8 min-h-0 rounded-xl border-[#d0d5cb] bg-white px-2.5 py-1 text-[11px] font-black text-[#193c1f] shadow-none hover:bg-[#f7f3ed]"
+                  className="text-[10px] sm:text-xs px-2 py-0.5 min-h-0 h-7 whitespace-nowrap flex items-center gap-1 shrink-0"
                 >
-                  <Pencil size={13} />
+                  <Pencil size={14} />
                   Update
                 </Button>
                 <Button
@@ -402,9 +414,9 @@ export function ReportClient({
                     setReportToDelete(r.id);
                     setIsDeleteAlertOpen(true);
                   }}
-                  className="h-8 min-h-0 rounded-xl border-red-200 bg-red-50 px-2.5 py-1 text-[11px] font-black text-red-600 shadow-none hover:border-red-300 hover:bg-red-100 hover:text-red-700"
+                  className="px-2 py-0.5 text-[10px] sm:text-xs h-7 min-h-0 text-red-600 hover:text-red-700 bg-red-50/50 hover:bg-red-50 whitespace-nowrap flex items-center gap-1 shrink-0"
                 >
-                  <Trash2 size={13} />
+                  <Trash2 size={14} />
                   Delete
                 </Button>
               </div>

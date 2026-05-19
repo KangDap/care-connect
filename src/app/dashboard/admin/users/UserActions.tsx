@@ -127,7 +127,7 @@ export function UserActions({ id, role, banned, name }: UserProps) {
   };
 
   return (
-    <div className="flex flex-wrap items-center justify-end gap-2">
+    <div className="flex items-center justify-end gap-2 whitespace-nowrap">
       <Toast
         show={toastState.show}
         msg={toastState.msg}
@@ -136,7 +136,7 @@ export function UserActions({ id, role, banned, name }: UserProps) {
       />
       <Button
         variant="outline"
-        className="text-[10px] sm:text-xs px-2 py-0.5 min-h-0 h-7"
+        className="text-[10px] sm:text-xs px-2 py-0.5 min-h-0 h-7 whitespace-nowrap flex items-center gap-1 shrink-0"
         onClick={() => {
           setNewRole(role);
           setIsModalOpen(true);
@@ -150,10 +150,10 @@ export function UserActions({ id, role, banned, name }: UserProps) {
         variant="outline"
         onClick={handleBanToggle}
         disabled={isUpdating}
-        className={`text-[10px] sm:text-xs px-2 py-0.5 min-h-0 h-7 ${
+        className={`text-[10px] sm:text-xs px-2 py-0.5 min-h-0 h-7 whitespace-nowrap flex items-center gap-1 shrink-0 ${
           banned
-            ? 'text-green-600 border-green-600 hover:bg-green-50'
-            : 'text-red-600 border-red-600 hover:bg-red-50'
+            ? 'text-green-600 hover:text-green-700 bg-green-50/50 hover:bg-green-50 border-green-200'
+            : 'text-red-600 hover:text-red-700 bg-red-50/50 hover:bg-red-50 border-red-200'
         }`}
       >
         {banned ? <ShieldCheck size={14} /> : <ShieldOff size={14} />}

@@ -69,14 +69,14 @@ export function ConsultationActions({
   };
 
   return (
-    <div className="flex flex-wrap items-center justify-end gap-2">
+    <div className="flex items-center justify-end gap-2 whitespace-nowrap">
       <Button
         variant="outline"
         onClick={() => {
           setNewStatus(status);
           setIsEditModalOpen(true);
         }}
-        className="text-[10px] sm:text-xs px-2 py-0.5 min-h-0 h-7"
+        className="text-[10px] sm:text-xs px-2 py-0.5 min-h-0 h-7 whitespace-nowrap flex items-center gap-1 shrink-0"
       >
         <Pencil size={14} />
         Edit
@@ -85,7 +85,7 @@ export function ConsultationActions({
         type="button"
         variant="outline"
         onClick={() => setIsDeleteAlertOpen(true)}
-        className="px-2 py-0.5 text-[10px] sm:text-xs h-7 min-h-0 text-red-600 hover:text-red-700 bg-red-50/50 hover:bg-red-50"
+        className="px-2 py-0.5 text-[10px] sm:text-xs h-7 min-h-0 text-red-600 hover:text-red-700 bg-red-50/50 hover:bg-red-50 whitespace-nowrap flex items-center gap-1 shrink-0"
       >
         <Trash2 size={14} />
         Delete

@@ -19,7 +19,7 @@ export const Modal = ({ isOpen, onClose, title, children }: ModalProps) => {
       />
 
       {/* Box Modal */}
-      <div className="relative bg-white w-full max-w-md rounded-[32px] p-10 shadow-2xl animate-in zoom-in duration-300">
+      <div className="relative bg-white w-full max-w-md rounded-[32px] p-10 shadow-2xl animate-in zoom-in duration-300 whitespace-normal break-words">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-xl font-black text-[#193c1f] tracking-tight">
             {title}

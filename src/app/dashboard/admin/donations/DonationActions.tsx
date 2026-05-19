@@ -76,12 +76,12 @@ export function DonationActions({
   };
 
   return (
-    <div className="flex flex-wrap items-center justify-end gap-2">
+    <div className="flex items-center justify-end gap-2 whitespace-nowrap">
       {/* Single compact "Manage" trigger */}
       <Button
         variant="outline"
         onClick={() => setIsEditModalOpen(true)}
-        className="text-[10px] sm:text-xs px-2 py-0.5 min-h-0 h-7"
+        className="text-[10px] sm:text-xs px-2 py-0.5 min-h-0 h-7 whitespace-nowrap flex items-center gap-1 shrink-0"
       >
         <Settings size={14} />
         Manage

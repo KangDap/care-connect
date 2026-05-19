@@ -51,6 +51,7 @@ export function UsersTable({
       columns={[
         {
           header: 'Name',
+          className: 'whitespace-nowrap',
           cell: (user) => (
             <div className="flex items-center gap-3">
               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-[#D0D5CB] bg-[#F7F3ED]">
@@ -58,34 +59,37 @@ export function UsersTable({
                   {user.name.charAt(0)}
                 </div>
               </div>
-              <span className="font-medium text-[#193C1F]">{user.name}</span>
+              <span className="font-medium text-[#193C1F] whitespace-nowrap">
+                {user.name}
+              </span>
             </div>
           ),
         },
         {
           header: 'Email',
-          className: 'text-gray-600',
+          className: 'text-gray-600 whitespace-nowrap',
           cell: (user) => user.email,
         },
         {
           header: 'Role',
-          className: 'text-gray-600 font-bold',
+          className: 'text-gray-600 font-bold whitespace-nowrap',
           cell: (user) => user.role,
         },
         {
           header: 'Joined',
-          className: 'text-gray-600',
+          className: 'text-gray-600 whitespace-nowrap',
           cell: (user) => fmtDate(user.createdAt),
         },
         {
           header: 'Status',
+          className: 'whitespace-nowrap',
           cell: (user) =>
             user.banned ? (
-              <span className="rounded-full border border-red-200 bg-red-100 px-2 py-1 text-xs font-bold text-red-700">
+              <span className="rounded-full border border-red-200 bg-red-100 px-2.5 py-1 text-xs font-bold text-red-700 whitespace-nowrap">
                 NON-ACTIVE
               </span>
             ) : (
-              <span className="rounded-full border border-green-200 bg-green-100 px-2 py-1 text-xs font-bold text-green-700">
+              <span className="rounded-full border border-green-200 bg-green-100 px-2.5 py-1 text-xs font-bold text-green-700 whitespace-nowrap">
                 ACTIVE
               </span>
             ),
@@ -93,7 +97,7 @@ export function UsersTable({
         {
           header: 'Actions',
           headerClassName: 'text-right',
-          className: 'text-right',
+          className: 'text-right whitespace-nowrap',
           cell: (user) => (
             <UserActions
               id={user.id}
