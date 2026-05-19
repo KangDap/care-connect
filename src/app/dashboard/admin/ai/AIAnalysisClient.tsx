@@ -18,6 +18,7 @@ import {
   Sparkles,
   Tags,
 } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 import type { ElementType, ReactNode } from 'react';
 
 const formatDuration = (durationMs: number) =>
@@ -275,13 +276,63 @@ export function AIAnalysisClient({
   canRunAnalysis = true,
   unavailableNotice,
 }: AIAnalysisClientProps) {
+  const searchParams = useSearchParams();
+  const searchQuery = (searchParams.get('search') || '').trim().toLowerCase();
   const { data, loading, error, analyze, reset } = useAIAnalysis();
+  const matchesSearch = (values: Array<number | string | undefined>) =>
+    !searchQuery ||
+    values.some((value) =>
+      String(value ?? '')
+        .toLowerCase()
+        .includes(searchQuery),
+    );
+
   const globalItemsets = topItems(
     data?.api_payload.global.frequent_itemsets,
     10,
+  ).filter((item) =>
+    matchesSearch([...item.itemsets, formatPercent(item.support)]),
   );
-  const globalRules = topItems(data?.api_payload.global.association_rules, 10);
-  const categoryEntries = Object.entries(data?.api_payload.by_category ?? {});
+  const globalRules = topItems(
+    data?.api_payload.global.association_rules,
+    10,
+  ).filter((rule) =>
+    matchesSearch([
+      ...rule.antecedents,
+      ...rule.consequents,
+      formatPercent(rule.confidence),
+      formatPercent(rule.support),
+      rule.lift.toFixed(2),
+    ]),
+  );
+  const categoryEntries = Object.entries(
+    data?.api_payload.by_category ?? {},
+  ).filter(([category, insights]) => {
+    if (!searchQuery) return true;
+
+    const itemsets = Array.isArray(insights)
+      ? insights
+      : (insights.frequent_itemsets ?? []);
+    const rules = Array.isArray(insights)
+      ? []
+      : (insights.association_rules ?? []);
+
+    return (
+      matchesSearch([category]) ||
+      itemsets.some((item) =>
+        matchesSearch([...item.itemsets, formatPercent(item.support)]),
+      ) ||
+      rules.some((rule) =>
+        matchesSearch([
+          ...rule.antecedents,
+          ...rule.consequents,
+          formatPercent(rule.confidence),
+          formatPercent(rule.support),
+          rule.lift.toFixed(2),
+        ]),
+      )
+    );
+  });
 
   const handleAnalyze = async () => {
     if (!canRunAnalysis) return;

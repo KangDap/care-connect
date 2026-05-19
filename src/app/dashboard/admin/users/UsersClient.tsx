@@ -1,6 +1,8 @@
 'use client';
 
 import { Table } from '@/components/table';
+import { useSearchParams } from 'next/navigation';
+import { useMemo } from 'react';
 
 import { UserActions } from './UserActions';
 import { UsersPagination } from './UsersPagination';
@@ -29,6 +31,9 @@ export function UsersClient({
   totalCount,
   totalPages,
 }: Props) {
+  const searchParams = useSearchParams();
+  const searchQuery = (searchParams.get('search') || '').trim().toLowerCase();
+
   const fmtDate = (d: Date | string) => {
     const date = typeof d === 'string' ? new Date(d) : d;
     return new Intl.DateTimeFormat('id-ID', {
@@ -38,15 +43,33 @@ export function UsersClient({
     }).format(date);
   };
 
+  const filteredUsers = useMemo(() => {
+    if (!searchQuery) return users;
+
+    return users.filter((user) =>
+      [
+        user.name,
+        user.email,
+        user.role,
+        user.banned ? 'non-active banned inactive' : 'active',
+        user.id,
+      ].some((value) => value.toLowerCase().includes(searchQuery)),
+    );
+  }, [searchQuery, users]);
+
   return (
     <Table
-      data={users}
+      data={filteredUsers}
       keyExtractor={(u) => u.id}
       emptyMessage="No users found."
-      paginationInfo={`Showing ${(page - 1) * perPage + 1}–${Math.min(
-        page * perPage,
-        totalCount,
-      )} of ${totalCount}`}
+      paginationInfo={
+        searchQuery
+          ? `Showing ${filteredUsers.length} of ${users.length} users on this page`
+          : `Showing ${(page - 1) * perPage + 1}–${Math.min(
+              page * perPage,
+              totalCount,
+            )} of ${totalCount}`
+      }
       paginationNode={
         totalPages > 1 ? <UsersPagination totalPages={totalPages} /> : null
       }

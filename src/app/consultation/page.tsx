@@ -64,6 +64,11 @@ export default function ConsultationPage() {
   const [timeSlots, setTimeSlots] = useState<ConsultationScheduleSlot[]>([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [todayWIB, setTodayWIB] = useState('');
+
+  useEffect(() => {
+    setTodayWIB(getTodayWIB());
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
@@ -346,7 +351,7 @@ export default function ConsultationPage() {
                   label="Preferred Date"
                   type="date"
                   id="consultation-date"
-                  min={getTodayWIB()}
+                  min={todayWIB || undefined}
                   value={selectedDate}
                   onChange={(e) => {
                     setSelectedDate(e.target.value);

@@ -18,7 +18,8 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useEffect, useMemo, useState } from 'react';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import React, { startTransition, useEffect, useMemo, useState } from 'react';
 
 interface Report {
   id: string;
@@ -64,11 +65,17 @@ const getStatusBadge = (status: string) => {
 
 const reportsPerPage = 6;
 
-const PublicReportsPage = () => {
+const PublicReportsContent = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const searchParamValue = searchParams.get('search') || '';
+  const searchParamsString = searchParams.toString();
+
   const [reports, setReports] = useState<Report[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(searchParamValue);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedStatus, setSelectedStatus] = useState('ALL');
   const [locationFilter, setLocationFilter] = useState('');
@@ -95,6 +102,35 @@ const PublicReportsPage = () => {
     fetchReports();
   }, []);
 
+  useEffect(() => {
+    startTransition(() => {
+      setSearchQuery(searchParamValue);
+      setCurrentPage(1);
+    });
+  }, [searchParamValue]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      const normalizedSearch = searchQuery.trim();
+      if (searchParamValue === normalizedSearch) return;
+
+      const params = new URLSearchParams(searchParamsString);
+      if (normalizedSearch) {
+        params.set('search', normalizedSearch);
+      } else {
+        params.delete('search');
+      }
+      params.delete('page');
+
+      const queryString = params.toString();
+      router.replace(queryString ? `${pathname}?${queryString}` : pathname, {
+        scroll: false,
+      });
+    }, 300);
+
+    return () => clearTimeout(handler);
+  }, [pathname, router, searchParamValue, searchParamsString, searchQuery]);
+
   const handleCategoryToggle = (category: string) => {
     setCurrentPage(1);
     setSelectedCategories((prev) =>
@@ -118,7 +154,7 @@ const PublicReportsPage = () => {
   const filteredReports = useMemo(() => {
     return reports
       .filter((report) => {
-        const normalizedSearch = searchQuery.toLowerCase();
+        const normalizedSearch = searchQuery.trim().toLowerCase();
         const matchesSearch =
           report.title.toLowerCase().includes(normalizedSearch) ||
           report.description.toLowerCase().includes(normalizedSearch);
@@ -427,4 +463,24 @@ const PublicReportsPage = () => {
   );
 };
 
-export default PublicReportsPage;
+export default function PublicReportsPage() {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="min-h-screen bg-[#f7f3ed] text-[#193c1f]">
+          <PublicHeader />
+          <main className="mx-auto w-full max-w-7xl px-6 py-10 md:px-12">
+            <Card className="rounded-3xl py-16 text-center">
+              <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-[#193c1f]" />
+              <p className="mt-4 text-xs font-black uppercase tracking-widest text-[#8ea087]">
+                Loading reports...
+              </p>
+            </Card>
+          </main>
+        </div>
+      }
+    >
+      <PublicReportsContent />
+    </React.Suspense>
+  );
+}

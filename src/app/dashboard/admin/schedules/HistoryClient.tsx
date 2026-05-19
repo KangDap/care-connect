@@ -6,7 +6,8 @@ import { Table } from '@/components/table';
 import { Calendar, Loader2, Pencil, User } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import React, { useEffect, useMemo, useState } from 'react';
 
 interface PsychologistSummary {
   id: string;
@@ -16,6 +17,8 @@ interface PsychologistSummary {
 }
 
 export default function HistoryClient() {
+  const searchParams = useSearchParams();
+  const searchQuery = (searchParams.get('search') || '').trim().toLowerCase();
   const [psychologists, setPsychologists] = useState<PsychologistSummary[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -35,6 +38,18 @@ export default function HistoryClient() {
     };
     fetchPsychologists();
   }, []);
+
+  const filteredPsychologists = useMemo(() => {
+    if (!searchQuery) return psychologists;
+
+    return psychologists.filter((psychologist) =>
+      [
+        psychologist.name,
+        psychologist.id,
+        ...(psychologist.activeDays ?? []),
+      ].some((value) => value.toLowerCase().includes(searchQuery)),
+    );
+  }, [psychologists, searchQuery]);
 
   if (loading) {
     return (
@@ -68,7 +83,7 @@ export default function HistoryClient() {
 
       {/* Table of Psychologists */}
       <Table
-        data={psychologists}
+        data={filteredPsychologists}
         keyExtractor={(psy) => psy.id}
         emptyMessage="No psychologists found in database."
         columns={[

@@ -1,3 +1,5 @@
+import { Suspense } from 'react';
+
 import { AIAnalysisClient } from './AIAnalysisClient';
 
 export const metadata = {
@@ -6,5 +8,15 @@ export const metadata = {
 };
 
 export default function AdminAIAnalysisPage() {
-  return <AIAnalysisClient />;
+  return (
+    <Suspense
+      fallback={
+        <div className="py-10 text-center text-sm font-bold text-[#8ea087]">
+          Loading AI analysis...
+        </div>
+      }
+    >
+      <AIAnalysisClient />
+    </Suspense>
+  );
 }

@@ -102,6 +102,8 @@ const uid = () => Math.random().toString(36).substring(2, 9);
 
 export default function AdminSchedulePage() {
   const searchParams = useSearchParams();
+  const initialPsychologistId = searchParams.get('id') || '';
+  const searchQuery = (searchParams.get('search') || '').trim().toLowerCase();
 
   const [psychologists, setPsychologists] = useState<Psychologist[]>([]);
   const [selectedPsyId, setSelectedPsyId] = useState<string>('');
@@ -123,7 +125,7 @@ export default function AdminSchedulePage() {
         if (data.success) {
           console.log('Psychologists fetched:', data.data);
           setPsychologists(data.data);
-          const initialId = searchParams.get('id') || data.data[0]?.id;
+          const initialId = initialPsychologistId || data.data[0]?.id;
           if (initialId) setSelectedPsyId(initialId);
         } else {
           console.error('API Error fetching psychologists:', data);
@@ -136,7 +138,7 @@ export default function AdminSchedulePage() {
       }
     };
     fetchPsychologists();
-  }, [searchParams]);
+  }, [initialPsychologistId]);
 
   // 2. Fetch Schedule when Psychologist changes
   useEffect(() => {
@@ -184,6 +186,13 @@ export default function AdminSchedulePage() {
   }, [selectedPsyId]);
 
   const selectedPsy = psychologists.find((p) => p.id === selectedPsyId);
+  const visiblePsychologists = psychologists.filter((psychologist) => {
+    if (!searchQuery) return true;
+
+    return [psychologist.name, psychologist.id].some((value) =>
+      value.toLowerCase().includes(searchQuery),
+    );
+  });
 
   // Toggle whether a day is active
   const toggleDay = (day: Day) => {
@@ -400,18 +409,20 @@ export default function AdminSchedulePage() {
 
           {dropdownOpen && (
             <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-[#d0d5cb] rounded-2xl shadow-xl z-50 overflow-hidden max-h-60 overflow-y-auto">
-              {psychologists.length === 0 ? (
+              {visiblePsychologists.length === 0 ? (
                 <div className="px-5 py-8 text-center">
                   <User
                     size={32}
                     className="mx-auto text-[#d0d5cb] mb-2 opacity-20"
                   />
                   <p className="text-xs text-[#8ea087] font-medium">
-                    No active psychologists found
+                    {psychologists.length === 0
+                      ? 'No active psychologists found'
+                      : 'No psychologists match your search'}
                   </p>
                 </div>
               ) : (
-                psychologists.map((psy) => (
+                visiblePsychologists.map((psy) => (
                   <Button
                     key={psy.id}
                     onClick={() => {

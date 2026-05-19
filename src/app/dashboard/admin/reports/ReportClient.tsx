@@ -8,8 +8,8 @@ import { Table } from '@/components/table';
 import { Toast } from '@/components/toast';
 import { FileText, Pencil, Trash2 } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { useMemo, useState } from 'react';
 
 const STATUS_BADGE: Record<string, string> = {
   PENDING: 'bg-amber-100 text-amber-700 border-amber-200',
@@ -61,6 +61,8 @@ export function ReportClient({
   perPage: number;
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const searchQuery = (searchParams.get('search') || '').trim().toLowerCase();
   const [toastState, setToastState] = useState<{
     show: boolean;
     msg: string;
@@ -86,6 +88,37 @@ export function ReportClient({
       currency: 'IDR',
       minimumFractionDigits: 0,
     }).format(v);
+
+  const buildReportsHref = (status: string, pageValue?: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('status', status);
+    if (pageValue && pageValue > 1) {
+      params.set('page', String(pageValue));
+    } else {
+      params.delete('page');
+    }
+
+    const queryString = params.toString();
+    return `/dashboard/admin/reports${queryString ? `?${queryString}` : ''}`;
+  };
+
+  const filteredReports = useMemo(() => {
+    if (!searchQuery) return reports;
+
+    return reports.filter((report) =>
+      [
+        report.title,
+        report.description,
+        report.status,
+        report.category,
+        report.city,
+        report.province,
+        report.user?.name,
+        report.user?.email,
+        String(report.id),
+      ].some((value) => (value ?? '').toLowerCase().includes(searchQuery)),
+    );
+  }, [reports, searchQuery]);
 
   const openUpdateModal = (r: ReportType) => {
     setSelectedReport(r);
@@ -173,7 +206,7 @@ export function ReportClient({
         {tabs.map((tab) => (
           <Link
             key={tab.value}
-            href={`/dashboard/admin/reports?status=${tab.value}`}
+            href={buildReportsHref(tab.value)}
             className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border ${
               activeTab === tab.value
                 ? 'bg-[#193c1f] text-white border-[#193c1f]'
@@ -191,15 +224,17 @@ export function ReportClient({
       </div>
 
       <Table
-        data={reports}
+        data={filteredReports}
         keyExtractor={(r) => r.id}
         emptyMessage="No reports found."
         currentPage={page}
         totalPages={totalPages}
-        onPageChange={(p) =>
-          router.push(`/dashboard/admin/reports?status=${activeTab}&page=${p}`)
+        onPageChange={(p) => router.push(buildReportsHref(activeTab, p))}
+        paginationInfo={
+          searchQuery
+            ? `Showing ${filteredReports.length} of ${reports.length} reports on this page`
+            : `Showing ${(page - 1) * perPage + 1}–${Math.min(page * perPage, totalCount)} of ${totalCount}`
         }
-        paginationInfo={`Showing ${(page - 1) * perPage + 1}–${Math.min(page * perPage, totalCount)} of ${totalCount}`}
         renderExpandedRow={(r) => (
           <div className="p-4 sm:p-5 bg-white border border-[#d0d5cb]/40 rounded-[18px] shadow-sm">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
@@ -355,9 +390,9 @@ export function ReportClient({
                   type="button"
                   variant="outline"
                   onClick={() => openUpdateModal(r)}
-                  className="px-2 py-0.5 text-[10px] sm:text-xs h-7 min-h-0 text-blue-600 hover:text-blue-700 bg-blue-50/50 hover:bg-blue-50"
+                  className="h-8 min-h-0 rounded-xl border-[#d0d5cb] bg-white px-2.5 py-1 text-[11px] font-black text-[#193c1f] shadow-none hover:bg-[#f7f3ed]"
                 >
-                  <Pencil size={14} />
+                  <Pencil size={13} />
                   Update
                 </Button>
                 <Button
@@ -367,9 +402,9 @@ export function ReportClient({
                     setReportToDelete(r.id);
                     setIsDeleteAlertOpen(true);
                   }}
-                  className="px-2 py-0.5 text-[10px] sm:text-xs h-7 min-h-0 text-red-600 hover:text-red-700 bg-red-50/50 hover:bg-red-50"
+                  className="h-8 min-h-0 rounded-xl border-red-200 bg-red-50 px-2.5 py-1 text-[11px] font-black text-red-600 shadow-none hover:border-red-300 hover:bg-red-100 hover:text-red-700"
                 >
-                  <Trash2 size={14} />
+                  <Trash2 size={13} />
                   Delete
                 </Button>
               </div>

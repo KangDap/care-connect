@@ -38,12 +38,13 @@ export function CommunityTable({
       data={channels}
       keyExtractor={(ch) => ch.id}
       emptyMessage="No channels found."
+      minWidth="min-w-[780px]"
       columns={[
         {
           header: 'Channel Name',
           cell: (ch) => (
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl overflow-hidden bg-[#F7F3ED] flex items-center justify-center border border-[#D0D5CB] shrink-0 relative">
+            <div className="flex min-w-[260px] items-center gap-3">
+              <div className="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#D0D5CB] bg-[#F7F3ED] md:h-10 md:w-10">
                 {ch.coverUrl ? (
                   <Image
                     src={ch.coverUrl}
@@ -81,24 +82,27 @@ export function CommunityTable({
         },
         {
           header: 'Actions',
-          headerClassName: 'text-right',
-          className: 'text-right w-40',
+          headerClassName: 'w-[196px] min-w-[196px] text-right',
+          className:
+            'w-[196px] min-w-[196px] text-right align-middle whitespace-nowrap',
           cell: (ch) => (
-            <div className="flex flex-wrap items-center justify-end gap-2">
+            <div className="grid w-full grid-cols-2 gap-2">
               <Button
+                type="button"
                 onClick={() => onEdit(ch)}
                 variant="outline"
-                className="text-[10px] sm:text-xs px-2 py-0.5 min-h-0 h-7"
+                className="h-9 min-h-0 w-full shrink-0 whitespace-nowrap rounded-xl border-[#d0d5cb] bg-white px-2 py-0 text-[11px] font-black text-[#193c1f] shadow-none hover:bg-[#f7f3ed]"
               >
-                <Pencil size={14} />
+                <Pencil size={13} className="shrink-0" />
                 Edit
               </Button>
               <Button
+                type="button"
                 onClick={() => onDelete(ch.id)}
                 variant="outline"
-                className="text-[10px] sm:text-xs px-2 py-0.5 min-h-0 h-7 text-red-600 hover:text-red-700 border-red-200 hover:bg-red-50 hover:border-red-300"
+                className="h-9 min-h-0 w-full shrink-0 whitespace-nowrap rounded-xl border-red-200 bg-red-50 px-2 py-0 text-[11px] font-black text-red-600 shadow-none hover:border-red-300 hover:bg-red-100 hover:text-red-700"
               >
-                <Trash2 size={14} />
+                <Trash2 size={13} className="shrink-0" />
                 Delete
               </Button>
             </div>

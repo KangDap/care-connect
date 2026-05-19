@@ -67,10 +67,13 @@ const HeaderInner = ({
         const params = new URLSearchParams(searchParams.toString());
         if (searchQuery) {
           params.set('search', searchQuery);
+          params.delete('page');
         } else {
           params.delete('search');
         }
-        router.push(`${pathname}?${params.toString()}`);
+
+        const queryString = params.toString();
+        router.push(queryString ? `${pathname}?${queryString}` : pathname);
       }
     }, 300);
     return () => clearTimeout(handler);
