@@ -1,4 +1,5 @@
 import {
+  sendExistingUserSignUpAttemptEmail,
   sendResetPasswordEmail,
   sendVerificationEmail,
 } from '@/lib/email/email';
@@ -46,6 +47,9 @@ export const auth = betterAuth({
     autoSignIn: false,
     sendResetPassword: async ({ user, url }) => {
       void sendResetPasswordEmail({ user, url });
+    },
+    onExistingUserSignUp: async ({ user }) => {
+      void sendExistingUserSignUpAttemptEmail(user.email);
     },
   },
   emailVerification: {

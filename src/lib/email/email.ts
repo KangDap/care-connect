@@ -11,6 +11,10 @@ const resetPasswordTemplate = readFileSync(
   join(process.cwd(), 'src/lib/email/templates/reset-password.html'),
   'utf8',
 );
+const emailExistTemplate = readFileSync(
+  join(process.cwd(), 'src/lib/email/templates/email-exist.html'),
+  'utf8',
+);
 
 const smtpPort = Number(process.env.SMTP_PORT ?? 587);
 const hasSmtpConfig =
@@ -18,6 +22,29 @@ const hasSmtpConfig =
   !!process.env.SMTP_USER &&
   !!process.env.SMTP_PASS &&
   !!process.env.SMTP_FROM;
+
+function renderEmailExistTemplate({ userEmail }: { userEmail: string }) {
+  return emailExistTemplate
+    .replaceAll('{{app_name}}', escapeHtml(APP_NAME))
+    .replaceAll('{{user_email}}', escapeHtml(userEmail));
+}
+
+export async function sendExistingUserSignUpAttemptEmail(userEmail: string) {
+  if (!transporter) {
+    console.warn(
+      'SMTP is not configured. Existing user sign-up attempt email was not sent automatically.',
+    );
+    console.info(`Existing user sign-up attempt notification for ${userEmail}`);
+    return;
+  }
+
+  await transporter.sendMail({
+    from: process.env.SMTP_FROM,
+    to: userEmail,
+    subject: 'Someone tried to sign up with your email',
+    html: renderEmailExistTemplate({ userEmail }),
+  });
+}
 
 const transporter = hasSmtpConfig
   ? nodemailer.createTransport({

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Sign Up Attempt</title>
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f8fafc;
+            margin: 0;
+            padding: 0;
+            color: #1e293b;
+        }
+        .container {
+            max-width: 600px;
+            margin: 40px auto;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+        .header {
+            background-color: #f59e42; /* Orange caution */
+            padding: 32px;
+            text-align: center;
+        }
+        .header h1 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .content {
+            padding: 40px;
+        }
+        .content p {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+        .footer {
+            padding: 32px;
+            background-color: #f1f5f9;
+            text-align: center;
+            font-size: 14px;
+            color: #64748b;
+        }
+        .footer p {
+            margin: 4px 0;
+        }
+        .divider {
+            height: 1px;
+            background-color: #e2e8f0;
+            margin: 32px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{app_name}}</h1>
+        </div>
+        <div class="content">
+            <p>Hi,</p>
+            <p>Someone just tried to sign up to <strong>{{app_name}}</strong> using your email address (<strong>{{user_email}}</strong>).</p>
+            <p>If this was you, you can ignore this message. If this wasn't you, your email is safe and no new account was created.</p>
+            <div class="divider"></div>
+            <p>For your security, you may want to ensure your password is strong and not shared elsewhere.</p>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 {{app_name}}. All rights reserved.</p>
+            <p>Bandung, Indonesia</p>
+        </div>
+    </div>
+</body>
+</html>
