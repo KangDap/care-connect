@@ -119,21 +119,6 @@ const UserCheckIcon = ({ className }: IconProps) => (
   </svg>
 );
 
-const HelpIcon = () => (
-  <svg
-    width="20"
-    height="20"
-    viewBox="0 0 20 20"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.66667"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M7.5 6.66667C7.5 5.28613 8.61929 4.16667 10 4.16667C11.3807 4.16667 12.5 5.28613 12.5 6.66667C12.5 8.04721 11.3807 9.16667 10 9.16667V10.8333M10 14.1667H10.0083M18.3333 10C18.3333 14.6024 14.6024 18.3333 10 18.3333C5.39763 18.3333 1.66667 14.6024 1.66667 10C1.66667 5.39763 5.39763 1.66667 10 1.66667C14.6024 1.66667 18.3333 5.39763 18.3333 10Z" />
-  </svg>
-);
-
 const FeatureCard = ({
   icon: Icon,
   text,
@@ -284,10 +269,6 @@ export default function LoginPage() {
         <div className="flex items-center gap-2">
           <LanguageToggle compact />
           <ThemeToggle />
-          <Button variant="outline" className="h-[44px] px-3 sm:px-7">
-            <HelpIcon />
-            <span className="hidden sm:inline">Help Center</span>
-          </Button>
         </div>
       </header>
 
@@ -598,13 +579,6 @@ export default function LoginPage() {
 
       <footer className="flex min-h-[64px] flex-col items-center justify-between gap-3 border-t border-[#d0d5cb] bg-[#f7f3ed] px-4 py-4 text-center text-[12px] text-[#193c1f] opacity-60 sm:px-6 md:flex-row md:text-left lg:px-12">
         <p>© 2026 CareConnect. Supporting resilience and safety.</p>
-        <nav className="flex flex-wrap justify-center gap-4 sm:gap-8">
-          {['Privacy Guide', 'Community Standards', 'Contact'].map((link) => (
-            <a key={link} href="#" className="hover:underline no-underline">
-              {link}
-            </a>
-          ))}
-        </nav>
       </footer>
 
       {/* Modal / Popup for Reset Password Notification */}

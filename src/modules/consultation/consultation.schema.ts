@@ -35,8 +35,8 @@ export class ConsultationSchema {
       .nullable()
       .optional()
       .refine(
-        (file) => !file || file.size <= 5 * 1024 * 1024,
-        'Ukuran file maksimal 5MB',
+        (file) => !file || file.size <= 10 * 1024 * 1024,
+        'Ukuran file maksimal 10MB',
       ),
   });
 
