@@ -33,7 +33,7 @@ export default function ProfileManagement() {
   const [toast, setToast] = useState<{
     show: boolean;
     msg: string;
-    type: 'success' | 'error';
+    type: 'success' | 'error' | 'info';
   }>({
     show: false,
     msg: '',
@@ -56,23 +56,47 @@ export default function ProfileManagement() {
     avatarUrl: '',
   });
 
+  const [initialFormData, setInitialFormData] = useState({
+    email: '',
+    userName: '',
+    bio: '',
+    birthDate: '',
+    gender: 'PREFER_NOT_TO_SAY',
+    phoneNumber: '',
+    avatarUrl: '',
+  });
+
   useEffect(() => {
     if (session?.user) {
       // Cast ke CustomUser & tipe bawaan session
       const u = session.user as CustomUser;
-      setFormData({
+      const parsedBirthDate = u.dateOfBirth ? new Date(u.dateOfBirth) : null;
+      const formattedBirthDate =
+        parsedBirthDate && !isNaN(parsedBirthDate.getTime())
+          ? parsedBirthDate.toISOString().slice(0, 10)
+          : '';
+
+      const data = {
         email: u.email ?? '',
         userName: u.username ?? '',
         bio: u.bio ?? '',
-        birthDate: u.dateOfBirth
-          ? new Date(u.dateOfBirth).toISOString().slice(0, 10)
-          : '',
+        birthDate: formattedBirthDate,
         gender: u.gender ?? 'PREFER_NOT_TO_SAY',
         phoneNumber: u.phoneNumber ?? '',
         avatarUrl: u.image ?? '',
-      });
+      };
+      setFormData(data);
+      setInitialFormData(data);
     }
   }, [session]);
+
+  const hasChanges =
+    formData.userName !== initialFormData.userName ||
+    formData.bio !== initialFormData.bio ||
+    formData.birthDate !== initialFormData.birthDate ||
+    formData.gender !== initialFormData.gender ||
+    formData.phoneNumber !== initialFormData.phoneNumber ||
+    formData.avatarUrl !== initialFormData.avatarUrl;
 
   const handleSaveProfile = async () => {
     setLoading(true);
@@ -106,13 +130,21 @@ export default function ProfileManagement() {
         }
       }
 
+      const parsedBirthDate = formData.birthDate
+        ? new Date(formData.birthDate)
+        : null;
+      const cleanBirthDate =
+        parsedBirthDate && !isNaN(parsedBirthDate.getTime())
+          ? parsedBirthDate
+          : undefined;
+
       const { error } = await authClient.updateUser({
         username: normalizedUsername,
         image: formData.avatarUrl,
         // @ts-expect-error: bio and other fields are custom extensions
         bio: formData.bio,
         phoneNumber: formData.phoneNumber,
-        dateOfBirth: new Date(formData.birthDate),
+        dateOfBirth: cleanBirthDate,
         gender: formData.gender,
       });
       if (error) throw error;
@@ -132,6 +164,10 @@ export default function ProfileManagement() {
         show: true,
         msg: 'Profile updated successfully!',
         type: 'success',
+      });
+      setInitialFormData({
+        ...formData,
+        userName: normalizedUsername,
       });
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Update failed';
@@ -385,7 +421,7 @@ export default function ProfileManagement() {
                 variant="secondary"
                 className="px-12 h-14 w-full md:w-auto shadow-lg shadow-[#193c1f]/10"
                 onClick={handleSaveProfile}
-                disabled={loading}
+                disabled={loading || !hasChanges}
               >
                 {loading ? 'Saving Changes...' : 'Save All Changes'}
               </Button>

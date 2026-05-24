@@ -79,7 +79,7 @@ export async function POST(req: NextRequest) {
       try {
         const json = JSON.parse(errorData);
         parsedError = json.detail || json.message || errorData;
-      } catch (e) {
+      } catch {
         // Not valid JSON, keep the original text
       }
 
