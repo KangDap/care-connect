@@ -615,6 +615,45 @@ describe('CommunityChatService', () => {
     );
   });
 
+  it('throws storage error when creating channel cover upload fails', async () => {
+    const coverImage = new File(['image'], 'cover.png', {
+      type: 'image/png',
+    });
+
+    const upload = vi.fn().mockResolvedValue({
+      error: {
+        message: 'upload failed',
+      },
+    });
+
+    const getPublicUrl = vi.fn();
+
+    const from = vi.fn().mockReturnValue({
+      upload,
+      getPublicUrl,
+    });
+
+    mocks.getSupabaseClient.mockReturnValue({
+      storage: {
+        from,
+      },
+    });
+
+    await expect(
+      CommunityChatService.createNewChannel('admin-1', 'ADMIN', {
+        name: 'Safe Space',
+        type: 'PUBLIC',
+        coverImage,
+      }),
+    ).rejects.toMatchObject({
+      status: 500,
+      code: 'STORAGE_ERROR',
+    });
+
+    expect(mocks.repository.createChannel).not.toHaveBeenCalled();
+    expect(mocks.repository.addMember).not.toHaveBeenCalled();
+  });
+
   it('allows admin to update channel', async () => {
     mocks.repository.getChannelById.mockResolvedValue({
       id: 1,
@@ -699,6 +738,140 @@ describe('CommunityChatService', () => {
     ).rejects.toMatchObject({
       status: 404,
       code: 'NOT_FOUND',
+    });
+  });
+
+  it('uploads new cover image when updating channel', async () => {
+    const coverImage = new File(['image'], 'updated-cover.png', {
+      type: 'image/png',
+    });
+
+    const upload = vi.fn().mockResolvedValue({
+      error: null,
+    });
+
+    const getPublicUrl = vi.fn().mockReturnValue({
+      data: {
+        publicUrl: 'https://cdn.test/updated-cover.png',
+      },
+    });
+
+    const from = vi.fn().mockReturnValue({
+      upload,
+      getPublicUrl,
+    });
+
+    mocks.repository.getChannelById.mockResolvedValue({
+      id: 1,
+      name: 'Old Channel',
+    });
+
+    mocks.getSupabaseClient.mockReturnValue({
+      storage: {
+        from,
+      },
+    });
+
+    mocks.repository.updateChannel.mockResolvedValue({
+      id: 1,
+      name: 'Updated Channel',
+      coverUrl: 'https://cdn.test/updated-cover.png',
+    });
+
+    const result = await CommunityChatService.updateChannel(
+      'admin-1',
+      'ADMIN',
+      1,
+      {
+        name: 'Updated Channel',
+        coverImage,
+      },
+    );
+
+    expect(result.coverUrl).toBe('https://cdn.test/updated-cover.png');
+    expect(from).toHaveBeenCalledWith('community-chat-profile');
+    expect(upload).toHaveBeenCalled();
+
+    expect(mocks.repository.updateChannel).toHaveBeenCalledWith(
+      1,
+      expect.objectContaining({
+        name: 'Updated Channel',
+        coverUrl: 'https://cdn.test/updated-cover.png',
+      }),
+    );
+  });
+
+  it('throws storage error when updating channel cover upload fails', async () => {
+    const coverImage = new File(['image'], 'broken-cover.png', {
+      type: 'image/png',
+    });
+
+    const upload = vi.fn().mockResolvedValue({
+      error: {
+        message: 'upload failed',
+      },
+    });
+
+    const getPublicUrl = vi.fn();
+
+    const from = vi.fn().mockReturnValue({
+      upload,
+      getPublicUrl,
+    });
+
+    mocks.repository.getChannelById.mockResolvedValue({
+      id: 1,
+      name: 'Old Channel',
+    });
+
+    mocks.getSupabaseClient.mockReturnValue({
+      storage: {
+        from,
+      },
+    });
+
+    await expect(
+      CommunityChatService.updateChannel('admin-1', 'ADMIN', 1, {
+        name: 'Updated Channel',
+        coverImage,
+      }),
+    ).rejects.toMatchObject({
+      status: 500,
+      code: 'STORAGE_ERROR',
+    });
+
+    expect(mocks.repository.updateChannel).not.toHaveBeenCalled();
+  });
+
+  it('updates channel with existing coverUrl when no new cover image is uploaded', async () => {
+    mocks.repository.getChannelById.mockResolvedValue({
+      id: 1,
+      name: 'Old Channel',
+    });
+
+    mocks.getSupabaseClient.mockReturnValue(null);
+
+    mocks.repository.updateChannel.mockResolvedValue({
+      id: 1,
+      name: 'Updated Channel',
+      coverUrl: 'https://cdn.test/existing-cover.png',
+    });
+
+    const result = await CommunityChatService.updateChannel(
+      'admin-1',
+      'ADMIN',
+      1,
+      {
+        name: 'Updated Channel',
+        coverUrl: 'https://cdn.test/existing-cover.png',
+      },
+    );
+
+    expect(result.coverUrl).toBe('https://cdn.test/existing-cover.png');
+
+    expect(mocks.repository.updateChannel).toHaveBeenCalledWith(1, {
+      name: 'Updated Channel',
+      coverUrl: 'https://cdn.test/existing-cover.png',
     });
   });
 
@@ -871,6 +1044,235 @@ describe('CommunityChatService', () => {
     ).rejects.toMatchObject({
       status: 404,
       code: 'NOT_FOUND',
+    });
+  });
+
+  it('allows owner to change member role and records system message', async () => {
+    mocks.repository.checkMembership
+      .mockResolvedValueOnce({
+        role: 'OWNER',
+      })
+      .mockResolvedValueOnce({
+        role: 'MEMBER',
+      });
+
+    mocks.repository.updateMemberRole.mockResolvedValue({
+      userId: 'member-1',
+      channelId: 1,
+      role: 'MODERATOR',
+    });
+
+    mocks.repository.getUserById
+      .mockResolvedValueOnce({
+        name: 'Owner User',
+      })
+      .mockResolvedValueOnce({
+        name: 'Member User',
+      });
+
+    const result = await CommunityChatService.changeUserRole(
+      'owner-1',
+      'USER',
+      'member-1',
+      1,
+      'MODERATOR',
+    );
+
+    expect(result).toEqual({
+      userId: 'member-1',
+      channelId: 1,
+      role: 'MODERATOR',
+    });
+
+    expect(mocks.repository.updateMemberRole).toHaveBeenCalledWith(
+      'member-1',
+      1,
+      'MODERATOR',
+    );
+
+    expect(mocks.repository.sendMessage).toHaveBeenCalledWith('owner-1', {
+      channelId: 1,
+      content: 'Role Member User was changed to MODERATOR by Owner User',
+      isSystem: true,
+    });
+  });
+
+  it('allows global admin to change member role without channel owner membership', async () => {
+    mocks.repository.checkMembership
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({
+        role: 'MEMBER',
+      });
+
+    mocks.repository.updateMemberRole.mockResolvedValue({
+      userId: 'member-1',
+      channelId: 1,
+      role: 'OWNER',
+    });
+
+    mocks.repository.getUserById
+      .mockResolvedValueOnce({
+        name: 'Global Admin',
+      })
+      .mockResolvedValueOnce({
+        name: 'Member User',
+      });
+
+    const result = await CommunityChatService.changeUserRole(
+      'admin-1',
+      'ADMIN',
+      'member-1',
+      1,
+      'OWNER',
+    );
+
+    expect(result.role).toBe('OWNER');
+
+    expect(mocks.repository.updateMemberRole).toHaveBeenCalledWith(
+      'member-1',
+      1,
+      'OWNER',
+    );
+  });
+
+  it('prevents normal member from changing user role', async () => {
+    mocks.repository.checkMembership.mockResolvedValueOnce({
+      role: 'MEMBER',
+    });
+
+    await expect(
+      CommunityChatService.changeUserRole(
+        'user-1',
+        'USER',
+        'member-1',
+        1,
+        'MODERATOR',
+      ),
+    ).rejects.toMatchObject({
+      status: 403,
+      code: 'FORBIDDEN',
+    });
+
+    expect(mocks.repository.updateMemberRole).not.toHaveBeenCalled();
+  });
+
+  it('throws notFound when changing role of user who is not a channel member', async () => {
+    mocks.repository.checkMembership
+      .mockResolvedValueOnce({
+        role: 'OWNER',
+      })
+      .mockResolvedValueOnce(null);
+
+    await expect(
+      CommunityChatService.changeUserRole(
+        'owner-1',
+        'USER',
+        'target-1',
+        1,
+        'MEMBER',
+      ),
+    ).rejects.toMatchObject({
+      status: 404,
+      code: 'NOT_FOUND',
+    });
+
+    expect(mocks.repository.updateMemberRole).not.toHaveBeenCalled();
+  });
+
+  it('prevents owner from changing role of banned user', async () => {
+    mocks.repository.checkMembership
+      .mockResolvedValueOnce({
+        role: 'OWNER',
+      })
+      .mockResolvedValueOnce({
+        role: 'BANNED',
+      });
+
+    await expect(
+      CommunityChatService.changeUserRole(
+        'owner-1',
+        'USER',
+        'banned-1',
+        1,
+        'MEMBER',
+      ),
+    ).rejects.toMatchObject({
+      status: 403,
+      code: 'FORBIDDEN',
+    });
+
+    expect(mocks.repository.updateMemberRole).not.toHaveBeenCalled();
+  });
+
+  it('allows global admin to change role of banned user', async () => {
+    mocks.repository.checkMembership
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({
+        role: 'BANNED',
+      });
+
+    mocks.repository.updateMemberRole.mockResolvedValue({
+      userId: 'banned-1',
+      channelId: 1,
+      role: 'MEMBER',
+    });
+
+    mocks.repository.getUserById
+      .mockResolvedValueOnce({
+        name: 'Global Admin',
+      })
+      .mockResolvedValueOnce({
+        name: 'Banned User',
+      });
+
+    const result = await CommunityChatService.changeUserRole(
+      'admin-1',
+      'ADMIN',
+      'banned-1',
+      1,
+      'MEMBER',
+    );
+
+    expect(result.role).toBe('MEMBER');
+
+    expect(mocks.repository.updateMemberRole).toHaveBeenCalledWith(
+      'banned-1',
+      1,
+      'MEMBER',
+    );
+  });
+
+  it('uses fallback names when role change system message users are missing', async () => {
+    mocks.repository.checkMembership
+      .mockResolvedValueOnce({
+        role: 'OWNER',
+      })
+      .mockResolvedValueOnce({
+        role: 'MEMBER',
+      });
+
+    mocks.repository.updateMemberRole.mockResolvedValue({
+      userId: 'member-1',
+      channelId: 1,
+      role: 'MODERATOR',
+    });
+
+    mocks.repository.getUserById
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce(null);
+
+    await CommunityChatService.changeUserRole(
+      'owner-1',
+      'USER',
+      'member-1',
+      1,
+      'MODERATOR',
+    );
+
+    expect(mocks.repository.sendMessage).toHaveBeenCalledWith('owner-1', {
+      channelId: 1,
+      content: 'Role A user was changed to MODERATOR by Admin',
+      isSystem: true,
     });
   });
 });
