@@ -158,30 +158,47 @@ export default function ReportForm({
 
   const isStep1Valid = () => {
     return (
-      formData.title.trim() !== '' &&
+      formData.title.trim().length >= 5 &&
       formData.type !== '' &&
       formData.date !== '' &&
       formData.province !== '' &&
       formData.city !== '' &&
       formData.district !== '' &&
-      formData.description.trim() !== ''
+      formData.description.trim().length >= 10
     );
   };
 
   const handleAction = async () => {
     if (currentStep === 1) {
-      if (isStep1Valid()) {
-        setIsSubmitting(true);
-        await new Promise((r) => setTimeout(r, 800));
-        setCurrentStep(2);
-        setIsSubmitting(false);
-      } else {
+      if (formData.title.trim().length < 5) {
+        setToast({
+          show: true,
+          msg: 'Title must be at least 5 characters long.',
+          type: 'error',
+        });
+        return;
+      }
+      if (formData.description.trim().length < 10) {
+        setToast({
+          show: true,
+          msg: 'Description must be at least 10 characters long.',
+          type: 'error',
+        });
+        return;
+      }
+      if (!isStep1Valid()) {
         setToast({
           show: true,
           msg: 'Please fill in all required fields (*)',
           type: 'error',
         });
+        return;
       }
+
+      setIsSubmitting(true);
+      await new Promise((r) => setTimeout(r, 800));
+      setCurrentStep(2);
+      setIsSubmitting(false);
     } else {
       if (formData.agreement) {
         setIsSubmitting(true);
@@ -358,13 +375,26 @@ export default function ReportForm({
                     ref={fileInputRef}
                     className="hidden"
                     multiple
-                    onChange={(e) =>
-                      e.target.files &&
-                      setSelectedFiles((prev) => [
-                        ...prev,
-                        ...Array.from(e.target.files!),
-                      ])
-                    }
+                    onChange={(e) => {
+                      if (e.target.files) {
+                        const newFiles = Array.from(e.target.files);
+                        const validFiles: File[] = [];
+                        for (const f of newFiles) {
+                          if (f.size > 10 * 1024 * 1024) {
+                            setToast({
+                              show: true,
+                              msg: 'File size must be less than 10MB',
+                              type: 'error',
+                            });
+                          } else {
+                            validFiles.push(f);
+                          }
+                        }
+                        if (validFiles.length > 0) {
+                          setSelectedFiles((prev) => [...prev, ...validFiles]);
+                        }
+                      }
+                    }}
                   />
                   <Button
                     type="button"

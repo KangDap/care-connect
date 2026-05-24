@@ -219,10 +219,10 @@ function CategoryPanel({
             <MiniMetric label="Rules" value={categoryRules.length} />
           </div>
         </div>
-      ) : (
+      ) : categoryItemsets.length > 0 ? (
         <div className="rounded-2xl border border-dashed border-[#D0D5CB] px-4 py-6">
-          <p className="mb-3 text-center text-sm font-medium text-[#8EA087]">
-            No category rule returned yet.
+          <p className="mb-3 text-center text-[11px] font-black uppercase tracking-widest text-[#8EA087]">
+            Top Itemsets
           </p>
           <div className="flex flex-wrap justify-center gap-2">
             {topItems(categoryItemsets, 5).map((itemset, index) => (
@@ -234,6 +234,12 @@ function CategoryPanel({
               </span>
             ))}
           </div>
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-dashed border-[#D0D5CB] px-4 py-6">
+          <p className="text-center text-sm font-medium text-[#8EA087]">
+            No association rules or itemsets found for this category.
+          </p>
         </div>
       )}
     </Card>

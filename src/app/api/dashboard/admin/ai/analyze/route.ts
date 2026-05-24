@@ -75,12 +75,16 @@ export async function POST(req: NextRequest) {
         `[AI Analyze] FastAPI error: ${aiResponse.status} - ${errorData}`,
       );
 
+      let parsedError = errorData;
+      try {
+        const json = JSON.parse(errorData);
+        parsedError = json.detail || json.message || errorData;
+      } catch (e) {
+        // Not valid JSON, keep the original text
+      }
+
       throw new Error(
-        `AI Service returned ${aiResponse.status}: ${
-          errorData
-            ? JSON.parse(errorData).detail || errorData
-            : 'Unknown error'
-        }`,
+        `AI Service returned ${aiResponse.status}: ${parsedError || 'Unknown error'}`,
       );
     }
 

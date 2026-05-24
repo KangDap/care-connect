@@ -5,6 +5,7 @@ import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Input } from '@/components/input';
 import { PublicHeader } from '@/components/public-header';
+import { Toast } from '@/components/toast';
 import { authClient } from '@/lib/auth/auth-client';
 import type { ConsultationScheduleSlot } from '@/modules/consultation/consultation.types';
 import { Check, Info, Lock, Send, Upload, X } from 'lucide-react';
@@ -59,6 +60,15 @@ export default function ConsultationPage() {
   } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
+  const [toast, setToast] = useState({
+    show: false,
+    msg: '',
+    type: 'error' as 'success' | 'error',
+  });
+  const showError = (title: string, description: string) => {
+    setToast({ show: true, msg: description, type: 'error' });
+  };
+
   const [selectedDate, setSelectedDate] = useState('');
   const [selectedTime, setSelectedTime] = useState('');
   const [timeSlots, setTimeSlots] = useState<ConsultationScheduleSlot[]>([]);
@@ -78,15 +88,12 @@ export default function ConsultationPage() {
     const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
 
     if (selected.size > maxSize) {
-      setMessage({ type: 'error', text: 'File size must be less than 10MB' });
+      showError('Validation Error', 'File size must be less than 10MB');
       return;
     }
 
     if (!allowedTypes.includes(selected.type)) {
-      setMessage({
-        type: 'error',
-        text: 'Only PDF, JPG, and PNG files are allowed',
-      });
+      showError('Validation Error', 'Only PDF, JPG, and PNG files are allowed');
       return;
     }
 
@@ -133,16 +140,34 @@ export default function ConsultationPage() {
   function handleReviewTrigger(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
+    const data = new FormData(form);
 
-    if (!selectedDate || !selectedTime) {
-      setMessage({
-        type: 'error',
-        text: 'Please select both a date and a time for your consultation.',
-      });
+    const title = (data.get('title') as string) || '';
+    const description = (data.get('description') as string) || '';
+
+    if (title.trim().length < 5) {
+      showError(
+        'Validation Error',
+        'Title must be at least 5 characters long.',
+      );
       return;
     }
 
-    const data = new FormData(form);
+    if (description.trim().length < 10) {
+      showError(
+        'Validation Error',
+        'Description must be at least 10 characters long.',
+      );
+      return;
+    }
+
+    if (!selectedDate || !selectedTime) {
+      showError(
+        'Validation Error',
+        'Please select both a date and a time for your consultation.',
+      );
+      return;
+    }
 
     setReviewData({
       title: data.get('title') as string | null,
@@ -181,10 +206,11 @@ export default function ConsultationPage() {
       const isSuccess = res.ok && (result.success ?? true);
 
       if (!isSuccess) {
-        setMessage({
-          type: 'error',
-          text: result.error || 'Failed to request consultation.',
-        });
+        setIsSubmitting(false);
+        showError(
+          'Submission Failed',
+          result.error || 'Failed to request consultation.',
+        );
         setStep('form');
         return;
       }
@@ -209,16 +235,23 @@ export default function ConsultationPage() {
       }, 300);
     } catch (error) {
       console.error('Consultation submit failed:', error);
-      setMessage({
-        type: 'error',
-        text: 'Failed to submit request. Please try again.',
-      });
       setIsSubmitting(false);
+      showError(
+        'Submission Failed',
+        'Failed to submit request. Please try again.',
+      );
     }
   }
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f7f3ed] text-[#193c1f] font-sans relative">
+      <Toast
+        show={toast.show}
+        msg={toast.msg}
+        type={toast.type}
+        onClose={() => setToast({ ...toast, show: false })}
+      />
+
       {/* Loading & Success Overlay */}
       {(isSubmitting || message.type === 'success') && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/40 backdrop-blur-sm transition-all duration-300">
@@ -285,26 +318,6 @@ export default function ConsultationPage() {
           </div>
 
           {/* Status Message */}
-          {message.text && message.type === 'error' && (
-            <div
-              className={`mb-6 p-4 rounded-xl border flex items-center gap-3 bg-red-50 text-red-700 border-red-200`}
-            >
-              <svg
-                className="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                ></path>
-              </svg>
-              <span className="font-medium">{message.text}</span>
-            </div>
-          )}
 
           {/* Consultation Form Fields */}
           <form
