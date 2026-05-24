@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 interface ToastProps {
   show: boolean;
   msg: string;
-  type: 'success' | 'error';
+  type: 'success' | 'error' | 'info';
   onClose: () => void; // Tambahin ini supaya toast bisa lapor kalau dia udah selesai
 }
 
@@ -25,10 +25,14 @@ export const Toast = ({ show, msg, type, onClose }: ToastProps) => {
       className={`fixed top-10 left-1/2 -translate-x-1/2 z-[300] px-6 py-4 rounded-2xl shadow-2xl border flex items-center gap-3 animate-in slide-in-from-top-full duration-300 ${
         type === 'success'
           ? 'bg-[#193c1f] text-white border-[#193c1f]'
-          : 'bg-red-500 text-white border-red-600'
+          : type === 'info'
+            ? 'bg-[#ede4d8] text-[#193c1f] border-[#d1b698]'
+            : 'bg-red-500 text-white border-red-600'
       }`}
     >
-      <span className="text-lg">{type === 'success' ? '✅' : '❌'}</span>
+      <span className="text-lg">
+        {type === 'success' ? '✅' : type === 'info' ? 'ℹ️' : '❌'}
+      </span>
       <span className="text-sm font-bold tracking-tight">{msg}</span>
     </div>
   );

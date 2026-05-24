@@ -3,16 +3,16 @@
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 
-import img1 from './images/carousel1.jpg';
-import img2 from './images/carousel2.jpg';
-import img3 from './images/carousel3.jpg';
-import img4 from './images/carousel4.jpg';
+import img1 from './images/carousel1.png';
+import img2 from './images/carousel2.png';
+import img3 from './images/carousel3.png';
+import img4 from './images/carousel4.png';
 
 const images = [
-  { src: img1, alt: 'Therapy Context' },
-  { src: img2, alt: 'Community Support' },
-  { src: img3, alt: 'Care and Connection' },
-  { src: img4, alt: 'Empathy and Understanding' },
+  { src: img1, alt: 'Online Consultation' },
+  { src: img2, alt: 'Emotional Wellness' },
+  { src: img3, alt: 'Support Communities' },
+  { src: img4, alt: 'Empathetic Counseling' },
 ];
 
 export default function Carousel() {

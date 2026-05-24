@@ -510,7 +510,8 @@ export const phraseTranslations = {
   Support: 'Support',
   'Strongest Rule': 'Aturan Terkuat',
   predicts: 'memprediksi',
-  'No category rule returned yet.': 'Belum ada aturan kategori.',
+  'No association rules found for this category.':
+    'Belum ada aturan asosiasi untuk kategori ini.',
   'Manage and monitor all platform consultations.':
     'Kelola dan pantau semua konsultasi platform.',
   'Consultation Summary': 'Ringkasan Konsultasi',
