@@ -1,6 +1,6 @@
 # CareConnect
 
-![CI Status](https://img.shields.io/badge/CI%20Testing-Passed-brightgreen)
+[![Continuous Integration](https://github.com/KangDap/care-connect/actions/workflows/ci.yml/badge.svg)](https://github.com/KangDap/care-connect/actions/workflows/ci.yml)
 ![Build](https://img.shields.io/badge/Build-Success-brightgreen)
 ![Unit Test](https://img.shields.io/badge/Unit%20Testing-Vitest-blue)
 ![Framework](https://img.shields.io/badge/Framework-Next.js-black)
