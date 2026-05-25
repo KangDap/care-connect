@@ -1,148 +1,299 @@
 # CareConnect
 
-![CI Testing](https://img.shields.io/badge/CI%20Testing-Success-brightgreen)
-![Next.js](https://img.shields.io/badge/Next.js-16-black)
-![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue)
-![Status](https://img.shields.io/badge/Project-PPL%201-green)
+![CI Status](https://img.shields.io/badge/CI%20Testing-Passed-brightgreen)
+![Build](https://img.shields.io/badge/Build-Success-brightgreen)
+![Unit Test](https://img.shields.io/badge/Unit%20Testing-Vitest-blue)
+![Framework](https://img.shields.io/badge/Framework-Next.js-black)
+![Database](https://img.shields.io/badge/Database-PostgreSQL-blue)
 
-## 📌 Project Description
+## Continuous Integration Status
 
-**CareConnect** adalah aplikasi web yang dirancang sebagai ruang aman bagi pengguna untuk mendapatkan dukungan psikologis, melakukan pelaporan kekerasan, berdiskusi dalam forum komunitas, serta melakukan donasi secara online.
+CareConnect telah menerapkan **Continuous Integration (CI)** menggunakan GitHub Actions. Setiap perubahan kode yang di-push ke branch `main` atau `dev` akan secara otomatis menjalankan proses validasi project, meliputi:
 
-Aplikasi ini dikembangkan sebagai project **Proyek Perangkat Lunak 1 (PPL 1)** dengan fokus pada kebutuhan pengguna, keamanan data, role-based access, serta integrasi fitur utama seperti konsultasi psikolog, pelaporan anonim, forum komunitas, donasi online, dashboard admin, dan AI Pattern Analysis.
+- Install dependencies
+- Generate Prisma Client
+- Linting
+- Prettier format checking
+- Unit testing
+- Build checking
 
-CareConnect memiliki tiga role utama, yaitu:
-
-- **User**: dapat membuat laporan, melakukan konsultasi, menggunakan forum komunitas, dan melakukan donasi.
-- **Psikolog**: dapat melihat konsultasi yang ditugaskan, membalas chat konsultasi, melihat jadwal, dan memantau informasi terkait sesi konsultasi.
-- **Admin**: dapat mengelola laporan, konsultasi, donasi, user, forum, jadwal psikolog, serta melihat AI Analysis.
+Status CI saat ini: **Passed / Success**
 
 ---
 
-## ✨ Main Features
+## Deskripsi Project
+
+**CareConnect** adalah aplikasi web yang dirancang untuk mendukung layanan kesehatan mental, pelaporan kasus, forum komunitas, dan donasi online dalam satu platform terintegrasi.
+
+Aplikasi ini dikembangkan untuk membantu pengguna mendapatkan akses bantuan psikologis secara lebih mudah, membuat laporan terkait kasus kekerasan atau permasalahan personal, berdiskusi dalam komunitas yang aman, serta memberikan dukungan melalui fitur donasi.
+
+CareConnect memiliki tiga role utama, yaitu **User**, **Psychologist**, dan **Admin**. Setiap role memiliki akses dan kebutuhan yang berbeda sesuai dengan alur penggunaan aplikasi.
+
+---
+
+## Tujuan Project
+
+CareConnect dikembangkan dengan tujuan untuk:
+
+1. Menyediakan platform konsultasi psikologis secara online.
+2. Memudahkan pengguna dalam membuat dan melacak laporan kasus.
+3. Menyediakan forum komunitas yang aman untuk berbagi cerita dan dukungan.
+4. Memfasilitasi donasi untuk mendukung korban atau pengembangan platform.
+5. Membantu admin dan psikolog mengelola data melalui dashboard.
+6. Mengintegrasikan fitur analisis berbasis AI untuk membantu admin memahami pola laporan.
+
+---
+
+## Fitur Utama
 
 ### 1. Authentication
-- Login
-- Register
+
+Fitur autentikasi digunakan untuk mengelola akses pengguna ke dalam aplikasi.
+
+Fitur yang tersedia:
+
+- Register menggunakan email dan password
+- Login menggunakan email dan password
+- Login menggunakan Google SSO
 - Logout
-- Google OAuth
+- Reset password
+- Email verification
+- Session management
 - Role-based access control
 
-### 2. User Profile Management
-- Edit profile
-- Update username
-- Update avatar
-- Update personal information
+Role pengguna:
 
-### 3. Consultation Scheduling
-- User dapat mengisi form konsultasi
-- Data konsultasi tersimpan ke database
-- Jadwal konsultasi dapat dikelola melalui sistem
-
-### 4. Consultation History
-- User dapat melihat riwayat konsultasi
-- Data ditampilkan berdasarkan akun yang sedang login
-
-### 5. Consultation Chat
-- User dan psikolog dapat berkomunikasi melalui room chat
-- Mendukung anonymous mode
-- Mendukung unread count
-- Mendukung attachment/media
-- User yang dikick tidak dapat mengirim pesan
-
-### 6. Report Submission
-- User dapat mengirim laporan kekerasan
-- Mendukung opsi anonymous
-- Mendukung upload evidence
-- Data laporan tersimpan ke database
-
-### 7. Report Tracking
-- User dapat melihat status perkembangan laporan
-- Status laporan ditampilkan dari database
-
-### 8. Public Reports
-- User dapat melihat laporan publik
-- Hanya laporan yang sudah approved yang ditampilkan
-- Mendukung search dan filter
-
-### 9. Community Forum
-- User dapat memilih forum berdasarkan kategori
-- User dapat berdiskusi dalam forum komunitas
-- Admin dapat mengelola forum dan member
-
-### 10. Admin Dashboard
-Admin dapat mengelola:
-
-- Reports
-- Consultations
-- Donations
-- Users
-- Community Forum
-- Psychologist Schedules
-- AI Analysis
-
-### 11. Online Donation
-- Donasi online terintegrasi dengan Midtrans
-- Mendukung status transaksi seperti pending, paid, failed, dan cancelled
-- Data donasi tersimpan ke database
-
-### 12. Donation History
-- Riwayat donasi tersimpan di database
-- Data dapat ditampilkan pada dashboard
-
-### 13. Psychologist Schedule
-- Admin dapat mengatur jadwal psikolog
-- Psikolog dapat melihat jadwal yang tersedia
-
-### 14. AI Insight & Impact Dashboard
-- Menggunakan pendekatan **Market Basket Analysis**
-- Digunakan untuk melihat pola dari data laporan
-- Menampilkan frequent itemsets dan association rules
+- `USER`
+- `PSYCHOLOGIST`
+- `ADMIN`
 
 ---
 
-## 🧩 Tech Stack
+### 2. Profile Management
+
+Pengguna dapat mengelola profil pribadi melalui halaman profile.
+
+Data yang dapat dikelola:
+
+- Username
+- Bio
+- Nomor telepon
+- Gender
+- Tanggal lahir
+- Foto profil
+- Password
+
+Fitur ini membantu pengguna memperbarui informasi akun sesuai kebutuhan.
+
+---
+
+### 3. Consultation
+
+Fitur konsultasi memungkinkan pengguna membuat jadwal konsultasi dengan psikolog.
+
+Fitur yang tersedia:
+
+- Melihat slot jadwal konsultasi
+- Memilih tanggal dan waktu konsultasi
+- Membuat konsultasi baru
+- Upload dokumen pendukung
+- Mode anonim
+- Penjadwalan otomatis dengan psikolog yang tersedia
+- Riwayat konsultasi
+- Dashboard konsultasi
+
+Sistem akan mengecek ketersediaan jadwal psikolog sebelum konsultasi dibuat.
+
+---
+
+### 4. Consultation Chat
+
+Setelah konsultasi dibuat, pengguna dan psikolog dapat berkomunikasi melalui ruang chat konsultasi.
+
+Fitur yang tersedia:
+
+- Mengirim pesan teks
+- Mengirim file atau media
+- Reply pesan
+- Mode anonim
+- Riwayat chat
+- Validasi akses hanya untuk peserta konsultasi
+- Room chat memiliki batas waktu aktif
+
+---
+
+### 5. Report / Pelaporan Kasus
+
+Pengguna dapat membuat laporan terkait kejadian atau kasus tertentu.
+
+Kategori laporan:
+
+- `PHYSICAL`
+- `SEXUAL`
+- `PSYCHOLOGICAL`
+- `OTHER`
+
+Fitur laporan:
+
+- Membuat laporan baru
+- Mengisi judul, kategori, lokasi, tanggal, dan deskripsi kejadian
+- Upload evidence atau bukti pendukung
+- Mode anonim
+- Tracking status laporan
+- Public report
+- Search dan filter laporan
+- Admin dapat mengelola status laporan
+
+---
+
+### 6. Community Chat
+
+CareConnect menyediakan forum komunitas sebagai ruang aman untuk pengguna saling berbagi dan mendukung.
+
+Fitur komunitas:
+
+- Melihat daftar channel
+- Join channel
+- Leave channel
+- Mengirim pesan
+- Mengirim media
+- Mode anonim
+- Unread count
+- System message untuk aktivitas penting
+- Moderasi user
+- Kick atau ban user
+- Change role member
+
+Role dalam komunitas:
+
+- `OWNER`
+- `MODERATOR`
+- `MEMBER`
+- `BANNED`
+
+---
+
+### 7. Donation
+
+CareConnect memiliki fitur donasi online yang terintegrasi dengan Midtrans.
+
+Jenis donasi:
+
+- Donasi untuk laporan tertentu
+- Donasi untuk platform
+
+Fitur donasi:
+
+- Membuat donasi
+- Memilih metode pembayaran
+- Mendapatkan Snap Token dari Midtrans
+- Melihat riwayat donasi
+- Update status pembayaran melalui webhook Midtrans
+
+Metode pembayaran:
+
+- `BANK_TRANSFER`
+- `CREDIT_CARD`
+- `EWALLET`
+- `QRIS`
+
+---
+
+### 8. Dashboard
+
+CareConnect menyediakan dashboard berdasarkan role pengguna.
+
+#### User Dashboard
+
+Digunakan oleh pengguna umum untuk melihat:
+
+- Riwayat konsultasi
+- Tracking laporan
+- Riwayat donasi
+- Akses ke fitur utama pengguna
+
+#### Psychologist Dashboard
+
+Digunakan oleh psikolog untuk mengelola:
+
+- Jadwal konsultasi
+- Konsultasi yang ditugaskan
+- Chat dengan user
+- Riwayat konsultasi
+
+#### Admin Dashboard
+
+Digunakan oleh admin untuk mengelola:
+
+- Data user
+- Data laporan
+- Data konsultasi
+- Data donasi
+- Jadwal psikolog
+- Community chat
+- Moderasi user
+- Statistik aplikasi
+- AI analysis
+
+---
+
+### 9. AI Analysis
+
+CareConnect memiliki fitur AI Analysis yang membantu admin menganalisis data laporan.
+
+Fitur AI Analysis:
+
+- Analisis seluruh laporan
+- Analisis laporan tertentu
+- Mengirim data laporan ke endpoint AI
+- Menggunakan kolom teks seperti `title` dan `description`
+- Menampilkan hasil analisis untuk membantu insight admin
+
+Fitur ini digunakan sebagai alat bantu analisis, bukan sebagai pengganti keputusan manusia.
+
+---
+
+## Tech Stack
 
 ### Frontend
+
 - Next.js
 - React
 - TypeScript
 - Tailwind CSS
 
 ### Backend
+
 - Next.js API Route
 - Prisma ORM
-- PostgreSQL
-- Supabase
+- Better Auth
 
-### Authentication
-- Better Auth / Auth system
-- Google OAuth
-- Role-based access control
+### Database
+
+- PostgreSQL
+
+### Storage
+
+- Supabase Storage
 
 ### Payment Gateway
+
 - Midtrans
 
-### Testing
-- Vitest
-- Unit Testing
-- Black Box Testing
-- CI Testing with GitHub Actions
+### Testing & CI
 
-### Project Management
-- GitHub Issues
-- Trello
-- Scrum Sprint
+- Vitest
+- V8 Coverage
+- GitHub Actions
+- ESLint
+- Prettier
 
 ---
 
-## 📁 Project Structure
+## Struktur Folder
 
 ```bash
 care-connect/
-├── prisma/
-│   └── schema.prisma
-├── public/
 ├── src/
 │   ├── app/
 │   │   ├── api/
@@ -150,18 +301,42 @@ care-connect/
 │   │   ├── consultation/
 │   │   ├── consultation-chat/
 │   │   ├── donation/
-│   │   ├── login/
 │   │   ├── profile/
 │   │   ├── publicreports/
 │   │   └── report/
+│   │
 │   ├── components/
+│   │
 │   ├── lib/
-│   └── styles/
+│   │   ├── api/
+│   │   ├── auth/
+│   │   ├── email/
+│   │   ├── api-response.ts
+│   │   ├── error.ts
+│   │   ├── prisma.ts
+│   │   └── supabase.ts
+│   │
+│   ├── modules/
+│   │   ├── community-chat/
+│   │   ├── consultation/
+│   │   ├── consultation-chat/
+│   │   ├── donation/
+│   │   └── report/
+│   │
+│   └── generated/
+│
+├── prisma/
+│   └── schema.prisma
+│
 ├── tests/
-│   ├── donation/
-│   ├── chat/
-│   ├── reports/
-│   ├── access/
-│   └── ai/
+│   ├── lib/
+│   ├── modules/
+│   └── routes/
+│
+├── .github/
+│   └── workflows/
+│
 ├── package.json
+├── tsconfig.json
+├── vitest.config.ts
 └── README.md
