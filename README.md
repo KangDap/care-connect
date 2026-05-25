@@ -327,7 +327,8 @@ care-connect/
 ├── tsconfig.json
 ├── vitest.config.ts
 └── README.md
-
+```
+--
 ## Continuous Integration Status
 
 CareConnect telah menerapkan **Continuous Integration (CI)** menggunakan GitHub Actions. Setiap perubahan kode yang di-push ke branch `main` atau `dev` akan secara otomatis menjalankan proses validasi project, meliputi:
