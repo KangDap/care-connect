@@ -20,7 +20,7 @@ export class ConsultationSchema {
     description: z
       .string()
       .min(1, 'Deskripsi harus diisi')
-      .min(10, 'Deskripsi minimal 10 karakter'),
+      .min(20, 'Deskripsi minimal 20 karakter'),
     date: z
       .string()
       .min(1, 'Tanggal harus diisi')

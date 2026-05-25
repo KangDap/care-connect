@@ -178,10 +178,10 @@ export default function ReportForm({
         });
         return;
       }
-      if (formData.description.trim().length < 10) {
+      if (formData.description.trim().length < 20) {
         setToast({
           show: true,
-          msg: 'Description must be at least 10 characters long.',
+          msg: 'Description must be at least 20 characters long.',
           type: 'error',
         });
         return;

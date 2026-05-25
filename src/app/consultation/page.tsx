@@ -153,10 +153,10 @@ export default function ConsultationPage() {
       return;
     }
 
-    if (description.trim().length < 10) {
+    if (description.trim().length < 20) {
       showError(
         'Validation Error',
-        'Description must be at least 10 characters long.',
+        'Description must be at least 20 characters long.',
       );
       return;
     }
