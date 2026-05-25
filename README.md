@@ -1,36 +1,167 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CareConnect
 
-## Getting Started
+![CI Testing](https://img.shields.io/badge/CI%20Testing-Success-brightgreen)
+![Next.js](https://img.shields.io/badge/Next.js-16-black)
+![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue)
+![Status](https://img.shields.io/badge/Project-PPL%201-green)
 
-First, run the development server:
+## 📌 Project Description
+
+**CareConnect** adalah aplikasi web yang dirancang sebagai ruang aman bagi pengguna untuk mendapatkan dukungan psikologis, melakukan pelaporan kekerasan, berdiskusi dalam forum komunitas, serta melakukan donasi secara online.
+
+Aplikasi ini dikembangkan sebagai project **Proyek Perangkat Lunak 1 (PPL 1)** dengan fokus pada kebutuhan pengguna, keamanan data, role-based access, serta integrasi fitur utama seperti konsultasi psikolog, pelaporan anonim, forum komunitas, donasi online, dashboard admin, dan AI Pattern Analysis.
+
+CareConnect memiliki tiga role utama, yaitu:
+
+- **User**: dapat membuat laporan, melakukan konsultasi, menggunakan forum komunitas, dan melakukan donasi.
+- **Psikolog**: dapat melihat konsultasi yang ditugaskan, membalas chat konsultasi, melihat jadwal, dan memantau informasi terkait sesi konsultasi.
+- **Admin**: dapat mengelola laporan, konsultasi, donasi, user, forum, jadwal psikolog, serta melihat AI Analysis.
+
+---
+
+## ✨ Main Features
+
+### 1. Authentication
+- Login
+- Register
+- Logout
+- Google OAuth
+- Role-based access control
+
+### 2. User Profile Management
+- Edit profile
+- Update username
+- Update avatar
+- Update personal information
+
+### 3. Consultation Scheduling
+- User dapat mengisi form konsultasi
+- Data konsultasi tersimpan ke database
+- Jadwal konsultasi dapat dikelola melalui sistem
+
+### 4. Consultation History
+- User dapat melihat riwayat konsultasi
+- Data ditampilkan berdasarkan akun yang sedang login
+
+### 5. Consultation Chat
+- User dan psikolog dapat berkomunikasi melalui room chat
+- Mendukung anonymous mode
+- Mendukung unread count
+- Mendukung attachment/media
+- User yang dikick tidak dapat mengirim pesan
+
+### 6. Report Submission
+- User dapat mengirim laporan kekerasan
+- Mendukung opsi anonymous
+- Mendukung upload evidence
+- Data laporan tersimpan ke database
+
+### 7. Report Tracking
+- User dapat melihat status perkembangan laporan
+- Status laporan ditampilkan dari database
+
+### 8. Public Reports
+- User dapat melihat laporan publik
+- Hanya laporan yang sudah approved yang ditampilkan
+- Mendukung search dan filter
+
+### 9. Community Forum
+- User dapat memilih forum berdasarkan kategori
+- User dapat berdiskusi dalam forum komunitas
+- Admin dapat mengelola forum dan member
+
+### 10. Admin Dashboard
+Admin dapat mengelola:
+
+- Reports
+- Consultations
+- Donations
+- Users
+- Community Forum
+- Psychologist Schedules
+- AI Analysis
+
+### 11. Online Donation
+- Donasi online terintegrasi dengan Midtrans
+- Mendukung status transaksi seperti pending, paid, failed, dan cancelled
+- Data donasi tersimpan ke database
+
+### 12. Donation History
+- Riwayat donasi tersimpan di database
+- Data dapat ditampilkan pada dashboard
+
+### 13. Psychologist Schedule
+- Admin dapat mengatur jadwal psikolog
+- Psikolog dapat melihat jadwal yang tersedia
+
+### 14. AI Insight & Impact Dashboard
+- Menggunakan pendekatan **Market Basket Analysis**
+- Digunakan untuk melihat pola dari data laporan
+- Menampilkan frequent itemsets dan association rules
+
+---
+
+## 🧩 Tech Stack
+
+### Frontend
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+
+### Backend
+- Next.js API Route
+- Prisma ORM
+- PostgreSQL
+- Supabase
+
+### Authentication
+- Better Auth / Auth system
+- Google OAuth
+- Role-based access control
+
+### Payment Gateway
+- Midtrans
+
+### Testing
+- Vitest
+- Unit Testing
+- Black Box Testing
+- CI Testing with GitHub Actions
+
+### Project Management
+- GitHub Issues
+- Trello
+- Scrum Sprint
+
+---
+
+## 📁 Project Structure
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+care-connect/
+├── prisma/
+│   └── schema.prisma
+├── public/
+├── src/
+│   ├── app/
+│   │   ├── api/
+│   │   ├── dashboard/
+│   │   ├── consultation/
+│   │   ├── consultation-chat/
+│   │   ├── donation/
+│   │   ├── login/
+│   │   ├── profile/
+│   │   ├── publicreports/
+│   │   └── report/
+│   ├── components/
+│   ├── lib/
+│   └── styles/
+├── tests/
+│   ├── donation/
+│   ├── chat/
+│   ├── reports/
+│   ├── access/
+│   └── ai/
+├── package.json
+└── README.md
