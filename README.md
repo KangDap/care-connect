@@ -6,19 +6,6 @@
 ![Framework](https://img.shields.io/badge/Framework-Next.js-black)
 ![Database](https://img.shields.io/badge/Database-PostgreSQL-blue)
 
-## Continuous Integration Status
-
-CareConnect telah menerapkan **Continuous Integration (CI)** menggunakan GitHub Actions. Setiap perubahan kode yang di-push ke branch `main` atau `dev` akan secara otomatis menjalankan proses validasi project, meliputi:
-
-- Install dependencies
-- Generate Prisma Client
-- Linting
-- Prettier format checking
-- Unit testing
-- Build checking
-
-Status CI saat ini: **Passed / Success**
-
 ---
 
 ## Deskripsi Project
@@ -340,3 +327,16 @@ care-connect/
 ├── tsconfig.json
 ├── vitest.config.ts
 └── README.md
+
+## Continuous Integration Status
+
+CareConnect telah menerapkan **Continuous Integration (CI)** menggunakan GitHub Actions. Setiap perubahan kode yang di-push ke branch `main` atau `dev` akan secara otomatis menjalankan proses validasi project, meliputi:
+
+- Install dependencies
+- Generate Prisma Client
+- Linting
+- Prettier format checking
+- Unit testing
+- Build checking
+
+Status CI saat ini: **Success**
