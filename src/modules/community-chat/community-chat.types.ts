@@ -1,0 +1,73 @@
+export interface Channel {
+  id: number;
+  name: string;
+  description?: string | null;
+  coverUrl?: string | null;
+  type: 'PUBLIC' | 'PRIVATE';
+  createdAt: Date;
+  unreadCount?: number;
+  chats: { timestamp: Date; content: string }[];
+  members?: ChannelMember[];
+  _count?: {
+    members: number;
+    chats?: number;
+  };
+}
+
+export interface ChannelMember {
+  channelId: number;
+  userId: string;
+  role: 'OWNER' | 'MODERATOR' | 'MEMBER' | 'BANNED';
+  joinedAt: Date;
+  lastViewedAt: Date;
+}
+
+export interface ChatMessage {
+  id: number;
+  channelId: number;
+  userId: string;
+  content: string;
+  mediaUrl?: string | null;
+  isAnonymous: boolean;
+  isSystem: boolean;
+  replyToId?: number | null;
+  timestamp: Date;
+  editedAt?: Date | null;
+  user: {
+    id: string;
+    name: string;
+    image?: string | null;
+    role: string;
+  };
+  replyTo?: {
+    id: number;
+    content: string;
+    user: {
+      name: string;
+    };
+  } | null;
+}
+
+export interface CreateChannelDTO {
+  name: string;
+  description?: string | null;
+  coverUrl?: string | null;
+  coverImage?: File | null;
+  type?: 'PUBLIC' | 'PRIVATE';
+}
+
+export interface SendMessageDTO {
+  channelId: number;
+  content: string;
+  media?: File | null;
+  mediaUrl?: string | null;
+  isAnonymous?: boolean;
+  isSystem?: boolean;
+  replyToId?: number | null;
+}
+
+export interface UpdateMemberRoleDTO {
+  userId: string;
+  channelId: number;
+  role: 'OWNER' | 'MODERATOR' | 'MEMBER' | 'BANNED';
+}

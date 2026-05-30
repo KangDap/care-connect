@@ -1,4 +1,5 @@
 import type {
+  DonationType as PrismaDonationType,
   PaymentMethod as PrismaPaymentMethod,
   PaymentStatus as PrismaPaymentStatus,
 } from '@/generated/prisma/enums';
@@ -7,10 +8,13 @@ export type DonationPaymentMethod = PrismaPaymentMethod;
 
 export type DonationPaymentStatus = PrismaPaymentStatus;
 
+export type DonationType = PrismaDonationType;
+
 export type CreateDonationInput = {
-  reportId: number;
+  reportId?: number | null;
   amount: number;
   paymentMethod: DonationPaymentMethod;
+  donationType: DonationType;
 };
 
 export type MidtransWebhookInput = {
@@ -25,10 +29,16 @@ export type MidtransWebhookInput = {
 
 export type CreateDonationRepositoryInput = {
   userId: string;
-  reportId: number;
+  reportId?: number | null;
   amount: number;
   paymentMethod: DonationPaymentMethod;
   paymentStatus: DonationPaymentStatus;
+  donationType: DonationType;
+};
+
+export type UpdateDonationMidtransInput = {
+  midtransOrderId: string;
+  snapToken: string;
 };
 
 export type DonationUserContext = {
@@ -41,16 +51,20 @@ export type DonationUserContext = {
 export type CreateDonationResult = {
   donation: {
     id: number;
-    reportId: number;
+    reportId: number | null;
     amount: unknown;
     paymentMethod: string;
     paymentStatus: string;
+    donationType: string;
+    midtransOrderId?: string | null;
+    snapToken?: string | null;
     timestamp: Date;
   };
   payment: {
     orderId: string;
     token: string;
-    redirectUrl: string;
+    redirectUrl?: string;
+    clientKey?: string;
   };
 };
 

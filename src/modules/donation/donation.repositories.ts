@@ -1,6 +1,9 @@
 import { prisma } from '@/lib/prisma';
 
-import type { CreateDonationRepositoryInput } from './donation.types';
+import type {
+  CreateDonationRepositoryInput,
+  UpdateDonationMidtransInput,
+} from './donation.types';
 
 export const findReportById = async (reportId: number) => {
   return prisma.report.findUnique({
@@ -21,7 +24,26 @@ export const createDonation = async (input: CreateDonationRepositoryInput) => {
       amount: true,
       paymentMethod: true,
       paymentStatus: true,
+      donationType: true,
+      midtransOrderId: true,
+      snapToken: true,
       timestamp: true,
+    },
+  });
+};
+
+export const updateDonationMidtransData = async (
+  donationId: number,
+  input: UpdateDonationMidtransInput,
+) => {
+  return prisma.donation.update({
+    where: { id: donationId },
+    data: input,
+    select: {
+      id: true,
+      midtransOrderId: true,
+      snapToken: true,
+      paymentStatus: true,
     },
   });
 };
@@ -46,6 +68,8 @@ export const findDonationById = async (donationId: number) => {
     select: {
       id: true,
       userId: true,
+      midtransOrderId: true,
+      snapToken: true,
       paymentStatus: true,
     },
   });
@@ -61,6 +85,9 @@ export const getDonationsByUserId = async (userId: string) => {
       amount: true,
       paymentMethod: true,
       paymentStatus: true,
+      donationType: true,
+      midtransOrderId: true,
+      snapToken: true,
       timestamp: true,
     },
   });

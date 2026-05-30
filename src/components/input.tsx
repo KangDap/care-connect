@@ -25,21 +25,21 @@ export const Input = ({
   const inputType = isPassword ? (showPassword ? 'text' : 'password') : type;
 
   const baseStyles =
-    'w-full bg-[#EBE6DE]/30 border border-transparent focus:border-[#8EA087] focus:bg-white p-4 rounded-2xl text-sm font-medium outline-none transition-all';
+    'min-w-0 w-full bg-[#EBE6DE]/30 border border-[#d0d5cb] focus:border-[#8ea087] focus:bg-white p-4 rounded-2xl text-sm font-medium outline-none transition-all';
 
   const inputStyles = `${baseStyles} ${className} ${icon ? 'pl-14' : ''} ${isPassword ? 'pr-14' : ''}`;
 
   return (
     <div className="flex flex-col gap-2 w-full text-left">
       {label && (
-        <label className="text-[11px] font-black uppercase tracking-widest text-[#8EA087]">
+        <label className="text-[11px] font-black uppercase tracking-widest text-[#8ea087] break-words">
           {label}
         </label>
       )}
 
       <div className="relative w-full flex items-center">
         {icon && (
-          <div className="absolute left-5 text-[#8EA087] z-10 pointer-events-none">
+          <div className="absolute left-5 text-[#8ea087] z-10 pointer-events-none">
             {icon}
           </div>
         )}
@@ -86,7 +86,7 @@ export const Input = ({
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 text-[#8EA087] hover:text-[#193C1F] transition-colors focus:outline-none"
+            className="absolute right-4 text-[#8ea087] hover:text-[#193c1f] transition-colors focus:outline-none"
           >
             {showPassword ? (
               <svg

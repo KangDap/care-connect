@@ -1,223 +1,469 @@
 'use client';
 
-import { Alert } from '@/components/alert';
+import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
-import { Header } from '@/components/header';
+import { Card } from '@/components/card';
 import { Input } from '@/components/input';
-// Import komponen Alert kamu
-import { ArrowRight, Filter, MapPin } from 'lucide-react';
-import React, { useState } from 'react';
+import { Pagination } from '@/components/pagination';
+import { PublicHeader } from '@/components/public-header';
+import {
+  ArrowRight,
+  Calendar,
+  Check,
+  FileText,
+  Filter,
+  MapPin,
+  RotateCcw,
+  Search,
+} from 'lucide-react';
+import Image from 'next/image';
+import Link from 'next/link';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import React, { startTransition, useEffect, useMemo, useState } from 'react';
 
-const PublicReportsPage = () => {
-  // State untuk Alert Privacy
-  const [isPrivacyAlertOpen, setIsPrivacyAlertOpen] = useState(true);
+interface Report {
+  id: string;
+  title: string;
+  category: string;
+  province: string;
+  city: string;
+  status: string;
+  incidentDate: string;
+  description: string;
+  createdAt: string;
+  coverImageUrl: string | null;
+}
 
-  const reports = [
-    {
-      id: '#8291',
-      category: 'Elderly Care',
-      title: 'Staffing levels in...',
-      desc: 'Observation of reduced nighttime staffing levels over a 7-day period....',
-      location: 'Manchester',
-    },
-    {
-      id: '#8290',
-      category: 'Healthcare',
-      title: 'Patient handover...',
-      desc: 'Inconsistencies observed during clinical handover between shift changes....',
-      location: 'London',
-    },
-    {
-      id: '#8289',
-      category: 'Child Safety',
-      title: 'Playground safet...',
-      desc: 'Summary of playground safety maintenance review. Identified speci...',
-      location: 'Birmingham',
-    },
-    {
-      id: '#8288',
-      category: 'Healthcare',
-      title: 'Patient transport...',
-      desc: 'Report detailing delays in patient discharge transport services....',
-      location: 'Bristol',
-    },
-    {
-      id: '#8287',
-      category: 'Elderly Care',
-      title: 'Dietary complian...',
-      desc: 'Compliance check on special dietary requirements. High...',
-      location: 'Leeds',
-    },
-    {
-      id: '#8286',
-      category: 'Healthcare',
-      title: 'Facility...',
-      desc: 'Review of lobby and corridor lighting during winter hours. Reported...',
-      location: 'Newcastle',
-    },
-  ];
+const categoryOptions = [
+  { label: 'Physical Violence', value: 'PHYSICAL' },
+  { label: 'Sexual Harassment', value: 'SEXUAL' },
+  { label: 'Psychological / Verbal', value: 'PSYCHOLOGICAL' },
+  { label: 'Other', value: 'OTHER' },
+];
+
+const statusOptions = [
+  { label: 'Pending', value: 'PENDING' },
+  { label: 'Reviewed', value: 'REVIEWED' },
+  { label: 'Resolved', value: 'RESOLVED' },
+  { label: 'Rejected', value: 'REJECTED' },
+];
+
+const categoryLabel = Object.fromEntries(
+  categoryOptions.map((category) => [category.value, category.label]),
+);
+
+const statusLabel = Object.fromEntries(
+  statusOptions.map((status) => [status.value, status.label]),
+);
+
+const getStatusBadge = (status: string) => {
+  if (status === 'RESOLVED') return 'SUCCESS';
+  if (status === 'PENDING') return 'PENDING';
+  if (status === 'REVIEWED') return 'UPCOMING';
+  return 'DEFAULT';
+};
+
+const reportsPerPage = 6;
+
+const PublicReportsContent = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const searchParamValue = searchParams.get('search') || '';
+  const searchParamsString = searchParams.toString();
+
+  const [reports, setReports] = useState<Report[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState(searchParamValue);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedStatus, setSelectedStatus] = useState('ALL');
+  const [locationFilter, setLocationFilter] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [sortBy, setSortBy] = useState('newest');
+
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        setIsLoading(true);
+        const response = await fetch('/api/publicreports');
+        if (!response.ok) throw new Error('Failed to fetch');
+        const data = await response.json();
+        setReports(data.data || []);
+      } catch (err) {
+        console.error('Failed to fetch reports:', err);
+        setReports([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchReports();
+  }, []);
+
+  useEffect(() => {
+    startTransition(() => {
+      setSearchQuery(searchParamValue);
+      setCurrentPage(1);
+    });
+  }, [searchParamValue]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      const normalizedSearch = searchQuery.trim();
+      if (searchParamValue === normalizedSearch) return;
+
+      const params = new URLSearchParams(searchParamsString);
+      if (normalizedSearch) {
+        params.set('search', normalizedSearch);
+      } else {
+        params.delete('search');
+      }
+      params.delete('page');
+
+      const queryString = params.toString();
+      router.replace(queryString ? `${pathname}?${queryString}` : pathname, {
+        scroll: false,
+      });
+    }, 300);
+
+    return () => clearTimeout(handler);
+  }, [pathname, router, searchParamValue, searchParamsString, searchQuery]);
+
+  const handleCategoryToggle = (category: string) => {
+    setCurrentPage(1);
+    setSelectedCategories((prev) =>
+      prev.includes(category)
+        ? prev.filter((current) => current !== category)
+        : [...prev, category],
+    );
+  };
+
+  const resetFilters = () => {
+    setSearchQuery('');
+    setSelectedCategories([]);
+    setSelectedStatus('ALL');
+    setLocationFilter('');
+    setStartDate('');
+    setEndDate('');
+    setSortBy('newest');
+    setCurrentPage(1);
+  };
+
+  const filteredReports = useMemo(() => {
+    return reports
+      .filter((report) => {
+        const normalizedSearch = searchQuery.trim().toLowerCase();
+        const matchesSearch =
+          report.title.toLowerCase().includes(normalizedSearch) ||
+          report.description.toLowerCase().includes(normalizedSearch);
+
+        const matchesCategory =
+          selectedCategories.length === 0 ||
+          selectedCategories.includes(report.category);
+
+        const matchesStatus =
+          selectedStatus === 'ALL' || report.status === selectedStatus;
+
+        const normalizedLocation = locationFilter.toLowerCase();
+        const matchesLocation =
+          report.city.toLowerCase().includes(normalizedLocation) ||
+          report.province.toLowerCase().includes(normalizedLocation);
+
+        const reportDate = new Date(report.incidentDate).getTime();
+        const start = startDate ? new Date(startDate).getTime() : -Infinity;
+        const end = endDate ? new Date(endDate).getTime() : Infinity;
+        const matchesDate = reportDate >= start && reportDate <= end;
+
+        return (
+          matchesSearch &&
+          matchesCategory &&
+          matchesStatus &&
+          matchesLocation &&
+          matchesDate
+        );
+      })
+      .sort((a, b) => {
+        const newest =
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        return sortBy === 'newest' ? newest : -newest;
+      });
+  }, [
+    reports,
+    searchQuery,
+    selectedCategories,
+    selectedStatus,
+    locationFilter,
+    startDate,
+    endDate,
+    sortBy,
+  ]);
+
+  const totalPages = Math.ceil(filteredReports.length / reportsPerPage);
+  const paginatedReports = filteredReports.slice(
+    (currentPage - 1) * reportsPerPage,
+    currentPage * reportsPerPage,
+  );
 
   return (
-    <div className="min-h-screen bg-[#F7F3ED]">
-      {/* 1. Header (Sudah include Search Bar di dalamnya) */}
-      <Header withSearch={true} withLogo={true} />
+    <div className="min-h-screen bg-[#f7f3ed] text-[#193c1f]">
+      <PublicHeader />
 
-      <main className="max-w-7xl mx-auto p-6 md:p-12">
-        {/* 2. Alert Privacy (Pakai komponen Alert kamu) */}
-        <Alert
-          isOpen={isPrivacyAlertOpen}
-          onClose={() => setIsPrivacyAlertOpen(false)}
-          onConfirm={() => setIsPrivacyAlertOpen(false)}
-          type="primary"
-          title="Privacy Information"
-          description="All data is anonymized to protect reporter and care recipient privacy while ensuring public transparency."
-          confirmText="I Understand"
+      <main className="mx-auto w-full max-w-7xl px-6 py-10 md:px-12">
+        <div className="mb-8 flex flex-col gap-6 text-left md:flex-row md:items-end md:justify-between">
+          <div>
+            <h1 className="mb-4 text-4xl font-black uppercase leading-none tracking-normal text-[#193c1f] md:text-6xl">
+              Public Reports
+            </h1>
+            <p className="max-w-2xl text-base font-medium text-[#8ea087] md:text-lg">
+              Community safety reports from every moderation status.
+            </p>
+          </div>
+          <Link href="/report">
+            <Button className="w-full uppercase tracking-widest md:w-auto">
+              Create Report
+              <ArrowRight size={18} />
+            </Button>
+          </Link>
+        </div>
+
+        <Input
+          value={searchQuery}
+          onChange={(event) => {
+            setSearchQuery(event.target.value);
+            setCurrentPage(1);
+          }}
+          placeholder="Search reports..."
+          icon={<Search size={20} />}
+          className="h-16 bg-white text-base shadow-sm"
         />
 
-        <div className="flex flex-col md:flex-row gap-10">
-          {/* Sidebar Filters */}
-          <aside className="w-full md:w-72 space-y-6">
-            <div className="bg-white p-8 rounded-[32px] border border-[#D0D5CB] shadow-sm">
-              <div className="flex justify-between items-center mb-8">
-                <h2 className="font-black uppercase text-sm tracking-widest flex items-center gap-2 text-[#193C1F]">
-                  <Filter size={18} /> Filters
+        <div className="mt-10 flex flex-col gap-8 lg:flex-row">
+          <aside className="w-full lg:w-80">
+            <Card className="sticky top-8 rounded-3xl p-6">
+              <div className="mb-6 flex items-center justify-between">
+                <h2 className="flex items-center gap-2 text-sm font-black uppercase tracking-widest">
+                  <Filter size={18} />
+                  Filters
                 </h2>
-                <button className="text-[10px] text-[#8EA087] font-black uppercase hover:underline transition-all">
-                  Reset All
-                </button>
-              </div>
-
-              {/* Category Filter */}
-              <div className="space-y-4 mb-10">
-                <p className="text-[11px] font-black text-[#8EA087] uppercase tracking-widest">
-                  Category
-                </p>
-                {[
-                  'Elderly Care',
-                  'Child Safety',
-                  'Healthcare',
-                  'Facility Quality',
-                ].map((cat) => (
-                  <label
-                    key={cat}
-                    className="flex items-center gap-3 cursor-pointer group"
-                  >
-                    <input
-                      type="checkbox"
-                      className="w-5 h-5 rounded-lg border-[#D0D5CB] accent-[#193C1F] cursor-pointer"
-                    />
-                    <span className="text-sm font-medium text-[#193C1F] group-hover:text-[#8EA087] transition-colors">
-                      {cat}
-                    </span>
-                  </label>
-                ))}
-              </div>
-
-              {/* Location & Date pakai Input Kamu */}
-              <div className="space-y-5">
-                <div>
-                  <p className="text-[11px] font-black text-[#8EA087] uppercase tracking-widest mb-3">
-                    Location
-                  </p>
-                  <Input
-                    placeholder="Search location..."
-                    name="location"
-                    className="bg-[#F7F3ED] border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <p className="text-[11px] font-black text-[#8EA087] uppercase tracking-widest mb-3">
-                    Date Range
-                  </p>
-                  <div className="space-y-2">
-                    <Input
-                      type="date"
-                      name="start"
-                      className="bg-[#F7F3ED] border-transparent"
-                    />
-                    <Input
-                      type="date"
-                      name="end"
-                      className="bg-[#F7F3ED] border-transparent"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* 3. Button dari Components Kamu */}
-              <div className="mt-8">
-                <Button className="w-full bg-[#8EA087] hover:bg-[#193C1F] text-white rounded-[18px] py-6 font-black uppercase tracking-widest transition-all">
-                  Apply Filters
+                <Button
+                  variant="ghost"
+                  onClick={resetFilters}
+                  className="px-2 py-2"
+                >
+                  <RotateCcw size={14} />
+                  Reset
                 </Button>
               </div>
-            </div>
-          </aside>
 
-          {/* Main Content Area */}
-          <div className="flex-1">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4 text-left">
-              <div>
-                <h1 className="text-4xl md:text-5xl font-black uppercase text-[#193C1F] leading-none mb-4 italic tracking-tight">
-                  Public Reports
-                </h1>
-                <p className="text-[#8EA087] text-lg font-medium">
-                  Community safety and care quality insights.
-                </p>
-              </div>
-              <div className="flex items-center gap-3 bg-white px-5 py-2.5 rounded-2xl border border-[#D0D5CB] shadow-sm">
-                <span className="text-[10px] font-black text-[#8EA087] uppercase tracking-widest">
-                  Sort:
-                </span>
-                <select className="bg-transparent font-bold text-xs text-[#193C1F] outline-none cursor-pointer">
-                  <option>Most Recent</option>
-                  <option>Oldest</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Grid Reports */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-              {reports.map((report, i) => (
-                <div
-                  key={i}
-                  className="bg-white rounded-[40px] border border-[#D0D5CB] overflow-hidden hover:shadow-2xl transition-all duration-500 flex flex-col group"
+              <div className="space-y-6">
+                <Input
+                  label="Sort By"
+                  type="select"
+                  value={sortBy}
+                  onChange={(event) => {
+                    setSortBy(event.target.value);
+                    setCurrentPage(1);
+                  }}
                 >
-                  {/* Thumbnail / ID Box */}
-                  <div className="h-44 bg-[#F7F3ED] flex items-center justify-center relative overflow-hidden transition-colors group-hover:bg-[#EBE6DE]">
-                    <span className="relative z-10 text-[10px] font-black uppercase tracking-[0.2em] text-[#8EA087] bg-white px-5 py-2.5 rounded-2xl border border-[#D0D5CB] shadow-sm">
-                      ID: {report.id}
-                    </span>
-                  </div>
+                  <option value="newest">Most Recent</option>
+                  <option value="oldest">Oldest</option>
+                </Input>
 
-                  <div className="p-8 text-left flex flex-col flex-1">
-                    <span className="text-[9px] font-black text-[#8EA087] uppercase tracking-[0.2em] mb-4 inline-block">
-                      {report.category}
-                    </span>
-                    <h3 className="font-black text-xl text-[#193C1F] mb-3 group-hover:text-[#8EA087] transition-colors italic tracking-tight">
-                      {report.title}
-                    </h3>
-                    <p className="text-sm text-[#193C1F]/60 font-medium leading-relaxed mb-8 flex-1 line-clamp-3">
-                      {report.desc}
-                    </p>
+                <div>
+                  <p className="mb-3 text-[11px] font-black uppercase tracking-widest text-[#8ea087]">
+                    Category
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    {categoryOptions.map((category) => {
+                      const isSelected = selectedCategories.includes(
+                        category.value,
+                      );
 
-                    <div className="flex justify-between items-center pt-6 border-t border-[#F7F3ED]">
-                      <span className="text-[10px] font-black text-[#8EA087] uppercase flex items-center gap-2 tracking-widest">
-                        <MapPin size={14} strokeWidth={3} /> {report.location}
-                      </span>
-                      <button className="text-[11px] font-black uppercase flex items-center gap-1 text-[#193C1F] hover:gap-3 transition-all tracking-[0.1em]">
-                        Details <ArrowRight size={16} strokeWidth={3} />
-                      </button>
-                    </div>
+                      return (
+                        <Button
+                          key={category.value}
+                          type="button"
+                          onClick={() => handleCategoryToggle(category.value)}
+                          variant="ghost"
+                          className="justify-start rounded-2xl px-2 py-2 text-left normal-case tracking-normal text-[#193c1f] hover:bg-[#f7f3ed]"
+                        >
+                          <span
+                            className={`flex h-6 w-6 items-center justify-center rounded-lg border-2 transition-colors ${
+                              isSelected
+                                ? 'border-[#193c1f] bg-[#193c1f] text-white'
+                                : 'border-[#d0d5cb] text-transparent'
+                            }`}
+                          >
+                            <Check size={14} />
+                          </span>
+                          <span className="text-sm font-bold">
+                            {category.label}
+                          </span>
+                        </Button>
+                      );
+                    })}
                   </div>
                 </div>
-              ))}
+
+                <Input
+                  label="Location"
+                  value={locationFilter}
+                  onChange={(event) => {
+                    setLocationFilter(event.target.value);
+                    setCurrentPage(1);
+                  }}
+                  placeholder="City or province..."
+                  icon={<MapPin size={16} />}
+                />
+
+                <div className="grid grid-cols-1 gap-3">
+                  <Input
+                    label="Start Date"
+                    type="date"
+                    value={startDate}
+                    onChange={(event) => {
+                      setStartDate(event.target.value);
+                      setCurrentPage(1);
+                    }}
+                    icon={<Calendar size={16} />}
+                  />
+                  <Input
+                    label="End Date"
+                    type="date"
+                    value={endDate}
+                    onChange={(event) => {
+                      setEndDate(event.target.value);
+                      setCurrentPage(1);
+                    }}
+                    icon={<Calendar size={16} />}
+                  />
+                </div>
+              </div>
+            </Card>
+          </aside>
+
+          <section className="min-w-0 flex-1">
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+              <p className="text-sm font-bold">
+                Showing{' '}
+                <span className="text-[#8ea087]">{filteredReports.length}</span>{' '}
+                of {reports.length} reports
+              </p>
             </div>
-          </div>
+
+            {isLoading ? (
+              <Card className="rounded-3xl py-16 text-center">
+                <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-[#193c1f]" />
+                <p className="mt-4 text-xs font-black uppercase tracking-widest text-[#8ea087]">
+                  Loading reports...
+                </p>
+              </Card>
+            ) : filteredReports.length === 0 ? (
+              <Card className="rounded-3xl border-dashed py-16 text-center">
+                <FileText size={40} className="mx-auto mb-4 text-[#8ea087]" />
+                <p className="font-bold">No reports found.</p>
+                <p className="mt-1 text-sm text-[#8ea087]">
+                  Try adjusting your filters.
+                </p>
+              </Card>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+                  {paginatedReports.map((report) => (
+                    <Link
+                      key={report.id}
+                      href={`/publicreports/${report.id}`}
+                      className="group block"
+                    >
+                      <Card className="flex h-full flex-col rounded-3xl transition-all duration-300 hover:border-[#193c1f] hover:shadow-xl">
+                        <div className="relative h-56 overflow-hidden bg-[#EBE6DE]">
+                          {report.coverImageUrl ? (
+                            <Image
+                              src={report.coverImageUrl}
+                              alt={report.title}
+                              fill
+                              className="object-cover transition-transform duration-500 group-hover:scale-105"
+                            />
+                          ) : (
+                            <div className="flex h-full items-center justify-center text-[#8ea087]">
+                              <FileText size={52} />
+                            </div>
+                          )}
+                          <div className="absolute left-5 top-5 flex flex-wrap gap-2">
+                            <Badge>
+                              {categoryLabel[report.category] ||
+                                report.category}
+                            </Badge>
+                            <Badge status={getStatusBadge(report.status)}>
+                              {statusLabel[report.status] || report.status}
+                            </Badge>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-1 flex-col p-7">
+                          <span className="mb-3 text-[10px] font-black uppercase tracking-widest text-[#8ea087]">
+                            Case #{report.id.toString().slice(-5).toUpperCase()}
+                          </span>
+                          <h3 className="mb-3 text-2xl font-black leading-tight transition-colors group-hover:text-[#8ea087]">
+                            {report.title}
+                          </h3>
+                          <p className="mb-7 line-clamp-3 text-sm font-medium leading-relaxed text-[#193c1f]/60">
+                            {report.description}
+                          </p>
+
+                          <div className="mt-auto flex items-center justify-between gap-4 border-t border-[#f7f3ed] pt-5">
+                            <span className="flex min-w-0 items-center gap-2 text-[11px] font-black uppercase">
+                              <MapPin
+                                size={14}
+                                className="shrink-0 text-[#8ea087]"
+                              />
+                              <span className="truncate">{report.city}</span>
+                            </span>
+                            <span className="flex shrink-0 items-center gap-2 text-[11px] font-black uppercase transition-transform group-hover:translate-x-1">
+                              View Details
+                              <ArrowRight size={16} />
+                            </span>
+                          </div>
+                        </div>
+                      </Card>
+                    </Link>
+                  ))}
+                </div>
+
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={setCurrentPage}
+                />
+              </>
+            )}
+          </section>
         </div>
       </main>
     </div>
   );
 };
 
-export default PublicReportsPage;
+export default function PublicReportsPage() {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="min-h-screen bg-[#f7f3ed] text-[#193c1f]">
+          <PublicHeader />
+          <main className="mx-auto w-full max-w-7xl px-6 py-10 md:px-12">
+            <Card className="rounded-3xl py-16 text-center">
+              <div className="mx-auto h-12 w-12 animate-spin rounded-full border-b-2 border-[#193c1f]" />
+              <p className="mt-4 text-xs font-black uppercase tracking-widest text-[#8ea087]">
+                Loading reports...
+              </p>
+            </Card>
+          </main>
+        </div>
+      }
+    >
+      <PublicReportsContent />
+    </React.Suspense>
+  );
+}

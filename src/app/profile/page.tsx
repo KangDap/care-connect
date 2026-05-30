@@ -1,10 +1,12 @@
 'use client';
 
 import { Button } from '@/components/button';
+import { Card } from '@/components/card';
 import { Input } from '@/components/input';
 import { Modal } from '@/components/modal';
 import { Toast } from '@/components/toast';
 import { authClient } from '@/lib/auth/auth-client';
+import { ArrowLeft } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
@@ -15,7 +17,7 @@ const SILHOUETTE_AVATAR = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/20
 interface CustomUser {
   id: string;
   email: string;
-  name: string;
+  username: string;
   image?: string;
   bio?: string;
   dateOfBirth?: string | Date;
@@ -31,7 +33,7 @@ export default function ProfileManagement() {
   const [toast, setToast] = useState<{
     show: boolean;
     msg: string;
-    type: 'success' | 'error';
+    type: 'success' | 'error' | 'info';
   }>({
     show: false,
     msg: '',
@@ -46,7 +48,17 @@ export default function ProfileManagement() {
 
   const [formData, setFormData] = useState({
     email: '',
-    displayName: '',
+    userName: '',
+    bio: '',
+    birthDate: '',
+    gender: 'PREFER_NOT_TO_SAY',
+    phoneNumber: '',
+    avatarUrl: '',
+  });
+
+  const [initialFormData, setInitialFormData] = useState({
+    email: '',
+    userName: '',
     bio: '',
     birthDate: '',
     gender: 'PREFER_NOT_TO_SAY',
@@ -58,39 +70,104 @@ export default function ProfileManagement() {
     if (session?.user) {
       // Cast ke CustomUser & tipe bawaan session
       const u = session.user as CustomUser;
-      setFormData({
+      const parsedBirthDate = u.dateOfBirth ? new Date(u.dateOfBirth) : null;
+      const formattedBirthDate =
+        parsedBirthDate && !isNaN(parsedBirthDate.getTime())
+          ? parsedBirthDate.toISOString().slice(0, 10)
+          : '';
+
+      const data = {
         email: u.email ?? '',
-        displayName: u.name ?? '',
+        userName: u.username ?? '',
         bio: u.bio ?? '',
-        birthDate: u.dateOfBirth
-          ? new Date(u.dateOfBirth).toISOString().slice(0, 10)
-          : '',
+        birthDate: formattedBirthDate,
         gender: u.gender ?? 'PREFER_NOT_TO_SAY',
         phoneNumber: u.phoneNumber ?? '',
         avatarUrl: u.image ?? '',
-      });
+      };
+      setFormData(data);
+      setInitialFormData(data);
     }
   }, [session]);
+
+  const hasChanges =
+    formData.userName !== initialFormData.userName ||
+    formData.bio !== initialFormData.bio ||
+    formData.birthDate !== initialFormData.birthDate ||
+    formData.gender !== initialFormData.gender ||
+    formData.phoneNumber !== initialFormData.phoneNumber ||
+    formData.avatarUrl !== initialFormData.avatarUrl;
 
   const handleSaveProfile = async () => {
     setLoading(true);
     try {
+      const normalizedUsername = formData.userName.trim();
+      if (!normalizedUsername) {
+        setToast({
+          show: true,
+          msg: 'Username is required.',
+          type: 'error',
+        });
+        return;
+      }
+
+      const currentUsername = session?.user?.username ?? '';
+      const isUsernameChanged = normalizedUsername !== currentUsername;
+      if (isUsernameChanged) {
+        const { data: response, error: availabilityError } =
+          await authClient.isUsernameAvailable({
+            username: normalizedUsername,
+          });
+        if (availabilityError) throw availabilityError;
+
+        if (!response?.available) {
+          setToast({
+            show: true,
+            msg: 'Username is already taken. Please try another.',
+            type: 'error',
+          });
+          return;
+        }
+      }
+
+      const parsedBirthDate = formData.birthDate
+        ? new Date(formData.birthDate)
+        : null;
+      const cleanBirthDate =
+        parsedBirthDate && !isNaN(parsedBirthDate.getTime())
+          ? parsedBirthDate
+          : undefined;
+
       const { error } = await authClient.updateUser({
-        name: formData.displayName,
+        username: normalizedUsername,
         image: formData.avatarUrl,
         // @ts-expect-error: bio and other fields are custom extensions
         bio: formData.bio,
         phoneNumber: formData.phoneNumber,
-        dateOfBirth: new Date(formData.birthDate),
+        dateOfBirth: cleanBirthDate,
         gender: formData.gender,
       });
       if (error) throw error;
+
+      const { data: response } = await authClient.isUsernameAvailable({
+        username: formData.userName,
+      });
+
+      if (response?.available) {
+        console.log('Username is available');
+      } else {
+        console.log('Username is not available');
+      }
 
       window.scrollTo({ top: 0, behavior: 'smooth' });
       setToast({
         show: true,
         msg: 'Profile updated successfully!',
         type: 'success',
+      });
+      setInitialFormData({
+        ...formData,
+        userName: normalizedUsername,
       });
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Update failed';
@@ -143,27 +220,40 @@ export default function ProfileManagement() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const [backHref, setBackHref] = useState('/dashboard');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const prev = localStorage.getItem('prevPath');
+      if (prev && (prev.startsWith('/dashboard') || prev === '/forums')) {
+        setBackHref(prev);
+      } else if (session?.user) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const role = (session.user as any).role?.toUpperCase();
+        if (role === 'ADMIN') {
+          setBackHref('/dashboard/admin');
+        } else if (role === 'PSYCHOLOGIST') {
+          setBackHref('/dashboard/psikolog');
+        } else {
+          setBackHref('/dashboard');
+        }
+      }
+    }
+  }, [session]);
+
   return (
-    <div className="min-h-screen bg-[#F7F3ED] text-[#193C1F] p-6 md:p-12">
+    <div className="min-h-screen bg-[#f7f3ed] text-[#193c1f] p-6 md:p-12">
       <Toast {...toast} onClose={() => setToast({ ...toast, show: false })} />
 
       <div className="max-w-5xl mx-auto">
         <div className="flex items-center gap-5 mb-10">
-          <Link
-            href="/dashboard"
-            className="w-12 h-12 flex items-center justify-center rounded-2xl bg-white border border-[#D0D5CB] hover:bg-[#EBE6DE] transition-all shadow-sm"
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
+          <Link href={backHref} className="inline-block">
+            <Button
+              variant="outline"
+              className="icon-button back-icon-button h-10 w-10 md:h-12 md:w-12 rounded-xl md:rounded-2xl !p-0 shrink-0 flex items-center justify-center text-[#193c1f]"
             >
-              <line x1="19" y1="12" x2="5" y2="12"></line>
-              <polyline points="12 19 5 12 12 5"></polyline>
-            </svg>
+              <ArrowLeft size={20} strokeWidth={2.5} />
+            </Button>
           </Link>
           <h1 className="text-2xl font-black tracking-tight">
             Profile Settings
@@ -172,12 +262,12 @@ export default function ProfileManagement() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
           <div className="lg:col-span-4">
-            <div className="bg-white p-10 rounded-[40px] border border-[#D0D5CB]/50 shadow-sm flex flex-col items-center text-center">
+            <Card className="flex flex-col items-center rounded-[40px] p-10 text-center">
               <div
                 className="relative group cursor-pointer"
                 onClick={() => fileInputRef.current?.click()}
               >
-                <div className="w-44 h-44 rounded-[48px] overflow-hidden border-8 border-[#F7F3ED] shadow-inner bg-slate-100">
+                <div className="w-44 h-44 rounded-[48px] overflow-hidden border-8 border-[#f7f3ed] shadow-inner bg-slate-100">
                   <Image
                     src={formData.avatarUrl || SILHOUETTE_AVATAR}
                     alt="Avatar"
@@ -187,7 +277,7 @@ export default function ProfileManagement() {
                     className="w-full h-full object-cover transition-transform group-hover:scale-105"
                   />
                 </div>
-                <div className="absolute -bottom-2 -right-2 w-12 h-12 bg-[#193C1F] rounded-2xl flex items-center justify-center border-4 border-white shadow-lg text-white">
+                <div className="absolute -bottom-2 -right-2 w-12 h-12 bg-[#193c1f] rounded-2xl flex items-center justify-center border-4 border-white shadow-lg text-white">
                   <svg
                     width="16"
                     height="16"
@@ -221,24 +311,26 @@ export default function ProfileManagement() {
               </div>
               <div className="mt-8">
                 <h2 className="text-xl font-black">
-                  {formData.displayName || 'User'}
+                  {session?.user.username || 'User'}
                 </h2>
-                <p className="text-[#8EA087] text-sm mt-1">{formData.email}</p>
+                <p className="text-[#8ea087] text-sm mt-1">
+                  {session?.user.email}
+                </p>
               </div>
-            </div>
+            </Card>
           </div>
 
           <div className="lg:col-span-8 space-y-6">
-            <section className="bg-white p-8 md:p-10 rounded-[40px] border border-[#D0D5CB]/50 shadow-sm">
-              <h3 className="text-lg font-black mb-8 text-[#193C1F]">
+            <Card className="rounded-[40px] p-8 md:p-10">
+              <h3 className="text-lg font-black mb-8 text-[#193c1f]">
                 Public Profile
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="md:col-span-2">
                   <Input
-                    label="Display Name"
-                    name="displayName"
-                    value={formData.displayName}
+                    label="Username"
+                    name="userName"
+                    value={formData.userName}
                     onChange={handleInputChange}
                   />
                 </div>
@@ -252,10 +344,10 @@ export default function ProfileManagement() {
                   />
                 </div>
               </div>
-            </section>
+            </Card>
 
-            <section className="bg-white p-8 md:p-10 rounded-[40px] border border-[#D0D5CB]/50 shadow-sm">
-              <h3 className="text-lg font-black mb-8 text-[#193C1F]">
+            <Card className="rounded-[40px] p-8 md:p-10">
+              <h3 className="text-lg font-black mb-8 text-[#193c1f]">
                 Personal Details
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -291,11 +383,11 @@ export default function ProfileManagement() {
                   <option value="PREFER_NOT_TO_SAY">Prefer not to say</option>
                 </Input>
               </div>
-            </section>
+            </Card>
 
-            <section className="bg-white p-8 md:p-10 rounded-[40px] border border-[#D0D5CB]/50 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <Card className="flex flex-col justify-between gap-6 rounded-[40px] p-8 md:flex-row md:items-center md:p-10">
               <div className="flex items-center gap-5">
-                <div className="w-14 h-14 bg-[#193C1F]/10 rounded-2xl flex items-center justify-center text-[#193C1F]">
+                <div className="w-14 h-14 bg-[#193c1f]/10 rounded-2xl flex items-center justify-center text-[#193c1f]">
                   <svg
                     width="18"
                     height="18"
@@ -308,10 +400,10 @@ export default function ProfileManagement() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-black text-[#193C1F]">
+                  <h3 className="font-black text-[#193c1f]">
                     Account Security
                   </h3>
-                  <p className="text-xs text-[#8EA087] mt-1 font-medium">
+                  <p className="text-xs text-[#8ea087] mt-1 font-medium">
                     Update password to keep account safe.
                   </p>
                 </div>
@@ -322,14 +414,14 @@ export default function ProfileManagement() {
               >
                 Change Password
               </Button>
-            </section>
+            </Card>
 
             <div className="pt-4 flex justify-end">
               <Button
                 variant="secondary"
-                className="px-12 h-14 w-full md:w-auto shadow-lg shadow-[#193C1F]/10"
+                className="px-12 h-14 w-full md:w-auto shadow-lg shadow-[#193c1f]/10"
                 onClick={handleSaveProfile}
-                disabled={loading}
+                disabled={loading || !hasChanges}
               >
                 {loading ? 'Saving Changes...' : 'Save All Changes'}
               </Button>

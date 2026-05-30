@@ -89,7 +89,9 @@ export const getConsultationChatsByConsultationId = async (
         include: {
           user: {
             select: {
+              id: true,
               name: true,
+              role: true,
             },
           },
         },

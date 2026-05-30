@@ -1,7 +1,12 @@
+import {
+  sendExistingUserSignUpAttemptEmail,
+  sendResetPasswordEmail,
+  sendVerificationEmail,
+} from '@/lib/email/email';
 import { prisma } from '@/lib/prisma';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { admin, openAPI } from 'better-auth/plugins';
+import { admin, openAPI, username } from 'better-auth/plugins';
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -38,8 +43,39 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: true,
+    autoSignIn: false,
+    sendResetPassword: async ({ user, url }) => {
+      void sendResetPasswordEmail({ user, url });
+    },
+    onExistingUserSignUp: async ({ user }) => {
+      void sendExistingUserSignUpAttemptEmail(user.email);
+    },
   },
-  plugins: [admin(), openAPI()],
+  emailVerification: {
+    sendOnSignUp: true,
+    sendOnSignIn: true,
+    expiresIn: 60 * 60,
+    sendVerificationEmail: async ({ user, url }) => {
+      void sendVerificationEmail({ user, url });
+    },
+  },
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      mapProfileToUser: (profile) => {
+        const email = profile.email ?? '';
+        const emailPrefix = email.split('@')[0] || 'user';
+        return {
+          username: emailPrefix,
+          displayUsername: profile.name,
+          image: profile.picture,
+        };
+      },
+    },
+  },
+  plugins: [admin(), openAPI(), username()],
 });
 
 export type Session = typeof auth.$Infer.Session;

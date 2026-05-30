@@ -1,3 +1,4 @@
+import type { Prisma } from '@/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
 
 import type {
@@ -41,4 +42,47 @@ export const findExistingConsultation = async (
   data: FindExistingConsultationInput,
 ) => {
   return prisma.consultation.findFirst({ where: data });
+};
+
+// Schedule Management Repositories
+export const getActivePsychologists = async () => {
+  return prisma.user.findMany({
+    where: {
+      role: 'PSYCHOLOGIST',
+      NOT: {
+        banned: true,
+      },
+    },
+    select: {
+      id: true,
+      name: true,
+      image: true,
+      schedules: {
+        select: {
+          dayOfWeek: true,
+        },
+      },
+    },
+  });
+};
+
+export const deleteSchedulesByUserId = async (userId: string) => {
+  return prisma.schedule.deleteMany({
+    where: { userId },
+  });
+};
+
+export const createManySchedules = async (
+  data: Prisma.ScheduleCreateManyInput[],
+) => {
+  return prisma.schedule.createMany({
+    data,
+  });
+};
+
+export const getSchedulesByUserId = async (userId: string) => {
+  return prisma.schedule.findMany({
+    where: { userId },
+    orderBy: [{ dayOfWeek: 'asc' }, { startTime: 'asc' }],
+  });
 };

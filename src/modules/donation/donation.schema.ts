@@ -3,22 +3,33 @@ import { z } from 'zod';
 
 import type {
   CreateDonationInput,
+  DonationType,
   MidtransWebhookInput,
 } from './donation.types';
 
-const CREATE_DONATION_SCHEMA = z.object({
-  reportId: z.coerce
-    .number()
-    .int()
-    .positive('reportId must be a positive integer'),
-  amount: z.coerce
-    .number()
-    .positive('amount must be a positive number')
-    .max(1_000_000_000, 'amount is too large'),
-  paymentMethod: z.enum(['BANK_TRANSFER', 'CREDIT_CARD', 'EWALLET', 'QRIS'], {
-    message: 'Invalid paymentMethod',
-  }),
-});
+const CREATE_DONATION_SCHEMA = z
+  .object({
+    reportId: z.coerce.number().int().positive().optional().nullable(),
+    amount: z.coerce
+      .number()
+      .positive('amount must be a positive number')
+      .max(1_000_000_000, 'amount is too large'),
+    paymentMethod: z.enum(['BANK_TRANSFER', 'CREDIT_CARD', 'EWALLET', 'QRIS'], {
+      message: 'Invalid paymentMethod',
+    }),
+    donationType: z.enum(['REPORT', 'PLATFORM'], {
+      message: 'Invalid donationType',
+    }),
+  })
+  .superRefine((data, ctx) => {
+    if (data.donationType === 'REPORT' && !data.reportId) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['reportId'],
+        message: 'reportId is required when donationType is REPORT',
+      });
+    }
+  });
 
 const MIDTRANS_WEBHOOK_SCHEMA = z.object({
   order_id: z.string().min(1, 'order_id is required'),
@@ -31,11 +42,15 @@ const MIDTRANS_WEBHOOK_SCHEMA = z.object({
 });
 
 export class DonationSchema {
-  static validateCreateDonation(formData: FormData): CreateDonationInput {
+  static validateCreateDonation(
+    formData: FormData,
+    donationType: DonationType = 'REPORT',
+  ): CreateDonationInput {
     const parseResult = CREATE_DONATION_SCHEMA.safeParse({
       reportId: formData.get('reportId'),
       amount: formData.get('amount'),
       paymentMethod: formData.get('paymentMethod'),
+      donationType: formData.get('donationType') || donationType,
     });
 
     if (!parseResult.success) {

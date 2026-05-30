@@ -1,165 +1,187 @@
-'use client';
-
-import { authClient } from '@/lib/auth/auth-client';
+import { Badge } from '@/components/badge';
+import { Button } from '@/components/button';
+import { Card } from '@/components/card';
+import Carousel from '@/components/carousel';
+import { PublicHeader } from '@/components/public-header';
+import { Prisma } from '@/generated/prisma/client';
+import { PaymentStatus, ReportStatus } from '@/generated/prisma/enums';
+import { auth } from '@/lib/auth/auth';
+import { prisma } from '@/lib/prisma';
+import { headers } from 'next/headers';
+import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
-export default function LandingPage() {
-  const { data: session } = authClient.useSession();
+export const dynamic = 'force-dynamic';
+
+export default async function LandingPage() {
+  let session = null;
+  try {
+    session = await auth.api.getSession({ headers: await headers() });
+  } catch (e) {
+    const err = e as { message?: string; digest?: string };
+    if (
+      err?.message?.includes('Dynamic server usage') ||
+      err?.digest === 'DYNAMIC_SERVER_USAGE'
+    ) {
+      throw e;
+    }
+    console.error('Failed to get session:', e);
+  }
   const isLoggedIn = !!session?.user;
+  const userRole = (session?.user as { role?: string })?.role;
+
+  let totalReports = 0;
+  let totalConsultations = 0;
+  let totalDonationAmount = 0;
+  let recentReports: Prisma.ReportGetPayload<{
+    include: { evidences: true };
+  }>[] = [];
+
+  try {
+    const [reportsCount, consultationsCount, paidDonations, latestReports] =
+      await Promise.all([
+        prisma.report.count({
+          where: { status: ReportStatus.RESOLVED, isPublic: true },
+        }),
+        prisma.consultation.count(),
+        prisma.donation.aggregate({
+          _sum: { amount: true },
+          where: { paymentStatus: PaymentStatus.PAID },
+        }),
+        prisma.report.findMany({
+          take: 3,
+          orderBy: { createdAt: 'desc' },
+          where: {
+            isPublic: true,
+            status: ReportStatus.RESOLVED,
+          },
+          include: {
+            evidences: {
+              take: 1,
+            },
+          },
+        }),
+      ]);
+
+    totalReports = reportsCount;
+    totalConsultations = consultationsCount;
+    totalDonationAmount = Number(paidDonations._sum.amount || 0);
+    recentReports = latestReports;
+  } catch (e) {
+    console.error('Failed to fetch landing page data:', e);
+  }
+
+  const formattedDonations = new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    maximumFractionDigits: 0,
+  }).format(totalDonationAmount);
 
   return (
-    <div className="font-sans antialiased bg-[#F7F3ED] text-[#193C1F] min-h-screen">
-      {/* Navigation */}
-      <header className="sticky top-0 z-[100] w-full bg-[#F7F3ED]/90 backdrop-blur-md py-6 px-12 flex justify-between items-center border-b border-[#D0D5CB]">
-        <Link
-          href="/"
-          className="flex items-center gap-2 transition-opacity hover:opacity-80"
-        >
-          <div className="w-10 h-10 bg-[#193C1F] rounded-lg flex items-center justify-center text-[#F7F3ED]">
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.744c0 5.578 4.5 10.13 10.125 10.13 5.625 0 10.125-4.552 10.125-10.13 0-1.494-.273-2.925-.77-4.244a11.959 11.959 0 0 1-8.355-3.212Z"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              ></path>
-            </svg>
-          </div>
-          <span className="text-2xl font-bold text-[#193C1F]">CareConnect</span>
-        </Link>
-        <nav className="flex items-center gap-12 text-[#193C1F] font-medium">
-          <Link href="/" className="hover:text-[#8EA087] transition-colors">
-            Home
-          </Link>
-          <Link
-            href={isLoggedIn ? '/consultation' : '/'}
-            className="hover:text-[#8EA087] transition-colors"
-          >
-            Consultation
-          </Link>
-          <Link
-            href={isLoggedIn ? '/publicreports' : '/'}
-            className="hover:text-[#8EA087] transition-colors"
-          >
-            Reports
-          </Link>
-          <Link href="/" className="hover:text-[#8EA087] transition-colors">
-            Forum
-          </Link>
-          <Link
-            href={isLoggedIn ? '/donation' : '/'}
-            className="hover:text-[#8EA087] transition-colors"
-          >
-            Donation
-          </Link>
-        </nav>
-        <Link href={isLoggedIn ? '/dashboard' : '/login'}>
-          <button className="bg-[#8EA087] text-[#F7F3ED] px-8 py-2.5 rounded-lg font-bold hover:bg-[#193C1F] transition-colors">
-            {isLoggedIn ? 'Dashboard' : 'Login/Profile'}
-          </button>
-        </Link>
-      </header>
+    <div className="font-sans antialiased bg-[#f7f3ed] text-[#193c1f] min-h-screen">
+      <PublicHeader />
 
       {/* Hero Section */}
-      <section className="max-w-[1440px] mx-auto py-24 px-12 flex items-center justify-between">
-        <div className="w-1/2">
-          <h1 className="text-[88px] leading-[1.1] font-black text-[#193C1F] mb-8 bg-gradient-to-r from-[#193C1F] to-[#D1B698] text-transparent bg-clip-text">
-            You are <span className="text-[#D1B698]">not alone</span>
+      <section className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-10 px-4 py-12 sm:px-6 md:py-16 lg:flex-row lg:px-12 lg:py-24">
+        <div className="w-full lg:w-1/2">
+          <h1 className="mb-6 bg-gradient-to-r from-[#193c1f] to-[#d1b698] bg-clip-text text-4xl font-black leading-[1.08] text-transparent sm:text-6xl lg:mb-8 lg:text-[88px]">
+            You are <span className="text-[#d1b698]">not alone</span>
           </h1>
-          <p className="text-xl text-[#193C1F] mb-12">
+          <p className="mb-8 text-base text-[#193c1f] sm:text-lg lg:mb-12 lg:text-xl">
             Connecting individuals with professional help, reporting resources,
             and a supportive community to ensure safety and well-being. Your
             healing starts with a single step.
           </p>
-          <div className="flex gap-4">
-            <Link href={isLoggedIn ? '/consultation' : '/'}>
-              <button className="bg-[#8EA087] text-[#F7F3ED] px-10 py-4 rounded-lg font-bold text-lg shadow-sm hover:bg-[#193C1F] transition-colors h-full">
+          <div className="grid gap-3 sm:grid-cols-3 lg:flex lg:flex-wrap lg:gap-4">
+            {userRole === 'PSYCHOLOGIST' ? (
+              <Button
+                disabled
+                className="h-full rounded-lg bg-[#8ea087]/50 px-5 py-3 text-sm sm:px-6 sm:text-base lg:px-10 lg:py-4 lg:text-lg"
+                title="Psychologists cannot create consultations"
+              >
                 Consult Now
-              </button>
-            </Link>
-            <Link href={isLoggedIn ? '/report' : '/'}>
-              <button className="bg-[#D0D5CB] text-[#193C1F] px-10 py-4 rounded-lg font-bold text-lg border border-[#8EA087] hover:bg-[#EDE4D8] transition-colors">
+              </Button>
+            ) : (
+              <Link href={isLoggedIn ? '/consultation' : '/login'}>
+                <Button
+                  variant="secondary"
+                  className="h-full w-full rounded-lg px-5 py-3 text-sm sm:px-6 sm:text-base lg:w-auto lg:px-10 lg:py-4 lg:text-lg"
+                >
+                  Consult Now
+                </Button>
+              </Link>
+            )}
+            <Link href={isLoggedIn ? '/report' : '/login'}>
+              <Button
+                variant="outline"
+                className="w-full rounded-lg border-[#8ea087] bg-[#d0d5cb] px-5 py-3 text-sm sm:px-6 sm:text-base lg:w-auto lg:px-10 lg:py-4 lg:text-lg"
+              >
                 Report Incident
-              </button>
+              </Button>
             </Link>
-            <Link href={isLoggedIn ? '/donation' : '/'}>
-              <button className="bg-[#F7F3ED] text-[#193C1F] px-10 py-4 rounded-lg font-bold text-lg border border-[#D1B698] hover:bg-[#EDE4D8] transition-colors h-full">
+            <Link href={isLoggedIn ? '/donation' : '/login'}>
+              <Button
+                variant="outline"
+                className="h-full w-full rounded-lg border-[#d1b698] bg-[#f7f3ed] px-5 py-3 text-sm sm:px-6 sm:text-base lg:w-auto lg:px-10 lg:py-4 lg:text-lg"
+              >
                 Donate
-              </button>
+              </Button>
             </Link>
           </div>
         </div>
         {/* Right side Hero Graphic */}
-        <div className="w-[600px] h-[400px] bg-[#D0D5CB] rounded-3xl flex items-center justify-center text-[#8EA087]">
-          <div className="w-32 h-32">
-            <svg
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              ></path>
-              <path
-                d="M10.5 19.5h3m-6.75-4.5h10.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              ></path>
-            </svg>
-          </div>
-        </div>
+        <Carousel />
       </section>
 
       {/* Stats Section */}
-      <section className="bg-[#EDE4D8] py-20 px-12">
-        <div className="max-w-[1440px] mx-auto grid grid-cols-3 gap-8">
-          <div className="bg-[#F7F3ED] p-12 rounded-2xl text-center shadow-sm border-b-4 border-[#8EA087]">
-            <p className="text-[#193C1F] font-semibold mb-2 opacity-80">
-              Total Reports Handled
+      <section className="bg-[#ede4d8] px-4 py-12 sm:px-6 md:px-12 md:py-20">
+        <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-4 md:grid-cols-3 md:gap-8">
+          <Card className="rounded-2xl border-b-4 border-[#8ea087] bg-[#f7f3ed] p-6 text-center md:p-12">
+            <p className="text-[#193c1f] font-semibold mb-2 opacity-80">
+              Reports Published
             </p>
-            <h2 className="text-6xl font-black text-[#193C1F] mb-4">1,240</h2>
-            <div className="w-16 h-1 bg-[#8EA087] mx-auto rounded-full"></div>
-          </div>
-          <div className="bg-[#F7F3ED] p-12 rounded-2xl text-center shadow-sm border-b-4 border-[#8EA087]">
-            <p className="text-[#193C1F] font-semibold mb-2 opacity-80">
-              Professional Consultations
+            <h2 className="mb-4 text-4xl font-black text-[#193c1f] md:text-6xl">
+              {totalReports}
+            </h2>
+            <div className="w-16 h-1 bg-[#8ea087] mx-auto rounded-full"></div>
+          </Card>
+          <Card className="rounded-2xl border-b-4 border-[#8ea087] bg-[#f7f3ed] p-6 text-center md:p-12">
+            <p className="text-[#193c1f] font-semibold mb-2 opacity-80">
+              Consultation Handled
             </p>
-            <h2 className="text-6xl font-black text-[#193C1F] mb-4">3,500+</h2>
-            <div className="w-16 h-1 bg-[#D1B698] mx-auto rounded-full"></div>
-          </div>
-          <div className="bg-[#F7F3ED] p-12 rounded-2xl text-center shadow-sm border-b-4 border-[#8EA087]">
-            <p className="text-[#193C1F] font-semibold mb-2 opacity-80">
+            <h2 className="mb-4 text-4xl font-black text-[#193c1f] md:text-6xl">
+              {totalConsultations}
+            </h2>
+            <div className="w-16 h-1 bg-[#d1b698] mx-auto rounded-full"></div>
+          </Card>
+          <Card className="rounded-2xl border-b-4 border-[#8ea087] bg-[#f7f3ed] p-6 text-center md:p-12">
+            <p className="text-[#193c1f] font-semibold mb-2 opacity-80">
               Community Donations
             </p>
-            <h2 className="text-6xl font-black text-[#193C1F] mb-4">$50,000</h2>
-            <div className="w-16 h-1 bg-[#8EA087] mx-auto rounded-full"></div>
-          </div>
+            <h2
+              className="mb-4 text-3xl font-black text-[#193c1f] md:text-4xl xl:text-5xl"
+              title={formattedDonations}
+            >
+              {formattedDonations}
+            </h2>
+            <div className="w-16 h-1 bg-[#8ea087] mx-auto rounded-full"></div>
+          </Card>
         </div>
       </section>
 
       {/* Support Methods Section */}
-      <section className="max-w-[1440px] mx-auto py-32 px-12 text-center">
-        <h2 className="text-5xl font-black text-[#193C1F] mb-6">
+      <section className="mx-auto max-w-[1440px] px-4 pb-12 pt-16 text-center sm:px-6 md:px-12 md:pb-16 md:pt-32">
+        <h2 className="mb-4 text-3xl font-black text-[#193c1f] sm:text-4xl md:mb-6 md:text-5xl">
           How we support you
         </h2>
-        <p className="text-[#193C1F] max-w-2xl mx-auto mb-20 opacity-80">
+        <p className="mx-auto mb-10 max-w-2xl text-sm text-[#193c1f] opacity-80 sm:text-base md:mb-20">
           Comprehensive tools designed to provide safety, healing, and community
           support in a confidential environment.
         </p>
-        <div className="grid grid-cols-4 gap-8">
-          <div className="bg-[#F7F3ED] p-8 rounded-2xl border border-[#D0D5CB] text-left shadow-sm flex flex-col items-start gap-4">
-            <div className="w-12 h-12 bg-[#EDE4D8] rounded-lg flex items-center justify-center text-[#8EA087]">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+          <Card className="flex flex-col items-start gap-4 rounded-2xl bg-[#f7f3ed] p-6 text-left md:p-8">
+            <div className="w-12 h-12 bg-[#ede4d8] rounded-lg flex items-center justify-center text-[#8ea087]">
               <svg
                 className="w-6 h-6"
                 fill="none"
@@ -175,13 +197,13 @@ export default function LandingPage() {
                 ></path>
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-[#193C1F]">Consultation</h3>
-            <p className="text-[#193C1F] opacity-80">
+            <h3 className="text-2xl font-bold text-[#193c1f]">Consultation</h3>
+            <p className="text-[#193c1f] opacity-80">
               One-on-one sessions with certified mental health professionals.
             </p>
-          </div>
-          <div className="bg-[#F7F3ED] p-8 rounded-2xl border border-[#D0D5CB] text-left shadow-sm flex flex-col items-start gap-4">
-            <div className="w-12 h-12 bg-[#EDE4D8] rounded-lg flex items-center justify-center text-[#8EA087]">
+          </Card>
+          <Card className="flex flex-col items-start gap-4 rounded-2xl bg-[#f7f3ed] p-6 text-left md:p-8">
+            <div className="w-12 h-12 bg-[#ede4d8] rounded-lg flex items-center justify-center text-[#8ea087]">
               <svg
                 className="w-6 h-6"
                 fill="none"
@@ -197,13 +219,13 @@ export default function LandingPage() {
                 ></path>
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-[#193C1F]">Reporting</h3>
-            <p className="text-[#193C1F] opacity-80">
+            <h3 className="text-2xl font-bold text-[#193c1f]">Reporting</h3>
+            <p className="text-[#193c1f] opacity-80">
               Secure and anonymous incident reporting for community safety.
             </p>
-          </div>
-          <div className="bg-[#F7F3ED] p-8 rounded-2xl border border-[#D0D5CB] text-left shadow-sm flex flex-col items-start gap-4">
-            <div className="w-12 h-12 bg-[#EDE4D8] rounded-lg flex items-center justify-center text-[#8EA087]">
+          </Card>
+          <Card className="flex flex-col items-start gap-4 rounded-2xl bg-[#f7f3ed] p-6 text-left md:p-8">
+            <div className="w-12 h-12 bg-[#ede4d8] rounded-lg flex items-center justify-center text-[#8ea087]">
               <svg
                 className="w-6 h-6"
                 fill="none"
@@ -219,13 +241,13 @@ export default function LandingPage() {
                 ></path>
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-[#193C1F]">Forum</h3>
-            <p className="text-[#193C1F] opacity-80">
+            <h3 className="text-2xl font-bold text-[#193c1f]">Forum</h3>
+            <p className="text-[#193c1f] opacity-80">
               Peer-led discussions and shared experiences in a moderated space.
             </p>
-          </div>
-          <div className="bg-[#F7F3ED] p-8 rounded-2xl border border-[#D0D5CB] text-left shadow-sm flex flex-col items-start gap-4">
-            <div className="w-12 h-12 bg-[#EDE4D8] rounded-lg flex items-center justify-center text-[#8EA087]">
+          </Card>
+          <Card className="flex flex-col items-start gap-4 rounded-2xl bg-[#f7f3ed] p-6 text-left md:p-8">
+            <div className="w-12 h-12 bg-[#ede4d8] rounded-lg flex items-center justify-center text-[#8ea087]">
               <svg
                 className="w-6 h-6"
                 fill="none"
@@ -241,23 +263,23 @@ export default function LandingPage() {
                 ></path>
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-[#193C1F]">Donation</h3>
-            <p className="text-[#193C1F] opacity-80">
+            <h3 className="text-2xl font-bold text-[#193c1f]">Donation</h3>
+            <p className="text-[#193c1f] opacity-80">
               Fund mental health initiatives and support those in need.
             </p>
-          </div>
+          </Card>
         </div>
       </section>
 
       {/* Recent Reports Section */}
-      <section className="max-w-[1440px] mx-auto py-32 px-12">
-        <div className="flex justify-between items-end mb-12">
-          <h2 className="text-4xl font-black text-[#193C1F]">
-            Recent Anonymized Reports
+      <section className="mx-auto max-w-[1440px] px-4 pb-20 pt-10 sm:px-6 md:px-12 md:pb-32 md:pt-16">
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between md:mb-12">
+          <h2 className="text-3xl font-black text-[#193c1f] md:text-4xl">
+            Recent Reports
           </h2>
-          <a
-            className="text-[#8EA087] font-bold flex items-center gap-2 hover:text-[#193C1F] transition-colors"
-            href="#"
+          <Link
+            className="text-[#8ea087] font-bold flex items-center gap-2 hover:text-[#193c1f] transition-colors"
+            href={isLoggedIn ? '/publicreports' : '/login'}
           >
             View Archive
             <svg
@@ -274,117 +296,102 @@ export default function LandingPage() {
                 strokeLinejoin="round"
               ></path>
             </svg>
-          </a>
+          </Link>
         </div>
-        <div className="grid grid-cols-3 gap-10">
-          <div data-purpose="report-card">
-            <div className="w-full aspect-video bg-[#D0D5CB] rounded-2xl mb-6 flex items-center justify-center text-[#8EA087]">
-              <svg
-                className="w-12 h-12"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          {recentReports.map((report) => (
+            <Link
+              key={report.id}
+              href={isLoggedIn ? `/publicreports/${report.id}` : '/login'}
+              className="block h-full outline-none"
+            >
+              <Card
+                data-purpose="report-card"
+                className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-3xl bg-white transition-all duration-300 hover:border-[#193c1f] hover:shadow-xl"
               >
-                <path
-                  d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.744c0 5.578 4.5 10.13 10.125 10.13 5.625 0 10.125-4.552 10.125-10.13 0-1.494-.273-2.925-.77-4.244a11.959 11.959 0 0 1-8.355-3.212Z"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                ></path>
-              </svg>
-            </div>
-            <h3 className="text-2xl font-bold text-[#193C1F] mb-2">
-              Report #882
-            </h3>
-            <p className="text-[#193C1F] opacity-80 mb-6">
-              Safety concern regarding workplace harassment addressed and
-              resolved via legal mediation.
-            </p>
-            <div className="flex gap-2">
-              <span className="bg-[#EDE4D8] text-[#8EA087] px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
-                Resolved
-              </span>
-              <span className="bg-[#D0D5CB] text-[#193C1F] px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
-                Workplace
-              </span>
-            </div>
-          </div>
-          <div data-purpose="report-card">
-            <div className="w-full aspect-video bg-[#D0D5CB] rounded-2xl mb-6 flex items-center justify-center text-[#8EA087]">
-              <svg
-                className="w-12 h-12"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M15.042 21.672 13.684 16.6m0 0-2.51 2.225.569-9.47 5.227 7.917-3.286-.672ZM12 2.25V4.5m5.834.166-1.591 1.591M21.75 12h-2.25m-.166 5.834-1.591-1.591M12 21.75V19.5m-5.834-.166 1.591-1.591M2.25 12h2.25m.166-5.834 1.591 1.591"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                ></path>
-              </svg>
-            </div>
-            <h3 className="text-2xl font-bold text-[#193C1F] mb-2">
-              Report #881
-            </h3>
-            <p className="text-[#193C1F] opacity-80 mb-6">
-              Community-led intervention provided temporary housing and support
-              for individual in crisis.
-            </p>
-            <div className="flex gap-2">
-              <span className="bg-[#D0D5CB] text-[#8EA087] px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
-                Active
-              </span>
-              <span className="bg-[#EDE4D8] text-[#193C1F] px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
-                Housing
-              </span>
-            </div>
-          </div>
-          <div data-purpose="report-card">
-            <div className="w-full aspect-video bg-[#D0D5CB] rounded-2xl mb-6 flex items-center justify-center text-[#8EA087]">
-              <svg
-                className="w-12 h-12"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                ></path>
-              </svg>
-            </div>
-            <h3 className="text-2xl font-bold text-[#193C1F] mb-2">
-              Report #880
-            </h3>
-            <p className="text-[#193C1F] opacity-80 mb-6">
-              Emergency mental health consultation provided within 30 minutes of
-              initial report submission.
-            </p>
-            <div className="flex gap-2">
-              <span className="bg-[#EDE4D8] text-[#8EA087] px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
-                Emergency
-              </span>
-              <span className="bg-[#D0D5CB] text-[#193C1F] px-3 py-1 rounded text-xs font-bold uppercase tracking-wider">
-                Crisis
-              </span>
-            </div>
-          </div>
+                <div className="relative h-56 w-full shrink-0 overflow-hidden bg-[#f7f3ed]">
+                  {report.evidences && report.evidences.length > 0 ? (
+                    <Image
+                      src={report.evidences[0].fileUrl}
+                      alt={`Report #${report.id} image`}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center text-[#8ea087]">
+                      <svg
+                        className="h-12 w-12"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.744c0 5.578 4.5 10.13 10.125 10.13 5.625 0 10.125-4.552 10.125-10.13 0-1.494-.273-2.925-.77-4.244a11.959 11.959 0 0 1-8.355-3.212Z"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        ></path>
+                      </svg>
+                    </div>
+                  )}
+                  <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+                    <Badge className="bg-white/90 text-[#193c1f] backdrop-blur-sm border-0 font-bold shadow-sm">
+                      {report.category}
+                    </Badge>
+                    <Badge className="bg-[#193c1f]/90 text-white backdrop-blur-sm border-0 font-bold shadow-sm">
+                      {report.status}
+                    </Badge>
+                  </div>
+                </div>
+
+                <div className="flex flex-1 flex-col p-6">
+                  <div className="mb-3 flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#8ea087]">
+                    <span>#{String(report.id).padStart(4, '0')}</span>
+                    <span className="h-1 w-1 rounded-full bg-[#d0d5cb]" />
+                    <span className="truncate">
+                      {report.city}, {report.province}
+                    </span>
+                  </div>
+
+                  <h3 className="mb-3 line-clamp-2 text-xl font-black leading-tight text-[#193c1f] transition-colors group-hover:text-[#8ea087]">
+                    {report.title}
+                  </h3>
+
+                  <p className="mb-6 line-clamp-3 flex-1 text-sm font-medium leading-relaxed text-[#193c1f]/60">
+                    {report.description}
+                  </p>
+
+                  <div className="mt-auto flex items-center justify-center gap-2 rounded-2xl bg-[#f7f3ed] px-4 py-3 text-sm font-bold text-[#193c1f] transition-colors group-hover:bg-[#193c1f] group-hover:text-white">
+                    View Details
+                    <svg
+                      className="w-4 h-4 transition-transform group-hover:translate-x-1"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                      ></path>
+                    </svg>
+                  </div>
+                </div>
+              </Card>
+            </Link>
+          ))}
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#F7F3ED] pt-24 pb-12 px-12 border-t border-[#D0D5CB]">
-        <div className="max-w-[1440px] mx-auto grid grid-cols-12 gap-12 mb-20">
-          <div className="col-span-4">
+      <footer className="border-t border-[#d0d5cb] bg-[#f7f3ed] px-4 pb-10 pt-14 sm:px-6 md:px-12 md:pb-12 md:pt-24">
+        <div className="mx-auto mb-12 grid max-w-[1440px] grid-cols-1 gap-10 md:mb-20 lg:grid-cols-12 lg:gap-12">
+          <div className="lg:col-span-4">
             <div className="flex items-center gap-2 mb-8">
-              <div className="w-8 h-8 bg-[#D0D5CB] rounded flex items-center justify-center text-[#193C1F]">
+              <div className="w-8 h-8 bg-[#d0d5cb] rounded flex items-center justify-center text-[#193c1f]">
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -400,16 +407,16 @@ export default function LandingPage() {
                   ></path>
                 </svg>
               </div>
-              <span className="text-xl font-bold text-[#193C1F]">
+              <span className="text-xl font-bold text-[#193c1f]">
                 CareConnect
               </span>
             </div>
-            <p className="text-[#193C1F] opacity-80 mb-8 max-w-sm">
+            <p className="text-[#193c1f] opacity-80 mb-8 max-w-sm">
               HealHub&apos;s CareConnect is dedicated to fostering a safe
               digital ecosystem for mental health and incident reporting.
             </p>
             <div className="flex gap-4">
-              <div className="w-10 h-10 rounded-full border border-[#D0D5CB] flex items-center justify-center text-[#193C1F] hover:bg-[#EDE4D8] transition-colors cursor-pointer">
+              <div className="w-10 h-10 rounded-full border border-[#d0d5cb] flex items-center justify-center text-[#193c1f] hover:bg-[#ede4d8] transition-colors cursor-pointer">
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -425,7 +432,7 @@ export default function LandingPage() {
                   ></path>
                 </svg>
               </div>
-              <div className="w-10 h-10 rounded-full border border-[#D0D5CB] flex items-center justify-center text-[#193C1F] hover:bg-[#EDE4D8] transition-colors cursor-pointer">
+              <div className="w-10 h-10 rounded-full border border-[#d0d5cb] flex items-center justify-center text-[#193c1f] hover:bg-[#ede4d8] transition-colors cursor-pointer">
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -443,34 +450,34 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
-          <div className="col-span-4">
-            <h4 className="text-xl font-bold text-[#193C1F] mb-8">Resources</h4>
-            <ul className="space-y-4 text-[#193C1F] opacity-80">
+          <div className="lg:col-span-4">
+            <h4 className="text-xl font-bold text-[#193c1f] mb-8">Resources</h4>
+            <ul className="space-y-4 text-[#193c1f] opacity-80">
               <li>
-                <a className="hover:text-[#8EA087] transition-colors" href="#">
+                <a className="hover:text-[#8ea087] transition-colors" href="#">
                   Emergency Help
                 </a>
               </li>
               <li>
-                <a className="hover:text-[#8EA087] transition-colors" href="#">
+                <a className="hover:text-[#8ea087] transition-colors" href="#">
                   FAQ
                 </a>
               </li>
               <li>
-                <a className="hover:text-[#8EA087] transition-colors" href="#">
+                <a className="hover:text-[#8ea087] transition-colors" href="#">
                   Privacy Policy
                 </a>
               </li>
               <li>
-                <a className="hover:text-[#8EA087] transition-colors" href="#">
+                <a className="hover:text-[#8ea087] transition-colors" href="#">
                   Terms of Service
                 </a>
               </li>
             </ul>
           </div>
-          <div className="col-span-4">
-            <h4 className="text-xl font-bold text-[#193C1F] mb-8">Contact</h4>
-            <ul className="space-y-4 text-[#193C1F] opacity-80">
+          <div className="lg:col-span-4">
+            <h4 className="text-xl font-bold text-[#193c1f] mb-8">Contact</h4>
+            <ul className="space-y-4 text-[#193c1f] opacity-80">
               <li className="flex items-center gap-3">
                 <svg
                   className="w-5 h-5"
@@ -530,8 +537,8 @@ export default function LandingPage() {
             </ul>
           </div>
         </div>
-        <div className="text-center text-[#193C1F] opacity-50 border-t border-[#D0D5CB] pt-12">
-          © 2024 CareConnect. All rights reserved. A HealHub Initiative.
+        <div className="text-center text-[#193c1f] opacity-50 border-t border-[#d0d5cb] pt-12">
+          © 2026 CareConnect. All rights reserved. A HealHub Initiative.
         </div>
       </footer>
     </div>

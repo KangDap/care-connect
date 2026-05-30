@@ -46,3 +46,22 @@ export type FindExistingConsultationInput = {
   time: Date;
   psychologistId: string;
 };
+
+// Schedule Management Types
+export type TimeSlotDTO = {
+  dayOfWeek: number;
+  startTime: string;
+  endTime: string;
+};
+
+export type SaveScheduleDTO = {
+  userId: string;
+  slots: TimeSlotDTO[];
+};
+
+export type PsychologistSummary = {
+  id: string;
+  name: string;
+  image: string | null;
+  activeDays: string[];
+};
