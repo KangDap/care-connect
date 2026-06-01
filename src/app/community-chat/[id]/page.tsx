@@ -320,7 +320,7 @@ export default function CommunityChatContent() {
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
         {/* Sidebar */}
-        <aside className="flex h-[260px] w-full shrink-0 flex-col overflow-hidden border-b border-[#d0d5cb] bg-[#f7f3ed] sm:h-[300px] lg:h-auto lg:w-80 lg:border-b-0 lg:border-r">
+        <aside className="hidden lg:flex lg:h-auto lg:w-80 lg:shrink-0 lg:flex-col lg:overflow-hidden lg:border-r lg:border-[#d0d5cb] lg:bg-[#f7f3ed]">
           <div className="p-4 shrink-0">
             <h2 className="text-lg font-bold text-[#193c1f]">
               Your Communities
@@ -416,6 +416,14 @@ export default function CommunityChatContent() {
           <main className="flex min-h-0 flex-1 flex-col bg-white min-w-0">
             <header className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-[#d0d5cb] bg-white px-3 py-3 sm:px-4 lg:px-6">
               <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2 sm:gap-3">
+                {/* Mobile back button — hidden on desktop */}
+                <Link
+                  href="/community-chat"
+                  className="lg:hidden flex items-center justify-center w-8 h-8 rounded-full text-[#193c1f] hover:bg-[#f7f3ed] transition shrink-0"
+                  aria-label="Back to communities"
+                >
+                  <ArrowLeft size={18} />
+                </Link>
                 <div className="w-8 h-8 rounded-lg overflow-hidden bg-[#F7F3ED] flex items-center justify-center border border-[#D0D5CB] shrink-0 relative">
                   {chatData.coverUrl ? (
                     <Image

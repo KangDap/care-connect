@@ -6,7 +6,7 @@ import { Header } from '@/components/header';
 import { Input } from '@/components/input';
 import { authClient } from '@/lib/auth/auth-client';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Paperclip, Send, X } from 'lucide-react';
+import { ArrowLeft, Paperclip, Send, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -179,6 +179,17 @@ export default function ConsultationChatContent() {
     (c: Consultation) => c.id === selectedConsultationId,
   );
 
+  // Compute chat partner display name for the mobile header
+  const mobileChatPartnerName = (() => {
+    if (!currentConsultation) return 'Consultation';
+    const isUserClient = currentConsultation.userId === session.user.id;
+    const isAnon = currentConsultation.isAnonymous;
+    const other = isUserClient
+      ? currentConsultation.psychologist
+      : currentConsultation.user;
+    return !isUserClient && isAnon ? 'Anonymous' : other?.name || 'Unknown';
+  })();
+
   const getReplyDisplayName = (
     reply: ChatMessage | NonNullable<ChatMessage['replyTo']>,
   ) => {
@@ -220,7 +231,7 @@ export default function ConsultationChatContent() {
 
       <div className="flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
         {/* Sidebar */}
-        <aside className="flex h-[260px] w-full shrink-0 flex-col overflow-hidden border-b border-[#d0d5cb] bg-[#f7f3ed] sm:h-[300px] lg:h-auto lg:w-80 lg:border-b-0 lg:border-r">
+        <aside className="hidden lg:flex lg:h-auto lg:w-80 lg:shrink-0 lg:flex-col lg:overflow-hidden lg:border-r lg:border-[#d0d5cb] lg:bg-[#f7f3ed]">
           <div className="p-4 shrink-0">
             <h2 className="text-lg font-bold text-[#193c1f]">
               Active Consultations
@@ -323,6 +334,19 @@ export default function ConsultationChatContent() {
         {/* Main Chat Area */}
         {selectedConsultationId ? (
           <main className="flex min-h-0 flex-1 flex-col bg-white min-w-0">
+            {/* Mobile-only chat header with back button — hidden on desktop */}
+            <header className="lg:hidden flex shrink-0 items-center gap-3 border-b border-[#d0d5cb] bg-white px-4 py-3">
+              <Link
+                href="/consultation-chat"
+                className="flex items-center justify-center w-8 h-8 rounded-full text-[#193c1f] hover:bg-[#f7f3ed] transition shrink-0"
+                aria-label="Back to consultations"
+              >
+                <ArrowLeft size={18} />
+              </Link>
+              <span className="text-sm font-bold text-[#193c1f] truncate">
+                {mobileChatPartnerName}
+              </span>
+            </header>
             <section className="flex-1 space-y-6 overflow-y-auto bg-[#f7f3ed] p-3 sm:p-4 lg:space-y-8 lg:p-6">
               {isLoadingMessages ? (
                 <p className="text-center text-[#193c1f] text-xs opacity-50 py-4 animate-pulse">
