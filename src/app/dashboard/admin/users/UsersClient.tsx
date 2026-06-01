@@ -61,6 +61,7 @@ export function UsersClient({
     <Table
       data={filteredUsers}
       keyExtractor={(u) => u.id}
+      minWidth="min-w-[780px]"
       emptyMessage="No users found."
       paginationInfo={
         searchQuery
@@ -76,35 +77,37 @@ export function UsersClient({
       columns={[
         {
           header: 'Name',
+          className: 'whitespace-nowrap',
           cell: (user) => (
             <span className="font-medium text-[#193C1F]">{user.name}</span>
           ),
         },
         {
           header: 'Email',
-          className: 'text-gray-600',
+          className: 'max-w-[260px] truncate text-gray-600',
           cell: (user) => user.email,
         },
         {
           header: 'Role',
-          className: 'text-gray-600 font-bold',
+          className: 'whitespace-nowrap font-bold text-gray-600',
           cell: (user) => user.role,
         },
         {
           header: 'Joined',
-          className: 'text-gray-600',
+          className: 'whitespace-nowrap text-gray-600',
           cell: (user) => fmtDate(user.createdAt),
         },
         {
           header: 'Status',
+          className: 'whitespace-nowrap',
           cell: (user) =>
             user.banned ? (
-              <span className="px-2 py-1 text-xs font-bold rounded-full bg-red-100 text-red-700 border border-red-200">
-                NON-ACTIVE
+              <span className="inline-flex min-w-[86px] items-center justify-center whitespace-nowrap rounded-full border border-red-200 bg-red-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-red-700">
+                Inactive
               </span>
             ) : (
-              <span className="px-2 py-1 text-xs font-bold rounded-full bg-green-100 text-green-700 border border-green-200">
-                ACTIVE
+              <span className="inline-flex min-w-[86px] items-center justify-center whitespace-nowrap rounded-full border border-green-200 bg-green-100 px-3 py-1 text-[11px] font-bold uppercase tracking-wide text-green-700">
+                Active
               </span>
             ),
         },

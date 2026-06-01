@@ -218,9 +218,9 @@ export default function ConsultationChatContent() {
         onLogoutClick={() => setIsLogoutAlertOpen(true)}
       />
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex min-h-0 flex-1 flex-col overflow-hidden lg:flex-row">
         {/* Sidebar */}
-        <aside className="w-80 flex flex-col border-r border-[#d0d5cb] bg-[#f7f3ed] shrink-0">
+        <aside className="flex h-[260px] w-full shrink-0 flex-col overflow-hidden border-b border-[#d0d5cb] bg-[#f7f3ed] sm:h-[300px] lg:h-auto lg:w-80 lg:border-b-0 lg:border-r">
           <div className="p-4 shrink-0">
             <h2 className="text-lg font-bold text-[#193c1f]">
               Active Consultations
@@ -229,7 +229,7 @@ export default function ConsultationChatContent() {
               {activeConsultations.length} ongoing sessions
             </p>
           </div>
-          <div className="flex-1 overflow-y-auto px-2 space-y-1">
+          <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-2 space-y-1 relative z-0">
             {isLoadingConsultations ? (
               <p className="text-center text-[#193c1f] text-xs opacity-50 py-4">
                 Loading...
@@ -310,7 +310,7 @@ export default function ConsultationChatContent() {
             )}
           </div>
 
-          <div className="p-4 border-t border-[#d0d5cb] shrink-0">
+          <div className="p-4 border-t border-[#d0d5cb] shrink-0 bg-[#f7f3ed] relative z-20">
             <Link
               href="/dashboard/consultations"
               className="w-full py-2.5 bg-[#8ea087] text-white font-semibold rounded-xl flex items-center justify-center space-x-2 transition hover:brightness-110 shadow-sm"
@@ -322,8 +322,8 @@ export default function ConsultationChatContent() {
 
         {/* Main Chat Area */}
         {selectedConsultationId ? (
-          <main className="flex-1 flex flex-col bg-white min-w-0">
-            <section className="flex-1 overflow-y-auto p-6 space-y-8 bg-[#f7f3ed]">
+          <main className="flex min-h-0 flex-1 flex-col bg-white min-w-0">
+            <section className="flex-1 space-y-6 overflow-y-auto bg-[#f7f3ed] p-3 sm:p-4 lg:space-y-8 lg:p-6">
               {isLoadingMessages ? (
                 <p className="text-center text-[#193c1f] text-xs opacity-50 py-4 animate-pulse">
                   Loading messages...
@@ -429,7 +429,7 @@ export default function ConsultationChatContent() {
                           return (
                             <div
                               key={chat.id}
-                              className="flex flex-col space-y-1 group relative"
+                              className="group relative flex min-w-0 flex-col space-y-1"
                             >
                               <div className="flex items-center space-x-2 ml-10 mb-1">
                                 <span className="text-xs font-bold text-[#193c1f] opacity-70">
@@ -441,7 +441,7 @@ export default function ConsultationChatContent() {
                                   )}
                                 </span>
                               </div>
-                              <div className="flex items-start space-x-3">
+                              <div className="flex min-w-0 items-start space-x-3">
                                 <Image
                                   alt="Avatar"
                                   width={32}
@@ -455,7 +455,7 @@ export default function ConsultationChatContent() {
                                   }
                                   unoptimized
                                 />
-                                <div className="flex flex-col max-w-xl">
+                                <div className="flex max-w-[calc(100vw-5.5rem)] flex-col sm:max-w-xl">
                                   {chat.replyTo && (
                                     <div className="bg-[#ede4d8] bg-opacity-50 border-l-4 border-[#8ea087] p-2 mb-1 rounded-tr-xl text-[11px] text-[#193c1f] opacity-80 line-clamp-2">
                                       <span className="font-bold block">
@@ -464,7 +464,7 @@ export default function ConsultationChatContent() {
                                       {chat.replyTo.content}
                                     </div>
                                   )}
-                                  <div className="bg-[#ede4d8] text-[#193c1f] rounded-2xl p-4 text-sm shadow-sm leading-relaxed whitespace-pre-wrap relative overflow-hidden">
+                                  <div className="relative overflow-hidden break-words rounded-2xl bg-[#ede4d8] p-3 text-sm leading-relaxed text-[#193c1f] shadow-sm whitespace-pre-wrap sm:p-4">
                                     {chat.content}
                                     {chat.mediaUrl && (
                                       <div className="mt-2">
@@ -547,7 +547,7 @@ export default function ConsultationChatContent() {
                         return (
                           <div
                             key={chat.id}
-                            className="flex flex-col items-end space-y-1 group relative"
+                            className="group relative flex min-w-0 flex-col items-end space-y-1"
                           >
                             <div className="flex items-center space-x-2 mr-10 mb-1">
                               <span className="text-xs font-bold text-[#193c1f] opacity-70">
@@ -563,7 +563,7 @@ export default function ConsultationChatContent() {
                                 )}
                               </span>
                             </div>
-                            <div className="flex items-start flex-row-reverse">
+                            <div className="flex min-w-0 flex-row-reverse items-start">
                               <Image
                                 alt="Avatar"
                                 width={32}
@@ -577,7 +577,7 @@ export default function ConsultationChatContent() {
                                 }
                                 unoptimized
                               />
-                              <div className="flex flex-col items-end max-w-xl">
+                              <div className="flex max-w-[calc(100vw-5.5rem)] flex-col items-end sm:max-w-xl">
                                 {chat.replyTo && (
                                   <div className="bg-[#8ea087] bg-opacity-20 border-r-4 border-[#8ea087] p-2 mb-1 rounded-tl-xl text-[11px] text-[#193c1f] opacity-80 line-clamp-2 text-right">
                                     <span className="font-bold block">
@@ -586,7 +586,7 @@ export default function ConsultationChatContent() {
                                     {chat.replyTo.content}
                                   </div>
                                 )}
-                                <div className="bg-[#8ea087] text-white rounded-2xl p-4 text-sm shadow-sm leading-relaxed whitespace-pre-wrap">
+                                <div className="overflow-hidden break-words rounded-2xl bg-[#8ea087] p-3 text-sm leading-relaxed text-white shadow-sm whitespace-pre-wrap sm:p-4">
                                   {chat.content}
                                   {chat.mediaUrl && (
                                     <div className="mt-2">
@@ -672,7 +672,7 @@ export default function ConsultationChatContent() {
               <div ref={messagesEndRef} />
             </section>
 
-            <footer className="p-6 bg-white border-t border-[#d0d5cb] shrink-0 flex flex-col space-y-3 relative">
+            <footer className="relative flex shrink-0 flex-col space-y-3 border-t border-[#d0d5cb] bg-white p-3 sm:p-4 lg:p-6">
               {replyingTo && (
                 <div className="flex items-center justify-between bg-[#f7f3ed] border-l-4 border-[#8ea087] px-4 py-2 rounded-xl mb-1 shadow-sm animate-in slide-in-from-bottom-2">
                   <div className="overflow-hidden">
@@ -693,7 +693,7 @@ export default function ConsultationChatContent() {
                 </div>
               )}
               {mediaFile && (
-                <div className="flex items-center justify-between bg-[#f7f3ed] border border-[#8ea087] rounded-xl px-4 py-2 w-max shadow-sm">
+                <div className="flex max-w-full items-center justify-between rounded-xl border border-[#8ea087] bg-[#f7f3ed] px-4 py-2 shadow-sm">
                   <span className="text-xs text-[#193c1f] font-semibold">
                     {mediaFile.name} ({(mediaFile.size / 1024).toFixed(1)}KB)
                   </span>
@@ -732,8 +732,8 @@ export default function ConsultationChatContent() {
                   </p>
                 </div>
               ) : (
-                <div className="flex items-center space-x-4">
-                  <div className="flex-1 relative flex items-center bg-[#f7f3ed] border border-[#d0d5cb] rounded-2xl px-4 py-3 focus-within:border-[#8ea087] focus-within:ring-1 focus-within:ring-[#8ea087] transition-all">
+                <div className="flex items-center gap-2 sm:gap-4">
+                  <div className="relative flex min-w-0 flex-1 items-center rounded-2xl border border-[#d0d5cb] bg-[#f7f3ed] px-3 py-3 transition-all focus-within:border-[#8ea087] focus-within:ring-1 focus-within:ring-[#8ea087] sm:px-4">
                     <input
                       type="file"
                       ref={fileInputRef}
@@ -751,7 +751,7 @@ export default function ConsultationChatContent() {
                       <Paperclip className="h-6 w-6" />
                     </Button>
                     <Input
-                      className="bg-transparent border-none focus:ring-0 text-sm text-[#193c1f] w-full p-0 outline-none"
+                      className="w-full min-w-0 border-none bg-transparent p-0 text-sm text-[#193c1f] outline-none focus:ring-0"
                       placeholder="Type your message here..."
                       type="text"
                       value={messageInput}
@@ -769,7 +769,7 @@ export default function ConsultationChatContent() {
                     }
                     variant="secondary"
                     loading={sendMessageMutation.isPending}
-                    className="icon-button send-icon-button h-12 w-12 shrink-0 rounded-2xl p-0 shadow-sm hover:brightness-110 disabled:hover:brightness-100"
+                    className="icon-button send-icon-button h-11 w-11 shrink-0 rounded-2xl p-0 shadow-sm hover:brightness-110 disabled:hover:brightness-100 sm:h-12 sm:w-12"
                     aria-label="Send message"
                   >
                     {sendMessageMutation.isPending ? (

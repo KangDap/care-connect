@@ -83,9 +83,9 @@ export default async function LandingPage() {
       <PublicHeader />
 
       {/* Hero Section */}
-      <section className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-10 px-4 py-12 sm:px-6 md:py-16 lg:flex-row lg:px-12 lg:py-24">
-        <div className="w-full lg:w-1/2">
-          <h1 className="mb-6 bg-gradient-to-r from-[#193c1f] to-[#d1b698] bg-clip-text text-4xl font-black leading-[1.08] text-transparent sm:text-6xl lg:mb-8 lg:text-[88px]">
+      <section className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-8 px-4 py-12 sm:px-6 md:py-16 lg:px-12 lg:py-20 xl:flex-row xl:gap-10 xl:py-24">
+        <div className="w-full xl:w-1/2 flex flex-col items-center text-center xl:items-start xl:text-left">
+          <h1 className="mb-6 bg-gradient-to-r from-[#193c1f] to-[#d1b698] bg-clip-text text-4xl font-black leading-[1.08] text-transparent sm:text-5xl md:text-6xl lg:mb-8 lg:text-7xl xl:text-[88px]">
             You are <span className="text-[#d1b698]">not alone</span>
           </h1>
           <p className="mb-8 text-base text-[#193c1f] sm:text-lg lg:mb-12 lg:text-xl">
@@ -93,37 +93,46 @@ export default async function LandingPage() {
             and a supportive community to ensure safety and well-being. Your
             healing starts with a single step.
           </p>
-          <div className="grid gap-3 sm:grid-cols-3 lg:flex lg:flex-wrap lg:gap-4">
+          <div className="flex flex-col sm:flex-row flex-wrap justify-center xl:justify-start items-center gap-3 lg:gap-4 w-full sm:w-auto">
             {userRole === 'PSYCHOLOGIST' ? (
               <Button
                 disabled
-                className="h-full rounded-lg bg-[#8ea087]/50 px-5 py-3 text-sm sm:px-6 sm:text-base lg:px-10 lg:py-4 lg:text-lg"
+                className="h-full rounded-lg bg-[#8ea087]/50 px-5 py-3 w-full sm:w-auto text-sm sm:px-6 sm:text-base lg:px-10 lg:py-4 lg:text-lg"
                 title="Psychologists cannot create consultations"
               >
                 Consult Now
               </Button>
             ) : (
-              <Link href={isLoggedIn ? '/consultation' : '/login'}>
+              <Link
+                href={isLoggedIn ? '/consultation' : '/login'}
+                className="w-full sm:w-auto"
+              >
                 <Button
                   variant="secondary"
-                  className="h-full w-full rounded-lg px-5 py-3 text-sm sm:px-6 sm:text-base lg:w-auto lg:px-10 lg:py-4 lg:text-lg"
+                  className="h-full w-full rounded-lg px-5 py-3 text-sm sm:px-6 sm:text-base xl:w-auto xl:px-10 xl:py-4 xl:text-lg"
                 >
                   Consult Now
                 </Button>
               </Link>
             )}
-            <Link href={isLoggedIn ? '/report' : '/login'}>
+            <Link
+              href={isLoggedIn ? '/report' : '/login'}
+              className="w-full sm:w-auto"
+            >
               <Button
                 variant="outline"
-                className="w-full rounded-lg border-[#8ea087] bg-[#d0d5cb] px-5 py-3 text-sm sm:px-6 sm:text-base lg:w-auto lg:px-10 lg:py-4 lg:text-lg"
+                className="w-full rounded-lg border-[#8ea087] bg-[#d0d5cb] px-5 py-3 text-sm sm:px-6 sm:text-base xl:w-auto xl:px-10 xl:py-4 xl:text-lg"
               >
                 Report Incident
               </Button>
             </Link>
-            <Link href={isLoggedIn ? '/donation' : '/login'}>
+            <Link
+              href={isLoggedIn ? '/donation' : '/login'}
+              className="w-full sm:w-auto"
+            >
               <Button
                 variant="outline"
-                className="h-full w-full rounded-lg border-[#d1b698] bg-[#f7f3ed] px-5 py-3 text-sm sm:px-6 sm:text-base lg:w-auto lg:px-10 lg:py-4 lg:text-lg"
+                className="h-full w-full rounded-lg border-[#d1b698] bg-[#f7f3ed] px-5 py-3 text-sm sm:px-6 sm:text-base xl:w-auto xl:px-10 xl:py-4 xl:text-lg"
               >
                 Donate
               </Button>
@@ -136,8 +145,8 @@ export default async function LandingPage() {
 
       {/* Stats Section */}
       <section className="bg-[#ede4d8] px-4 py-12 sm:px-6 md:px-12 md:py-20">
-        <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-4 md:grid-cols-3 md:gap-8">
-          <Card className="rounded-2xl border-b-4 border-[#8ea087] bg-[#f7f3ed] p-6 text-center md:p-12">
+        <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-8">
+          <Card className="rounded-2xl border-b-4 border-[#8ea087] bg-[#f7f3ed] p-6 text-center md:p-8 lg:p-12">
             <p className="text-[#193c1f] font-semibold mb-2 opacity-80">
               Reports Published
             </p>
@@ -146,7 +155,7 @@ export default async function LandingPage() {
             </h2>
             <div className="w-16 h-1 bg-[#8ea087] mx-auto rounded-full"></div>
           </Card>
-          <Card className="rounded-2xl border-b-4 border-[#8ea087] bg-[#f7f3ed] p-6 text-center md:p-12">
+          <Card className="rounded-2xl border-b-4 border-[#8ea087] bg-[#f7f3ed] p-6 text-center md:p-8 lg:p-12">
             <p className="text-[#193c1f] font-semibold mb-2 opacity-80">
               Consultation Handled
             </p>
@@ -155,12 +164,12 @@ export default async function LandingPage() {
             </h2>
             <div className="w-16 h-1 bg-[#d1b698] mx-auto rounded-full"></div>
           </Card>
-          <Card className="rounded-2xl border-b-4 border-[#8ea087] bg-[#f7f3ed] p-6 text-center md:p-12">
+          <Card className="rounded-2xl border-b-4 border-[#8ea087] bg-[#f7f3ed] p-6 text-center sm:col-span-2 md:p-8 lg:col-span-1 lg:p-12">
             <p className="text-[#193c1f] font-semibold mb-2 opacity-80">
               Community Donations
             </p>
             <h2
-              className="mb-4 text-3xl font-black text-[#193c1f] md:text-4xl xl:text-5xl"
+              className="mb-4 text-2xl font-black text-[#193c1f] md:text-3xl lg:text-4xl xl:text-5xl"
               title={formattedDonations}
             >
               {formattedDonations}
@@ -298,7 +307,7 @@ export default async function LandingPage() {
             </svg>
           </Link>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
           {recentReports.map((report) => (
             <Link
               key={report.id}

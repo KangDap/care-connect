@@ -82,7 +82,7 @@ function PublicHeaderContent() {
           </div>
         ) : (
           <>
-            <nav className="hidden items-center gap-8 text-[#193c1f] font-medium lg:flex xl:gap-12">
+            <nav className="hidden items-center gap-8 text-[#193c1f] font-medium xl:flex 2xl:gap-12">
               <Link href="/" className={navLinkClass('/')}>
                 {t('header.home')}
               </Link>
@@ -131,7 +131,7 @@ function PublicHeaderContent() {
                 type="button"
                 variant="outline"
                 onClick={() => setIsMobileMenuOpen((value) => !value)}
-                className="icon-button h-10 w-10 rounded-full p-0 lg:hidden"
+                className="icon-button h-10 w-10 rounded-full p-0 xl:hidden"
                 aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
               >
                 {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
@@ -142,7 +142,7 @@ function PublicHeaderContent() {
       </div>
 
       {!fromDashboard && isMobileMenuOpen && (
-        <div className="mt-4 rounded-2xl border border-[#d0d5cb] bg-white p-3 shadow-xl lg:hidden">
+        <div className="mt-4 rounded-2xl border border-[#d0d5cb] bg-white p-3 shadow-xl xl:hidden">
           <nav className="flex flex-col gap-1 text-sm font-bold text-[#193c1f]">
             {userRole !== 'PSYCHOLOGIST' && (
               <Link
