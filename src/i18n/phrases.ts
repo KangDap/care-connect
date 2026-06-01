@@ -132,8 +132,8 @@ export const phraseTranslations = {
 
   // Auth and profile
   'Your privacy is our priority': 'Privasi Anda adalah prioritas kami',
-  'We provide a safe, encrypted environment for everyone. Choose to remain anonymous while receiving the support you need.':
-    'Kami menyediakan lingkungan aman dan terenkripsi untuk semua orang. Anda dapat tetap anonim sambil menerima dukungan yang dibutuhkan.',
+  'We provide a safe and secure space for everyone. Choose to remain anonymous while receiving the support you need.':
+    'Kami menyediakan ruang yang aman dan nyaman untuk semua orang. Pilih untuk tetap anonim saat menerima dukungan yang kamu butuhkan.',
   'Forum Chat Community': 'Komunitas Obrolan Forum',
   'Anonymous Options': 'Opsi Anonim',
   'Reset Password': 'Atur Ulang Kata Sandi',

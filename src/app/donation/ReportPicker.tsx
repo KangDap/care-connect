@@ -24,7 +24,6 @@ type ReportOption = {
   id: number;
   title: string;
   category: string;
-  status: string;
   city: string;
   province: string;
   incidentDate: string;
@@ -45,27 +44,9 @@ const categoryOptions = [
   { label: 'Other', value: 'OTHER' },
 ];
 
-const statusOptions = [
-  { label: 'Pending', value: 'PENDING' },
-  { label: 'Reviewed', value: 'REVIEWED' },
-  { label: 'Resolved', value: 'RESOLVED' },
-  { label: 'Rejected', value: 'REJECTED' },
-];
-
 const categoryLabel = Object.fromEntries(
   categoryOptions.map((category) => [category.value, category.label]),
 );
-
-const statusLabel = Object.fromEntries(
-  statusOptions.map((status) => [status.value, status.label]),
-);
-
-const getStatusBadge = (status: string) => {
-  if (status === 'RESOLVED') return 'SUCCESS';
-  if (status === 'PENDING') return 'PENDING';
-  if (status === 'REVIEWED') return 'UPCOMING';
-  return 'DEFAULT';
-};
 
 const reportsPerPage = 6;
 
@@ -159,9 +140,6 @@ export function ReportPicker({ onSelect, onBack }: Props) {
           selectedCategories.length === 0 ||
           selectedCategories.includes(report.category);
 
-        const matchesStatus =
-          selectedStatus === 'ALL' || report.status === selectedStatus;
-
         const normalizedLocation = locationFilter.toLowerCase();
         const matchesLocation =
           report.city.toLowerCase().includes(normalizedLocation) ||
@@ -173,11 +151,7 @@ export function ReportPicker({ onSelect, onBack }: Props) {
         const matchesDate = reportDate >= start && reportDate <= end;
 
         return (
-          matchesSearch &&
-          matchesCategory &&
-          matchesStatus &&
-          matchesLocation &&
-          matchesDate
+          matchesSearch && matchesCategory && matchesLocation && matchesDate
         );
       })
       .sort((a, b) => {
@@ -267,23 +241,6 @@ export function ReportPicker({ onSelect, onBack }: Props) {
               >
                 <option value="newest">Most Recent</option>
                 <option value="oldest">Oldest</option>
-              </Input>
-
-              <Input
-                label="Status"
-                type="select"
-                value={selectedStatus}
-                onChange={(event) => {
-                  setSelectedStatus(event.target.value);
-                  setCurrentPage(1);
-                }}
-              >
-                <option value="ALL">All Statuses</option>
-                {statusOptions.map((status) => (
-                  <option key={status.value} value={status.value}>
-                    {status.label}
-                  </option>
-                ))}
               </Input>
 
               <div>
@@ -418,9 +375,6 @@ export function ReportPicker({ onSelect, onBack }: Props) {
                         <div className="absolute left-4 top-4 flex flex-wrap gap-2">
                           <Badge>
                             {categoryLabel[report.category] || report.category}
-                          </Badge>
-                          <Badge status={getStatusBadge(report.status)}>
-                            {statusLabel[report.status] || report.status}
                           </Badge>
                         </div>
                       </div>
