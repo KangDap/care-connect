@@ -712,7 +712,7 @@ export default function CommunityChatContent() {
 
                             {/* Message Actions (Reply & Moderation) */}
                             <div
-                              className={`absolute top-0 ${isMe ? 'right-full mr-2' : 'left-full ml-2'} opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 z-50 hidden sm:flex items-center h-full space-x-1`}
+                              className={`absolute top-0 ${isMe ? 'right-full mr-2' : 'left-full ml-2'} opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200 z-50 flex items-center h-full space-x-1`}
                             >
                               <button
                                 onClick={() => setReplyingTo(chat)}

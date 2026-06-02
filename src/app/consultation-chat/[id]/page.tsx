@@ -547,7 +547,7 @@ export default function ConsultationChatContent() {
                                 <Button
                                   onClick={() => setReplyingTo(chat)}
                                   variant="ghost"
-                                  className="hidden self-center p-2 text-[#193c1f] opacity-40 hover:opacity-100 group-hover:flex"
+                                  className="flex self-center p-2 text-[#193c1f] opacity-40 hover:opacity-100 lg:opacity-0 lg:group-hover:opacity-100"
                                   title="Reply"
                                 >
                                   <svg

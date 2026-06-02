@@ -363,6 +363,7 @@ export const phraseTranslations = {
   '0% transaction fee': 'Biaya transaksi 0%',
   'Report Info': 'Info Laporan',
   'Report ID': 'ID Laporan',
+  'Reported By': 'Dilaporkan Oleh',
   'New Donation': 'Donasi Baru',
   "Choose how you'd like to contribute today.":
     'Pilih cara Anda ingin berkontribusi hari ini.',

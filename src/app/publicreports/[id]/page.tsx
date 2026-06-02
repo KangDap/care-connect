@@ -196,13 +196,6 @@ export default function PublicReportDetailPage() {
 
             {/* Metadata badges */}
             <div className="flex flex-wrap gap-2">
-              <Badge
-                className={
-                  STATUS_BADGE[report.status] || 'bg-gray-100 text-gray-600'
-                }
-              >
-                {report.status}
-              </Badge>
               <Badge className="flex items-center gap-1 bg-[#f7f3ed] text-[#193c1f]">
                 <Tag size={10} />
                 {CATEGORY_LABEL[report.category] || report.category}
@@ -296,14 +289,6 @@ export default function PublicReportDetailPage() {
                   <span className="text-[#8ea087]">Report ID</span>
                   <span className="font-bold text-[#193c1f]">
                     #{String(report.id).padStart(5, '0')}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[#8ea087]">Status</span>
-                  <span
-                    className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full border ${STATUS_BADGE[report.status]}`}
-                  >
-                    {report.status}
                   </span>
                 </div>
                 <div className="flex justify-between">
