@@ -34,6 +34,10 @@ export class ConsultationSchema {
       .instanceof(File)
       .nullable()
       .optional()
+      .transform((file) => {
+        if (!file || file.size === 0) return null;
+        return file;
+      })
       .refine(
         (file) => !file || file.size <= 10 * 1024 * 1024,
         'Ukuran file maksimal 10MB',
