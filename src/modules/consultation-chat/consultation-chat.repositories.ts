@@ -41,6 +41,8 @@ export const createConsultationChat = async (
         select: {
           id: true,
           name: true,
+          displayUsername: true,
+          username: true,
           image: true,
           role: true,
         },
@@ -50,6 +52,8 @@ export const createConsultationChat = async (
           user: {
             select: {
               name: true,
+              displayUsername: true,
+              username: true,
             },
           },
         },
@@ -81,6 +85,8 @@ export const getConsultationChatsByConsultationId = async (
         select: {
           id: true,
           name: true,
+          displayUsername: true,
+          username: true,
           image: true,
           role: true,
         },
@@ -91,6 +97,8 @@ export const getConsultationChatsByConsultationId = async (
             select: {
               id: true,
               name: true,
+              displayUsername: true,
+              username: true,
               role: true,
             },
           },

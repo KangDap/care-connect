@@ -34,8 +34,16 @@ export default function ConsultationChatContent() {
   const [mediaFile, setMediaFile] = useState<File | null>(null);
   type ChatUser = {
     id: string;
-    name: string;
+    name?: string | null;
+    displayUsername?: string | null;
+    username?: string | null;
     role: string;
+    image?: string | null;
+  };
+  type ChatPerson = {
+    name?: string | null;
+    displayUsername?: string | null;
+    username?: string | null;
     image?: string | null;
   };
   type ChatMessage = {
@@ -57,10 +65,19 @@ export default function ConsultationChatContent() {
     isAnonymous: boolean;
     date?: string;
     createdAt: string;
-    psychologist: { name: string; image: string | null };
-    user: { name: string; image: string | null };
+    psychologist: ChatPerson | null;
+    user: ChatPerson | null;
     latestChat: { timestamp: string; content: string } | null;
   };
+
+  const getDisplayName = (
+    person: ChatPerson | null | undefined,
+    fallback = 'User',
+  ) =>
+    person?.name?.trim() ||
+    person?.displayUsername?.trim() ||
+    person?.username?.trim() ||
+    fallback;
 
   const [replyingTo, setReplyingTo] = useState<null | ChatMessage>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -187,7 +204,7 @@ export default function ConsultationChatContent() {
     const other = isUserClient
       ? currentConsultation.psychologist
       : currentConsultation.user;
-    return !isUserClient && isAnon ? 'Anonymous' : other?.name || 'Unknown';
+    return !isUserClient && isAnon ? 'Anonymous' : getDisplayName(other);
   })();
 
   const getReplyDisplayName = (
@@ -208,7 +225,7 @@ export default function ConsultationChatContent() {
       ? 'Anonymous'
       : isReplyMe
         ? 'Me'
-        : reply.user.name || 'Unknown';
+        : getDisplayName(reply.user);
   };
 
   return (
@@ -262,7 +279,7 @@ export default function ConsultationChatContent() {
                 const displayName =
                   !isUserClient && isAnonymous
                     ? 'Anonymous'
-                    : otherPerson?.name || 'Unknown User';
+                    : getDisplayName(otherPerson);
 
                 const displayImage =
                   !isUserClient && isAnonymous
@@ -405,7 +422,7 @@ export default function ConsultationChatContent() {
                     ? 'Anonymous'
                     : isMe
                       ? 'Me'
-                      : chat.user.name || 'Unknown';
+                      : getDisplayName(chat.user);
 
                   const currentChatDate = new Date(
                     chat.timestamp,

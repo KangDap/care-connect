@@ -15,10 +15,26 @@ type Consultation = {
   isAnonymous: boolean;
   date?: string;
   createdAt: string;
-  psychologist: { name: string; image: string | null };
-  user: { name: string; image: string | null };
+  psychologist: ChatPerson | null;
+  user: ChatPerson | null;
   latestChat: { timestamp: string; content: string } | null;
 };
+
+type ChatPerson = {
+  name?: string | null;
+  displayUsername?: string | null;
+  username?: string | null;
+  image?: string | null;
+};
+
+const getDisplayName = (
+  person: ChatPerson | null | undefined,
+  fallback = 'User',
+) =>
+  person?.name?.trim() ||
+  person?.displayUsername?.trim() ||
+  person?.username?.trim() ||
+  fallback;
 
 const DEFAULT_AVATAR =
   'https://lh3.googleusercontent.com/aida-public/AB6AXuBEco0p3MDuxX90l9mF4SA0D5WmC84PJazeYS6jFlgGu6Z-L_HxYF4go8gTd7ImSPN8Yg9IYm5nWoKdCW7Azu9bfAq8XhByCCA0h4C3l_yC4OkTfQRzppjGbvuLkHC6-rZVaScgJcjaRYm350CGpQyEHirHU0mOph6TPnQxShR39Kv0qls4iqEaza6VOZncpHcdH6aQXKwLy1R587WGI_FxQ5evlw3n9GBfy59SZ_CAlBuxXdF87MFefAimDan5A6GOVUKeBPYHqA';
@@ -117,7 +133,7 @@ export default function ConsultationChatList() {
                 const displayName =
                   !isUserClient && isAnonymous
                     ? 'Anonymous'
-                    : otherPerson?.name || 'Unknown User';
+                    : getDisplayName(otherPerson);
 
                 const displayImage =
                   !isUserClient && isAnonymous

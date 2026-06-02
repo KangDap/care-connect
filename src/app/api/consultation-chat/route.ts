@@ -47,9 +47,25 @@ export async function GET(req: NextRequest) {
     const consultations = await prisma.consultation.findMany({
       where: roleFilter,
       include: {
-        user: { select: { id: true, name: true, image: true, role: true } },
+        user: {
+          select: {
+            id: true,
+            name: true,
+            displayUsername: true,
+            username: true,
+            image: true,
+            role: true,
+          },
+        },
         psychologist: {
-          select: { id: true, name: true, image: true, role: true },
+          select: {
+            id: true,
+            name: true,
+            displayUsername: true,
+            username: true,
+            image: true,
+            role: true,
+          },
         },
         chats: {
           orderBy: { timestamp: 'desc' },
