@@ -69,7 +69,9 @@ export class ConsultationSchema {
       description: formData.get('description'),
       date: formData.get('date'),
       time: formData.get('time'),
-      isAnonymous: formData.get('isAnonymous') === 'true',
+      isAnonymous:
+        formData.get('isAnonymous') === 'true' ||
+        formData.get('isAnonymous') === 'on',
       document: formData.get('document'),
     };
 

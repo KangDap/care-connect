@@ -135,6 +135,7 @@ export default function ConsultationChatContent() {
   const handleSendMessage = () => {
     if (!selectedConsultationId) return;
     if (!messageInput.trim() && !mediaFile) return;
+    if (!session?.user?.id) return;
 
     const currentConsultation = activeConsultations.find(
       (c: Consultation) => c.id === selectedConsultationId,
@@ -143,9 +144,12 @@ export default function ConsultationChatContent() {
     const formData = new FormData();
     formData.append('consultationId', selectedConsultationId.toString());
     formData.append('content', messageInput);
-    if (currentConsultation?.isAnonymous) {
+
+    const isSenderPatient = currentConsultation?.userId === session.user.id;
+    if (currentConsultation?.isAnonymous && isSenderPatient) {
       formData.append('isAnonymous', 'true');
     }
+
     if (mediaFile) {
       formData.append('media', mediaFile);
     }
