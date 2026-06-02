@@ -560,8 +560,8 @@ export function DonationClient({
             router.push(buildDonationHref({ page: p }), { scroll: false });
           }}
           paginationInfo={
-            searchQuery
-              ? `Showing ${filteredDonations.length} of ${donations.length} donations on this page`
+            totalCount === 0
+              ? 'No donations found'
               : `Showing ${(page - 1) * perPage + 1}–${Math.min(page * perPage, totalCount)} of ${totalCount}`
           }
           renderExpandedRow={(d) => (

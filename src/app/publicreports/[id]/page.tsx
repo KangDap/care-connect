@@ -20,12 +20,19 @@ type ReportDetail = {
   status: string;
   incidentDate: string;
   description: string;
-  evidences: {
-    id: number;
-    fileName: string;
+  isPublic: boolean;
+  isAnonymous: boolean;
+  user: {
+    name: string | null;
+  } | null;
+  coverImage?: {
     fileUrl: string;
     mimeType: string;
-    fileSize: number;
+  } | null;
+
+  images?: {
+    fileUrl: string;
+    mimeType: string;
   }[];
 };
 
@@ -103,13 +110,9 @@ export default function PublicReportDetailPage() {
     );
   }
 
-  const coverImage = report.evidences.find((e) =>
-    e.mimeType.startsWith('image/'),
-  );
-  const images = report.evidences.filter((e) =>
-    e.mimeType.startsWith('image/'),
-  );
-  const docs = report.evidences.filter((e) => !e.mimeType.startsWith('image/'));
+  const coverImage = report.coverImage;
+  const images = report.images ?? [];
+  const docs: never[] = [];
 
   const fmtDate = (d: string) =>
     new Intl.DateTimeFormat('id-ID', {
@@ -122,6 +125,20 @@ export default function PublicReportDetailPage() {
     bytes >= 1024 * 1024
       ? `${(bytes / (1024 * 1024)).toFixed(1)} MB`
       : `${Math.round(bytes / 1024)} KB`;
+
+  const getAbsoluteUrl = (raw: string) => {
+    try {
+      // If already absolute, return as-is
+      const parsed = new URL(raw);
+      return parsed.href;
+    } catch {
+      // Fallback: treat as relative to current origin
+      if (typeof window !== 'undefined') {
+        return `${window.location.origin}${raw.startsWith('/') ? '' : '/'}${raw}`;
+      }
+      return raw;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#f7f3ed]">
@@ -153,10 +170,10 @@ export default function PublicReportDetailPage() {
             {coverImage && (
               <div
                 className="relative w-full h-64 md:h-80 rounded-3xl overflow-hidden cursor-pointer"
-                onClick={() => setSelectedImage(coverImage.fileUrl)}
+                onClick={() => setSelectedImage(coverImage!.fileUrl)}
               >
                 <Image
-                  src={coverImage.fileUrl}
+                  src={coverImage!.fileUrl}
                   alt={report.title}
                   fill
                   className="object-cover"
@@ -205,6 +222,12 @@ export default function PublicReportDetailPage() {
               <h1 className="text-3xl md:text-4xl font-black text-[#193c1f] italic tracking-tight leading-tight mb-4">
                 {report.title}
               </h1>
+              <p className="mb-4 text-sm font-semibold text-[#8ea087]">
+                Reported by{' '}
+                {report.isAnonymous || !report.isPublic
+                  ? 'Anonymous'
+                  : report.user?.name || 'Unknown reporter'}
+              </p>
               <Card className="rounded-2xl p-6">
                 <h3 className="text-[11px] font-black uppercase tracking-widest text-[#8ea087] mb-3">
                   Incident Description
@@ -216,87 +239,10 @@ export default function PublicReportDetailPage() {
             </div>
 
             {/* Image Gallery */}
-            {images.length > 1 && (
-              <div>
-                <h3 className="text-[11px] font-black uppercase tracking-widest text-[#8ea087] mb-3">
-                  Evidence ({images.length})
-                </h3>
-                <div className="grid grid-cols-3 gap-3">
-                  {images.map((img) => (
-                    <div
-                      key={img.id}
-                      className="relative h-28 rounded-xl overflow-hidden cursor-pointer hover:opacity-90 transition-opacity border border-[#d0d5cb]"
-                      onClick={() => setSelectedImage(img.fileUrl)}
-                    >
-                      <Image
-                        src={img.fileUrl}
-                        alt={img.fileName}
-                        fill
-                        className="object-cover"
-                        sizes="200px"
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* Evidence hidden from public view */}
 
             {/* Documents */}
-            {docs.length > 0 && (
-              <div>
-                <h3 className="text-[11px] font-black uppercase tracking-widest text-[#8ea087] mb-3">
-                  Documents
-                </h3>
-                <div className="space-y-2">
-                  {docs.map((doc) => (
-                    <a
-                      key={doc.id}
-                      href={doc.fileUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-3 bg-white border border-[#d0d5cb] rounded-xl p-3 hover:border-[#193c1f] transition-colors"
-                    >
-                      <div className="w-8 h-8 bg-[#f7f3ed] rounded-lg flex items-center justify-center shrink-0">
-                        <svg
-                          className="w-4 h-4 text-[#8ea087]"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth="2"
-                            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                          />
-                        </svg>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-[#193c1f] truncate">
-                          {doc.fileName}
-                        </p>
-                        <p className="text-[11px] text-[#8ea087]">
-                          {fmtSize(doc.fileSize)}
-                        </p>
-                      </div>
-                      <svg
-                        className="w-4 h-4 text-[#8ea087] shrink-0"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="2"
-                          d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                        />
-                      </svg>
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
+            {/* Evidence hidden from public view */}
           </div>
 
           {/* Right: Sidebar */}
@@ -370,12 +316,6 @@ export default function PublicReportDetailPage() {
                   <span className="text-[#8ea087]">Incident Date</span>
                   <span className="font-bold text-[#193c1f]">
                     {fmtDate(report.incidentDate)}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-[#8ea087]">Evidence</span>
-                  <span className="font-bold text-[#193c1f]">
-                    {report.evidences.length} file(s)
                   </span>
                 </div>
               </div>

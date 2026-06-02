@@ -9,7 +9,6 @@ export async function GET(req: Request) {
     const search = searchParams.get('search');
 
     const where: Record<string, unknown> = {
-      isPublic: true,
       status: 'RESOLVED',
     };
 
@@ -36,6 +35,13 @@ export async function GET(req: Request) {
         incidentDate: true,
         description: true,
         createdAt: true,
+        isPublic: true,
+        isAnonymous: true,
+        user: {
+          select: {
+            name: true,
+          },
+        },
         evidences: {
           select: {
             fileUrl: true,
@@ -47,16 +53,12 @@ export async function GET(req: Request) {
       },
       orderBy: { createdAt: 'desc' },
     });
-    const reportsWithCover = reports.map(({ evidences, ...report }) => {
-      const coverEvidence = evidences.find((evidence) =>
-        evidence.mimeType.startsWith('image/'),
-      );
-
-      return {
-        ...report,
-        coverImageUrl: coverEvidence?.fileUrl ?? null,
-      };
-    });
+    const reportsWithCover = reports.map(({ evidences, ...report }) => ({
+      ...report,
+      coverImageUrl:
+        evidences.find((e) => e.mimeType?.startsWith('image/'))?.fileUrl ??
+        null,
+    }));
 
     return ok(reportsWithCover);
   } catch (error) {

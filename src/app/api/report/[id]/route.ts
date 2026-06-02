@@ -25,19 +25,23 @@ export async function GET(_req: Request, { params }: RouteParams) {
         category: true,
         province: true,
         city: true,
+        district: true,
         status: true,
         incidentDate: true,
         description: true,
+        isPublic: true,
+        isAnonymous: true,
+        user: {
+          select: {
+            name: true,
+          },
+        },
         evidences: {
           select: {
             id: true,
-            fileName: true,
             fileUrl: true,
             mimeType: true,
-            fileSize: true,
-            uploadedAt: true,
           },
-          orderBy: { uploadedAt: 'desc' },
         },
       },
     });
@@ -46,7 +50,13 @@ export async function GET(_req: Request, { params }: RouteParams) {
       return fail('NOT_FOUND', 'Report not found', 404);
     }
 
-    return ok(report);
+    return ok({
+      ...report,
+      coverImage:
+        report.evidences.find((e) => e.mimeType?.startsWith('image/')) ?? null,
+
+      images: report.evidences.filter((e) => e.mimeType?.startsWith('image/')),
+    });
   } catch (error) {
     if (error instanceof ApiError) {
       return fail(error.code, error.message, error.status, error.details);

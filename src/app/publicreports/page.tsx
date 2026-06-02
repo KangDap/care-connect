@@ -32,6 +32,11 @@ interface Report {
   description: string;
   createdAt: string;
   coverImageUrl: string | null;
+  isPublic: boolean;
+  isAnonymous: boolean;
+  user?: {
+    name: string | null;
+  } | null;
 }
 
 const categoryOptions = [
@@ -409,7 +414,12 @@ const PublicReportsContent = () => {
                           <h3 className="mb-3 text-2xl font-black leading-tight transition-colors group-hover:text-[#8ea087]">
                             {report.title}
                           </h3>
-                          <p className="mb-7 line-clamp-3 text-sm font-medium leading-relaxed text-[#193c1f]/60">
+                          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.15em] text-[#8ea087]">
+                            {report.isAnonymous || !report.isPublic
+                              ? 'Anonymous'
+                              : report.user?.name || 'Unknown reporter'}
+                          </p>
+                          <p className="mb-5 line-clamp-3 text-sm font-medium leading-relaxed text-[#193c1f]/60">
                             {report.description}
                           </p>
 

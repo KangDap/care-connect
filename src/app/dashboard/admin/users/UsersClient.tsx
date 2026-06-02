@@ -64,8 +64,8 @@ export function UsersClient({
       minWidth="min-w-[780px]"
       emptyMessage="No users found."
       paginationInfo={
-        searchQuery
-          ? `Showing ${filteredUsers.length} of ${users.length} users on this page`
+        totalCount === 0
+          ? 'No users found'
           : `Showing ${(page - 1) * perPage + 1}–${Math.min(
               page * perPage,
               totalCount,

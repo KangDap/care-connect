@@ -202,11 +202,9 @@ export function ConsultationsClient({
         totalPages={totalPages}
         onPageChange={(p) => router.push(buildConsultationsHref(tab, p))}
         paginationInfo={
-          searchQuery
-            ? `Showing ${filteredConsultations.length} of ${consultations.length} consultations on this page`
-            : totalPages > 1
-              ? `Showing ${(page - 1) * perPage + 1}–${Math.min(page * perPage, totalCount)} of ${totalCount}`
-              : undefined
+          totalCount === 0
+            ? 'No consultations found'
+            : `Showing ${(page - 1) * perPage + 1}–${Math.min(page * perPage, totalCount)} of ${totalCount}`
         }
         renderExpandedRow={(c) => (
           <div className="p-4 sm:p-5 bg-white border border-[#d0d5cb]/40 rounded-[18px] shadow-sm cursor-default">
