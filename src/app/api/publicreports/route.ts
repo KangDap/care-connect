@@ -46,7 +46,9 @@ export async function GET(req: Request) {
           select: {
             fileUrl: true,
             mimeType: true,
+            uploadedAt: true,
           },
+          orderBy: { uploadedAt: 'desc' },
         },
       },
       orderBy: { createdAt: 'desc' },

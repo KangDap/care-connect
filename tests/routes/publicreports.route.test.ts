@@ -74,7 +74,6 @@ describe('API Route /api/publicreports', () => {
 
     expect(mocks.reportFindMany).toHaveBeenCalledWith({
       where: {
-        isPublic: true,
         status: 'RESOLVED',
       },
       select: {
@@ -87,6 +86,13 @@ describe('API Route /api/publicreports', () => {
         incidentDate: true,
         description: true,
         createdAt: true,
+        isPublic: true,
+        isAnonymous: true,
+        user: {
+          select: {
+            name: true,
+          },
+        },
         evidences: {
           select: {
             fileUrl: true,
@@ -159,7 +165,6 @@ describe('API Route /api/publicreports', () => {
     expect(mocks.reportFindMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: {
-          isPublic: true,
           status: 'RESOLVED',
           category: 'PHYSICAL',
         },
@@ -188,7 +193,6 @@ describe('API Route /api/publicreports', () => {
     expect(mocks.reportFindMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: {
-          isPublic: true,
           status: 'RESOLVED',
           OR: [
             { title: { contains: 'verbal', mode: 'insensitive' } },
@@ -220,7 +224,6 @@ describe('API Route /api/publicreports', () => {
     expect(mocks.reportFindMany).toHaveBeenCalledWith(
       expect.objectContaining({
         where: {
-          isPublic: true,
           status: 'RESOLVED',
           category: 'SEXUAL',
           OR: [
