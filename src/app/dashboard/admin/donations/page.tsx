@@ -12,6 +12,7 @@ export default async function AdminDonationsPage({
     year?: string;
     status?: string;
     page?: string;
+    search?: string;
   }>;
 }) {
   const params = await searchParams;
@@ -20,6 +21,7 @@ export default async function AdminDonationsPage({
   const currentYear = Number(params.year) || now.getFullYear();
   const status = params.status || 'ALL';
   const page = Number(params.page) || 1;
+  const search = params.search;
   const perPage = 10;
 
   const startDate = new Date(currentYear, currentMonth - 1, 1);
@@ -28,6 +30,20 @@ export default async function AdminDonationsPage({
   const whereDonation: Prisma.DonationWhereInput = {};
   if (status !== 'ALL') {
     whereDonation.paymentStatus = status as PaymentStatus;
+  }
+
+  if (search && search.trim()) {
+    const trimmed = search.trim();
+    // Check if the search term is a number to allow searching by amount
+    const amountVal = Number(trimmed);
+    const amountFilter = !isNaN(amountVal) ? { amount: amountVal } : {};
+
+    whereDonation.OR = [
+      { user: { name: { contains: trimmed, mode: 'insensitive' } } },
+      { report: { title: { contains: trimmed, mode: 'insensitive' } } },
+      { report: { description: { contains: trimmed, mode: 'insensitive' } } },
+      ...(!isNaN(amountVal) ? [amountFilter] : []),
+    ];
   }
 
   const [

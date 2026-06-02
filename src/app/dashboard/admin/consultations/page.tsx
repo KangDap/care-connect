@@ -1,24 +1,37 @@
+import { Prisma } from '@/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
 
 import { ConsultationsClient } from './ConsultationsClient';
 
 type PageProps = {
-  searchParams: Promise<{ tab?: string; page?: string }>;
+  searchParams: Promise<{ tab?: string; page?: string; search?: string }>;
 };
 
 export default async function AdminConsultationsPage({
   searchParams,
 }: PageProps) {
-  const { tab = 'all', page: pageStr } = await searchParams;
+  const { tab = 'all', page: pageStr, search } = await searchParams;
   const page = Math.max(1, Number(pageStr) || 1);
   const perPage = 10;
 
-  const where =
+  const where: Prisma.ConsultationWhereInput =
     tab === 'active'
-      ? { status: { in: ['SCHEDULED', 'ONGOING'] as never[] } }
+      ? { status: { in: ['SCHEDULED', 'ONGOING'] } }
       : tab === 'history'
-        ? { status: { in: ['COMPLETED', 'CANCELLED'] as never[] } }
+        ? { status: { in: ['COMPLETED', 'CANCELLED'] } }
         : {};
+
+  if (search && search.trim()) {
+    const trimmed = search.trim();
+    where.OR = [
+      { title: { contains: trimmed, mode: 'insensitive' } },
+      { category: { contains: trimmed, mode: 'insensitive' } },
+      { description: { contains: trimmed, mode: 'insensitive' } },
+      { user: { name: { contains: trimmed, mode: 'insensitive' } } },
+      { user: { email: { contains: trimmed, mode: 'insensitive' } } },
+      { psychologist: { name: { contains: trimmed, mode: 'insensitive' } } },
+    ];
+  }
 
   const [consultations, totalCount, statusCounts, absoluteTotalCount] =
     await Promise.all([

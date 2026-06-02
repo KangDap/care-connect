@@ -234,8 +234,8 @@ export function ReportClient({
         totalPages={totalPages}
         onPageChange={(p) => router.push(buildReportsHref(activeTab, p))}
         paginationInfo={
-          searchQuery
-            ? `Showing ${filteredReports.length} of ${reports.length} reports on this page`
+          totalCount === 0
+            ? 'No reports found'
             : `Showing ${(page - 1) * perPage + 1}–${Math.min(page * perPage, totalCount)} of ${totalCount}`
         }
         renderExpandedRow={(r) => (
@@ -305,13 +305,14 @@ export function ReportClient({
                           Evidence File
                         </span>
 
-                        <Link
+                        <a
                           href={r.evidences?.[0]?.fileUrl ?? '#'}
                           target="_blank"
+                          rel="noopener noreferrer"
                           className="text-[10px] font-black text-[#8ea087] uppercase hover:text-[#193c1f] ml-2"
                         >
                           View
-                        </Link>
+                        </a>
                       </div>
                     </div>
                   </div>
