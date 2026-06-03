@@ -157,14 +157,12 @@ describe('Auth Client Configuration Unit Testing', () => {
     expect(result.data.user.email).toBe('nikita@mail.com');
   });
 
-  it('TC-AUTH-CLIENT-08 gagal register jika email sudah digunakan', async () => {
+  it('TC-AUTH-CLIENT-08 tidak membocorkan informasi duplicate email ke user', async () => {
     const { authClient } = await import('@/lib/auth/auth-client');
 
     mocks.signUpEmail.mockResolvedValueOnce({
       data: null,
-      error: {
-        message: 'Email already exists',
-      },
+      error: null,
     });
 
     const result = await authClient.signUp.email({
@@ -176,7 +174,15 @@ describe('Auth Client Configuration Unit Testing', () => {
     });
 
     expect(result.data).toBeNull();
-    expect(result.error.message).toBe('Email already exists');
+    expect(result.error).toBeNull();
+
+    expect(mocks.signUpEmail).toHaveBeenCalledWith({
+      name: 'Nikita',
+      email: 'nikita@mail.com',
+      username: 'nikita',
+      password: 'password123',
+      callbackURL: '/login?verified=1',
+    });
   });
 
   it('TC-AUTH-CLIENT-09 berhasil login menggunakan Google SSO', async () => {

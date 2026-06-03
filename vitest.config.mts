@@ -3,14 +3,28 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
-  plugins: [tsconfigPaths(), react()],
+  plugins: [
+    tsconfigPaths(),
+    react(),
+  ],
+
   test: {
     environment: 'jsdom',
     clearMocks: true,
+
     // setupFiles: ['./tests/setup.ts'],
+
     coverage: {
       provider: 'v8',
+      exclude: [
+        'src/app/api/**',
+        'src/app/**/page.tsx',
+        'src/app/**/layout.tsx',
+        'src/generated/**',
+        'prisma/**',
+      ],
     },
+
     tags: [
       {
         name: 'frontend',

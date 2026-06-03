@@ -1,20 +1,34 @@
+import { Prisma } from '@/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
 
 import { ReportClient } from './ReportClient';
 
 type PageProps = {
-  searchParams: Promise<{ status?: string; page?: string }>;
+  searchParams: Promise<{ status?: string; page?: string; search?: string }>;
 };
 
 export default async function AdminReportsPage({ searchParams }: PageProps) {
-  const { status: filterStatus, page: pageStr } = await searchParams;
+  const { status: filterStatus, page: pageStr, search } = await searchParams;
   const page = Math.max(1, Number(pageStr) || 1);
   const perPage = 10;
 
-  const where =
-    filterStatus && filterStatus !== 'ALL'
-      ? { status: filterStatus as never }
-      : {};
+  const where: Prisma.ReportWhereInput = {};
+  if (filterStatus && filterStatus !== 'ALL') {
+    where.status = filterStatus as never;
+  }
+
+  if (search && search.trim()) {
+    const trimmed = search.trim();
+    where.OR = [
+      { title: { contains: trimmed, mode: 'insensitive' } },
+      { description: { contains: trimmed, mode: 'insensitive' } },
+      { province: { contains: trimmed, mode: 'insensitive' } },
+      { city: { contains: trimmed, mode: 'insensitive' } },
+      { district: { contains: trimmed, mode: 'insensitive' } },
+      { user: { name: { contains: trimmed, mode: 'insensitive' } } },
+      { user: { email: { contains: trimmed, mode: 'insensitive' } } },
+    ];
+  }
 
   const [reports, totalCount] = await Promise.all([
     prisma.report.findMany({
@@ -34,7 +48,7 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
         createdAt: true,
         description: true,
         user: { select: { name: true, email: true } },
-        evidences: { select: { id: true }, take: 1 },
+        evidences: { select: { fileUrl: true }, take: 1 },
         donations: {
           where: { paymentStatus: 'PAID' },
           select: { amount: true },
@@ -75,6 +89,7 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
       description: r.description,
       user: r.user,
       hasEvidence: r.evidences.length > 0,
+      evidences: r.evidences,
       donationTotal,
     };
   });

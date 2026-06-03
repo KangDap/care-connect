@@ -78,15 +78,20 @@ export default function PsychologistDonationsContent({
       </div>
 
       {/* Summary Cards — 1 col mobile, 3 on sm+ */}
-      <div className="grid grid-cols-3 gap-2 md:gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
         {statCards.map((item, index) => (
           <Card
             key={index}
-            className="flex items-center gap-2 bg-[#f7f3ed] border-0 p-2 sm:p-4 md:p-5 rounded-[16px] md:rounded-[28px]"
+            className={`
+              flex items-center gap-2 bg-[#f7f3ed] border-0 p-2 sm:p-4 md:p-5
+              rounded-[16px] md:rounded-[28px]
+              ${statCards.length === 3 && index === 2 ? 'col-span-2 md:col-span-1' : ''}
+            `}
           >
             <div className="w-6 h-6 sm:w-9 sm:h-9 md:w-11 md:h-11 bg-[#EBE6DE] rounded-lg md:rounded-2xl flex items-center justify-center shrink-0 text-[#193c1f]">
               {item.icon}
             </div>
+
             <div className="min-w-0">
               <p className="text-[9px] sm:text-[10px] uppercase font-black text-[#8ea087] tracking-widest truncate">
                 {item.label}

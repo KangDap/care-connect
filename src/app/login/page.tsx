@@ -287,8 +287,8 @@ export default function LoginPage() {
             </h1>
 
             <p className="text-lg text-[#193c1f] text-center leading-relaxed opacity-80 mb-10">
-              We provide a safe, encrypted environment for everyone. Choose to
-              remain anonymous while receiving the support you need.
+              We provide a safe and secure space for everyone. Choose to remain
+              anonymous while receiving the support you need.
             </p>
 
             <div className="flex gap-6 w-full">

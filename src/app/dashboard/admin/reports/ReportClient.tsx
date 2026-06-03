@@ -38,6 +38,9 @@ type ReportType = {
   description: string;
   user: { name: string; email: string };
   hasEvidence: boolean;
+  evidences?: {
+    fileUrl: string;
+  }[];
   donationTotal: number;
 };
 
@@ -231,8 +234,8 @@ export function ReportClient({
         totalPages={totalPages}
         onPageChange={(p) => router.push(buildReportsHref(activeTab, p))}
         paginationInfo={
-          searchQuery
-            ? `Showing ${filteredReports.length} of ${reports.length} reports on this page`
+          totalCount === 0
+            ? 'No reports found'
             : `Showing ${(page - 1) * perPage + 1}–${Math.min(page * perPage, totalCount)} of ${totalCount}`
         }
         renderExpandedRow={(r) => (
@@ -297,13 +300,19 @@ export function ReportClient({
                       <div className="w-8 h-8 rounded-lg bg-[#f7f3ed] flex items-center justify-center shrink-0">
                         <FileText size={16} className="text-[#8ea087]" />
                       </div>
-                      <div>
-                        <p className="text-sm font-bold text-[#193c1f]">
-                          Evidence Files Attached
-                        </p>
-                        <p className="text-[10px] text-[#8ea087]">
-                          Available in full report view.
-                        </p>
+                      <div className="flex-1 flex items-center justify-between">
+                        <span className="text-[12px] font-bold text-[#193c1f] truncate max-w-[150px]">
+                          Evidence File
+                        </span>
+
+                        <a
+                          href={r.evidences?.[0]?.fileUrl ?? '#'}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[10px] font-black text-[#8ea087] uppercase hover:text-[#193c1f] ml-2"
+                        >
+                          View
+                        </a>
                       </div>
                     </div>
                   </div>

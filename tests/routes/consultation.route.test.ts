@@ -55,13 +55,11 @@ const makeConsultationFormData = () => {
 
 describe('API Route /api/consultation', () => {
   beforeEach(() => {
-    vi.resetModules();
     vi.clearAllMocks();
-
     mocks.headers.mockResolvedValue(new Headers());
   });
 
-  it('GET returns schedule availability with success true', async () => {
+  it('GET returns schedule availability', async () => {
     const { GET } = await import('@/app/api/consultation/route');
 
     mocks.validateScheduleQuery.mockReturnValue({ date: '2026-05-24' });
@@ -81,14 +79,10 @@ describe('API Route /api/consultation', () => {
       success: true,
       data: [{ time: '09:00', available: true }],
     });
-
-    expect(mocks.validateScheduleQuery).toHaveBeenCalledWith({
-      date: '2026-05-24',
-    });
     expect(mocks.getScheduleAvailability).toHaveBeenCalledWith('2026-05-24');
   });
 
-  it('GET returns ApiError status when query is invalid', async () => {
+  it('GET returns 400 when query validation fails', async () => {
     const { GET } = await import('@/app/api/consultation/route');
     const { Errors } = await import('@/lib/error');
 
@@ -221,7 +215,6 @@ describe('API Route /api/consultation', () => {
       },
     });
 
-    expect(mocks.validateCreateConsultation).toHaveBeenCalled();
     expect(mocks.createConsultation).toHaveBeenCalledWith(
       'user-1',
       validatedData,

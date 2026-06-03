@@ -1,18 +1,30 @@
+import { Prisma } from '@/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
 
 import { UsersClient } from './UsersClient';
 
 type PageProps = {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; search?: string }>;
 };
 
 export default async function AdminUsersPage({ searchParams }: PageProps) {
-  const { page: pageStr } = await searchParams;
+  const { page: pageStr, search } = await searchParams;
   const page = Number(pageStr) || 1;
   const perPage = 10;
 
+  const where: Prisma.UserWhereInput = {};
+  if (search && search.trim()) {
+    const trimmed = search.trim();
+    where.OR = [
+      { name: { contains: trimmed, mode: 'insensitive' } },
+      { email: { contains: trimmed, mode: 'insensitive' } },
+      { role: { contains: trimmed, mode: 'insensitive' } },
+    ];
+  }
+
   const [users, totalCount] = await Promise.all([
     prisma.user.findMany({
+      where,
       orderBy: { createdAt: 'desc' },
       skip: (page - 1) * perPage,
       take: perPage,
@@ -25,7 +37,7 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
         createdAt: true,
       },
     }),
-    prisma.user.count(),
+    prisma.user.count({ where }),
   ]);
 
   const totalPages = Math.ceil(totalCount / perPage);

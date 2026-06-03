@@ -90,7 +90,6 @@ export const ForumModal = ({
             onChange={(e) => setFormData({ ...formData, type: e.target.value })}
           >
             <option value="PUBLIC">Public (Visible to everyone)</option>
-            <option value="PRIVATE">Private (Invite only)</option>
           </Input>
 
           <Input
