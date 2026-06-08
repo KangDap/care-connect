@@ -42,7 +42,7 @@ export default async function LandingPage() {
     const [reportsCount, consultationsCount, paidDonations, latestReports] =
       await Promise.all([
         prisma.report.count({
-          where: { status: ReportStatus.RESOLVED, isPublic: true },
+          where: { status: ReportStatus.RESOLVED },
         }),
         prisma.consultation.count(),
         prisma.donation.aggregate({
