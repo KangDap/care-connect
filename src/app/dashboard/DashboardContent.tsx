@@ -179,7 +179,7 @@ export default function DashboardContent({
             icon: <ReportsIcon />,
           },
           {
-            label: 'Donations Given',
+            label: 'Donations Received',
             val: formatRupiah(totalDonationAmount),
             icon: <DonationsIcon />,
           },

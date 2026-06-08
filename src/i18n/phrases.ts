@@ -426,7 +426,7 @@ export const phraseTranslations = {
   '+ New Donation': '+ Donasi Baru',
   'Total Consultations': 'Total Konsultasi',
   'Reports Filed': 'Laporan Diajukan',
-  'Donations Given': 'Donasi Diberikan',
+  'Donations Received': 'Donasi Diterima',
   'Recent Consultations': 'Konsultasi Terbaru',
   'Your latest session history': 'Riwayat sesi terbaru Anda',
   'No consultations found.': 'Tidak ada konsultasi ditemukan.',
