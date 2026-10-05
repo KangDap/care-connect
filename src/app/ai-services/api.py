@@ -8,6 +8,7 @@ import time
 from pathlib import Path
 from typing import Any
 
+import joblib
 import nltk
 import pandas as pd
 from dotenv import load_dotenv
@@ -40,6 +41,32 @@ SUPABASE_CLIENT: Client | None = None
 DEFAULT_MIN_SUPPORT = 0.1
 DEFAULT_MIN_CONFIDENCE = 0.6
 DEFAULT_TOP_N_CATEGORY_ITEMSETS = 10
+
+# TF-IDF Classifier Model
+MODEL_PATH = Path(__file__).resolve().parent / "model" / "tfidf_logreg" / "pipeline.joblib"
+CLASSIFIER_PIPELINE: Any = None
+
+
+def load_classifier_model():
+    """Load pre-trained TF-IDF + Logistic Regression classification pipeline."""
+    global CLASSIFIER_PIPELINE
+    if MODEL_PATH.exists():
+        try:
+            import numpy
+            if not hasattr(numpy, "_core"):
+                _core = numpy.core
+                sys.modules["numpy._core"] = _core
+                sys.modules["numpy._core.multiarray"] = _core.multiarray
+                sys.modules["numpy._core.umath"] = _core.umath
+                sys.modules["numpy._core._multiarray_umath"] = getattr(_core, "_multiarray_umath", _core.multiarray)
+
+            CLASSIFIER_PIPELINE = joblib.load(MODEL_PATH)
+            logger.info("TF-IDF + LogisticRegression model loaded successfully")
+        except Exception as e:
+            logger.error(f"Failed to load classifier model: {e}")
+            CLASSIFIER_PIPELINE = None
+    else:
+        logger.warning(f"Model file not found: {MODEL_PATH}")
 
 def load_config():
     """Load taxonomy and slang dictionary from JSON config files."""
@@ -112,6 +139,7 @@ def startup_event():
     load_supabase_client()
     ensure_nltk_stopwords()
     load_config()
+    load_classifier_model()
     logger.info("AI Service ready")
     logger.info(f"SUPABASE_URL: {NEXT_PUBLIC_SUPABASE_URL}")
     logger.info(f"SUPABASE_KEY exists: {bool(SUPABASE_SERVICE_ROLE_KEY)}")
@@ -272,6 +300,91 @@ def analyze_reports(
     except Exception as e:
         logger.error(f"Error during analysis: {e}", exc_info=True)
         raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
+
+
+class ClassifyItem(BaseModel):
+    id: str | int | None = None
+    text: str | None = None
+    title: str | None = None
+    description: str | None = None
+
+
+class ClassifyRequest(BaseModel):
+    text: str | None = None
+    items: list[ClassifyItem] = Field(default_factory=list)
+
+
+class ClassifyResultItem(BaseModel):
+    id: str | int | None = None
+    text: str
+    predicted_category: str
+    confidence: float
+    probabilities: dict[str, float]
+
+
+class ClassifyResponse(BaseModel):
+    status: str
+    processed_count: int
+    duration_ms: float
+    results: list[ClassifyResultItem]
+
+
+@app.post("/dashboard/admin/ai/classify", response_model=ClassifyResponse)
+def classify_text(request: ClassifyRequest) -> ClassifyResponse:
+    """
+    Classify text or reports into predefined categories using TF-IDF + Logistic Regression.
+    """
+    start_time = time.time()
+
+    global CLASSIFIER_PIPELINE
+    if CLASSIFIER_PIPELINE is None:
+        load_classifier_model()
+        if CLASSIFIER_PIPELINE is None:
+            raise HTTPException(status_code=500, detail="Classifier model pipeline is not available")
+
+    items_to_process = list(request.items)
+    if request.text and not items_to_process:
+        items_to_process.append(ClassifyItem(text=request.text))
+
+    if not items_to_process:
+        raise HTTPException(status_code=400, detail="No text or items provided for classification")
+
+    results: list[ClassifyResultItem] = []
+    classes = getattr(CLASSIFIER_PIPELINE, "classes_", [])
+
+    for item in items_to_process:
+        combined_text = (item.text or f"{item.title or ''} {item.description or ''}").strip()
+        if not combined_text:
+            continue
+
+        try:
+            preds = CLASSIFIER_PIPELINE.predict([combined_text])
+            probas = CLASSIFIER_PIPELINE.predict_proba([combined_text])[0]
+
+            predicted_cat = str(preds[0])
+            prob_dict = {str(cls): float(prob) for cls, prob in zip(classes, probas)}
+            confidence = float(max(probas))
+
+            results.append(
+                ClassifyResultItem(
+                    id=item.id,
+                    text=combined_text,
+                    predicted_category=predicted_cat,
+                    confidence=confidence,
+                    probabilities=prob_dict,
+                )
+            )
+        except Exception as e:
+            logger.error(f"Error classifying item {item.id}: {e}")
+
+    duration_ms = (time.time() - start_time) * 1000
+
+    return ClassifyResponse(
+        status="ok",
+        processed_count=len(results),
+        duration_ms=duration_ms,
+        results=results,
+    )
 
 
 if __name__ == "__main__":
