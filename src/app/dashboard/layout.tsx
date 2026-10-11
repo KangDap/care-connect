@@ -10,6 +10,7 @@ import {
   Calendar,
   CreditCard,
   FileText,
+  HandCoins,
   LayoutDashboard,
   MessageSquare,
   ShieldAlert,
@@ -195,7 +196,21 @@ export default function DashboardLayout({
                 icon={CreditCard}
                 label="All Donations"
                 href="/dashboard/admin/donations"
-                active={pathname.startsWith('/dashboard/admin/donations')}
+                active={
+                  pathname.startsWith('/dashboard/admin/donations') &&
+                  !pathname.startsWith(
+                    '/dashboard/admin/donations/distributions',
+                  )
+                }
+                isDark={theme === 'dark'}
+              />
+              <SidebarItem
+                icon={HandCoins}
+                label="Distribution Management"
+                href="/dashboard/admin/donations/distributions"
+                active={pathname.startsWith(
+                  '/dashboard/admin/donations/distributions',
+                )}
                 isDark={theme === 'dark'}
               />
               <SidebarItem
