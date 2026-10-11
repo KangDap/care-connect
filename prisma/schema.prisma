@@ -32,6 +32,7 @@ model User {
   consultationsAsPsych Consultation[]     @relation("PsychologistConsultations")
   consultationsAsUser  Consultation[]     @relation("UserConsultations")
   donations            Donation[]
+  distributionsCreated DonationDistribution[]
   reports              Report[]
   schedules            Schedule[]
   sessions             Session[]
@@ -104,9 +105,10 @@ model Report {
   incidentDate DateTime         @map("incident_date") @db.Date
   province     String           @db.VarChar(120)
   updatedAt    DateTime         @updatedAt @map("updated_at")
-  donations    Donation[]
-  evidences    ReportEvidence[]
-  user         User             @relation(fields: [userId], references: [id])
+  donations     Donation[]
+  distributions DonationDistribution[]
+  evidences     ReportEvidence[]
+  user          User                   @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([status])
@@ -167,6 +169,26 @@ model Donation {
 
   @@index([midtransOrderId])
   @@map("donations")
+}
+
+model DonationDistribution {
+  id            Int          @id @default(autoincrement()) @map("distribution_id")
+  targetType    DonationType @map("target_type")
+  reportId      Int?         @map("report_id")
+  amount        Decimal      @db.Decimal(15, 2)
+  recipient     String       @db.VarChar(255)
+  notes         String?      @db.Text
+  distributedAt DateTime     @default(now()) @map("distributed_at")
+  createdById   String       @map("created_by_id")
+  createdAt     DateTime     @default(now()) @map("created_at")
+
+  report    Report? @relation(fields: [reportId], references: [id])
+  createdBy User    @relation(fields: [createdById], references: [id])
+
+  @@index([targetType])
+  @@index([reportId])
+  @@index([createdById])
+  @@map("donation_distributions")
 }
 
 model Channel {
