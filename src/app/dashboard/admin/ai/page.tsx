@@ -1,4 +1,6 @@
-import { AIInsightDashboard } from './AIInsightDashboard';
+import { Suspense } from 'react';
+
+import { AIAnalysisTabs } from './AIAnalysisTabs';
 
 export const metadata = {
   title: 'AI Analysis | CareConnect Admin',
@@ -6,5 +8,15 @@ export const metadata = {
 };
 
 export default function AdminAIAnalysisPage() {
-  return <AIInsightDashboard />;
+  return (
+    <Suspense
+      fallback={
+        <div className="py-10 text-center text-sm font-bold text-[#8ea087]">
+          Loading AI analysis...
+        </div>
+      }
+    >
+      <AIAnalysisTabs />
+    </Suspense>
+  );
 }
