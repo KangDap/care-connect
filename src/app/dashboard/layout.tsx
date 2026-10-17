@@ -6,6 +6,7 @@ import { Logo } from '@/components/logo';
 import { useTranslation } from '@/components/providers/i18n-provider';
 import { authClient } from '@/lib/auth/auth-client';
 import {
+  BookOpen,
   BrainCircuit,
   Calendar,
   CreditCard,
@@ -14,6 +15,7 @@ import {
   LayoutDashboard,
   MessageSquare,
   ShieldAlert,
+  Tags,
   User,
   Users,
 } from 'lucide-react';
@@ -232,6 +234,25 @@ export default function DashboardLayout({
                 label="Psikolog Schedules"
                 href="/dashboard/admin/schedules"
                 active={pathname.startsWith('/dashboard/admin/schedules')}
+                isDark={theme === 'dark'}
+              />
+              <SidebarItem
+                icon={BookOpen}
+                label="Article Management"
+                href="/dashboard/admin/articles"
+                active={
+                  pathname.startsWith('/dashboard/admin/articles') &&
+                  !pathname.startsWith('/dashboard/admin/articles/categories')
+                }
+                isDark={theme === 'dark'}
+              />
+              <SidebarItem
+                icon={Tags}
+                label="Article Categories"
+                href="/dashboard/admin/articles/categories"
+                active={pathname.startsWith(
+                  '/dashboard/admin/articles/categories',
+                )}
                 isDark={theme === 'dark'}
               />
             </>
