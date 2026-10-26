@@ -12,7 +12,7 @@ import {
   BrainCircuit,
   Download,
   type LucideIcon,
-  Sparkles,
+  PieChart,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -52,12 +52,10 @@ export function StatCard({
 }
 
 export function SectionPanel({
-  title,
   type,
   data,
   onExport,
 }: {
-  title: string;
   type: 'Laporan' | 'Konsultasi';
   data: SectionStatisticalAnalysis;
   onExport: (type: 'Laporan' | 'Konsultasi') => void;
@@ -80,6 +78,7 @@ export function SectionPanel({
     ...data.categoryBreakdown.map((item) => item.count),
     1,
   );
+  const leadingCategory = data.categoryBreakdown[0];
 
   useEffect(() => {
     setCurrentPage(1);
@@ -126,103 +125,82 @@ export function SectionPanel({
 
   return (
     <div className="space-y-5">
-      <Card className="p-5 sm:p-6">
-        <div className="flex flex-wrap items-start justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="rounded-xl bg-[#edf1e9] p-2.5 text-[#34563a]">
-              <Sparkles size={19} />
-            </div>
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#74816f]">
-                Ringkasan AI · {title}
-              </p>
-              <p className="mt-1 text-sm text-[#899286]">
-                Prioritas berdasarkan kategori paling sering muncul
-              </p>
-            </div>
-          </div>
-          {data.dominantCategory && (
-            <span className="rounded-full bg-[#f4eadc] px-3 py-1.5 text-xs font-bold capitalize text-[#86603a]">
-              {data.dominantCategory.attentionRequired
-                ? 'Perlu perhatian'
-                : 'Sebaran merata'}
-            </span>
-          )}
-        </div>
-        <div className="mt-5 space-y-3">
-          <p className="rounded-xl bg-[#f7f8f5] p-4 text-sm font-semibold leading-6 text-[#344235]">
-            {data.insights.summary}
-          </p>
-          <div className="border-l-[3px] border-[#8ea087] pl-4">
-            <p className="text-xs font-bold uppercase tracking-wider text-[#74816f]">
-              Rekomendasi tindak lanjut
-            </p>
-            <p className="mt-1 text-sm leading-6 text-[#53604f]">
-              {data.insights.recommendation}
-            </p>
-          </div>
-        </div>
-        {data.insights.priorityCategories.length > 0 && (
-          <div className="mt-4 flex flex-wrap items-center gap-2">
-            <span className="mr-1 text-xs font-semibold text-[#74816f]">
-              Fokus:
-            </span>
-            {data.insights.priorityCategories.map((category) => (
-              <span
-                key={category}
-                className="rounded-full border border-[#dce2d7] px-3 py-1 text-xs font-semibold capitalize text-[#38513b]"
-              >
-                {categoryLabel(category)}
-              </span>
-            ))}
-          </div>
-        )}
-      </Card>
-
       <div className="grid gap-5 xl:grid-cols-2">
-        <Card className="p-5 sm:p-6">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h3 className="font-bold text-[#193c1f]">Sebaran kategori</h3>
-              <p className="mt-1 text-xs text-[#899286]">
-                Jumlah dan persentase dari{' '}
-                {numberFormat.format(data.totalCount)}{' '}
-                {type.toLocaleLowerCase('id-ID')}
-              </p>
+        <section className="overflow-hidden rounded-3xl border border-[#dce5d8] bg-white shadow-sm">
+          <div className="border-b border-[#e9eee6] bg-gradient-to-r from-[#f2f6ef] to-white p-5 sm:p-6">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <div className="rounded-xl bg-[#193c1f] p-2.5 text-white">
+                  <PieChart size={19} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-[#193c1f]">Sebaran kategori</h3>
+                  <p className="mt-1 text-xs text-[#74816f]">
+                    {numberFormat.format(data.totalCount)}{' '}
+                    {type.toLocaleLowerCase('id-ID')} berdasarkan kategori
+                  </p>
+                </div>
+              </div>
+              <span className="rounded-lg border border-[#dce5d8] bg-white px-2.5 py-1.5 text-xs font-semibold text-[#53604f]">
+                {data.categoryBreakdown.length} kategori
+              </span>
             </div>
-            <span className="rounded-lg bg-[#f7f8f5] px-2.5 py-1.5 text-xs font-semibold text-[#687563]">
-              {data.categoryBreakdown.length} kategori
-            </span>
           </div>
           {data.categoryBreakdown.length ? (
-            <div className="mt-6 space-y-4">
-              {data.categoryBreakdown.map((item) => (
-                <div key={item.category}>
-                  <div className="mb-1.5 flex items-center justify-between gap-3 text-sm">
-                    <span className="truncate font-medium capitalize text-[#344235]">
-                      {categoryLabel(item.category)}
-                    </span>
-                    <span className="shrink-0 text-xs font-semibold text-[#74816f]">
-                      {numberFormat.format(item.count)} · {item.percentage}%
-                    </span>
-                  </div>
-                  <div className="h-2 overflow-hidden rounded-full bg-[#eef0eb]">
-                    <div
-                      className="h-full rounded-full bg-[#68836a]"
-                      style={{
-                        width: `${Math.max(2, (item.count / maxCount) * 100)}%`,
-                      }}
-                    />
+            <div className="space-y-5 p-5 sm:p-6">
+              {leadingCategory && (
+                <div className="rounded-2xl border border-[#dce8d8] bg-[#f5f8f3] p-4 sm:p-5">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.12em] text-[#74816f]">
+                    Kategori terbanyak
+                  </p>
+                  <div className="mt-2 flex flex-wrap items-end justify-between gap-3">
+                    <div>
+                      <p className="text-xl font-black capitalize tracking-tight text-[#193c1f] sm:text-2xl">
+                        {categoryLabel(leadingCategory.category)}
+                      </p>
+                      <p className="mt-1 text-sm text-[#687563]">
+                        {numberFormat.format(leadingCategory.count)}{' '}
+                        {type.toLocaleLowerCase('id-ID')}
+                      </p>
+                    </div>
+                    <p className="text-3xl font-black tracking-tight text-[#315d37] sm:text-4xl">
+                      {leadingCategory.percentage}%
+                    </p>
                   </div>
                 </div>
-              ))}
+              )}
+              <div className="space-y-4">
+                {data.categoryBreakdown.map((item, index) => (
+                  <div key={item.category}>
+                    <div className="mb-2 flex items-center justify-between gap-3">
+                      <span className="truncate text-sm font-semibold capitalize text-[#344235]">
+                        {categoryLabel(item.category)}
+                      </span>
+                      <span className="shrink-0 text-sm font-bold tabular-nums text-[#53604f]">
+                        {numberFormat.format(item.count)}
+                        <span className="ml-2 text-[#899286]">
+                          {item.percentage}%
+                        </span>
+                      </span>
+                    </div>
+                    <div className="h-2.5 overflow-hidden rounded-full bg-[#eef0eb]">
+                      <div
+                        className={`h-full rounded-full ${index === 0 ? 'bg-[#315d37]' : 'bg-[#8ea087]'}`}
+                        style={{
+                          width: `${Math.max(2, (item.count / maxCount) * 100)}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           ) : (
-            <p className="mt-8 rounded-xl bg-[#f7f8f5] px-4 py-8 text-center text-sm text-[#899286]">
+            <p className="m-5 rounded-xl bg-[#f7f8f5] px-4 py-8 text-center text-sm text-[#899286] sm:m-6">
               Belum ada data kategori pada periode ini.
             </p>
           )}
-        </Card>
+        </section>
 
         <div className="overflow-hidden rounded-3xl border border-[#D0D5CB]/50 bg-white shadow-sm">
           <div className="flex flex-wrap items-start justify-between gap-3 p-5 sm:p-6">

@@ -345,7 +345,6 @@ export function AIInsightDashboard() {
           <div className="space-y-7">
             {(source === 'all' || source === 'reports') && (
               <SectionPanel
-                title="Laporan"
                 type="Laporan"
                 data={shownData.reports}
                 onExport={exportCsv}
@@ -353,7 +352,6 @@ export function AIInsightDashboard() {
             )}
             {(source === 'all' || source === 'consultations') && (
               <SectionPanel
-                title="Konsultasi"
                 type="Konsultasi"
                 data={shownData.consultations}
                 onExport={exportCsv}
@@ -363,8 +361,7 @@ export function AIInsightDashboard() {
 
           <p className="rounded-xl border border-[#e3e7df] bg-white/70 px-4 py-3 text-xs leading-5 text-[#7b8478]">
             Sampel dipilih secara terstratifikasi dari data pada periode
-            terpilih. Ringkasan otomatis membantu evaluasi awal; tinjau konteks
-            data sebelum mengambil keputusan.
+            terpilih, dan identitas pelapor tidak ditampilkan.
           </p>
         </>
       ) : null}
