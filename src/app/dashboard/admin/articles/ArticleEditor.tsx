@@ -35,6 +35,8 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
 
+import { ARTICLE_CATEGORIES_HREF } from './article-management-tabs';
+
 type ToastState = { show: boolean; msg: string; type: 'success' | 'error' };
 
 const FieldError = ({ message }: { message?: string }) =>
@@ -356,10 +358,7 @@ export function ArticleEditor({ articleId }: { articleId: number | null }) {
       {noCategories && (
         <div className="rounded-2xl border border-[#d1b698] bg-[#ede4d8] p-4 text-sm font-medium text-[#193c1f]">
           You need at least one category before saving an article.{' '}
-          <Link
-            href="/dashboard/admin/articles/categories"
-            className="font-bold underline"
-          >
+          <Link href={ARTICLE_CATEGORIES_HREF} className="font-bold underline">
             Create a category
           </Link>
         </div>
@@ -518,7 +517,7 @@ export function ArticleEditor({ articleId }: { articleId: number | null }) {
                 </Input>
                 <FieldError message={errors.categoryId} />
                 <Link
-                  href="/dashboard/admin/articles/categories"
+                  href={ARTICLE_CATEGORIES_HREF}
                   className="mt-1 inline-block text-[11px] font-bold text-[#8ea087] underline hover:text-[#193c1f]"
                 >
                   Manage categories

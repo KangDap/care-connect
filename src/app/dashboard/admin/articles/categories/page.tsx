@@ -1,22 +1,11 @@
-import { Suspense } from 'react';
+import { redirect } from 'next/navigation';
 
-import { CategoriesClient } from './CategoriesClient';
+import { ARTICLE_CATEGORIES_HREF } from '../article-management-tabs';
 
-export const metadata = {
-  title: 'Article Categories | CareConnect Admin',
-  description: 'Manage article categories.',
-};
-
-export default function ArticleCategoriesPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="py-10 text-center text-sm font-bold text-[#8ea087]">
-          Loading categories...
-        </div>
-      }
-    >
-      <CategoriesClient />
-    </Suspense>
-  );
+/**
+ * Categories now live in a tab of Article Management. This route is kept so
+ * old links and bookmarks still land on the right place.
+ */
+export default function ArticleCategoriesRedirect() {
+  redirect(ARTICLE_CATEGORIES_HREF);
 }

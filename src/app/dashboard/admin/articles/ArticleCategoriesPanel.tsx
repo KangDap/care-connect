@@ -18,8 +18,7 @@ import {
 import { formatArticleDate } from '@/lib/article-content';
 import type { ArticleCategory } from '@/types/article';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
-import Link from 'next/link';
+import { Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useMemo, useState } from 'react';
 
@@ -29,7 +28,7 @@ type FormState = { name: string; description: string };
 const NAME_MAX = 100;
 const DESCRIPTION_MAX = 1000;
 
-export function CategoriesClient() {
+export function ArticleCategoriesPanel() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const search = (searchParams.get('search') || '').trim().toLowerCase();
@@ -191,20 +190,9 @@ export function CategoriesClient() {
       />
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <Link
-            href="/dashboard/admin/articles"
-            className="mb-2 inline-flex items-center gap-1 text-xs font-bold text-[#8ea087] no-underline hover:text-[#193c1f]"
-          >
-            <ArrowLeft size={14} /> Back to Articles
-          </Link>
-          <h1 className="text-2xl font-black text-[#193c1f] sm:text-[32px]">
-            Article Categories
-          </h1>
-          <p className="font-medium text-[#8ea087]">
-            Group articles by topic, for example Stress Management.
-          </p>
-        </div>
+        <p className="text-sm font-medium text-[#8ea087]">
+          Group articles by topic, for example Stress Management.
+        </p>
         <Button
           onClick={openCreate}
           className="h-11 w-full shrink-0 whitespace-nowrap rounded-xl px-4 py-0 text-xs font-black uppercase tracking-[0.08em] sm:w-auto"

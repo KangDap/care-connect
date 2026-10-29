@@ -880,6 +880,9 @@ export const phraseTranslations = {
     'Terjadi kesalahan pada server. Silakan coba lagi.',
   'Image preview': 'Pratinjau gambar',
   'Forum sections': 'Bagian forum',
+  'Write, publish, and manage educational articles and their categories.':
+    'Tulis, terbitkan, dan kelola artikel edukasi beserta kategorinya.',
+  'Article management sections': 'Bagian manajemen artikel',
 } as const;
 
 export type PhraseKey = keyof typeof phraseTranslations;

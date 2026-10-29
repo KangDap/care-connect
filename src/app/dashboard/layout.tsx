@@ -15,7 +15,6 @@ import {
   LayoutDashboard,
   MessageSquare,
   ShieldAlert,
-  Tags,
   User,
   Users,
 } from 'lucide-react';
@@ -240,19 +239,7 @@ export default function DashboardLayout({
                 icon={BookOpen}
                 label="Article Management"
                 href="/dashboard/admin/articles"
-                active={
-                  pathname.startsWith('/dashboard/admin/articles') &&
-                  !pathname.startsWith('/dashboard/admin/articles/categories')
-                }
-                isDark={theme === 'dark'}
-              />
-              <SidebarItem
-                icon={Tags}
-                label="Article Categories"
-                href="/dashboard/admin/articles/categories"
-                active={pathname.startsWith(
-                  '/dashboard/admin/articles/categories',
-                )}
+                active={pathname.startsWith('/dashboard/admin/articles')}
                 isDark={theme === 'dark'}
               />
             </>
