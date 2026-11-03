@@ -28,19 +28,12 @@ import {
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query';
-import {
-  Eye,
-  EyeOff,
-  FolderCog,
-  Loader2,
-  Pencil,
-  Plus,
-  Send,
-  Trash2,
-} from 'lucide-react';
+import { Eye, EyeOff, Loader2, Pencil, Plus, Send, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
+
+import { ARTICLE_CATEGORIES_HREF } from './article-management-tabs';
 
 const PAGE_SIZE = 10;
 const STATUS_TABS: { label: string; value: ArticleStatus | null }[] = [
@@ -180,42 +173,11 @@ export function ArticlesAdminClient() {
         }
       />
 
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-black text-[#193c1f] sm:text-[32px]">
-            Article Management
-          </h1>
-          <p className="font-medium text-[#8ea087]">
-            Write, publish, and manage educational articles.
-          </p>
-        </div>
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <Link href="/dashboard/admin/articles/categories">
-            <Button
-              variant="outline"
-              className="h-11 w-full whitespace-nowrap rounded-xl px-4 py-0 text-xs font-black uppercase tracking-[0.08em] sm:w-auto"
-            >
-              <FolderCog size={16} className="shrink-0" />
-              Categories
-            </Button>
-          </Link>
-          <Link href="/dashboard/admin/articles/new">
-            <Button className="h-11 w-full whitespace-nowrap rounded-xl px-4 py-0 text-xs font-black uppercase tracking-[0.08em] sm:w-auto">
-              <Plus size={16} className="shrink-0" />
-              New Article
-            </Button>
-          </Link>
-        </div>
-      </div>
-
       {noCategories && (
         <div className="rounded-2xl border border-[#d1b698] bg-[#ede4d8] p-4 text-sm font-medium text-[#193c1f]">
           There are no categories yet. Create one first, because every article
           needs a category.{' '}
-          <Link
-            href="/dashboard/admin/articles/categories"
-            className="font-bold underline"
-          >
+          <Link href={ARTICLE_CATEGORIES_HREF} className="font-bold underline">
             Manage categories
           </Link>
         </div>
@@ -245,23 +207,31 @@ export function ArticlesAdminClient() {
             );
           })}
         </div>
-        <div className="w-full md:w-64">
-          <Input
-            type="select"
-            aria-label="Filter by category"
-            value={categoryId ? String(categoryId) : ''}
-            onChange={(e) =>
-              updateParams({ category: e.target.value || null, page: null })
-            }
-            className="py-3"
-          >
-            <option value="">All categories</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
-          </Input>
+        <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center md:w-auto">
+          <div className="w-full sm:w-64">
+            <Input
+              type="select"
+              aria-label="Filter by category"
+              value={categoryId ? String(categoryId) : ''}
+              onChange={(e) =>
+                updateParams({ category: e.target.value || null, page: null })
+              }
+              className="py-3"
+            >
+              <option value="">All categories</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </Input>
+          </div>
+          <Link href="/dashboard/admin/articles/new" className="shrink-0">
+            <Button className="h-11 w-full whitespace-nowrap rounded-xl px-4 py-0 text-xs font-black uppercase tracking-[0.08em] sm:w-auto">
+              <Plus size={16} className="shrink-0" />
+              New Article
+            </Button>
+          </Link>
         </div>
       </div>
 

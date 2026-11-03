@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 
-import { ArticlesAdminClient } from './ArticlesAdminClient';
+import { ArticleManagement } from './ArticleManagement';
 
 export const metadata = {
   title: 'Article Management | CareConnect Admin',
@@ -16,7 +16,7 @@ export default function AdminArticlesPage() {
         </div>
       }
     >
-      <ArticlesAdminClient />
+      <ArticleManagement />
     </Suspense>
   );
 }
