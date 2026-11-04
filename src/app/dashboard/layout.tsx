@@ -9,9 +9,7 @@ import {
   BookOpen,
   BrainCircuit,
   Calendar,
-  CreditCard,
   FileText,
-  HandCoins,
   LayoutDashboard,
   MessageSquare,
   ShieldAlert,
@@ -194,27 +192,6 @@ export default function DashboardLayout({
                 isDark={theme === 'dark'}
               />
               <SidebarItem
-                icon={CreditCard}
-                label="All Donations"
-                href="/dashboard/admin/donations"
-                active={
-                  pathname.startsWith('/dashboard/admin/donations') &&
-                  !pathname.startsWith(
-                    '/dashboard/admin/donations/distributions',
-                  )
-                }
-                isDark={theme === 'dark'}
-              />
-              <SidebarItem
-                icon={HandCoins}
-                label="Distribution Management"
-                href="/dashboard/admin/donations/distributions"
-                active={pathname.startsWith(
-                  '/dashboard/admin/donations/distributions',
-                )}
-                isDark={theme === 'dark'}
-              />
-              <SidebarItem
                 icon={User}
                 label="Users"
                 href="/dashboard/admin/users"
@@ -256,13 +233,6 @@ export default function DashboardLayout({
                 isDark={theme === 'dark'}
               />
               <SidebarItem
-                icon={CreditCard}
-                label="Donation History"
-                href="/dashboard/psikolog/donations"
-                active={pathname.startsWith('/dashboard/psikolog/donations')}
-                isDark={theme === 'dark'}
-              />
-              <SidebarItem
                 icon={Calendar}
                 label="My Schedule"
                 href="/dashboard/psikolog/schedule"
@@ -288,16 +258,6 @@ export default function DashboardLayout({
                 label="My Reports"
                 href="/dashboard/reports"
                 active={pathname.startsWith('/dashboard/reports')}
-                isDark={theme === 'dark'}
-              />
-              <SidebarItem
-                icon={CreditCard}
-                label="Donation History"
-                href="/dashboard/donations"
-                active={
-                  pathname.startsWith('/dashboard/donations') &&
-                  !isAtPsikologPage
-                }
                 isDark={theme === 'dark'}
               />
             </>

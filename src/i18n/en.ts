@@ -12,6 +12,7 @@ export const en = {
     dashboard: 'Dashboard',
     login: 'Login',
     logout: 'Logout',
+    campaign: 'Campaign',
   },
   home: {
     heroTitle: 'Speak Up & Make an Impact with Care Connect',

@@ -49,10 +49,6 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
         description: true,
         user: { select: { name: true, email: true } },
         evidences: { select: { fileUrl: true }, take: 1 },
-        donations: {
-          where: { paymentStatus: 'PAID' },
-          select: { amount: true },
-        },
       },
     }),
     prisma.report.count({ where }),
@@ -70,29 +66,21 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
 
   const totalPages = Math.ceil(totalCount / perPage);
 
-  const formattedReports = reports.map((r) => {
-    const donationTotal = r.donations.reduce(
-      (sum, d) => sum + Number(d.amount),
-      0,
-    );
-
-    return {
-      id: r.id,
-      title: r.title,
-      category: r.category,
-      status: r.status,
-      isAnonymous: r.isAnonymous,
-      province: r.province,
-      city: r.city,
-      incidentDate: r.incidentDate.toISOString(),
-      createdAt: r.createdAt.toISOString(),
-      description: r.description,
-      user: r.user,
-      hasEvidence: r.evidences.length > 0,
-      evidences: r.evidences,
-      donationTotal,
-    };
-  });
+  const formattedReports = reports.map((r) => ({
+    id: r.id,
+    title: r.title,
+    category: r.category,
+    status: r.status,
+    isAnonymous: r.isAnonymous,
+    province: r.province,
+    city: r.city,
+    incidentDate: r.incidentDate.toISOString(),
+    createdAt: r.createdAt.toISOString(),
+    description: r.description,
+    user: r.user,
+    hasEvidence: r.evidences.length > 0,
+    evidences: r.evidences,
+  }));
 
   const tabs = [
     { label: 'All', value: 'ALL', count: totalAll },

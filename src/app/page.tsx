@@ -4,7 +4,7 @@ import { Card } from '@/components/card';
 import Carousel from '@/components/carousel';
 import { PublicHeader } from '@/components/public-header';
 import { Prisma } from '@/generated/prisma/client';
-import { PaymentStatus, ReportStatus } from '@/generated/prisma/enums';
+import { ReportStatus } from '@/generated/prisma/enums';
 import { auth } from '@/lib/auth/auth';
 import { prisma } from '@/lib/prisma';
 import { headers } from 'next/headers';
@@ -33,22 +33,17 @@ export default async function LandingPage() {
 
   let totalReports = 0;
   let totalConsultations = 0;
-  let totalDonationAmount = 0;
   let recentReports: Prisma.ReportGetPayload<{
     include: { evidences: true };
   }>[] = [];
 
   try {
-    const [reportsCount, consultationsCount, paidDonations, latestReports] =
-      await Promise.all([
+    const [reportsCount, consultationsCount, latestReports] = await Promise.all(
+      [
         prisma.report.count({
           where: { status: ReportStatus.RESOLVED },
         }),
         prisma.consultation.count(),
-        prisma.donation.aggregate({
-          _sum: { amount: true },
-          where: { paymentStatus: PaymentStatus.PAID },
-        }),
         prisma.report.findMany({
           take: 3,
           orderBy: { createdAt: 'desc' },
@@ -62,21 +57,15 @@ export default async function LandingPage() {
             },
           },
         }),
-      ]);
+      ],
+    );
 
     totalReports = reportsCount;
     totalConsultations = consultationsCount;
-    totalDonationAmount = Number(paidDonations._sum.amount || 0);
     recentReports = latestReports;
   } catch (e) {
     console.error('Failed to fetch landing page data:', e);
   }
-
-  const formattedDonations = new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    maximumFractionDigits: 0,
-  }).format(totalDonationAmount);
 
   return (
     <div className="font-sans antialiased bg-[#f7f3ed] text-[#193c1f] min-h-screen">
@@ -126,15 +115,12 @@ export default async function LandingPage() {
                 Report Incident
               </Button>
             </Link>
-            <Link
-              href={isLoggedIn ? '/donation' : '/login'}
-              className="w-full sm:w-auto"
-            >
+            <Link href="/campaign" className="w-full sm:w-auto">
               <Button
                 variant="outline"
                 className="h-full w-full rounded-lg border-[#d1b698] bg-[#f7f3ed] px-5 py-3 text-sm sm:px-6 sm:text-base xl:w-auto xl:px-10 xl:py-4 xl:text-lg"
               >
-                Donate
+                Explore Campaign
               </Button>
             </Link>
           </div>
@@ -145,7 +131,7 @@ export default async function LandingPage() {
 
       {/* Stats Section */}
       <section className="bg-[#ede4d8] px-4 py-12 sm:px-6 md:px-12 md:py-20">
-        <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-8">
+        <div className="mx-auto grid max-w-4xl grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:gap-8">
           <Card className="rounded-2xl border-b-4 border-[#8ea087] bg-[#f7f3ed] p-6 text-center md:p-8 lg:p-12">
             <p className="text-[#193c1f] font-semibold mb-2 opacity-80">
               Reports Published
@@ -163,18 +149,6 @@ export default async function LandingPage() {
               {totalConsultations}
             </h2>
             <div className="w-16 h-1 bg-[#d1b698] mx-auto rounded-full"></div>
-          </Card>
-          <Card className="rounded-2xl border-b-4 border-[#8ea087] bg-[#f7f3ed] p-6 text-center sm:col-span-2 md:p-8 lg:col-span-1 lg:p-12">
-            <p className="text-[#193c1f] font-semibold mb-2 opacity-80">
-              Community Donations
-            </p>
-            <h2
-              className="mb-4 text-2xl font-black text-[#193c1f] md:text-3xl lg:text-4xl xl:text-5xl"
-              title={formattedDonations}
-            >
-              {formattedDonations}
-            </h2>
-            <div className="w-16 h-1 bg-[#8ea087] mx-auto rounded-full"></div>
           </Card>
         </div>
       </section>
@@ -272,9 +246,10 @@ export default async function LandingPage() {
                 ></path>
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-[#193c1f]">Donation</h3>
+            <h3 className="text-2xl font-bold text-[#193c1f]">Campaign</h3>
             <p className="text-[#193c1f] opacity-80">
-              Fund mental health initiatives and support those in need.
+              Join a community initiative that brings meaningful support to
+              people who need it.
             </p>
           </Card>
         </div>

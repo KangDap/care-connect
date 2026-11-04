@@ -54,11 +54,7 @@ function PublicHeaderContent() {
       activePath: '/forums',
       label: t('header.forum'),
     },
-    {
-      href: protectedHref('/donation'),
-      activePath: '/donation',
-      label: t('header.donate'),
-    },
+    { href: '/campaign', activePath: '/campaign', label: t('header.campaign') },
   ];
 
   return (

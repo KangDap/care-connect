@@ -1,4 +1,3 @@
-import { PaymentStatus } from '@/generated/prisma/enums';
 import { auth } from '@/lib/auth/auth';
 import { prisma } from '@/lib/prisma';
 import { headers } from 'next/headers';
@@ -64,12 +63,11 @@ export default async function DashboardPage() {
     status: string;
     createdAt: Date;
   }[] = [];
-  let serializedDonations: { amount: number }[] = [];
   let totalConsCount = 0;
   let totalRepCount = 0;
 
   try {
-    const [consultationsData, reportsData, donations, consCount, repCount] =
+    const [consultationsData, reportsData, consCount, repCount] =
       await Promise.all([
         prisma.consultation.findMany({
           where: { userId: session!.user.id },
@@ -99,26 +97,12 @@ export default async function DashboardPage() {
             createdAt: true,
           },
         }),
-        prisma.donation.findMany({
-          where: {
-            report: {
-              userId: session!.user.id,
-            },
-            paymentStatus: PaymentStatus.PAID,
-          },
-          select: {
-            amount: true,
-          },
-        }),
         prisma.consultation.count({ where: { userId: session!.user.id } }),
         prisma.report.count({ where: { userId: session!.user.id } }),
       ]);
 
     consultations = consultationsData;
     reports = reportsData;
-    serializedDonations = donations.map((item) => ({
-      amount: Number(item.amount),
-    }));
     totalConsCount = consCount;
     totalRepCount = repCount;
   } catch (e) {
@@ -142,7 +126,6 @@ export default async function DashboardPage() {
       <DashboardContent
         consultations={consultations}
         reports={reports}
-        donations={serializedDonations}
         displayName={displayName}
         pendingReportsCount={pendingReportsCount}
         totalConsultationsCount={totalConsCount}

@@ -41,7 +41,6 @@ type ReportType = {
   evidences?: {
     fileUrl: string;
   }[];
-  donationTotal: number;
 };
 
 type TabType = { label: string; value: string; count: number };
@@ -84,13 +83,6 @@ export function ReportClient({
       month: 'short',
       year: 'numeric',
     }).format(new Date(d));
-
-  const fmt = (v: number) =>
-    new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-    }).format(v);
 
   const buildReportsHref = (status: string, pageValue?: number) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -386,19 +378,6 @@ export function ReportClient({
                 {r.status}
               </span>
             ),
-          },
-          {
-            header: 'Donations',
-            headerClassName: 'w-[10%] min-w-[90px]',
-            className: 'w-[10%] min-w-[90px] align-middle whitespace-nowrap',
-            cell: (r) =>
-              r.donationTotal > 0 ? (
-                <span className="text-green-700 font-bold text-[10px] md:text-xs whitespace-nowrap">
-                  {fmt(r.donationTotal)}
-                </span>
-              ) : (
-                <span className="text-[#8EA087] text-[10px] md:text-xs">—</span>
-              ),
           },
           {
             header: 'Actions',

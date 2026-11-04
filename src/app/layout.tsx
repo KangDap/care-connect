@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'CareConnect',
   description:
-    'Mental health support, reporting, consultation, and donation platform.',
+    'Mental health support, reporting, consultation, and community campaigns.',
 };
 
 export default function RootLayout({

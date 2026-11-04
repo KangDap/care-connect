@@ -883,6 +883,48 @@ export const phraseTranslations = {
   'Write, publish, and manage educational articles and their categories.':
     'Tulis, terbitkan, dan kelola artikel edukasi beserta kategorinya.',
   'Article management sections': 'Bagian manajemen artikel',
+
+  // Campaign & Landing Page Additions
+  'Explore Campaign': 'Jelajahi Kampanye',
+  Campaign: 'Kampanye',
+  'Humanitarian Campaign': 'Kampanye Kemanusiaan',
+  'Social Fundraising': 'Penggalangan Dana Sosial',
+  'CareConnect · Social Fundraising': 'CareConnect · Penggalangan Dana Sosial',
+  'Together We Share, Together We Care': 'Bersama Berbagi, Bersama Peduli',
+  'Every contribution provides new hope for those in need. Let us work together to supply essential necessities and support the welfare of our community.':
+    'Setiap bantuan yang diberikan dapat menjadi harapan baru bagi mereka yang membutuhkan. Mari bersama membantu menyediakan kebutuhan pokok dan mendukung kesejahteraan masyarakat.',
+  'Why participate?': 'Mengapa berpartisipasi?',
+  'Helping fulfill the basic needs of the community.':
+    'Membantu memenuhi kebutuhan dasar masyarakat.',
+  'Supporting meaningful social initiatives.':
+    'Mendukung kegiatan sosial yang bermanfaat.',
+  'Fostering empathy and a spirit of giving.':
+    'Menumbuhkan kepedulian dan semangat berbagi.',
+  'Contact Us to Donate': 'Hubungi Kami untuk Berdonasi',
+  'An email draft will open with a pre-filled message.':
+    'Email akan dikirim dengan pesan awal yang sudah terisi.',
+  'Join a community initiative that brings meaningful support to people who need it.':
+    'Bergabunglah dengan inisiatif komunitas yang menghadirkan dukungan bermakna bagi mereka yang membutuhkan.',
+  'Support for Together We Share, Together We Care Campaign':
+    'Dukungan untuk Kampanye Bersama Berbagi, Bersama Peduli',
+  'Hello CareConnect team,\n\nI would like to support the \"Together We Share, Together We Care\" campaign. Please provide details on how to contribute.\n\nThank you.':
+    'Halo tim CareConnect,\n\nSaya ingin mendukung kampanye \"Bersama Berbagi, Bersama Peduli\". Mohon informasikan cara untuk berpartisipasi.\n\nTerima kasih.',
+
+  // Additional Dashboard & Psychologist Management
+  'Pending / Scheduled': 'Tertunda / Terjadwal',
+  'Completed Sessions': 'Sesi Selesai',
+  'Search patients or consultations': 'Cari pasien atau konsultasi',
+  'Search patients': 'Cari pasien',
+  'Upcoming Patient Sessions': 'Sesi Pasien Mendatang',
+  'Upcoming consultations to handle.':
+    'Konsultasi mendatang yang perlu ditangani.',
+  'Manage your schedule': 'Kelola jadwal Anda',
+  'Consultation Availability': 'Ketersediaan Konsultasi',
+  'Available Schedules': 'Jadwal Tersedia',
+  'No schedules found': 'Tidak ada jadwal ditemukan',
+  'Apriori Analysis': 'Analisis Apriori',
+  'AI Insight': 'Wawasan AI',
+  'AI Analysis Type': 'Jenis Analisis AI',
 } as const;
 
 export type PhraseKey = keyof typeof phraseTranslations;

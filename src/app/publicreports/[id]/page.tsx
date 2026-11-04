@@ -4,7 +4,7 @@ import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { PublicHeader } from '@/components/public-header';
-import { ArrowLeft, Calendar, Heart, MapPin, Tag, X } from 'lucide-react';
+import { ArrowLeft, Calendar, MapPin, Tag, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -255,29 +255,6 @@ export default function PublicReportDetailPage() {
                 </p>
               </div>
             </Card>
-
-            {/* Donate CTA */}
-            {report.status !== 'REJECTED' && (
-              <Card className="rounded-2xl border-[#193c1f] bg-[#193c1f] p-6 text-white">
-                <h3 className="font-black text-lg mb-2">Support This Case</h3>
-                <p className="text-[#8ea087] text-sm mb-4 leading-relaxed">
-                  Your donation goes directly to supporting the victim of this
-                  reported case.
-                </p>
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={() => router.push(`/donation/report/${report.id}`)}
-                  className="w-full rounded-xl py-3 uppercase tracking-wider"
-                >
-                  <Heart className="w-4 h-4" />
-                  Donate Now
-                </Button>
-                <p className="text-center text-[10px] text-[#8ea087] mt-2">
-                  0% transaction fee
-                </p>
-              </Card>
-            )}
 
             {/* Report Info */}
             <Card className="rounded-2xl p-6">

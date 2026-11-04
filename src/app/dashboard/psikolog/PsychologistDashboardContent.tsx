@@ -3,14 +3,13 @@
 import { Badge } from '@/components/badge';
 import { Card } from '@/components/card';
 import { Table } from '@/components/table';
-import { Activity, CheckCircle, Clock, CreditCard } from 'lucide-react';
+import { Activity, CheckCircle, Clock } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
 const TotalIcon = () => <Activity size={20} strokeWidth={2} />;
 const PendingIcon = () => <Clock size={20} strokeWidth={2} />;
 const CompletedIcon = () => <CheckCircle size={20} strokeWidth={2} />;
-const EarningsIcon = () => <CreditCard size={20} strokeWidth={2} />;
 
 const formatDateLabel = (value: Date | string) => {
   if (!value) return '-';
@@ -38,7 +37,6 @@ type PsychologistDashboardProps = {
   totalConsultationsCount: number;
   pendingConsultationsCount: number;
   completedConsultationsCount: number;
-  monthlyEarnings: number;
 };
 
 export default function PsychologistDashboardContent({
@@ -48,7 +46,6 @@ export default function PsychologistDashboardContent({
   totalConsultationsCount,
   pendingConsultationsCount,
   completedConsultationsCount,
-  monthlyEarnings = 0,
 }: PsychologistDashboardProps) {
   const searchParams = useSearchParams();
   const searchBarQuery = searchParams.get('search')?.toLowerCase() || '';
@@ -77,12 +74,6 @@ export default function PsychologistDashboardContent({
     );
   });
 
-  const formattedEarnings = new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    maximumFractionDigits: 0,
-  }).format(monthlyEarnings);
-
   const stats = [
     {
       label: 'Total Consultations',
@@ -98,12 +89,6 @@ export default function PsychologistDashboardContent({
       label: 'Completed Sessions',
       val: String(completedConsultationsCount),
       icon: <CompletedIcon />,
-    },
-    {
-      label: 'Monthly Earnings (Est.)',
-      val: formattedEarnings,
-      icon: <EarningsIcon />,
-      highlight: true,
     },
   ];
 
@@ -122,7 +107,7 @@ export default function PsychologistDashboardContent({
       </div>
 
       {/* Stats Cards — 2 cols on mobile/sm, 4 on lg */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5">
         {stats.map((item, index) => (
           <Card
             key={index}
@@ -135,20 +120,9 @@ export default function PsychologistDashboardContent({
               <p className="text-[8px] sm:text-[9px] md:text-[10px] uppercase font-black text-[#8ea087] tracking-widest truncate leading-tight mb-0.5">
                 {item.label}
               </p>
-              <p
-                className={`font-bold text-[#193c1f] leading-tight ${
-                  item.highlight
-                    ? 'text-xs sm:text-sm md:text-base'
-                    : 'text-lg sm:text-xl md:text-2xl'
-                }`}
-              >
+              <p className="text-lg font-bold leading-tight text-[#193c1f] sm:text-xl md:text-2xl">
                 {item.val}
               </p>
-              {item.highlight && (
-                <p className="text-[8px] md:text-[9px] text-[#d6a36c] font-black uppercase tracking-widest mt-0.5">
-                  This month
-                </p>
-              )}
             </div>
           </Card>
         ))}

@@ -14,6 +14,7 @@ export const id: Dictionary = {
     dashboard: 'Dasbor',
     login: 'Masuk',
     logout: 'Keluar',
+    campaign: 'Kampanye',
   },
   home: {
     heroTitle: 'Angkat Bicara & Bawa Perubahan Bersama Care Connect',
