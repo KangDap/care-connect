@@ -7,6 +7,8 @@ type PageProps = {
   searchParams: Promise<{ status?: string; page?: string; search?: string }>;
 };
 
+const paymentEnabled = process.env.NEXT_PUBLIC_PAYMENT_ENABLED === 'true';
+
 export default async function AdminReportsPage({ searchParams }: PageProps) {
   const { status: filterStatus, page: pageStr, search } = await searchParams;
   const page = Math.max(1, Number(pageStr) || 1);
@@ -49,6 +51,14 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
         description: true,
         user: { select: { name: true, email: true } },
         evidences: { select: { fileUrl: true }, take: 1 },
+        ...(paymentEnabled
+          ? {
+              donations: {
+                where: { paymentStatus: 'PAID' },
+                select: { amount: true },
+              },
+            }
+          : {}),
       },
     }),
     prisma.report.count({ where }),
@@ -66,21 +76,33 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
 
   const totalPages = Math.ceil(totalCount / perPage);
 
-  const formattedReports = reports.map((r) => ({
-    id: r.id,
-    title: r.title,
-    category: r.category,
-    status: r.status,
-    isAnonymous: r.isAnonymous,
-    province: r.province,
-    city: r.city,
-    incidentDate: r.incidentDate.toISOString(),
-    createdAt: r.createdAt.toISOString(),
-    description: r.description,
-    user: r.user,
-    hasEvidence: r.evidences.length > 0,
-    evidences: r.evidences,
-  }));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const formattedReports = reports.map((r: any) => {
+    const donationTotal =
+      paymentEnabled && r.donations
+        ? r.donations.reduce(
+            (sum: number, d: { amount: number }) => sum + Number(d.amount),
+            0,
+          )
+        : 0;
+
+    return {
+      id: r.id,
+      title: r.title,
+      category: r.category,
+      status: r.status,
+      isAnonymous: r.isAnonymous,
+      province: r.province,
+      city: r.city,
+      incidentDate: r.incidentDate.toISOString(),
+      createdAt: r.createdAt.toISOString(),
+      description: r.description,
+      user: r.user,
+      hasEvidence: r.evidences.length > 0,
+      evidences: r.evidences,
+      donationTotal,
+    };
+  });
 
   const tabs = [
     { label: 'All', value: 'ALL', count: totalAll },
@@ -90,12 +112,10 @@ export default async function AdminReportsPage({ searchParams }: PageProps) {
     { label: 'Rejected', value: 'REJECTED', count: countMap['REJECTED'] || 0 },
   ];
 
-  const activeTab = filterStatus || 'ALL';
-
   return (
     <ReportClient
       reports={formattedReports}
-      activeTab={activeTab}
+      activeTab={filterStatus || 'ALL'}
       tabs={tabs}
       page={page}
       totalPages={totalPages}

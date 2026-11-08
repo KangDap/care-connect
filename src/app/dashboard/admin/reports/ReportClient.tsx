@@ -11,6 +11,8 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useMemo, useState } from 'react';
 
+const paymentEnabled = process.env.NEXT_PUBLIC_PAYMENT_ENABLED === 'true';
+
 const STATUS_BADGE: Record<string, string> = {
   PENDING: 'bg-amber-100 text-amber-700 border-amber-200',
   REVIEWED: 'bg-blue-100 text-blue-700 border-blue-200',
@@ -41,6 +43,7 @@ type ReportType = {
   evidences?: {
     fileUrl: string;
   }[];
+  donationTotal?: number;
 };
 
 type TabType = { label: string; value: string; count: number };
@@ -76,6 +79,13 @@ export function ReportClient({
   const [isDeleteAlertOpen, setIsDeleteAlertOpen] = useState(false);
   const [reportToDelete, setReportToDelete] = useState<number | null>(null);
   const [newStatus, setNewStatus] = useState<string>('PENDING');
+
+  const fmt = (v: number) =>
+    new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      minimumFractionDigits: 0,
+    }).format(v);
 
   const fmtDate = (d: string) =>
     new Intl.DateTimeFormat('id-ID', {
@@ -379,6 +389,26 @@ export function ReportClient({
               </span>
             ),
           },
+          ...(paymentEnabled
+            ? [
+                {
+                  header: 'Donations',
+                  headerClassName: 'w-[10%] min-w-[90px]',
+                  className:
+                    'w-[10%] min-w-[90px] align-middle whitespace-nowrap',
+                  cell: (r: ReportType) =>
+                    (r.donationTotal ?? 0) > 0 ? (
+                      <span className="text-green-700 font-bold text-[10px] md:text-xs whitespace-nowrap">
+                        {fmt(r.donationTotal!)}
+                      </span>
+                    ) : (
+                      <span className="text-[#8EA087] text-[10px] md:text-xs">
+                        —
+                      </span>
+                    ),
+                },
+              ]
+            : []),
           {
             header: 'Actions',
             headerClassName: 'w-[15%] min-w-[130px] text-right',

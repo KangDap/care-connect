@@ -4,12 +4,15 @@ import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Table } from '@/components/table';
-import { Activity, FileText } from 'lucide-react';
+import { Activity, CreditCard, FileText } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
+const paymentEnabled = process.env.NEXT_PUBLIC_PAYMENT_ENABLED === 'true';
+
 const ConsultationIcon = () => <Activity size={20} strokeWidth={2} />;
 const ReportsIcon = () => <FileText size={20} strokeWidth={2} />;
+const DonationsIcon = () => <CreditCard size={20} strokeWidth={2} />;
 
 type RecentConsultation = {
   id: number;
@@ -39,11 +42,19 @@ type DashboardContentProps = {
     status: string;
     createdAt: Date;
   }>;
+  donations?: Array<{ amount: number }>;
   displayName: string;
   pendingReportsCount: number;
   totalConsultationsCount: number;
   totalReportsCount: number;
 };
+
+const formatRupiah = (value: number) =>
+  new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+  }).format(value);
 
 const formatDateLabel = (value: Date) =>
   new Intl.DateTimeFormat('id-ID', {
@@ -70,6 +81,7 @@ const STATUS_MAP: Record<
 export default function DashboardContent({
   consultations,
   reports,
+  donations,
   displayName,
   pendingReportsCount,
   totalConsultationsCount,
@@ -106,6 +118,11 @@ export default function DashboardContent({
       status: item.status,
     }));
 
+  const totalDonationAmount = (donations || []).reduce(
+    (accumulator, current) => accumulator + current.amount,
+    0,
+  );
+
   return (
     <div className="space-y-6 md:space-y-8 animate-fade-in">
       {/* Header */}
@@ -122,7 +139,11 @@ export default function DashboardContent({
                 : 'No pending reports right now.'}
           </p>
         </div>
-        <div className="grid grid-cols-2 gap-1 sm:flex sm:flex-wrap sm:gap-2">
+        <div
+          className={`grid gap-1 sm:flex sm:flex-wrap sm:gap-2 ${
+            paymentEnabled ? 'grid-cols-3' : 'grid-cols-2'
+          }`}
+        >
           <Button
             suppressHydrationWarning
             onClick={() => router.push('/consultation?from=dashboard')}
@@ -139,11 +160,25 @@ export default function DashboardContent({
           >
             + New Report
           </Button>
+          {paymentEnabled && (
+            <Button
+              suppressHydrationWarning
+              onClick={() => router.push('/donation?from=dashboard')}
+              variant="outline"
+              className="text-[10px] sm:text-xs md:text-sm px-1.5 py-1 sm:px-3 shadow-md truncate"
+            >
+              + New Donation
+            </Button>
+          )}
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 gap-2 md:gap-4">
+      <div
+        className={`grid gap-2 md:gap-4 ${
+          paymentEnabled ? 'grid-cols-3' : 'grid-cols-2'
+        }`}
+      >
         {[
           {
             label: 'Total Consultations',
@@ -155,6 +190,15 @@ export default function DashboardContent({
             val: totalReportsCount.toString(),
             icon: <ReportsIcon />,
           },
+          ...(paymentEnabled
+            ? [
+                {
+                  label: 'Donations Received',
+                  val: formatRupiah(totalDonationAmount),
+                  icon: <DonationsIcon />,
+                },
+              ]
+            : []),
         ].map((item, index) => (
           <Card
             key={index}
@@ -168,7 +212,11 @@ export default function DashboardContent({
                 {item.label}
               </p>
               <p
-                className={`${'text-xl sm:text-2xl md:text-[28px]'} font-bold text-[#193c1f] leading-tight truncate`}
+                className={`${
+                  item.label === 'Donations Given'
+                    ? 'text-sm sm:text-base md:text-lg'
+                    : 'text-xl sm:text-2xl md:text-[28px]'
+                } font-bold text-[#193c1f] leading-tight truncate`}
               >
                 {item.val}
               </p>

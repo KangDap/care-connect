@@ -9,7 +9,9 @@ import {
   BookOpen,
   BrainCircuit,
   Calendar,
+  CreditCard,
   FileText,
+  HandCoins,
   LayoutDashboard,
   MessageSquare,
   ShieldAlert,
@@ -19,6 +21,8 @@ import {
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import React, { useState } from 'react';
+
+const paymentEnabled = process.env.NEXT_PUBLIC_PAYMENT_ENABLED === 'true';
 
 // ==========================================
 // --- SUB-KOMPONEN SIDEBAR ITEM ---
@@ -219,6 +223,31 @@ export default function DashboardLayout({
                 active={pathname.startsWith('/dashboard/admin/articles')}
                 isDark={theme === 'dark'}
               />
+              {paymentEnabled && (
+                <>
+                  <SidebarItem
+                    icon={CreditCard}
+                    label="All Donations"
+                    href="/dashboard/admin/donations"
+                    active={
+                      pathname.startsWith('/dashboard/admin/donations') &&
+                      !pathname.startsWith(
+                        '/dashboard/admin/donations/distributions',
+                      )
+                    }
+                    isDark={theme === 'dark'}
+                  />
+                  <SidebarItem
+                    icon={HandCoins}
+                    label="Distribution Management"
+                    href="/dashboard/admin/donations/distributions"
+                    active={pathname.startsWith(
+                      '/dashboard/admin/donations/distributions',
+                    )}
+                    isDark={theme === 'dark'}
+                  />
+                </>
+              )}
             </>
           ) : isAtPsikologPage ? (
             /* --- MENU PSIKOLOG --- */
@@ -239,6 +268,15 @@ export default function DashboardLayout({
                 active={pathname.startsWith('/dashboard/psikolog/schedule')}
                 isDark={theme === 'dark'}
               />
+              {paymentEnabled && (
+                <SidebarItem
+                  icon={CreditCard}
+                  label="Donation History"
+                  href="/dashboard/psikolog/donations"
+                  active={pathname.startsWith('/dashboard/psikolog/donations')}
+                  isDark={theme === 'dark'}
+                />
+              )}
             </>
           ) : (
             /* --- MENU USER --- */
@@ -260,6 +298,18 @@ export default function DashboardLayout({
                 active={pathname.startsWith('/dashboard/reports')}
                 isDark={theme === 'dark'}
               />
+              {paymentEnabled && (
+                <SidebarItem
+                  icon={CreditCard}
+                  label="Donation History"
+                  href="/dashboard/donations"
+                  active={
+                    pathname.startsWith('/dashboard/donations') &&
+                    !isAtPsikologPage
+                  }
+                  isDark={theme === 'dark'}
+                />
+              )}
             </>
           )}
         </nav>

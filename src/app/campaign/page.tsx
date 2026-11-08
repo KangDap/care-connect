@@ -4,6 +4,7 @@ import { Button } from '@/components/button';
 import { useTranslation } from '@/components/providers/i18n-provider';
 import { PublicHeader } from '@/components/public-header';
 import { Mail } from 'lucide-react';
+import Image from 'next/image';
 
 const campaignEmail = 'nikitaputri2709@gmail.com';
 
@@ -30,9 +31,11 @@ export default function CampaignPage() {
         <article className="overflow-hidden rounded-3xl border border-[#d0d5cb] bg-white shadow-xl shadow-[#193c1f]/10">
           <div className="relative h-64 overflow-hidden sm:h-80 md:h-[420px]">
             {/* Flat cartoon illustration matching landing page carousel aesthetic */}
-            <img
+            <Image
               src="/campaign-hero.jpg"
               alt="Community sharing illustration"
+              fill
+              priority
               className="h-full w-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#193c1f]/40 via-transparent to-transparent" />

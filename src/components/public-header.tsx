@@ -11,6 +11,8 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import React, { Suspense, useState } from 'react';
 
+const paymentEnabled = process.env.NEXT_PUBLIC_PAYMENT_ENABLED === 'true';
+
 function PublicHeaderContent() {
   const { data: session } = authClient.useSession();
   const isLoggedIn = !!session?.user;
@@ -54,7 +56,17 @@ function PublicHeaderContent() {
       activePath: '/forums',
       label: t('header.forum'),
     },
-    { href: '/campaign', activePath: '/campaign', label: t('header.campaign') },
+    paymentEnabled
+      ? {
+          href: protectedHref('/donation'),
+          activePath: '/donation',
+          label: t('header.donate'),
+        }
+      : {
+          href: '/campaign',
+          activePath: '/campaign',
+          label: t('header.campaign'),
+        },
   ];
 
   return (
