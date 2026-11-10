@@ -3,9 +3,12 @@
 import { Button } from '@/components/button';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { use, useEffect, useState } from 'react';
 
 import { DonationForm } from '../../DonationForm';
+
+const paymentEnabled = process.env.NEXT_PUBLIC_PAYMENT_ENABLED === 'true';
 
 type ReportInfo = {
   id: number;
@@ -23,12 +26,21 @@ type Props = {
 };
 
 export default function DonationReportPage({ params }: Props) {
+  const router = useRouter();
   const { reportId } = use(params);
   const [report, setReport] = useState<ReportInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    if (!paymentEnabled) {
+      router.replace('/campaign');
+    }
+  }, [router]);
+
+  useEffect(() => {
+    if (!paymentEnabled) return;
+
     fetch(`/api/report/${reportId}`)
       .then((r) => r.json())
       .then((result) => {
@@ -53,6 +65,10 @@ export default function DonationReportPage({ params }: Props) {
       .catch(() => setError(true))
       .finally(() => setLoading(false));
   }, [reportId]);
+
+  if (!paymentEnabled) {
+    return null;
+  }
 
   if (loading) {
     return (

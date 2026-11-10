@@ -10,6 +10,8 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
+const paymentEnabled = process.env.NEXT_PUBLIC_PAYMENT_ENABLED === 'true';
+
 type ReportDetail = {
   id: number;
   title: string;
@@ -34,13 +36,6 @@ type ReportDetail = {
     fileUrl: string;
     mimeType: string;
   }[];
-};
-
-const STATUS_BADGE: Record<string, string> = {
-  PENDING: 'bg-amber-100 text-amber-700 border-amber-200',
-  REVIEWED: 'bg-blue-100 text-blue-700 border-blue-200',
-  RESOLVED: 'bg-green-100 text-green-700 border-green-200',
-  REJECTED: 'bg-red-100 text-red-600 border-red-200',
 };
 
 const CATEGORY_LABEL: Record<string, string> = {
@@ -111,8 +106,6 @@ export default function PublicReportDetailPage() {
   }
 
   const coverImage = report.coverImage;
-  const images = report.images ?? [];
-  const docs: never[] = [];
 
   const fmtDate = (d: string) =>
     new Intl.DateTimeFormat('id-ID', {
@@ -120,25 +113,6 @@ export default function PublicReportDetailPage() {
       month: 'long',
       year: 'numeric',
     }).format(new Date(d));
-
-  const fmtSize = (bytes: number) =>
-    bytes >= 1024 * 1024
-      ? `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-      : `${Math.round(bytes / 1024)} KB`;
-
-  const getAbsoluteUrl = (raw: string) => {
-    try {
-      // If already absolute, return as-is
-      const parsed = new URL(raw);
-      return parsed.href;
-    } catch {
-      // Fallback: treat as relative to current origin
-      if (typeof window !== 'undefined') {
-        return `${window.location.origin}${raw.startsWith('/') ? '' : '/'}${raw}`;
-      }
-      return raw;
-    }
-  };
 
   return (
     <div className="min-h-screen bg-[#f7f3ed]">
@@ -257,7 +231,7 @@ export default function PublicReportDetailPage() {
             </Card>
 
             {/* Donate CTA */}
-            {report.status !== 'REJECTED' && (
+            {paymentEnabled && report.status !== 'REJECTED' && (
               <Card className="rounded-2xl border-[#193c1f] bg-[#193c1f] p-6 text-white">
                 <h3 className="font-black text-lg mb-2">Support This Case</h3>
                 <p className="text-[#8ea087] text-sm mb-4 leading-relaxed">

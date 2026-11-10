@@ -105,7 +105,7 @@ async function apiRequest<T>(url: string, init?: RequestInit): Promise<T> {
   const response = await fetch(url, { cache: 'no-store', ...init });
   const result = (await response.json()) as ApiResponse<T>;
   if (!response.ok || !result.success || result.data === undefined) {
-    throw new Error(result.error?.message || 'Permintaan gagal diproses.');
+    throw new Error(result.error?.message || 'Failed to process request.');
   }
   return result.data;
 }
@@ -135,7 +135,7 @@ function SummaryCard({
 }: {
   label: string;
   value: string;
-  description: string;
+  description: React.ReactNode;
   icon: typeof Wallet;
 }) {
   return (
@@ -148,7 +148,7 @@ function SummaryCard({
           <p className="mt-3 break-words text-xl font-black text-[#193c1f] sm:text-2xl">
             {value}
           </p>
-          <p className="mt-1 text-xs text-[#899286]">{description}</p>
+          <div className="mt-1 text-xs text-[#899286]">{description}</div>
         </div>
         <span className="rounded-xl bg-[#edf1e9] p-3 text-[#34563a]">
           <Icon size={20} />
@@ -190,7 +190,7 @@ function HistorySection() {
       .catch((cause: unknown) => {
         if (active)
           setError(
-            cause instanceof Error ? cause.message : 'Riwayat gagal dimuat.',
+            cause instanceof Error ? cause.message : 'Failed to load history.',
           );
       })
       .finally(() => {
@@ -225,7 +225,7 @@ function HistorySection() {
           Distribution History
         </h2>
         <p className="mt-1 text-sm text-[#74816f]">
-          Riwayat dari catatan distribusi yang tersimpan.
+          History of recorded distributions.
         </p>
       </div>
       <Card className="p-5">
@@ -234,7 +234,7 @@ function HistorySection() {
           className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5 lg:items-end"
         >
           <label className="text-xs font-bold text-[#687563]">
-            Jenis target
+            Target Type
             <select
               value={targetType}
               onChange={(event) =>
@@ -242,13 +242,13 @@ function HistorySection() {
               }
               className="mt-1 block w-full rounded-xl border border-[#d0d5cb] bg-white px-3 py-2.5 text-sm text-[#193c1f]"
             >
-              <option value="ALL">Semua</option>
+              <option value="ALL">All</option>
               <option value="PLATFORM">Platform</option>
               <option value="REPORT">Report</option>
             </select>
           </label>
           <label className="text-xs font-bold text-[#687563]">
-            Dari tanggal
+            Start Date
             <input
               type="date"
               value={startDate}
@@ -258,7 +258,7 @@ function HistorySection() {
             />
           </label>
           <label className="text-xs font-bold text-[#687563]">
-            Sampai tanggal
+            End Date
             <input
               type="date"
               value={endDate}
@@ -271,7 +271,7 @@ function HistorySection() {
             className="rounded-xl bg-[#193c1f] px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50"
             disabled={loading}
           >
-            Terapkan filter
+            Apply Filters
           </button>
           <button
             type="button"
@@ -285,13 +285,13 @@ function HistorySection() {
       {error ? (
         <MessageCard message={error} error />
       ) : loading ? (
-        <MessageCard message="Memuat riwayat distribusi…" />
+        <MessageCard message="Loading distribution history…" />
       ) : (
         <Table
           data={history?.distributions ?? []}
           keyExtractor={(record) => record.id}
           minWidth="min-w-[760px]"
-          emptyMessage="Belum ada catatan distribusi untuk filter ini."
+          emptyMessage="No distribution records found for this filter."
           currentPage={history?.page ?? 1}
           totalPages={Math.max(1, history?.totalPages ?? 1)}
           onPageChange={(nextPage) => {
@@ -299,23 +299,33 @@ function HistorySection() {
             setError(null);
             setPage(nextPage);
           }}
-          paginationInfo={`${history?.totalCount ?? 0} catatan`}
+          paginationInfo={
+            <>
+              <span>{history?.totalCount ?? 0}</span> <span>records</span>
+            </>
+          }
           columns={[
             {
-              header: 'Tanggal',
+              header: 'Date',
               cell: (record) => formatDate(record.distributedAt),
             },
             {
               header: 'Target',
               cell: (record) =>
-                record.targetType === 'PLATFORM'
-                  ? 'Platform'
-                  : record.report?.title || `Report #${record.reportId}`,
+                record.targetType === 'PLATFORM' ? (
+                  'Platform'
+                ) : record.report?.title ? (
+                  record.report.title
+                ) : (
+                  <>
+                    <span>Report</span> #{record.reportId}
+                  </>
+                ),
             },
-            { header: 'Penerima', cell: (record) => record.recipient },
-            { header: 'Catatan', cell: (record) => record.notes || '—' },
+            { header: 'Recipient', cell: (record) => record.recipient },
+            { header: 'Notes', cell: (record) => record.notes || '—' },
             {
-              header: 'Nominal',
+              header: 'Amount',
               className: 'text-right font-bold text-[#193c1f]',
               cell: (record) => formatMoney(record.amount),
             },
@@ -379,7 +389,7 @@ export function AdminDonationDistribution() {
           setError(
             cause instanceof Error
               ? cause.message
-              : 'Data distribusi gagal dimuat.',
+              : 'Failed to load distribution data.',
           );
       })
       .finally(() => {
@@ -406,8 +416,8 @@ export function AdminDonationDistribution() {
           Distribution Management
         </h1>
         <p className="mt-2 max-w-3xl text-sm leading-6 text-[#687563]">
-          Kelola penyaluran dana platform dan donasi per laporan berdasarkan
-          saldo.
+          Manage fund allocation for platform and per-report donations based on
+          balance.
         </p>
       </header>
       <div className="max-w-xs">
@@ -415,7 +425,7 @@ export function AdminDonationDistribution() {
           htmlFor="distribution-target-filter"
           className="text-xs font-bold text-[#687563]"
         >
-          Jenis target
+          Target Type
         </label>
         <select
           id="distribution-target-filter"
@@ -427,41 +437,41 @@ export function AdminDonationDistribution() {
           }}
           className="mt-1 block w-full rounded-xl border border-[#d0d5cb] bg-white px-3 py-2.5 text-sm text-[#193c1f]"
         >
-          <option value="ALL">Semua target</option>
+          <option value="ALL">All Targets</option>
           <option value="GROUP">Group (Platform)</option>
           <option value="REPORT">Report</option>
         </select>
       </div>
       {loading ? (
-        <MessageCard message="Sedang memuat data distribusi…" />
+        <MessageCard message="Loading distribution data…" />
       ) : error ? (
         <MessageCard message={error} error />
       ) : !summary ? (
-        <MessageCard message="Ringkasan distribusi belum tersedia." />
+        <MessageCard message="Distribution summary not yet available." />
       ) : (
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <SummaryCard
-            label="Donasi memenuhi syarat"
+            label="Eligible Donations"
             value={formatMoney(summary.totalDonations)}
-            description="Total donasi berstatus PAID"
+            description="Total donations with PAID status"
             icon={CircleDollarSign}
           />
           <SummaryCard
-            label="Total disalurkan"
+            label="Total Distributed"
             value={formatMoney(summary.totalDistributed)}
-            description="Catatan distribusi tersimpan"
+            description="Recorded distribution logs"
             icon={HandCoins}
           />
           <SummaryCard
-            label="Sisa dana"
+            label="Remaining Balance"
             value={formatMoney(summary.totalRemainingBalance)}
-            description="Saldo platform dan seluruh laporan"
+            description="Platform and all report balances"
             icon={Wallet}
           />
           <SummaryCard
-            label="Target perlu dikelola"
+            label="Targets to Manage"
             value={String(managedTargetCount)}
-            description="Target dengan saldo yang masih tersedia"
+            description="Targets with remaining funds"
             icon={Wallet}
           />
         </section>
@@ -501,8 +511,8 @@ export function AdminDonationDistribution() {
                   </h2>
                   <p className="mt-1 text-sm text-[#74816f]">
                     {targetType === 'PLATFORM'
-                      ? 'Dana platform sesuai pengelompokan.'
-                      : 'Saldo dan riwayat tiap laporan ditampilkan terpisah.'}
+                      ? 'Platform funds according to group allocations.'
+                      : 'Balances and history for each report are displayed separately.'}
                   </p>
                 </div>
                 {targetGroups.length ? (
@@ -519,9 +529,14 @@ export function AdminDonationDistribution() {
                             <div className="flex items-start justify-between gap-3">
                               <div>
                                 <span className="rounded-full bg-[#edf1e9] px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-[#38513b]">
-                                  {targetType === 'PLATFORM'
-                                    ? 'Platform'
-                                    : `Report #${group.reportId ?? group.id}`}
+                                  {targetType === 'PLATFORM' ? (
+                                    'Platform'
+                                  ) : (
+                                    <>
+                                      <span>Report</span> #
+                                      {group.reportId ?? group.id}
+                                    </>
+                                  )}
                                 </span>
                                 <h3 className="mt-3 break-words text-lg font-black text-[#193c1f]">
                                   {group.name}
@@ -539,14 +554,14 @@ export function AdminDonationDistribution() {
                             </div>
                             <dl className="mt-5 grid grid-cols-2 gap-4">
                               {[
-                                ['Dana terkumpul', group.totalCollected],
-                                ['Dana disalurkan', group.totalDistributed],
-                                ['Sisa dana', group.remainingBalance],
+                                ['Funds Collected', group.totalCollected],
+                                ['Funds Distributed', group.totalDistributed],
+                                ['Remaining Balance', group.remainingBalance],
                                 [
-                                  'Kondisi saldo',
+                                  'Balance Status',
                                   group.remainingBalance > 0
-                                    ? 'Masih tersedia'
-                                    : 'Saldo habis',
+                                    ? 'Available'
+                                    : 'Depleted',
                                 ],
                               ].map(([label, value]) => (
                                 <div key={String(label)}>
@@ -562,8 +577,11 @@ export function AdminDonationDistribution() {
                               ))}
                             </dl>
                             <p className="mt-4 border-t border-[#f0f2ed] pt-3 text-xs text-[#74816f]">
-                              {group.donationCount} donasi ·{' '}
-                              {group.distributionCount} catatan distribusi
+                              <span>{group.donationCount}</span>{' '}
+                              <span>donations</span>
+                              <span> · </span>
+                              <span>{group.distributionCount}</span>{' '}
+                              <span>distribution records</span>
                             </p>
                           </Card>
                         </Link>
@@ -574,17 +592,17 @@ export function AdminDonationDistribution() {
                   <MessageCard
                     message={
                       search
-                        ? 'Tidak ada target yang cocok dengan pencarian.'
-                        : `Belum ada target ${targetType === 'PLATFORM' ? 'platform' : 'laporan'}.`
+                        ? 'No targets matching search query.'
+                        : `No ${targetType === 'PLATFORM' ? 'platform' : 'report'} targets available yet.`
                     }
                   />
                 )}
                 {targetType === 'REPORT' && totalPages > 1 && (
                   <>
                     <p className="text-center text-xs text-[#74816f]">
-                      Menampilkan {(currentPage - 1) * 10 + 1}–
-                      {Math.min(currentPage * 10, targetGroups.length)} dari{' '}
-                      {targetGroups.length} laporan
+                      <span>Showing</span> {(currentPage - 1) * 10 + 1}–
+                      {Math.min(currentPage * 10, targetGroups.length)}{' '}
+                      <span>of</span> {targetGroups.length} <span>reports</span>
                     </p>
                     <Pagination
                       currentPage={currentPage}
@@ -638,7 +656,7 @@ export function AdminDonationDistributionDetail({
           setError(
             cause instanceof Error
               ? cause.message
-              : 'Detail distribusi gagal dimuat.',
+              : 'Failed to load distribution detail.',
           );
       })
       .finally(() => {
@@ -655,17 +673,15 @@ export function AdminDonationDistributionDetail({
     if (!detail) return;
     const amountNumber = Number(amount);
     if (!Number.isFinite(amountNumber) || amountNumber <= 0) {
-      setFormError('Masukkan nominal lebih dari Rp 0.');
+      setFormError('Please enter an amount greater than Rp 0.');
       return;
     }
     if (amountNumber > detail.group.remainingBalance) {
-      setFormError(
-        `Nominal melebihi saldo tersedia ${formatMoney(detail.group.remainingBalance)}.`,
-      );
+      setFormError('Amount exceeds available balance.');
       return;
     }
     if (!recipient.trim()) {
-      setFormError('Tujuan/penerima distribusi wajib diisi.');
+      setFormError('Recipient is required.');
       return;
     }
     setSaving(true);
@@ -693,25 +709,25 @@ export function AdminDonationDistributionDetail({
       setRecipient('');
       setDistributedAt('');
       setNotes('');
-      setSuccess('Catatan distribusi berhasil disimpan.');
+      setSuccess('Distribution record saved successfully.');
       setReload((value) => value + 1);
     } catch (cause) {
       setFormError(
         cause instanceof Error
           ? cause.message
-          : 'Catatan distribusi gagal disimpan.',
+          : 'Failed to save distribution record.',
       );
     } finally {
       setSaving(false);
     }
   }
 
-  if (loading) return <MessageCard message="Memuat detail distribusi…" />;
+  if (loading) return <MessageCard message="Loading distribution details…" />;
   if (error || !detail)
     return (
       <div className="mx-auto max-w-3xl space-y-4">
         <MessageCard
-          message={error || 'Detail distribusi tidak tersedia.'}
+          message={error || 'Distribution details not available.'}
           error
         />
         <Link
@@ -719,7 +735,7 @@ export function AdminDonationDistributionDetail({
           className="inline-flex items-center gap-2 text-sm font-bold text-[#38513b] hover:underline"
         >
           <ArrowLeft size={17} />
-          Kembali ke Distribution Management
+          Back to Distribution Management
         </Link>
       </div>
     );
@@ -728,9 +744,7 @@ export function AdminDonationDistributionDetail({
     (groupType === 'platform' && group.targetType !== 'PLATFORM') ||
     (groupType === 'report' && group.targetType !== 'REPORT')
   )
-    return (
-      <MessageCard message="Jenis target tidak sesuai dengan detail." error />
-    );
+    return <MessageCard message="Target type does not match details." error />;
   const canDistribute = group.remainingBalance > 0;
 
   return (
@@ -740,7 +754,7 @@ export function AdminDonationDistributionDetail({
         className="inline-flex items-center gap-2 text-sm font-bold text-[#38513b] hover:underline"
       >
         <ArrowLeft size={17} />
-        Kembali ke Distribution Management
+        Back to Distribution Management
       </Link>
       <header>
         <span className="rounded-full bg-[#edf1e9] px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#38513b]">
@@ -752,31 +766,49 @@ export function AdminDonationDistributionDetail({
           {group.name}
         </h1>
         <p className="mt-2 text-sm text-[#687563]">
-          {group.reportId
-            ? `Report #${group.reportId}${group.reportCategory ? ` · ${group.reportCategory}` : ''}`
-            : 'Target distribusi platform'}
+          {group.reportId ? (
+            <>
+              <span>Report</span> #{group.reportId}
+              {group.reportCategory ? (
+                <>
+                  <span> · </span>
+                  <span>{group.reportCategory}</span>
+                </>
+              ) : null}
+            </>
+          ) : (
+            'Platform distribution target'
+          )}
         </p>
       </header>
       <section className="grid gap-4 sm:grid-cols-3">
         <SummaryCard
-          label="Donasi terkumpul"
+          label="Funds Collected"
           value={formatMoney(group.totalCollected)}
-          description={`${group.donationCount} donasi`}
+          description={
+            <>
+              <span>{group.donationCount}</span> <span>donations</span>
+            </>
+          }
           icon={CircleDollarSign}
         />
         <SummaryCard
-          label="Dana disalurkan"
+          label="Funds Distributed"
           value={formatMoney(group.totalDistributed)}
-          description={`${group.distributionCount} catatan`}
+          description={
+            <>
+              <span>{group.distributionCount}</span> <span>records</span>
+            </>
+          }
           icon={HandCoins}
         />
         <SummaryCard
-          label="Saldo tersedia"
+          label="Available Balance"
           value={formatMoney(group.remainingBalance)}
           description={
             canDistribute
-              ? 'Tersedia untuk disalurkan'
-              : 'Tidak ada saldo untuk disalurkan'
+              ? 'Available for distribution'
+              : 'No balance available to distribute'
           }
           icon={Wallet}
         />
@@ -787,7 +819,7 @@ export function AdminDonationDistributionDetail({
             Process Distribution
           </h2>
           <p className="mt-1 text-sm text-[#74816f]">
-            Saldo tersedia:{' '}
+            Available balance:{' '}
             <strong className="text-[#193c1f]">
               {formatMoney(group.remainingBalance)}
             </strong>
@@ -795,7 +827,7 @@ export function AdminDonationDistributionDetail({
         </div>
         {!canDistribute && (
           <p className="mb-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
-            Penyaluran dinonaktifkan karena saldo tersedia Rp 0.
+            Distribution disabled because available balance is Rp 0.
           </p>
         )}
         {formError && (
@@ -819,7 +851,7 @@ export function AdminDonationDistributionDetail({
           className="grid gap-4 sm:grid-cols-2"
         >
           <label className="text-xs font-bold text-[#687563]">
-            Tujuan / penerima
+            Recipient
             <input
               required
               maxLength={255}
@@ -827,11 +859,11 @@ export function AdminDonationDistributionDetail({
               onChange={(event) => setRecipient(event.target.value)}
               disabled={!canDistribute || saving}
               className="mt-1 block w-full rounded-xl border border-[#d0d5cb] px-3 py-2.5 text-sm font-normal text-[#193c1f] disabled:bg-gray-100"
-              placeholder="Nama penerima atau tujuan"
+              placeholder="Recipient name or purpose"
             />
           </label>
           <label className="text-xs font-bold text-[#687563]">
-            Nominal distribusi
+            Distribution Amount
             <input
               required
               type="number"
@@ -842,11 +874,11 @@ export function AdminDonationDistributionDetail({
               onChange={(event) => setAmount(event.target.value)}
               disabled={!canDistribute || saving}
               className="mt-1 block w-full rounded-xl border border-[#d0d5cb] px-3 py-2.5 text-sm font-normal text-[#193c1f] disabled:bg-gray-100"
-              placeholder="Masukkan nominal"
+              placeholder="Enter amount"
             />
           </label>
           <label className="text-xs font-bold text-[#687563]">
-            Tanggal distribusi
+            Distribution Date
             <input
               type="date"
               value={distributedAt}
@@ -856,7 +888,7 @@ export function AdminDonationDistributionDetail({
             />
           </label>
           <label className="text-xs font-bold text-[#687563] sm:col-span-2">
-            Catatan
+            Notes
             <textarea
               value={notes}
               onChange={(event) => setNotes(event.target.value)}
@@ -871,7 +903,7 @@ export function AdminDonationDistributionDetail({
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#193c1f] px-4 py-3 text-sm font-bold text-white disabled:cursor-not-allowed disabled:opacity-45 sm:col-span-2"
           >
             <HandCoins size={17} />
-            {saving ? 'Menyimpan…' : 'Process Distribution'}
+            {saving ? 'Saving…' : 'Process Distribution'}
           </button>
         </form>
       </Card>
@@ -886,20 +918,20 @@ export function AdminDonationDistributionDetail({
           data={donations}
           keyExtractor={(donation) => donation.id}
           minWidth="min-w-[680px]"
-          emptyMessage="Belum ada transaksi donasi untuk kelompok ini."
+          emptyMessage="No donation transactions for this group."
           columns={[
             { header: 'ID', cell: (donation) => `#${donation.id}` },
-            { header: 'Donatur', cell: (donation) => donation.donorName },
+            { header: 'Donor', cell: (donation) => donation.donorName },
             {
-              header: 'Status pembayaran',
+              header: 'Payment Status',
               cell: (donation) => donation.paymentStatus,
             },
             {
-              header: 'Tanggal',
+              header: 'Date',
               cell: (donation) => formatDate(donation.timestamp),
             },
             {
-              header: 'Nominal',
+              header: 'Amount',
               className: 'text-right font-bold text-[#193c1f]',
               cell: (donation) => formatMoney(donation.amount),
             },
@@ -917,16 +949,16 @@ export function AdminDonationDistributionDetail({
           data={distributions}
           keyExtractor={(record) => record.id}
           minWidth="min-w-[680px]"
-          emptyMessage="Belum ada catatan distribusi untuk kelompok ini."
+          emptyMessage="No distribution records for this group."
           columns={[
             {
-              header: 'Tanggal',
+              header: 'Date',
               cell: (record) => formatDate(record.distributedAt),
             },
-            { header: 'Penerima', cell: (record) => record.recipient },
-            { header: 'Catatan', cell: (record) => record.notes || '—' },
+            { header: 'Recipient', cell: (record) => record.recipient },
+            { header: 'Notes', cell: (record) => record.notes || '—' },
             {
-              header: 'Nominal',
+              header: 'Amount',
               className: 'text-right font-bold text-[#193c1f]',
               cell: (record) => formatMoney(record.amount),
             },

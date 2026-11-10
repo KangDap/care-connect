@@ -62,7 +62,6 @@ export function ReportPicker({ onSelect, onBack }: Props) {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState(searchParamValue);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedStatus, setSelectedStatus] = useState('ALL');
   const [locationFilter, setLocationFilter] = useState('');
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -120,7 +119,6 @@ export function ReportPicker({ onSelect, onBack }: Props) {
   const resetFilters = () => {
     setSearchQuery('');
     setSelectedCategories([]);
-    setSelectedStatus('ALL');
     setLocationFilter('');
     setStartDate('');
     setEndDate('');
@@ -163,7 +161,6 @@ export function ReportPicker({ onSelect, onBack }: Props) {
     reports,
     searchQuery,
     selectedCategories,
-    selectedStatus,
     locationFilter,
     startDate,
     endDate,

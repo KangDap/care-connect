@@ -66,10 +66,10 @@ export function DonationActions({
       });
       if (!res.ok) throw new Error('Failed to delete donation');
       setIsDeleteModalOpen(false);
-      onSuccess('Data donasi berhasil dihapus!');
+      onSuccess('Donation data successfully deleted!');
       router.refresh();
     } catch {
-      onError('Gagal menghapus data donasi');
+      onError('Failed to delete donation data');
     } finally {
       setIsUpdating(false);
     }
@@ -123,8 +123,8 @@ export function DonationActions({
               onClick={() =>
                 handlePatchStatus(
                   'PAID',
-                  'Donasi berhasil ditandai sebagai LUNAS!',
-                  'Gagal memperbarui status donasi.',
+                  'Donation successfully marked as PAID!',
+                  'Failed to update donation status.',
                 )
               }
               className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-[#D0D5CB] bg-white hover:bg-[#f7f3ed] disabled:opacity-40 disabled:cursor-not-allowed transition-colors text-left"
@@ -174,9 +174,9 @@ export function DonationActions({
       >
         <div className="space-y-4">
           <p className="text-sm text-gray-500">
-            Apakah Anda yakin ingin menghapus catatan donasi dari{' '}
-            <strong>{donor}</strong> sebesar <strong>{fmt(amount)}</strong>?
-            Tindakan ini tidak dapat dibatalkan.
+            Are you sure you want to delete the donation record from{' '}
+            <strong>{donor}</strong> of <strong>{fmt(amount)}</strong>? This
+            action cannot be undone.
           </p>
           <div className="flex justify-end gap-2 pt-2">
             <Button
@@ -184,14 +184,14 @@ export function DonationActions({
               type="button"
               onClick={() => setIsDeleteModalOpen(false)}
             >
-              Batal
+              Cancel
             </Button>
             <Button
               loading={isUpdating}
               onClick={handleDelete}
               className="bg-red-600 hover:bg-red-700 text-white border-none"
             >
-              Hapus
+              Delete
             </Button>
           </div>
         </div>

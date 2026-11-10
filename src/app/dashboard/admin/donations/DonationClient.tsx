@@ -130,7 +130,7 @@ export function DonationClient({
         };
         if (!response.ok || !result.success || !result.data) {
           throw new Error(
-            result.error?.message || 'Riwayat payout gagal dimuat.',
+            result.error?.message || 'Failed to load payout history.',
           );
         }
         return result.data.history;
@@ -146,7 +146,7 @@ export function DonationClient({
           setPayoutHistoryError(
             cause instanceof Error
               ? cause.message
-              : 'Riwayat payout gagal dimuat.',
+              : 'Failed to load payout history.',
           );
         }
       })
@@ -190,18 +190,18 @@ export function DonationClient({
   };
 
   const months = [
-    'Januari',
-    'Februari',
-    'Maret',
+    'January',
+    'February',
+    'March',
     'April',
-    'Mei',
-    'Juni',
-    'Juli',
-    'Agustus',
+    'May',
+    'June',
+    'July',
+    'August',
     'September',
-    'Oktober',
+    'October',
     'November',
-    'Desember',
+    'December',
   ];
 
   const years = [2024, 2025, 2026];
@@ -414,7 +414,7 @@ export function DonationClient({
                   Total (All Time)
                 </span>
                 <span className="font-bold text-xs text-[#193c1f]">
-                  {summary.allTimeSessions} sesi
+                  {summary.allTimeSessions} sessions
                 </span>
               </div>
               <div className="text-[10px] font-black text-[#193c1f] bg-[#f7f3ed] px-3 py-2 rounded-xl">
@@ -482,7 +482,9 @@ export function DonationClient({
 
             <div className="mt-auto pt-2">
               <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-[#8ea087] leading-relaxed">
-                Estimasi tertinggi berdasarkan <br /> proporsi sesi bulan ini.
+                <span>Highest estimate based on</span>
+                <br />
+                <span>{"this month's session share."}</span>
               </p>
             </div>
           </div>
@@ -497,7 +499,7 @@ export function DonationClient({
               Psychologist Payout Breakdown
             </h2>
             <p className="text-xs md:text-sm text-[#8ea087] font-medium mt-1">
-              Data sesi dan bagi hasil untuk periode{' '}
+              Session data and revenue share for period{' '}
               <strong>
                 {months[currentMonth - 1]} {currentYear}
               </strong>
@@ -558,7 +560,7 @@ export function DonationClient({
                     {p.sessions}
                   </span>
                   <span className="text-[10px] md:text-xs font-bold text-[#8ea087] ml-2 uppercase tracking-widest">
-                    Sesi
+                    Sessions
                   </span>
                 </div>
               ),
@@ -581,15 +583,15 @@ export function DonationClient({
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="text-xl font-black tracking-tight text-[#193c1f] md:text-2xl">
-              Riwayat Ringkasan Payout Psikolog
+              Psychologist Payout Summary History
             </h2>
             <p className="mt-1 max-w-2xl text-xs leading-5 text-[#8ea087] md:text-sm">
-              Ringkasan dana platform, pool payout, dan sesi selesai per bulan
-              sebelum bulan berjalan.
+              Summary of platform funds, payout pool, and completed sessions per
+              month before current month.
             </p>
           </div>
           <label className="w-full text-[11px] font-black uppercase tracking-widest text-[#8ea087] sm:max-w-[220px]">
-            Jumlah bulan terakhir
+            Number of past months
             <Input
               type="select"
               value={payoutMonths}
@@ -599,7 +601,7 @@ export function DonationClient({
               {Array.from({ length: 24 }, (_, index) => index + 1).map(
                 (monthCount) => (
                   <option key={monthCount} value={monthCount}>
-                    {monthCount} bulan
+                    {monthCount} months
                   </option>
                 ),
               )}
@@ -609,7 +611,7 @@ export function DonationClient({
 
         {isPayoutHistoryLoading ? (
           <p className="py-8 text-center text-sm text-[#74816f]">
-            Memuat riwayat payout…
+            Loading payout history…
           </p>
         ) : payoutHistoryError ? (
           <p
@@ -624,21 +626,21 @@ export function DonationClient({
             data={payoutHistory}
             keyExtractor={(item) => item.id}
             minWidth="min-w-[640px]"
-            emptyMessage="Belum ada ringkasan payout pada periode ini."
+            emptyMessage="No payout summary for this period."
             columns={[
-              { header: 'Periode', cell: (item) => item.period },
+              { header: 'Period', cell: (item) => item.period },
               {
-                header: 'Dana platform',
+                header: 'Platform Funds',
                 className: 'text-right font-bold text-[#193c1f]',
                 cell: (item) => fmt(item.platformPool),
               },
               {
-                header: 'Pool payout psikolog',
+                header: 'Psychologist Payout Pool',
                 className: 'text-right font-bold text-[#193c1f]',
                 cell: (item) => fmt(item.payoutPool),
               },
               {
-                header: 'Sesi selesai',
+                header: 'Completed Sessions',
                 className: 'text-right font-bold text-[#193c1f]',
                 cell: (item) => item.totalCompletedSessions,
               },

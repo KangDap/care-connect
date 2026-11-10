@@ -9,6 +9,8 @@ import DashboardContent from './DashboardContent';
 
 export const dynamic = 'force-dynamic';
 
+const paymentEnabled = process.env.NEXT_PUBLIC_PAYMENT_ENABLED === 'true';
+
 export default async function DashboardPage() {
   let session = null;
   try {
@@ -69,58 +71,99 @@ export default async function DashboardPage() {
   let totalRepCount = 0;
 
   try {
-    const [consultationsData, reportsData, donations, consCount, repCount] =
-      await Promise.all([
-        prisma.consultation.findMany({
-          where: { userId: session!.user.id },
-          orderBy: { id: 'desc' },
-          take: 10,
-          select: {
-            id: true,
-            title: true,
-            category: true,
-            date: true,
-            status: true,
-            psychologist: {
-              select: {
-                name: true,
+    if (paymentEnabled) {
+      const [consultationsData, reportsData, donations, consCount, repCount] =
+        await Promise.all([
+          prisma.consultation.findMany({
+            where: { userId: session!.user.id },
+            orderBy: { id: 'desc' },
+            take: 10,
+            select: {
+              id: true,
+              title: true,
+              category: true,
+              date: true,
+              status: true,
+              psychologist: {
+                select: {
+                  name: true,
+                },
               },
             },
-          },
-        }),
-        prisma.report.findMany({
-          where: { userId: session!.user.id },
-          orderBy: { createdAt: 'desc' },
-          take: 10,
-          select: {
-            id: true,
-            title: true,
-            status: true,
-            createdAt: true,
-          },
-        }),
-        prisma.donation.findMany({
-          where: {
-            report: {
-              userId: session!.user.id,
+          }),
+          prisma.report.findMany({
+            where: { userId: session!.user.id },
+            orderBy: { createdAt: 'desc' },
+            take: 10,
+            select: {
+              id: true,
+              title: true,
+              status: true,
+              createdAt: true,
             },
-            paymentStatus: PaymentStatus.PAID,
-          },
-          select: {
-            amount: true,
-          },
-        }),
-        prisma.consultation.count({ where: { userId: session!.user.id } }),
-        prisma.report.count({ where: { userId: session!.user.id } }),
-      ]);
+          }),
+          prisma.donation.findMany({
+            where: {
+              report: {
+                userId: session!.user.id,
+              },
+              paymentStatus: PaymentStatus.PAID,
+            },
+            select: {
+              amount: true,
+            },
+          }),
+          prisma.consultation.count({ where: { userId: session!.user.id } }),
+          prisma.report.count({ where: { userId: session!.user.id } }),
+        ]);
 
-    consultations = consultationsData;
-    reports = reportsData;
-    serializedDonations = donations.map((item) => ({
-      amount: Number(item.amount),
-    }));
-    totalConsCount = consCount;
-    totalRepCount = repCount;
+      consultations = consultationsData;
+      reports = reportsData;
+      serializedDonations = donations.map((item) => ({
+        amount: Number(item.amount),
+      }));
+      totalConsCount = consCount;
+      totalRepCount = repCount;
+    } else {
+      const [consultationsData, reportsData, consCount, repCount] =
+        await Promise.all([
+          prisma.consultation.findMany({
+            where: { userId: session!.user.id },
+            orderBy: { id: 'desc' },
+            take: 10,
+            select: {
+              id: true,
+              title: true,
+              category: true,
+              date: true,
+              status: true,
+              psychologist: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          }),
+          prisma.report.findMany({
+            where: { userId: session!.user.id },
+            orderBy: { createdAt: 'desc' },
+            take: 10,
+            select: {
+              id: true,
+              title: true,
+              status: true,
+              createdAt: true,
+            },
+          }),
+          prisma.consultation.count({ where: { userId: session!.user.id } }),
+          prisma.report.count({ where: { userId: session!.user.id } }),
+        ]);
+
+      consultations = consultationsData;
+      reports = reportsData;
+      totalConsCount = consCount;
+      totalRepCount = repCount;
+    }
   } catch (e) {
     console.error('Failed to fetch dashboard data:', e);
   }
