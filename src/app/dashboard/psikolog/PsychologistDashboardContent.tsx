@@ -7,6 +7,8 @@ import { Activity, CheckCircle, Clock, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
+const paymentEnabled = process.env.NEXT_PUBLIC_PAYMENT_ENABLED === 'true';
+
 const TotalIcon = () => <Activity size={20} strokeWidth={2} />;
 const PendingIcon = () => <Clock size={20} strokeWidth={2} />;
 const CompletedIcon = () => <CheckCircle size={20} strokeWidth={2} />;
@@ -38,7 +40,7 @@ type PsychologistDashboardProps = {
   totalConsultationsCount: number;
   pendingConsultationsCount: number;
   completedConsultationsCount: number;
-  monthlyEarnings: number;
+  monthlyEarnings?: number;
 };
 
 export default function PsychologistDashboardContent({
@@ -99,12 +101,16 @@ export default function PsychologistDashboardContent({
       val: String(completedConsultationsCount),
       icon: <CompletedIcon />,
     },
-    {
-      label: 'Monthly Earnings (Est.)',
-      val: formattedEarnings,
-      icon: <EarningsIcon />,
-      highlight: true,
-    },
+    ...(paymentEnabled
+      ? [
+          {
+            label: 'Monthly Earnings (Est.)',
+            val: formattedEarnings,
+            icon: <EarningsIcon />,
+            highlight: true,
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -121,8 +127,14 @@ export default function PsychologistDashboardContent({
         </p>
       </div>
 
-      {/* Stats Cards — 2 cols on mobile/sm, 4 on lg */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5">
+      {/* Stats Cards — 2 cols on mobile/sm, 4 on lg if paymentEnabled else 3 */}
+      <div
+        className={`grid gap-3 md:gap-5 ${
+          paymentEnabled
+            ? 'grid-cols-2 lg:grid-cols-4'
+            : 'grid-cols-2 lg:grid-cols-3'
+        }`}
+      >
         {stats.map((item, index) => (
           <Card
             key={index}

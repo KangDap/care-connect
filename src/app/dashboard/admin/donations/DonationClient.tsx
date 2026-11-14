@@ -6,8 +6,9 @@ import { Card } from '@/components/card';
 import { Input } from '@/components/input';
 import { Table } from '@/components/table';
 import { Toast } from '@/components/toast';
+import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { DonationActions } from './DonationActions';
 
@@ -44,6 +45,14 @@ type PsychologistBreakdown = {
   name: string;
   sessions: number;
   earnings: number;
+};
+
+type PsychologistPayoutHistory = {
+  id: number;
+  period: string;
+  platformPool: number;
+  payoutPool: number;
+  totalCompletedSessions: number;
 };
 
 type DonationClientProps = {
@@ -92,6 +101,63 @@ export function DonationClient({
     msg: string;
     type: 'success' | 'error';
   }>({ show: false, msg: '', type: 'success' });
+  const [payoutMonths, setPayoutMonths] = useState(6);
+  const [payoutHistory, setPayoutHistory] = useState<
+    PsychologistPayoutHistory[]
+  >([]);
+  const [loadedPayoutMonths, setLoadedPayoutMonths] = useState<number | null>(
+    null,
+  );
+  const [payoutHistoryError, setPayoutHistoryError] = useState<string | null>(
+    null,
+  );
+  const isPayoutHistoryLoading = loadedPayoutMonths !== payoutMonths;
+
+  useEffect(() => {
+    let active = true;
+
+    fetch(
+      `/api/dashboard/admin/donations/payout-summary?months=${payoutMonths}`,
+      {
+        cache: 'no-store',
+      },
+    )
+      .then(async (response) => {
+        const result = (await response.json()) as {
+          success: boolean;
+          data?: { history: PsychologistPayoutHistory[] };
+          error?: { message?: string };
+        };
+        if (!response.ok || !result.success || !result.data) {
+          throw new Error(
+            result.error?.message || 'Failed to load payout history.',
+          );
+        }
+        return result.data.history;
+      })
+      .then((history) => {
+        if (active) {
+          setPayoutHistory(history);
+          setPayoutHistoryError(null);
+        }
+      })
+      .catch((cause: unknown) => {
+        if (active) {
+          setPayoutHistoryError(
+            cause instanceof Error
+              ? cause.message
+              : 'Failed to load payout history.',
+          );
+        }
+      })
+      .finally(() => {
+        if (active) setLoadedPayoutMonths(payoutMonths);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [payoutMonths]);
 
   const buildDonationHref = (updates: {
     month?: number;
@@ -124,18 +190,18 @@ export function DonationClient({
   };
 
   const months = [
-    'Januari',
-    'Februari',
-    'Maret',
+    'January',
+    'February',
+    'March',
     'April',
-    'Mei',
-    'Juni',
-    'Juli',
-    'Agustus',
+    'May',
+    'June',
+    'July',
+    'August',
     'September',
-    'Oktober',
+    'October',
     'November',
-    'Desember',
+    'December',
   ];
 
   const years = [2024, 2025, 2026];
@@ -193,13 +259,21 @@ export function DonationClient({
       />
 
       {/* Header */}
-      <div>
-        <h1 className="text-2xl sm:text-3xl md:text-[40px] font-black text-[#193c1f] tracking-tight leading-tight">
-          Donation &amp; Payouts
-        </h1>
-        <p className="text-[#8ea087] font-medium mt-2">
-          Monitor platform revenue and calculate psychologist shares.
-        </p>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-2xl sm:text-3xl md:text-[40px] font-black text-[#193c1f] tracking-tight leading-tight">
+            Donation &amp; Payouts
+          </h1>
+          <p className="text-[#8ea087] font-medium mt-2">
+            Monitor platform revenue and calculate psychologist shares.
+          </p>
+        </div>
+        <Link
+          href="/dashboard/admin/donations/distributions"
+          className="inline-flex w-fit items-center rounded-xl bg-[#193c1f] px-4 py-3 text-sm font-bold text-white transition hover:bg-[#2d5a35]"
+        >
+          Distribution Management
+        </Link>
       </div>
 
       {/* Summary Stats */}
@@ -340,7 +414,7 @@ export function DonationClient({
                   Total (All Time)
                 </span>
                 <span className="font-bold text-xs text-[#193c1f]">
-                  {summary.allTimeSessions} sesi
+                  {summary.allTimeSessions} sessions
                 </span>
               </div>
               <div className="text-[10px] font-black text-[#193c1f] bg-[#f7f3ed] px-3 py-2 rounded-xl">
@@ -408,7 +482,9 @@ export function DonationClient({
 
             <div className="mt-auto pt-2">
               <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-[#8ea087] leading-relaxed">
-                Estimasi tertinggi berdasarkan <br /> proporsi sesi bulan ini.
+                <span>Highest estimate based on</span>
+                <br />
+                <span>{"this month's session share."}</span>
               </p>
             </div>
           </div>
@@ -423,7 +499,7 @@ export function DonationClient({
               Psychologist Payout Breakdown
             </h2>
             <p className="text-xs md:text-sm text-[#8ea087] font-medium mt-1">
-              Data sesi dan bagi hasil untuk periode{' '}
+              Session data and revenue share for period{' '}
               <strong>
                 {months[currentMonth - 1]} {currentYear}
               </strong>
@@ -484,7 +560,7 @@ export function DonationClient({
                     {p.sessions}
                   </span>
                   <span className="text-[10px] md:text-xs font-bold text-[#8ea087] ml-2 uppercase tracking-widest">
-                    Sesi
+                    Sessions
                   </span>
                 </div>
               ),
@@ -501,6 +577,76 @@ export function DonationClient({
             },
           ]}
         />
+      </Card>
+
+      <Card className="overflow-visible rounded-[24px] p-5 md:rounded-[32px] md:p-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="text-xl font-black tracking-tight text-[#193c1f] md:text-2xl">
+              Psychologist Payout Summary History
+            </h2>
+            <p className="mt-1 max-w-2xl text-xs leading-5 text-[#8ea087] md:text-sm">
+              Summary of platform funds, payout pool, and completed sessions per
+              month before current month.
+            </p>
+          </div>
+          <label className="w-full text-[11px] font-black uppercase tracking-widest text-[#8ea087] sm:max-w-[220px]">
+            Number of past months
+            <Input
+              type="select"
+              value={payoutMonths}
+              onChange={(event) => setPayoutMonths(Number(event.target.value))}
+              className="mt-2 rounded-xl bg-white px-3 py-2 text-sm font-bold normal-case tracking-normal text-[#193c1f]"
+            >
+              {Array.from({ length: 24 }, (_, index) => index + 1).map(
+                (monthCount) => (
+                  <option key={monthCount} value={monthCount}>
+                    {monthCount} months
+                  </option>
+                ),
+              )}
+            </Input>
+          </label>
+        </div>
+
+        {isPayoutHistoryLoading ? (
+          <p className="py-8 text-center text-sm text-[#74816f]">
+            Loading payout history…
+          </p>
+        ) : payoutHistoryError ? (
+          <p
+            role="alert"
+            className="mt-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800"
+          >
+            {payoutHistoryError}
+          </p>
+        ) : (
+          <Table
+            className="mt-5 rounded-t-none border-t-0 shadow-none"
+            data={payoutHistory}
+            keyExtractor={(item) => item.id}
+            minWidth="min-w-[640px]"
+            emptyMessage="No payout summary for this period."
+            columns={[
+              { header: 'Period', cell: (item) => item.period },
+              {
+                header: 'Platform Funds',
+                className: 'text-right font-bold text-[#193c1f]',
+                cell: (item) => fmt(item.platformPool),
+              },
+              {
+                header: 'Psychologist Payout Pool',
+                className: 'text-right font-bold text-[#193c1f]',
+                cell: (item) => fmt(item.payoutPool),
+              },
+              {
+                header: 'Completed Sessions',
+                className: 'text-right font-bold text-[#193c1f]',
+                cell: (item) => item.totalCompletedSessions,
+              },
+            ]}
+          />
+        )}
       </Card>
 
       {/* Donation History Section */}

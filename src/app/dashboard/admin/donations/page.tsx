@@ -1,8 +1,11 @@
 import { Prisma } from '@/generated/prisma/client';
 import { PaymentStatus } from '@/generated/prisma/enums';
 import { prisma } from '@/lib/prisma';
+import { redirect } from 'next/navigation';
 
 import { DonationClient } from './DonationClient';
+
+const paymentEnabled = process.env.NEXT_PUBLIC_PAYMENT_ENABLED === 'true';
 
 export default async function AdminDonationsPage({
   searchParams,
@@ -15,6 +18,9 @@ export default async function AdminDonationsPage({
     search?: string;
   }>;
 }) {
+  if (!paymentEnabled) {
+    redirect('/dashboard/admin');
+  }
   const params = await searchParams;
   const now = new Date();
   const currentMonth = Number(params.month) || now.getMonth() + 1;

@@ -1,6 +1,7 @@
 'use client';
 
 import { ForumModal } from '@/components/ForumModal';
+import { ForumTabs } from '@/components/article/forum-tabs';
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
@@ -218,6 +219,8 @@ const SupportForumsContent = () => {
       )}
 
       <main className="max-w-7xl mx-auto p-6 md:p-12 text-left">
+        <ForumTabs />
+
         <div className="text-center mb-10">
           <h1 className="text-4xl md:text-5xl font-black uppercase text-[#193c1f] leading-none mb-4 tracking-tight">
             Support Forums

@@ -63,7 +63,7 @@ export const Pagination = ({
   };
 
   return (
-    <div className="flex items-center justify-center gap-3 mt-10 mb-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
+    <div className="flex items-center justify-center gap-3 mt-0 mb-0 animate-in fade-in slide-in-from-bottom-2 duration-500">
       {/* Tombol Previous */}
       <button
         onClick={() => onPageChange(currentPage - 1)}

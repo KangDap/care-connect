@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 
-import { AIAnalysisClient } from './AIAnalysisClient';
+import { AIAnalysisTabs } from './AIAnalysisTabs';
 
 export const metadata = {
   title: 'AI Analysis | CareConnect Admin',
@@ -16,7 +16,7 @@ export default function AdminAIAnalysisPage() {
         </div>
       }
     >
-      <AIAnalysisClient />
+      <AIAnalysisTabs />
     </Suspense>
   );
 }

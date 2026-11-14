@@ -5,7 +5,12 @@ import { redirect } from 'next/navigation';
 
 import PsychologistDonationsContent from './PsychologistDonationsContent';
 
+const paymentEnabled = process.env.NEXT_PUBLIC_PAYMENT_ENABLED === 'true';
+
 export default async function PsychologistDonationsPage() {
+  if (!paymentEnabled) {
+    redirect('/dashboard/psikolog');
+  }
   const session = await auth.api.getSession({ headers: await headers() });
 
   if (!session?.user) {

@@ -23,7 +23,12 @@ interface DonationItem {
 
 export const dynamic = 'force-dynamic';
 
+const paymentEnabled = process.env.NEXT_PUBLIC_PAYMENT_ENABLED === 'true';
+
 export default async function DonationsPage() {
+  if (!paymentEnabled) {
+    redirect('/dashboard');
+  }
   let session = null;
   try {
     session = await auth.api.getSession({ headers: await headers() });

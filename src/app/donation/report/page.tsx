@@ -2,12 +2,24 @@
 
 import { PublicHeader } from '@/components/public-header';
 import { useRouter } from 'next/navigation';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { ReportPicker } from '../ReportPicker';
 
+const paymentEnabled = process.env.NEXT_PUBLIC_PAYMENT_ENABLED === 'true';
+
 export default function DonationReportPickerPage() {
   const router = useRouter();
+
+  useEffect(() => {
+    if (!paymentEnabled) {
+      router.replace('/campaign');
+    }
+  }, [router]);
+
+  if (!paymentEnabled) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen flex flex-col font-sans bg-[#f7f3ed]">
