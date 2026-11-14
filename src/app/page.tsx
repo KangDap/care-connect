@@ -12,6 +12,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
+const paymentEnabled = process.env.NEXT_PUBLIC_PAYMENT_ENABLED === 'true';
+
 export const dynamic = 'force-dynamic';
 
 export default async function LandingPage() {
@@ -39,35 +41,62 @@ export default async function LandingPage() {
   }>[] = [];
 
   try {
-    const [reportsCount, consultationsCount, paidDonations, latestReports] =
-      await Promise.all([
-        prisma.report.count({
-          where: { status: ReportStatus.RESOLVED },
-        }),
-        prisma.consultation.count(),
-        prisma.donation.aggregate({
-          _sum: { amount: true },
-          where: { paymentStatus: PaymentStatus.PAID },
-        }),
-        prisma.report.findMany({
-          take: 3,
-          orderBy: { createdAt: 'desc' },
-          where: {
-            isPublic: true,
-            status: ReportStatus.RESOLVED,
-          },
-          include: {
-            evidences: {
-              take: 1,
+    if (paymentEnabled) {
+      const [reportsCount, consultationsCount, paidDonations, latestReports] =
+        await Promise.all([
+          prisma.report.count({
+            where: { status: ReportStatus.RESOLVED },
+          }),
+          prisma.consultation.count(),
+          prisma.donation.aggregate({
+            _sum: { amount: true },
+            where: { paymentStatus: PaymentStatus.PAID },
+          }),
+          prisma.report.findMany({
+            take: 3,
+            orderBy: { createdAt: 'desc' },
+            where: {
+              isPublic: true,
+              status: ReportStatus.RESOLVED,
             },
-          },
-        }),
-      ]);
+            include: {
+              evidences: {
+                take: 1,
+              },
+            },
+          }),
+        ]);
 
-    totalReports = reportsCount;
-    totalConsultations = consultationsCount;
-    totalDonationAmount = Number(paidDonations._sum.amount || 0);
-    recentReports = latestReports;
+      totalReports = reportsCount;
+      totalConsultations = consultationsCount;
+      totalDonationAmount = Number(paidDonations._sum.amount || 0);
+      recentReports = latestReports;
+    } else {
+      const [reportsCount, consultationsCount, latestReports] =
+        await Promise.all([
+          prisma.report.count({
+            where: { status: ReportStatus.RESOLVED },
+          }),
+          prisma.consultation.count(),
+          prisma.report.findMany({
+            take: 3,
+            orderBy: { createdAt: 'desc' },
+            where: {
+              isPublic: true,
+              status: ReportStatus.RESOLVED,
+            },
+            include: {
+              evidences: {
+                take: 1,
+              },
+            },
+          }),
+        ]);
+
+      totalReports = reportsCount;
+      totalConsultations = consultationsCount;
+      recentReports = latestReports;
+    }
   } catch (e) {
     console.error('Failed to fetch landing page data:', e);
   }
@@ -126,17 +155,28 @@ export default async function LandingPage() {
                 Report Incident
               </Button>
             </Link>
-            <Link
-              href={isLoggedIn ? '/donation' : '/login'}
-              className="w-full sm:w-auto"
-            >
-              <Button
-                variant="outline"
-                className="h-full w-full rounded-lg border-[#d1b698] bg-[#f7f3ed] px-5 py-3 text-sm sm:px-6 sm:text-base xl:w-auto xl:px-10 xl:py-4 xl:text-lg"
+            {paymentEnabled ? (
+              <Link
+                href={isLoggedIn ? '/donation' : '/login'}
+                className="w-full sm:w-auto"
               >
-                Donate
-              </Button>
-            </Link>
+                <Button
+                  variant="outline"
+                  className="h-full w-full rounded-lg border-[#d1b698] bg-[#f7f3ed] px-5 py-3 text-sm sm:px-6 sm:text-base xl:w-auto xl:px-10 xl:py-4 xl:text-lg"
+                >
+                  Donate
+                </Button>
+              </Link>
+            ) : (
+              <Link href="/campaign" className="w-full sm:w-auto">
+                <Button
+                  variant="outline"
+                  className="h-full w-full rounded-lg border-[#d1b698] bg-[#f7f3ed] px-5 py-3 text-sm sm:px-6 sm:text-base xl:w-auto xl:px-10 xl:py-4 xl:text-lg"
+                >
+                  Explore Campaign
+                </Button>
+              </Link>
+            )}
           </div>
         </div>
         {/* Right side Hero Graphic */}
@@ -145,7 +185,11 @@ export default async function LandingPage() {
 
       {/* Stats Section */}
       <section className="bg-[#ede4d8] px-4 py-12 sm:px-6 md:px-12 md:py-20">
-        <div className="mx-auto grid max-w-[1440px] grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-8">
+        <div
+          className={`mx-auto grid gap-4 sm:grid-cols-2 md:gap-6 lg:gap-8 ${
+            paymentEnabled ? 'max-w-[1440px] lg:grid-cols-3' : 'max-w-4xl'
+          }`}
+        >
           <Card className="rounded-2xl border-b-4 border-[#8ea087] bg-[#f7f3ed] p-6 text-center md:p-8 lg:p-12">
             <p className="text-[#193c1f] font-semibold mb-2 opacity-80">
               Reports Published
@@ -164,18 +208,20 @@ export default async function LandingPage() {
             </h2>
             <div className="w-16 h-1 bg-[#d1b698] mx-auto rounded-full"></div>
           </Card>
-          <Card className="rounded-2xl border-b-4 border-[#8ea087] bg-[#f7f3ed] p-6 text-center sm:col-span-2 md:p-8 lg:col-span-1 lg:p-12">
-            <p className="text-[#193c1f] font-semibold mb-2 opacity-80">
-              Community Donations
-            </p>
-            <h2
-              className="mb-4 text-2xl font-black text-[#193c1f] md:text-3xl lg:text-4xl xl:text-5xl"
-              title={formattedDonations}
-            >
-              {formattedDonations}
-            </h2>
-            <div className="w-16 h-1 bg-[#8ea087] mx-auto rounded-full"></div>
-          </Card>
+          {paymentEnabled && (
+            <Card className="rounded-2xl border-b-4 border-[#8ea087] bg-[#f7f3ed] p-6 text-center sm:col-span-2 md:p-8 lg:col-span-1 lg:p-12">
+              <p className="text-[#193c1f] font-semibold mb-2 opacity-80">
+                Community Donations
+              </p>
+              <h2
+                className="mb-4 text-2xl font-black text-[#193c1f] md:text-3xl lg:text-4xl xl:text-5xl"
+                title={formattedDonations}
+              >
+                {formattedDonations}
+              </h2>
+              <div className="w-16 h-1 bg-[#8ea087] mx-auto rounded-full"></div>
+            </Card>
+          )}
         </div>
       </section>
 
@@ -272,10 +318,22 @@ export default async function LandingPage() {
                 ></path>
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-[#193c1f]">Donation</h3>
-            <p className="text-[#193c1f] opacity-80">
-              Fund mental health initiatives and support those in need.
-            </p>
+            {paymentEnabled ? (
+              <>
+                <h3 className="text-2xl font-bold text-[#193c1f]">Donation</h3>
+                <p className="text-[#193c1f] opacity-80">
+                  Fund mental health initiatives and support those in need.
+                </p>
+              </>
+            ) : (
+              <>
+                <h3 className="text-2xl font-bold text-[#193c1f]">Campaign</h3>
+                <p className="text-[#193c1f] opacity-80">
+                  Join a community initiative that brings meaningful support to
+                  people who need it.
+                </p>
+              </>
+            )}
           </Card>
         </div>
       </section>

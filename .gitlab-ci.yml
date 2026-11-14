@@ -7,3 +7,7 @@ include:
 variables:
   STAGING_URL: 'https://careconnect.fmipa.stg.unpad.ac.id'
   PRODUCTION_URL: 'https://careconnect.fmipa.unpad.ac.id'
+
+  # Perintah migrasi database otomatis saat rollout pre-deploy
+  DB_INITIALIZE: 'npx prisma migrate deploy'
+  DB_MIGRATE: 'npx prisma migrate deploy'
