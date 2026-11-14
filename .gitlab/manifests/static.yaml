@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${HELM_RELEASE_NAME}-static
+  namespace: ${KUBE_NAMESPACE}
+data:
+  APP_ENV: ${CI_ENVIRONMENT_NAME}
+  APP_URL: ${CI_ENVIRONMENT_URL}
+  APP_NAME: 'CareConnect'
+  NODE_ENV: 'production'
+  SMTP_PORT: '587'
+  NEXT_PUBLIC_PAYMENT_ENABLED: 'false'
+  PAYMENT_ENABLED: 'false'

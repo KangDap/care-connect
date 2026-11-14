@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${HELM_RELEASE_NAME}-config
+  namespace: ${KUBE_NAMESPACE}
+data:
+  BETTER_AUTH_URL: 'https://careconnect.fmipa.stg.unpad.ac.id'
+  NEXT_PUBLIC_PAYMENT_ENABLED: 'false'
+  PAYMENT_ENABLED: 'false'
