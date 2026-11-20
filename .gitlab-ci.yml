@@ -8,10 +8,6 @@ variables:
   STAGING_URL: 'https://careconnect.fmipa.stg.unpad.ac.id'
   PRODUCTION_URL: 'https://careconnect.fmipa.unpad.ac.id'
 
-  # Perintah migrasi database otomatis saat rollout pre-deploy (gunakan binary langsung tanpa npx)
-  DB_INITIALIZE: 'prisma migrate deploy'
-  DB_MIGRATE: 'prisma migrate deploy'
-
   # Nonaktifkan test job Auto-DevOps (flaky)
   TEST_DISABLED: 'true'
 
