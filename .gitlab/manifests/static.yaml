@@ -11,3 +11,10 @@ data:
   SMTP_PORT: '587'
   NEXT_PUBLIC_PAYMENT_ENABLED: 'false'
   PAYMENT_ENABLED: 'false'
+  NEXT_PUBLIC_REGISTRATION_ENABLED: 'false'
+  # MinIO Object Storage (S3-Compatible Unpad Platform)
+  FILESYSTEM_DISK: 's3'
+  AWS_URL: 'https://nodes.minio.unpad.dev'
+  AWS_ENDPOINT: 'https://nodes.minio.unpad.dev'
+  AWS_DEFAULT_REGION: 'id-dipatiukur-1'
+  AWS_USE_PATH_STYLE_ENDPOINT: 'true'

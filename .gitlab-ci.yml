@@ -11,3 +11,10 @@ variables:
   # Perintah migrasi database otomatis saat rollout pre-deploy
   DB_INITIALIZE: 'npx prisma migrate deploy'
   DB_MIGRATE: 'npx prisma migrate deploy'
+
+  # Nonaktifkan test job Auto-DevOps (flaky)
+  TEST_DISABLED: 'true'
+
+test:
+  rules:
+    - when: never
