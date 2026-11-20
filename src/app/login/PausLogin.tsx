@@ -93,12 +93,18 @@ export function PausLogin() {
       <AdminLogin />
 
       <p className="text-center text-[12px] text-[#193c1f] opacity-60 leading-relaxed">
-        By {'logging in'}, you agree to our{' '}
-        <a href="#" className="text-[#d1b698] underline hover:text-[#c4a685]">
+        By logging in, you agree to our{' '}
+        <a
+          href="/terms"
+          className="text-[#d1b698] underline hover:text-[#c4a685]"
+        >
           Terms of Service
-        </a>{' '}
-        and{' '}
-        <a href="#" className="text-[#d1b698] underline hover:text-[#c4a685]">
+        </a>
+        {' and '}
+        <a
+          href="/privacy"
+          className="text-[#d1b698] underline hover:text-[#c4a685]"
+        >
           Privacy Policy
         </a>
         .

@@ -484,11 +484,17 @@ function EmailLoginPage() {
         <p className="text-center text-[12px] text-[#193c1f] opacity-60 leading-relaxed mt-4">
           By {activeTab === 'register' ? 'registering' : 'logging in'}, you
           agree to our{' '}
-          <a href="#" className="text-[#d1b698] underline hover:text-[#c4a685]">
+          <a
+            href="/terms"
+            className="text-[#d1b698] underline hover:text-[#c4a685]"
+          >
             Terms of Service
-          </a>{' '}
-          and{' '}
-          <a href="#" className="text-[#d1b698] underline hover:text-[#c4a685]">
+          </a>
+          {' and '}
+          <a
+            href="/privacy"
+            className="text-[#d1b698] underline hover:text-[#c4a685]"
+          >
             Privacy Policy
           </a>
           .
