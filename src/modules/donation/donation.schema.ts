@@ -33,8 +33,14 @@ const CREATE_DONATION_SCHEMA = z
 
 const MIDTRANS_WEBHOOK_SCHEMA = z.object({
   order_id: z.string().min(1, 'order_id is required'),
-  status_code: z.coerce.string().min(1, 'status_code is required'),
-  gross_amount: z.coerce.string().min(1, 'gross_amount is required'),
+  status_code: z.preprocess(
+    (val) => (val === undefined ? 'undefined' : val),
+    z.coerce.string().min(1, 'status_code is required'),
+  ),
+  gross_amount: z.preprocess(
+    (val) => (val === undefined ? 'undefined' : val),
+    z.coerce.string().min(1, 'gross_amount is required'),
+  ),
   signature_key: z.string().min(1, 'signature_key is required'),
   transaction_status: z.string().min(1, 'transaction_status is required'),
   payment_type: z.string().optional(),

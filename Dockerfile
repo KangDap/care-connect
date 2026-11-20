@@ -41,18 +41,27 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
+# Install Prisma CLI globally for DB initialization and migrations
+RUN npm install -g prisma@7.8.0
+
+# Create nextjs user with a valid home directory (fixes /nonexistent EACCES)
 RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs
+    adduser --system --uid 1001 --home /home/nextjs nextjs && \
+    mkdir -p /home/nextjs && \
+    chown -R nextjs:nodejs /home/nextjs
+
+ENV HOME=/home/nextjs
 
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./prisma.config.ts
 COPY --from=builder /app/package.json ./package.json
-COPY --from=deps /app/node_modules ./node_modules
 
 # Copy standalone build output
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+RUN chown -R nextjs:nodejs /app
 
 USER nextjs
 
