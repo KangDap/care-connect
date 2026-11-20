@@ -26,6 +26,8 @@ COPY . .
 
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+# Enable PAuS SSO mode (disable general email registration) in Unpad build
+ENV NEXT_PUBLIC_REGISTRATION_ENABLED=false
 
 # Generate Prisma Client and build Next.js
 RUN npx prisma generate
