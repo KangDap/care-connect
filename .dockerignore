@@ -8,6 +8,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 coverage
+tests
+vitest.config.mts
+.husky
 # CATATAN KHUSUS UNPAD PLATFORM (base-multi-build):
 # JANGAN mengabaikan file .env di sini karena GitLab CI menyalin variabel ENV
 # ke file .env sebelum build agar Next.js dapat membaca NEXT_PUBLIC_* saat kompilasi.
