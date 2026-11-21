@@ -6,6 +6,10 @@ metadata:
 data:
   BETTER_AUTH_URL: 'https://careconnect.fmipa.stg.unpad.ac.id'
   PAUS_REDIRECT_URI: 'https://careconnect.fmipa.unpad.ac.id/api/auth/paus/callback'
+  PAUS_CLIENT_ID: 'qHf8URmlzmjiY.paus.unpad.ac.id'
+  PAUS_AUTHORIZATION_URL: 'https://paus.unpad.ac.id/oauth/authorize'
+  PAUS_TOKEN_URL: 'https://paus.unpad.ac.id/oauth/token'
+  PAUS_USER_INFO_URL: 'https://paus.unpad.ac.id/api/user'
   NEXT_PUBLIC_PAYMENT_ENABLED: 'false'
   PAYMENT_ENABLED: 'false'
   NEXT_PUBLIC_REGISTRATION_ENABLED: 'false'
