@@ -1,1 +1,8 @@
-// This file has been removed because the Sentry example page is not used in the application.
+export default function SentryExamplePage() {
+  return (
+    <main>
+      <h1>Sentry Example Page</h1>
+      <p>Test Sentry integration.</p>
+    </main>
+  );
+}
