@@ -25,7 +25,8 @@ export function PausLogin() {
     try {
       const result = await authClient.signIn.social({
         provider: PAUS_PROVIDER_ID,
-        callbackURL: '/',
+        // Redirect back to the page the user was on (or root if unknown)
+        callbackURL: `${window.location.origin}${window.location.pathname}`,
       });
       if (result?.error) {
         throw new Error(result.error.message || 'PAuS unavailable');

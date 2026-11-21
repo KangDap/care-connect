@@ -4,6 +4,7 @@ metadata:
   name: ${HELM_RELEASE_NAME}-config
   namespace: ${KUBE_NAMESPACE}
 data:
+  PAUS_REDIRECT_URI: 'https://careconnect.fmipa.unpad.ac.id/api/auth/paus/callback'
   BETTER_AUTH_URL: 'https://careconnect.fmipa.unpad.ac.id'
   NEXT_PUBLIC_PAYMENT_ENABLED: 'false'
   PAYMENT_ENABLED: 'false'
