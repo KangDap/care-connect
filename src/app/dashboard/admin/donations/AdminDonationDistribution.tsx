@@ -268,6 +268,7 @@ function HistorySection() {
             />
           </label>
           <button
+            type="submit"
             className="rounded-xl bg-[#193c1f] px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50"
             disabled={loading}
           >

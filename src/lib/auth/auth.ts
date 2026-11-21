@@ -6,12 +6,21 @@ import {
 import { prisma } from '@/lib/prisma';
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { admin, openAPI, username } from 'better-auth/plugins';
+import { admin, genericOAuth, openAPI, username } from 'better-auth/plugins';
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),
+  trustedOrigins: [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    'http://localhost:*',
+    'https://careconnect.fmipa.unpad.ac.id',
+    'https://careconnect.fmipa.stg.unpad.ac.id',
+    'https://*.unpad.ac.id',
+    ...(process.env.BETTER_AUTH_URL ? [process.env.BETTER_AUTH_URL] : []),
+  ],
   user: {
     additionalFields: {
       role: {
@@ -75,7 +84,68 @@ export const auth = betterAuth({
       },
     },
   },
-  plugins: [admin(), openAPI(), username()],
+  plugins: [
+    admin(),
+    openAPI(),
+    username(),
+    ...(process.env.PAUS_CLIENT_ID
+      ? [
+          genericOAuth({
+            config: [
+              {
+                providerId: 'paus',
+                clientId: process.env.PAUS_CLIENT_ID,
+                clientSecret: process.env.PAUS_CLIENT_SECRET,
+
+                redirectURI: process.env.PAUS_REDIRECT_URI,
+
+                authorizationUrl:
+                  process.env.PAUS_AUTHORIZATION_URL ||
+                  'https://paus.unpad.ac.id/oauth/authorize',
+
+                tokenUrl:
+                  process.env.PAUS_TOKEN_URL ||
+                  'https://paus.unpad.ac.id/oauth/token',
+
+                userInfoUrl:
+                  process.env.PAUS_USER_INFO_URL ||
+                  'https://paus.unpad.ac.id/api/user',
+
+                getUserInfo: async (tokens) => {
+                  const url =
+                    process.env.PAUS_USER_INFO_URL ||
+                    'https://paus.unpad.ac.id/api/user';
+                  const res = await fetch(url, {
+                    headers: {
+                      Authorization: `Bearer ${tokens.accessToken}`,
+                    },
+                  });
+                  const profile = (await res
+                    .json()
+                    .catch(() => ({}))) as Record<string, unknown>;
+                  const email = (profile.email as string) || '';
+                  const userSub =
+                    (profile.username as string) ||
+                    (profile.npm as string) ||
+                    email.split('@')[0] ||
+                    'user';
+                  const name =
+                    (profile.name as string) ||
+                    (profile.nama as string) ||
+                    userSub;
+                  return {
+                    id: String(profile.id || profile.sub || userSub),
+                    name,
+                    email,
+                    emailVerified: true,
+                  };
+                },
+              },
+            ],
+          }),
+        ]
+      : []),
+  ],
 });
 
 export type Session = typeof auth.$Infer.Session;

@@ -55,3 +55,6 @@ __pycache__/
 .venv-ai/
 venv/
 *.log
+
+# Sentry Config File
+.env.sentry-build-plugin

@@ -1133,6 +1133,30 @@ export const phraseTranslations = {
   'For Report / Platform': 'Untuk Laporan / Platform',
   'Donation data successfully deleted!': 'Data donasi berhasil dihapus!',
   'Search...': 'Cari...',
+  // Login with PAuS (Unpad environment)
+  'Welcome to CareConnect': 'Selamat datang di CareConnect',
+  'A safe space for the Universitas Padjadjaran academic community to report, consult, and support each other.':
+    'Ruang aman bagi sivitas akademika Universitas Padjadjaran untuk melapor, berkonsultasi, dan saling mendukung.',
+  'Sign in with your PAuS ID Universitas Padjadjaran account.':
+    'Masuk memakai akun PAuS ID Universitas Padjadjaran Anda.',
+  'Sign in with PAuS': 'Masuk dengan PAuS',
+  'Redirecting to PAuS...': 'Mengalihkan ke PAuS...',
+  'Only for the Universitas Padjadjaran academic community.':
+    'Khusus untuk sivitas akademika Universitas Padjadjaran.',
+  'PAuS sign-in is not available right now. Please try again later or contact the administrator.':
+    'Login PAuS belum tersedia saat ini. Silakan coba lagi nanti atau hubungi administrator.',
+  'For Administrator:': 'Untuk Administrator:',
+  'Username or email': 'Username atau email',
+  'Login as Administrator': 'Masuk sebagai Administrator',
+  'Forgot your username or password?': 'Lupa username atau password?',
+  'Invalid username or password.': 'Username atau password salah.',
+  'This form is only for administrators and psychologists. Please sign in with PAuS.':
+    'Form ini khusus untuk administrator dan psikolog. Silakan masuk dengan PAuS.',
+  'Enter your account email. We will send a link to reset your password. If you forgot your username, sign in with your email instead.':
+    'Masukkan email akun Anda. Kami akan mengirim tautan untuk mengatur ulang password. Jika lupa username, Anda bisa masuk memakai email.',
+  'Failed to send the reset link. Please try again.':
+    'Gagal mengirim tautan reset. Silakan coba lagi.',
+  'Administrator login': 'Login administrator',
 } as const;
 
 export type PhraseKey = keyof typeof phraseTranslations;

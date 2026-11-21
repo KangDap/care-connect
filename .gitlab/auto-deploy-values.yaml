@@ -24,12 +24,15 @@ podAnnotations:
 
 serviceAccount: {}
 
-# Layer 1 & 2 ConfigMap Injection
+# Layer 1 & 2 ConfigMap Injection + Layer 3 Secret Injection
 extraEnvFrom: &extraEnvFrom
   - configMapRef:
       name: '${HELM_RELEASE_NAME}-static'
   - configMapRef:
       name: '${HELM_RELEASE_NAME}-config'
+  - secretRef:
+      name: '${HELM_RELEASE_NAME}-secret'
+      optional: true
 
 # Layer 4 Operator Secrets (PostgreSQL CloudNativePG Unpad)
 extraEnv: &extraEnv

@@ -62,15 +62,15 @@ export default function CampaignPage() {
               <ul className="mt-5 space-y-3 text-[#193c1f]/80">
                 <li className="flex gap-3">
                   <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#8ea087]" />
-                  Helping fulfill the basic needs of the community.
+                  <span>Helping fulfill the basic needs of the community.</span>
                 </li>
                 <li className="flex gap-3">
                   <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#8ea087]" />
-                  Supporting meaningful social initiatives.
+                  <span>Supporting meaningful social initiatives.</span>
                 </li>
                 <li className="flex gap-3">
                   <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-[#8ea087]" />
-                  Fostering empathy and a spirit of giving.
+                  <span>Fostering empathy and a spirit of giving.</span>
                 </li>
               </ul>
             </section>
