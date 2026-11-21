@@ -23,17 +23,23 @@ export function PausLogin() {
     setError('');
     setLoading(true);
     try {
-      const { error: signInError } = await authClient.signIn.social({
+      const result = await authClient.signIn.social({
         provider: PAUS_PROVIDER_ID,
         callbackURL: '/',
       });
-      if (signInError) {
-        throw new Error(signInError.message || 'PAuS unavailable');
+      if (result?.error) {
+        throw new Error(result.error.message || 'PAuS unavailable');
       }
-    } catch {
-      setError(
-        'PAuS sign-in is not available right now. Please try again later or contact the administrator.',
-      );
+      if (result?.data?.url) {
+        window.location.href = result.data.url;
+      }
+    } catch (err) {
+      console.error('PAuS Sign-In Error:', err);
+      const message =
+        err instanceof Error && err.message !== 'PAuS unavailable'
+          ? err.message
+          : 'PAuS sign-in is not available right now. Please try again later or contact the administrator.';
+      setError(message);
       setLoading(false);
     }
   };
