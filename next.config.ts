@@ -10,13 +10,13 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  async rewrites() {
-    return [
+  rewrites() {
+    return Promise.resolve([
       {
         source: '/api/auth/paus/callback',
         destination: '/api/auth/callback/paus',
       },
-    ];
+    ]);
   },
 };
 

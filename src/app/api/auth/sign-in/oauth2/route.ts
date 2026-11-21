@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify(transformedBody),
     });
 
-    return auth.handler(socialRequest);
+    return await auth.handler(socialRequest);
   } catch (error) {
     return new Response(
       JSON.stringify({

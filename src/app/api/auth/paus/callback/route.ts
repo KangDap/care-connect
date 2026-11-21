@@ -18,5 +18,5 @@ export async function GET(request: NextRequest) {
     headers: request.headers,
   });
 
-  return auth.handler(callbackRequest);
+  return await auth.handler(callbackRequest);
 }
