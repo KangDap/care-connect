@@ -1,6 +1,7 @@
 'use client';
 
 import { Button } from '@/components/button';
+import { authClient } from '@/lib/auth/auth-client';
 import { PAUS_PROVIDER_ID } from '@/lib/auth/auth-mode';
 import { ShieldCheck } from 'lucide-react';
 import React, { useState } from 'react';
@@ -22,23 +23,13 @@ export function PausLogin() {
     setError('');
     setLoading(true);
     try {
-      // Better Auth genericOAuth endpoint. Called directly so the shared
-      // authClient does not need an extra plugin.
-      const response = await fetch('/api/auth/sign-in/oauth2', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          providerId: PAUS_PROVIDER_ID,
-          callbackURL: '/',
-        }),
+      const { error: signInError } = await authClient.signIn.social({
+        provider: PAUS_PROVIDER_ID,
+        callbackURL: '/',
       });
-      const data = (await response.json().catch(() => null)) as {
-        url?: string;
-      } | null;
-      if (!response.ok || !data?.url) throw new Error('PAuS unavailable');
-      // Hand over to the PAuS login page; keep the loading state meanwhile.
-      window.location.href = data.url;
+      if (signInError) {
+        throw new Error(signInError.message || 'PAuS unavailable');
+      }
     } catch {
       setError(
         'PAuS sign-in is not available right now. Please try again later or contact the administrator.',
