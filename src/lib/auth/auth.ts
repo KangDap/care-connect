@@ -97,6 +97,8 @@ export const auth = betterAuth({
                 clientId: process.env.PAUS_CLIENT_ID,
                 clientSecret: process.env.PAUS_CLIENT_SECRET,
 
+                redirectURI: process.env.PAUS_REDIRECT_URI,
+
                 authorizationUrl:
                   process.env.PAUS_AUTHORIZATION_URL ||
                   'https://paus.unpad.ac.id/oauth/authorize',
