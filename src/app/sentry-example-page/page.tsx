@@ -15,6 +15,31 @@ export default function Page() {
   const [hasSentError, setHasSentError] = useState(false);
   const [isConnected, setIsConnected] = useState(true);
 
+  // Helper to handle the button click with proper error handling.
+  const handleThrowError = async () => {
+    try {
+      Sentry.logger.info('User clicked the button, throwing a sample error');
+      await Sentry.startSpan(
+        {
+          name: 'Example Frontend/Backend Span',
+          op: 'test',
+        },
+        async () => {
+          const res = await fetch('/api/sentry-example-api');
+          if (!res.ok) {
+            setHasSentError(true);
+          }
+        },
+      );
+      throw new SentryExampleFrontendError(
+        'This error is raised on the frontend of the example page.',
+      );
+    } catch (err) {
+      // Capture any unexpected error so SonarQube sees the promise handled.
+      Sentry.captureException(err);
+    }
+  };
+
   useEffect(() => {
     Sentry.logger.info('Sentry example page loaded');
     async function checkConnectivity() {
