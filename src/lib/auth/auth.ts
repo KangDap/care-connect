@@ -96,20 +96,19 @@ export const auth = betterAuth({
                 providerId: 'paus',
                 clientId: process.env.PAUS_CLIENT_ID,
                 clientSecret: process.env.PAUS_CLIENT_SECRET,
-                redirectURI:
-                  process.env.PAUS_REDIRECT_URI ||
-                  (process.env.BETTER_AUTH_URL
-                    ? `${process.env.BETTER_AUTH_URL}/api/auth/paus/callback`
-                    : undefined),
+
                 authorizationUrl:
                   process.env.PAUS_AUTHORIZATION_URL ||
                   'https://paus.unpad.ac.id/oauth/authorize',
+
                 tokenUrl:
                   process.env.PAUS_TOKEN_URL ||
                   'https://paus.unpad.ac.id/oauth/token',
+
                 userInfoUrl:
                   process.env.PAUS_USER_INFO_URL ||
                   'https://paus.unpad.ac.id/api/user',
+
                 getUserInfo: async (tokens) => {
                   const url =
                     process.env.PAUS_USER_INFO_URL ||
