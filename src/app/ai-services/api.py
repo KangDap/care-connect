@@ -298,7 +298,7 @@ def analyze_reports(
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Error during analysis: {e}", exc_info=True)
+        logger.exception("Error during analysis")
         raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
 
 
@@ -374,8 +374,8 @@ def classify_text(request: ClassifyRequest) -> ClassifyResponse:
                     probabilities=prob_dict,
                 )
             )
-        except Exception as e:
-            logger.error(f"Error classifying item {item.id}: {e}")
+        except Exception:
+            logger.exception("Error classifying item %s", item.id)
 
     duration_ms = (time.time() - start_time) * 1000
 
