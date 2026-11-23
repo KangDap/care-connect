@@ -125,34 +125,24 @@ function EmailLoginPage() {
         setActiveTab('login');
         setPassword('');
         return;
-      } else {
-        const { error: signInError } = await authClient.signIn.email({
-          email,
-          password,
-        });
-        if (signInError) throw new Error(signInError.message);
-
-        const { data: session } = await authClient.getSession();
-
-        if (session?.user) {
-          router.push('/');
-        } else {
-          // Fallback jika session tidak langsung terbaca
-          router.push('/');
-        }
+        return;
       }
+
+      const { error: signInError } = await authClient.signIn.email({
+        email,
+        password,
+      });
+      if (signInError) throw new Error(signInError.message);
+      await authClient.getSession();
+      router.push('/');
     } catch (err) {
-      if (err instanceof Error) {
-        if (err.message === 'Email not verified') {
-          setError(
-            'Your email is not verified yet. Please check your inbox and verify your account first.',
-          );
-        } else {
-          setError(err.message);
-        }
-      } else {
-        setError('Authentication failed.');
-      }
+      const message =
+        err instanceof Error ? err.message : 'Authentication failed.';
+      setError(
+        message === 'Email not verified'
+          ? 'Your email is not verified yet. Please check your inbox and verify your account first.'
+          : message,
+      );
     } finally {
       setLoading(false);
     }

@@ -16,10 +16,18 @@ const paymentEnabled = process.env.NEXT_PUBLIC_PAYMENT_ENABLED === 'true';
 
 export const dynamic = 'force-dynamic';
 
-export default async function LandingPage() {
-  let session = null;
+type LandingPageData = {
+  totalReports: number;
+  totalConsultations: number;
+  totalDonationAmount: number;
+  recentReports: Prisma.ReportGetPayload<{
+    include: { evidences: true };
+  }>[];
+};
+
+async function getLandingSession() {
   try {
-    session = await auth.api.getSession({ headers: await headers() });
+    return await auth.api.getSession({ headers: await headers() });
   } catch (e) {
     const err = e as { message?: string; digest?: string };
     if (
@@ -29,77 +37,57 @@ export default async function LandingPage() {
       throw e;
     }
     console.error('Failed to get session:', e);
+    return null;
   }
+}
+
+async function getLandingPageData(): Promise<LandingPageData> {
+  try {
+    const [totalReports, totalConsultations, paidDonations, recentReports] =
+      await Promise.all([
+        prisma.report.count({ where: { status: ReportStatus.RESOLVED } }),
+        prisma.consultation.count(),
+        paymentEnabled
+          ? prisma.donation.aggregate({
+              _sum: { amount: true },
+              where: { paymentStatus: PaymentStatus.PAID },
+            })
+          : Promise.resolve(null),
+        prisma.report.findMany({
+          take: 3,
+          orderBy: { createdAt: 'desc' },
+          where: { isPublic: true, status: ReportStatus.RESOLVED },
+          include: { evidences: { take: 1 } },
+        }),
+      ]);
+
+    return {
+      totalReports,
+      totalConsultations,
+      totalDonationAmount: Number(paidDonations?._sum.amount || 0),
+      recentReports,
+    };
+  } catch (error) {
+    console.error('Failed to fetch landing page data:', error);
+    return {
+      totalReports: 0,
+      totalConsultations: 0,
+      totalDonationAmount: 0,
+      recentReports: [],
+    };
+  }
+}
+
+export default async function LandingPage() {
+  const session = await getLandingSession();
   const isLoggedIn = !!session?.user;
   const userRole = (session?.user as { role?: string })?.role;
-
-  let totalReports = 0;
-  let totalConsultations = 0;
-  let totalDonationAmount = 0;
-  let recentReports: Prisma.ReportGetPayload<{
-    include: { evidences: true };
-  }>[] = [];
-
-  try {
-    if (paymentEnabled) {
-      const [reportsCount, consultationsCount, paidDonations, latestReports] =
-        await Promise.all([
-          prisma.report.count({
-            where: { status: ReportStatus.RESOLVED },
-          }),
-          prisma.consultation.count(),
-          prisma.donation.aggregate({
-            _sum: { amount: true },
-            where: { paymentStatus: PaymentStatus.PAID },
-          }),
-          prisma.report.findMany({
-            take: 3,
-            orderBy: { createdAt: 'desc' },
-            where: {
-              isPublic: true,
-              status: ReportStatus.RESOLVED,
-            },
-            include: {
-              evidences: {
-                take: 1,
-              },
-            },
-          }),
-        ]);
-
-      totalReports = reportsCount;
-      totalConsultations = consultationsCount;
-      totalDonationAmount = Number(paidDonations._sum.amount || 0);
-      recentReports = latestReports;
-    } else {
-      const [reportsCount, consultationsCount, latestReports] =
-        await Promise.all([
-          prisma.report.count({
-            where: { status: ReportStatus.RESOLVED },
-          }),
-          prisma.consultation.count(),
-          prisma.report.findMany({
-            take: 3,
-            orderBy: { createdAt: 'desc' },
-            where: {
-              isPublic: true,
-              status: ReportStatus.RESOLVED,
-            },
-            include: {
-              evidences: {
-                take: 1,
-              },
-            },
-          }),
-        ]);
-
-      totalReports = reportsCount;
-      totalConsultations = consultationsCount;
-      recentReports = latestReports;
-    }
-  } catch (e) {
-    console.error('Failed to fetch landing page data:', e);
-  }
+  const {
+    totalReports,
+    totalConsultations,
+    totalDonationAmount,
+    recentReports,
+  } = await getLandingPageData();
 
   const formattedDonations = new Intl.NumberFormat('id-ID', {
     style: 'currency',

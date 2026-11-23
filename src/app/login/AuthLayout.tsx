@@ -86,10 +86,10 @@ const FeatureCard = ({
 export function AuthLayout({
   children,
   overlay,
-}: {
+}: Readonly<{
   children: React.ReactNode;
   overlay?: React.ReactNode;
-}) {
+}>) {
   return (
     <div className="flex flex-col min-h-screen bg-white">
       <header className="sticky top-0 z-50 flex min-h-[72px] items-center justify-between gap-3 border-b border-[#d0d5cb] bg-[#f7f3ed] px-4 py-3 sm:px-6 lg:h-[80px] lg:px-12">

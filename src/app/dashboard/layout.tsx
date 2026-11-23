@@ -171,7 +171,7 @@ export default function DashboardLayout({
             isDark={theme === 'dark'}
           />
 
-          {isAtAdminPage ? (
+          {isAtAdminPage && (
             /* --- MENU ADMIN --- */
             <>
               <SidebarItem
@@ -249,7 +249,8 @@ export default function DashboardLayout({
                 </>
               )}
             </>
-          ) : isAtPsikologPage ? (
+          )}
+          {!isAtAdminPage && isAtPsikologPage && (
             /* --- MENU PSIKOLOG --- */
             <>
               <SidebarItem
@@ -278,7 +279,8 @@ export default function DashboardLayout({
                 />
               )}
             </>
-          ) : (
+          )}
+          {!isAtAdminPage && !isAtPsikologPage && (
             /* --- MENU USER --- */
             <>
               <SidebarItem

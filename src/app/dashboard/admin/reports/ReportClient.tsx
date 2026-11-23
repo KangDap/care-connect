@@ -104,7 +104,8 @@ export function ReportClient({
     }
 
     const queryString = params.toString();
-    return `/dashboard/admin/reports${queryString ? `?${queryString}` : ''}`;
+    const querySuffix = queryString ? '?' + queryString : '';
+    return `/dashboard/admin/reports${querySuffix}`;
   };
 
   const filteredReports = useMemo(() => {

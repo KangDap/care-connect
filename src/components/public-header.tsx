@@ -13,6 +13,57 @@ import React, { Suspense, useState } from 'react';
 
 const paymentEnabled = process.env.NEXT_PUBLIC_PAYMENT_ENABLED === 'true';
 
+function createPublicNavLinks(
+  isLoggedIn: boolean,
+  labels: Record<string, string>,
+) {
+  const protectedHref = (path: string) => (isLoggedIn ? path : '/login');
+  const links = [
+    { href: '/', activePath: '/', label: labels.home },
+    {
+      href: protectedHref('/publicreports'),
+      activePath: '/publicreports',
+      label: labels.publicReports,
+    },
+    {
+      href: protectedHref('/report'),
+      activePath: '/report',
+      label: labels.report,
+    },
+    {
+      href: protectedHref('/forums'),
+      activePath: '/forums',
+      label: labels.forum,
+    },
+  ];
+  if (paymentEnabled) {
+    links.push({
+      href: protectedHref('/donation'),
+      activePath: '/donation',
+      label: labels.donate,
+    });
+  } else {
+    links.push({
+      href: '/campaign',
+      activePath: '/campaign',
+      label: labels.campaign,
+    });
+  }
+  return links;
+}
+
+function isPathActive(pathname: string, path: string) {
+  return !(path === '/' && pathname !== '/') && pathname.startsWith(path);
+}
+
+function getNavLinkClass(pathname: string, path: string) {
+  return `transition-colors ${
+    isPathActive(pathname, path)
+      ? 'text-[#8ea087] font-bold border-b-2 border-[#8ea087] pb-1'
+      : 'hover:text-[#8ea087]'
+  }`;
+}
+
 function PublicHeaderContent() {
   const { data: session } = authClient.useSession();
   const isLoggedIn = !!session?.user;
@@ -25,49 +76,14 @@ function PublicHeaderContent() {
 
   const fromDashboard = searchParams.get('from') === 'dashboard';
 
-  // Helper function to check if the path is active
-  const isActive = (path: string) => {
-    if (path === '/' && pathname !== '/') return false;
-    return pathname.startsWith(path);
-  };
-
-  const navLinkClass = (path: string) =>
-    `transition-colors ${
-      isActive(path)
-        ? 'text-[#8ea087] font-bold border-b-2 border-[#8ea087] pb-1'
-        : 'hover:text-[#8ea087]'
-    }`;
-
-  const protectedHref = (path: string) => (isLoggedIn ? path : '/login');
-  const navLinks = [
-    { href: '/', activePath: '/', label: t('header.home') },
-    {
-      href: protectedHref('/publicreports'),
-      activePath: '/publicreports',
-      label: t('header.publicReports'),
-    },
-    {
-      href: protectedHref('/report'),
-      activePath: '/report',
-      label: t('header.report'),
-    },
-    {
-      href: protectedHref('/forums'),
-      activePath: '/forums',
-      label: t('header.forum'),
-    },
-    paymentEnabled
-      ? {
-          href: protectedHref('/donation'),
-          activePath: '/donation',
-          label: t('header.donate'),
-        }
-      : {
-          href: '/campaign',
-          activePath: '/campaign',
-          label: t('header.campaign'),
-        },
-  ];
+  const navLinks = createPublicNavLinks(isLoggedIn, {
+    home: t('header.home'),
+    publicReports: t('header.publicReports'),
+    report: t('header.report'),
+    forum: t('header.forum'),
+    donate: t('header.donate'),
+    campaign: t('header.campaign'),
+  });
 
   return (
     <header className="sticky top-0 z-[100] w-full border-b border-[#d0d5cb] bg-[#f7f3ed]/90 px-4 py-4 backdrop-blur-md sm:px-6 lg:px-12">
@@ -91,7 +107,7 @@ function PublicHeaderContent() {
         ) : (
           <>
             <nav className="hidden items-center gap-8 text-[#193c1f] font-medium xl:flex 2xl:gap-12">
-              <Link href="/" className={navLinkClass('/')}>
+              <Link href="/" className={getNavLinkClass(pathname, '/')}>
                 {t('header.home')}
               </Link>
               {userRole === 'PSYCHOLOGIST' ? (
@@ -104,7 +120,7 @@ function PublicHeaderContent() {
               ) : (
                 <Link
                   href={isLoggedIn ? '/consultation' : '/login'}
-                  className={navLinkClass('/consultation')}
+                  className={getNavLinkClass(pathname, '/consultation')}
                 >
                   {t('header.consultation')}
                 </Link>
@@ -113,7 +129,7 @@ function PublicHeaderContent() {
                 <Link
                   key={link.label}
                   href={link.href}
-                  className={navLinkClass(link.activePath)}
+                  className={getNavLinkClass(pathname, link.activePath)}
                 >
                   {link.label}
                 </Link>
@@ -154,7 +170,7 @@ function PublicHeaderContent() {
           <nav className="flex flex-col gap-1 text-sm font-bold text-[#193c1f]">
             {userRole !== 'PSYCHOLOGIST' && (
               <Link
-                href={protectedHref('/consultation')}
+                href={isLoggedIn ? '/consultation' : '/login'}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="rounded-xl px-4 py-3 hover:bg-[#f7f3ed]"
               >
