@@ -93,6 +93,12 @@ export default function DashboardLayout({
   // LOGIKA DETEKSI HALAMAN (Berdasarkan Folder)
   const isAtPsikologPage = pathname.startsWith('/dashboard/psikolog');
   const isAtAdminPage = pathname.startsWith('/dashboard/admin');
+  let dashboardHomeHref = '/dashboard';
+  if (isAtAdminPage) {
+    dashboardHomeHref = '/dashboard/admin';
+  } else if (isAtPsikologPage) {
+    dashboardHomeHref = '/dashboard/psikolog';
+  }
 
   // Close sidebar on route change (mobile)
   React.useEffect(() => {
@@ -156,13 +162,7 @@ export default function DashboardLayout({
           <SidebarItem
             icon={LayoutDashboard}
             label={t('header.dashboard')}
-            href={
-              isAtAdminPage
-                ? '/dashboard/admin'
-                : isAtPsikologPage
-                  ? '/dashboard/psikolog'
-                  : '/dashboard'
-            }
+            href={dashboardHomeHref}
             active={
               pathname === '/dashboard' ||
               pathname === '/dashboard/psikolog' ||

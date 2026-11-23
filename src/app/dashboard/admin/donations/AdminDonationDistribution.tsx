@@ -132,12 +132,12 @@ function SummaryCard({
   value,
   description,
   icon: Icon,
-}: {
+}: Readonly<{
   label: string;
   value: string;
   description: React.ReactNode;
   icon: typeof Wallet;
-}) {
+}>) {
   return (
     <Card className="p-5">
       <div className="flex items-start justify-between gap-3">
@@ -311,16 +311,15 @@ function HistorySection() {
             },
             {
               header: 'Target',
-              cell: (record) =>
-                record.targetType === 'PLATFORM' ? (
-                  'Platform'
-                ) : record.report?.title ? (
-                  record.report.title
-                ) : (
+              cell: (record) => {
+                if (record.targetType === 'PLATFORM') return 'Platform';
+                if (record.report?.title) return record.report.title;
+                return (
                   <>
                     <span>Report</span> #{record.reportId}
                   </>
-                ),
+                );
+              },
             },
             { header: 'Recipient', cell: (record) => record.recipient },
             { header: 'Notes', cell: (record) => record.notes || '—' },

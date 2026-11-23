@@ -68,6 +68,9 @@ const input = {
   ctaText: 'Pelajari lebih lanjut',
   courseUrl: 'https://example.com/course/stres',
 };
+const courseUrlWithCredentials = new URL(input.courseUrl);
+courseUrlWithCredentials.username = 'fixture-user';
+courseUrlWithCredentials.password = 'fixture-pass';
 const category = { id: 1, name: 'Manajemen Stres', description: null };
 const article = {
   ...input,
@@ -303,7 +306,7 @@ describe('Article writes and publication', () => {
     { categoryId: true },
     { courseUrl: 'javascript:alert(1)' },
     { courseUrl: 'invalid url' },
-    { courseUrl: 'https://user:secret@example.com/course' },
+    { courseUrl: courseUrlWithCredentials.toString() },
     { imageUrl: 'data:image/png;base64,test' },
     { ctaText: '' },
     { status: 'ARCHIVED' },
