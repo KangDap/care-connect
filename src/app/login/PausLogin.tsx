@@ -3,6 +3,7 @@
 import { Button } from '@/components/button';
 import { authClient } from '@/lib/auth/auth-client';
 import { PAUS_PROVIDER_ID } from '@/lib/auth/auth-mode';
+import * as Sentry from '@sentry/nextjs';
 import { ShieldCheck } from 'lucide-react';
 import React, { useState } from 'react';
 
@@ -36,6 +37,11 @@ export function PausLogin() {
       }
     } catch (err) {
       console.error('PAuS Sign-In Error:', err);
+      Sentry.withScope((scope) => {
+        scope.setTag('feature', 'auth');
+        scope.setTag('auth.provider', PAUS_PROVIDER_ID);
+        Sentry.captureException(err);
+      });
       const message =
         err instanceof Error && err.message !== 'PAuS unavailable'
           ? err.message
