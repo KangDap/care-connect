@@ -21,12 +21,14 @@ export function ArticleContent({
   return (
     <div className="space-y-5 text-[15px] leading-8 text-[#193c1f]/85 md:text-base">
       {blocks.map((block) => {
-        const blockContentKey =
-          block.type === 'heading'
-            ? `heading:${block.id}`
-            : block.type === 'list'
-              ? `list:${block.items.join('\u001f')}`
-              : `paragraph:${block.text}`;
+        let blockContentKey: string;
+        if (block.type === 'heading') {
+          blockContentKey = `heading:${block.id}`;
+        } else if (block.type === 'list') {
+          blockContentKey = `list:${block.items.join('\u001f')}`;
+        } else {
+          blockContentKey = `paragraph:${block.text}`;
+        }
         const occurrence = blockKeyCounts.get(blockContentKey) ?? 0;
         blockKeyCounts.set(blockContentKey, occurrence + 1);
         const blockKey = `${blockContentKey}:${occurrence}`;

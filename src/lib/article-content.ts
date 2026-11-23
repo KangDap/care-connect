@@ -70,12 +70,12 @@ export function parseArticleContent(content: string): ArticleBlock[] {
       continue;
     }
 
-    const headingLevel =
-      trimmed.startsWith('###') && /\s/.test(trimmed[3] ?? '')
-        ? 3
-        : trimmed.startsWith('##') && /\s/.test(trimmed[2] ?? '')
-          ? 2
-          : null;
+    let headingLevel: 2 | 3 | null = null;
+    if (trimmed.startsWith('###') && /\s/.test(trimmed[3] ?? '')) {
+      headingLevel = 3;
+    } else if (trimmed.startsWith('##') && /\s/.test(trimmed[2] ?? '')) {
+      headingLevel = 2;
+    }
     if (headingLevel !== null) {
       flushParagraph();
       flushList();
