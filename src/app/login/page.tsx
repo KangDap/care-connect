@@ -125,7 +125,6 @@ function EmailLoginPage() {
         setActiveTab('login');
         setPassword('');
         return;
-        return;
       }
 
       const { error: signInError } = await authClient.signIn.email({
