@@ -19,19 +19,6 @@ variables:
   # Exclude the article route test fixture that contains the historical dummy credential.
   SECRET_DETECTION_EXCLUDED_PATHS: 'tests/routes/article.route.test.ts,.gitlab/secret-detection-allowlist.toml'
 
-# Global defaults applied to all jobs (including those imported from the template)
-default:
-  image: docker:23.0.5 # Docker CLI image
-  services:
-    - docker:dind
-  variables:
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ''
-    BUILDX_TIMEOUT: '1800' # 30 menit timeout for BuildKit
-  before_script:
-    - docker info
-    - docker buildx create --use
-
 # Disable Auto‑DevOps test stage (kept from original file)
 test:
   rules:
