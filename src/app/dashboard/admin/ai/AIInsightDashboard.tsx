@@ -94,7 +94,9 @@ export function AIInsightDashboard() {
           section.categoryBreakdown.map((item) => item.category),
         ),
       ),
-    ].sort();
+    ].sort((firstCategory, secondCategory) =>
+      firstCategory.localeCompare(secondCategory),
+    );
   }, [data, source]);
 
   useEffect(() => {
