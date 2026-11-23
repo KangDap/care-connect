@@ -43,6 +43,85 @@ const STATUS_TABS: { label: string; value: ArticleStatus | null }[] = [
 ];
 
 type ToastState = { show: boolean; msg: string; type: 'success' | 'error' };
+type ArticleTableRow = ArticleListItem & {
+  busy: boolean;
+  onToggleStatus: () => void;
+  onDelete: () => void;
+};
+
+function renderArticleTitle(article: ArticleListItem) {
+  return (
+    <div className="min-w-[280px] max-w-[420px]" data-no-translate>
+      <Link
+        href={`/dashboard/admin/articles/${article.id}/edit`}
+        className="font-bold text-[#193c1f] no-underline hover:text-[#8ea087]"
+      >
+        {article.title}
+      </Link>
+      <p className="mt-1 line-clamp-1 text-xs text-gray-500">
+        {article.summary}
+      </p>
+    </div>
+  );
+}
+
+function renderArticleCategory(article: ArticleListItem) {
+  return <span data-no-translate>{article.category.name}</span>;
+}
+
+function renderArticleStatus(article: ArticleListItem) {
+  const published = article.status === 'PUBLISHED';
+  return (
+    <Badge status={published ? 'SUCCESS' : 'DEFAULT'}>
+      {published ? 'Published' : 'Draft'}
+    </Badge>
+  );
+}
+
+function renderArticleActions(article: ArticleTableRow) {
+  const published = article.status === 'PUBLISHED';
+  return (
+    <div className="flex items-center justify-end gap-1">
+      <Link
+        href={`/dashboard/admin/articles/${article.id}/edit?view=preview`}
+        title="Preview"
+        aria-label="Preview"
+        className="rounded-xl p-2 text-[#8ea087] hover:bg-[#f7f3ed] hover:text-[#193c1f]"
+      >
+        <Eye size={16} />
+      </Link>
+      <Link
+        href={`/dashboard/admin/articles/${article.id}/edit`}
+        title="Edit"
+        aria-label="Edit"
+        className="rounded-xl p-2 text-[#8ea087] hover:bg-[#f7f3ed] hover:text-[#193c1f]"
+      >
+        <Pencil size={16} />
+      </Link>
+      <button
+        type="button"
+        title={published ? 'Move to draft' : 'Publish'}
+        aria-label={published ? 'Move to draft' : 'Publish'}
+        disabled={article.busy}
+        onClick={article.onToggleStatus}
+        className="rounded-xl p-2 text-[#8ea087] hover:bg-[#f7f3ed] hover:text-[#193c1f] disabled:opacity-40"
+      >
+        {article.busy && <Loader2 size={16} className="animate-spin" />}
+        {!article.busy && published && <EyeOff size={16} />}
+        {!article.busy && !published && <Send size={16} />}
+      </button>
+      <button
+        type="button"
+        title="Delete"
+        aria-label="Delete"
+        onClick={article.onDelete}
+        className="rounded-xl p-2 text-red-400 hover:bg-red-50 hover:text-red-600"
+      >
+        <Trash2 size={16} />
+      </button>
+    </div>
+  );
+}
 
 export function ArticlesAdminClient() {
   const router = useRouter();
@@ -152,6 +231,21 @@ export function ArticlesAdminClient() {
   const forbidden =
     isArticleApiError(articlesQuery.error) &&
     articlesQuery.error.status === 403;
+  const tableArticles: ArticleTableRow[] = articles.map((article) => {
+    const published = article.status === 'PUBLISHED';
+    const busy =
+      statusMutation.isPending && statusMutation.variables?.id === article.id;
+    return {
+      ...article,
+      busy,
+      onToggleStatus: () =>
+        statusMutation.mutate({
+          id: article.id,
+          next: published ? 'DRAFT' : 'PUBLISHED',
+        }),
+      onDelete: () => setToDelete(article),
+    };
+  });
 
   return (
     <div className="space-y-6">
@@ -272,7 +366,7 @@ export function ArticlesAdminClient() {
       )}
       {!articlesQuery.isLoading && !articlesQuery.isError && (
         <Table
-          data={articles}
+          data={tableArticles}
           keyExtractor={(article) => article.id}
           minWidth="min-w-[900px]"
           emptyMessage={
@@ -291,39 +385,17 @@ export function ArticlesAdminClient() {
           columns={[
             {
               header: 'Article',
-              cell: (article) => (
-                <div className="min-w-[280px] max-w-[420px]" data-no-translate>
-                  <Link
-                    href={`/dashboard/admin/articles/${article.id}/edit`}
-                    className="font-bold text-[#193c1f] no-underline hover:text-[#8ea087]"
-                  >
-                    {article.title}
-                  </Link>
-                  <p className="mt-1 line-clamp-1 text-xs text-gray-500">
-                    {article.summary}
-                  </p>
-                </div>
-              ),
+              cell: renderArticleTitle,
             },
             {
               header: 'Category',
               className: 'whitespace-nowrap',
-              cell: (article) => (
-                <span data-no-translate>{article.category.name}</span>
-              ),
+              cell: renderArticleCategory,
             },
             {
               header: 'Status',
               className: 'whitespace-nowrap',
-              cell: (article) => (
-                <Badge
-                  status={
-                    article.status === 'PUBLISHED' ? 'SUCCESS' : 'DEFAULT'
-                  }
-                >
-                  {article.status === 'PUBLISHED' ? 'Published' : 'Draft'}
-                </Badge>
-              ),
+              cell: renderArticleStatus,
             },
             {
               header: 'Date',
@@ -337,58 +409,7 @@ export function ArticlesAdminClient() {
               header: 'Actions',
               headerClassName: 'text-right',
               className: 'text-right whitespace-nowrap',
-              cell: (article) => {
-                const isPublished = article.status === 'PUBLISHED';
-                const busy =
-                  statusMutation.isPending &&
-                  statusMutation.variables?.id === article.id;
-                return (
-                  <div className="flex items-center justify-end gap-1">
-                    <Link
-                      href={`/dashboard/admin/articles/${article.id}/edit?view=preview`}
-                      title="Preview"
-                      aria-label="Preview"
-                      className="rounded-xl p-2 text-[#8ea087] hover:bg-[#f7f3ed] hover:text-[#193c1f]"
-                    >
-                      <Eye size={16} />
-                    </Link>
-                    <Link
-                      href={`/dashboard/admin/articles/${article.id}/edit`}
-                      title="Edit"
-                      aria-label="Edit"
-                      className="rounded-xl p-2 text-[#8ea087] hover:bg-[#f7f3ed] hover:text-[#193c1f]"
-                    >
-                      <Pencil size={16} />
-                    </Link>
-                    <button
-                      type="button"
-                      title={isPublished ? 'Move to draft' : 'Publish'}
-                      aria-label={isPublished ? 'Move to draft' : 'Publish'}
-                      disabled={busy}
-                      onClick={() =>
-                        statusMutation.mutate({
-                          id: article.id,
-                          next: isPublished ? 'DRAFT' : 'PUBLISHED',
-                        })
-                      }
-                      className="rounded-xl p-2 text-[#8ea087] hover:bg-[#f7f3ed] hover:text-[#193c1f] disabled:opacity-40"
-                    >
-                      {busy && <Loader2 size={16} className="animate-spin" />}
-                      {!busy && isPublished && <EyeOff size={16} />}
-                      {!busy && !isPublished && <Send size={16} />}
-                    </button>
-                    <button
-                      type="button"
-                      title="Delete"
-                      aria-label="Delete"
-                      onClick={() => setToDelete(article)}
-                      className="rounded-xl p-2 text-red-400 hover:bg-red-50 hover:text-red-600"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                );
-              },
+              cell: renderArticleActions,
             },
           ]}
         />

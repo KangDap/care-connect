@@ -24,6 +24,54 @@ import React, { useEffect, useMemo, useState } from 'react';
 
 type ToastState = { show: boolean; msg: string; type: 'success' | 'error' };
 type FormState = { name: string; description: string };
+type CategoryTableRow = ArticleCategory & {
+  onEdit: (category: ArticleCategory) => void;
+  onDelete: (category: ArticleCategory) => void;
+};
+
+function renderCategoryName(category: ArticleCategory) {
+  return (
+    <span className="font-bold text-[#193c1f]" data-no-translate>
+      {category.name}
+    </span>
+  );
+}
+
+function renderCategoryDescription(category: ArticleCategory) {
+  return (
+    <span
+      className="line-clamp-2 max-w-[420px] text-gray-500"
+      data-no-translate
+    >
+      {category.description || '-'}
+    </span>
+  );
+}
+
+function renderCategoryActions(category: CategoryTableRow) {
+  return (
+    <div className="flex items-center justify-end gap-1">
+      <button
+        type="button"
+        title="Edit"
+        aria-label="Edit"
+        onClick={() => category.onEdit(category)}
+        className="rounded-xl p-2 text-[#8ea087] hover:bg-[#f7f3ed] hover:text-[#193c1f]"
+      >
+        <Pencil size={16} />
+      </button>
+      <button
+        type="button"
+        title="Delete"
+        aria-label="Delete"
+        onClick={() => category.onDelete(category)}
+        className="rounded-xl p-2 text-red-400 hover:bg-red-50 hover:text-red-600"
+      >
+        <Trash2 size={16} />
+      </button>
+    </div>
+  );
+}
 
 const NAME_MAX = 100;
 const DESCRIPTION_MAX = 1000;
@@ -168,6 +216,11 @@ export function ArticleCategoriesPanel() {
       ),
     );
   }, [categoriesQuery.data, search]);
+  const tableCategories: CategoryTableRow[] = categories.map((category) => ({
+    ...category,
+    onEdit: openEdit,
+    onDelete: setToDelete,
+  }));
 
   return (
     <div className="space-y-6">
@@ -229,7 +282,7 @@ export function ArticleCategoriesPanel() {
       )}
       {!categoriesQuery.isLoading && !categoriesQuery.isError && (
         <Table
-          data={categories}
+          data={tableCategories}
           keyExtractor={(category) => category.id}
           minWidth="min-w-[700px]"
           emptyMessage={
@@ -240,22 +293,11 @@ export function ArticleCategoriesPanel() {
           columns={[
             {
               header: 'Name',
-              cell: (category) => (
-                <span className="font-bold text-[#193c1f]" data-no-translate>
-                  {category.name}
-                </span>
-              ),
+              cell: renderCategoryName,
             },
             {
               header: 'Description',
-              cell: (category) => (
-                <span
-                  className="line-clamp-2 max-w-[420px] text-gray-500"
-                  data-no-translate
-                >
-                  {category.description || '-'}
-                </span>
-              ),
+              cell: renderCategoryDescription,
             },
             {
               header: 'Last Updated',
@@ -266,28 +308,7 @@ export function ArticleCategoriesPanel() {
               header: 'Actions',
               headerClassName: 'text-right',
               className: 'text-right whitespace-nowrap',
-              cell: (category) => (
-                <div className="flex items-center justify-end gap-1">
-                  <button
-                    type="button"
-                    title="Edit"
-                    aria-label="Edit"
-                    onClick={() => openEdit(category)}
-                    className="rounded-xl p-2 text-[#8ea087] hover:bg-[#f7f3ed] hover:text-[#193c1f]"
-                  >
-                    <Pencil size={16} />
-                  </button>
-                  <button
-                    type="button"
-                    title="Delete"
-                    aria-label="Delete"
-                    onClick={() => setToDelete(category)}
-                    className="rounded-xl p-2 text-red-400 hover:bg-red-50 hover:text-red-600"
-                  >
-                    <Trash2 size={16} />
-                  </button>
-                </div>
-              ),
+              cell: renderCategoryActions,
             },
           ]}
         />

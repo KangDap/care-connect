@@ -101,6 +101,16 @@ const formatDate = (value: string) =>
     year: 'numeric',
   }).format(new Date(value));
 
+function renderDistributionTarget(record: Distribution) {
+  if (record.targetType === 'PLATFORM') return 'Platform';
+  if (record.report?.title) return record.report.title;
+  return (
+    <>
+      <span>Report</span> #{record.reportId}
+    </>
+  );
+}
+
 async function apiRequest<T>(url: string, init?: RequestInit): Promise<T> {
   const response = await fetch(url, { cache: 'no-store', ...init });
   const result = (await response.json()) as ApiResponse<T>;
@@ -312,15 +322,7 @@ function HistorySection() {
             },
             {
               header: 'Target',
-              cell: (record) => {
-                if (record.targetType === 'PLATFORM') return 'Platform';
-                if (record.report?.title) return record.report.title;
-                return (
-                  <>
-                    <span>Report</span> #{record.reportId}
-                  </>
-                );
-              },
+              cell: renderDistributionTarget,
             },
             { header: 'Recipient', cell: (record) => record.recipient },
             { header: 'Notes', cell: (record) => record.notes || '—' },
@@ -839,12 +841,9 @@ export function AdminDonationDistributionDetail({
           </p>
         )}
         {success && (
-          <p
-            role="status"
-            className="mb-4 rounded-xl border border-green-200 bg-green-50 p-3 text-sm text-green-800"
-          >
+          <output className="mb-4 rounded-xl border border-green-200 bg-green-50 p-3 text-sm text-green-800">
             {success}
-          </p>
+          </output>
         )}
         <form
           onSubmit={submitDistribution}

@@ -48,6 +48,21 @@ type ReportType = {
 
 type TabType = { label: string; value: string; count: number };
 
+function renderDonationTotal(report: ReportType) {
+  if ((report.donationTotal ?? 0) > 0) {
+    return (
+      <span className="text-green-700 font-bold text-[10px] md:text-xs whitespace-nowrap">
+        {new Intl.NumberFormat('id-ID', {
+          style: 'currency',
+          currency: 'IDR',
+          minimumFractionDigits: 0,
+        }).format(report.donationTotal ?? 0)}
+      </span>
+    );
+  }
+  return <span className="text-[#8EA087] text-[10px] md:text-xs">—</span>;
+}
+
 export function ReportClient({
   reports,
   activeTab,
@@ -397,16 +412,7 @@ export function ReportClient({
                   headerClassName: 'w-[10%] min-w-[90px]',
                   className:
                     'w-[10%] min-w-[90px] align-middle whitespace-nowrap',
-                  cell: (r: ReportType) =>
-                    (r.donationTotal ?? 0) > 0 ? (
-                      <span className="text-green-700 font-bold text-[10px] md:text-xs whitespace-nowrap">
-                        {fmt(r.donationTotal!)}
-                      </span>
-                    ) : (
-                      <span className="text-[#8EA087] text-[10px] md:text-xs">
-                        —
-                      </span>
-                    ),
+                  cell: renderDonationTotal,
                 },
               ]
             : []),

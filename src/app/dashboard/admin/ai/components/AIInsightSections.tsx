@@ -6,6 +6,7 @@ import type {
   ClassifyAPIResponse,
   ClassifyResultItem,
   SectionStatisticalAnalysis,
+  StratifiedSampleItem,
 } from '@/modules/ai/ai.type';
 import {
   AlertTriangle,
@@ -20,9 +21,12 @@ const numberFormat = new Intl.NumberFormat('id-ID');
 const categoryLabel = (category: string) =>
   category.replaceAll('_', ' ').toLocaleLowerCase('id-ID');
 
-function PredictionCategory({
-  prediction,
-}: Readonly<{ prediction?: ClassifyResultItem }>) {
+type ClassifiedSample = StratifiedSampleItem & {
+  prediction?: ClassifyResultItem;
+};
+
+function renderPredictionCategory(item: ClassifiedSample) {
+  const { prediction } = item;
   if (!prediction) return <span className="text-[#899286]">—</span>;
   return (
     <span className="inline-block whitespace-nowrap rounded-full bg-[#edf1e9] px-2.5 py-1 text-xs font-semibold capitalize text-[#38513b]">
@@ -31,9 +35,8 @@ function PredictionCategory({
   );
 }
 
-function PredictionConfidence({
-  prediction,
-}: Readonly<{ prediction?: ClassifyResultItem }>) {
+function renderPredictionConfidence(item: ClassifiedSample) {
+  const { prediction } = item;
   if (!prediction) return <span className="text-[#899286]">—</span>;
   return `${(prediction.confidence * 100).toFixed(1)}%`;
 }
@@ -88,10 +91,12 @@ export function SectionPanel({
   );
   const pageSize = 5;
   const totalPages = Math.ceil(data.stratifiedSample.length / pageSize);
-  const pageData = data.stratifiedSample.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize,
-  );
+  const pageData: ClassifiedSample[] = data.stratifiedSample
+    .slice((currentPage - 1) * pageSize, currentPage * pageSize)
+    .map((item) => ({
+      ...item,
+      prediction: predictions[String(item.id)],
+    }));
   const maxCount = Math.max(
     ...data.categoryBreakdown.map((item) => item.count),
     1,
@@ -290,21 +295,13 @@ export function SectionPanel({
                 header: 'Prediksi AI',
                 headerClassName: 'w-[220px]',
                 className: 'whitespace-nowrap',
-                cell: (item) => (
-                  <PredictionCategory
-                    prediction={predictions[String(item.id)]}
-                  />
-                ),
+                cell: renderPredictionCategory,
               },
               {
                 header: 'Confidence',
                 headerClassName: 'w-[140px]',
                 className: 'whitespace-nowrap font-semibold text-[#53604f]',
-                cell: (item) => (
-                  <PredictionConfidence
-                    prediction={predictions[String(item.id)]}
-                  />
-                ),
+                cell: renderPredictionConfidence,
               },
               {
                 header: 'Tanggal',
