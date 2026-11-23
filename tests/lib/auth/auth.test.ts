@@ -21,6 +21,7 @@ const mocks = vi.hoisted(() => ({
   admin: vi.fn(() => 'admin-plugin'),
   openAPI: vi.fn(() => 'openapi-plugin'),
   username: vi.fn(() => 'username-plugin'),
+  genericOAuth: vi.fn((options) => options),
 
   sendResetPasswordEmail: vi.fn(),
   sendExistingUserSignUpAttemptEmail: vi.fn(),
@@ -45,6 +46,7 @@ vi.mock('better-auth/plugins', () => ({
   admin: mocks.admin,
   openAPI: mocks.openAPI,
   username: mocks.username,
+  genericOAuth: mocks.genericOAuth,
 }));
 
 vi.mock('@/lib/prisma', () => ({
@@ -68,6 +70,31 @@ const importAuthAndGetConfig = async () => {
 };
 
 describe('Auth Server Configuration Unit Testing', () => {
+  it('registers PAuS with user.basic scope, PKCE and the environment callback', async () => {
+    vi.resetModules();
+    vi.stubEnv('PAUS_CLIENT_ID', 'paus-test-client');
+    vi.stubEnv('PAUS_CLIENT_SECRET', 'paus-test-secret');
+    vi.stubEnv(
+      'PAUS_REDIRECT_URI',
+      'http://localhost:3000/api/auth/paus/callback',
+    );
+    try {
+      await importAuthAndGetConfig();
+      expect(mocks.genericOAuth).toHaveBeenCalledWith({
+        config: [
+          expect.objectContaining({
+            providerId: 'paus',
+            scopes: ['user.basic'],
+            pkce: true,
+            redirectURI: 'http://localhost:3000/api/auth/paus/callback',
+          }),
+        ],
+      });
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+
   beforeEach(() => {
     vi.resetModules();
     vi.clearAllMocks();

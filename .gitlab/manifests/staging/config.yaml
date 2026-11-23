@@ -5,7 +5,7 @@ metadata:
   namespace: ${KUBE_NAMESPACE}
 data:
   BETTER_AUTH_URL: 'https://careconnect.fmipa.stg.unpad.ac.id'
-  PAUS_REDIRECT_URI: 'https://careconnect.fmipa.unpad.ac.id/api/auth/paus/callback'
+  PAUS_REDIRECT_URI: 'https://careconnect.fmipa.stg.unpad.ac.id/api/auth/paus/callback'
   NEXT_PUBLIC_PAYMENT_ENABLED: 'false'
   PAYMENT_ENABLED: 'false'
   NEXT_PUBLIC_REGISTRATION_ENABLED: 'false'

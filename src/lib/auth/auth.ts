@@ -1,3 +1,4 @@
+import { getPausUserInfo } from '@/lib/auth/paus';
 import {
   sendExistingUserSignUpAttemptEmail,
   sendResetPasswordEmail,
@@ -96,6 +97,8 @@ export const auth = betterAuth({
                 providerId: 'paus',
                 clientId: process.env.PAUS_CLIENT_ID,
                 clientSecret: process.env.PAUS_CLIENT_SECRET,
+                scopes: ['user.basic'],
+                pkce: true,
 
                 redirectURI: process.env.PAUS_REDIRECT_URI,
 
@@ -111,35 +114,10 @@ export const auth = betterAuth({
                   process.env.PAUS_USER_INFO_URL ||
                   'https://paus.unpad.ac.id/api/user',
 
-                getUserInfo: async (tokens) => {
-                  const url =
-                    process.env.PAUS_USER_INFO_URL ||
-                    'https://paus.unpad.ac.id/api/user';
-                  const res = await fetch(url, {
-                    headers: {
-                      Authorization: `Bearer ${tokens.accessToken}`,
-                    },
-                  });
-                  const profile = (await res
-                    .json()
-                    .catch(() => ({}))) as Record<string, unknown>;
-                  const email = (profile.email as string) || '';
-                  const userSub =
-                    (profile.username as string) ||
-                    (profile.npm as string) ||
-                    email.split('@')[0] ||
-                    'user';
-                  const name =
-                    (profile.name as string) ||
-                    (profile.nama as string) ||
-                    userSub;
-                  return {
-                    id: String(profile.id || profile.sub || userSub),
-                    name,
-                    email,
-                    emailVerified: true,
-                  };
-                },
+                getUserInfo: async (tokens) =>
+                  tokens.accessToken
+                    ? getPausUserInfo(tokens.accessToken)
+                    : null,
               },
             ],
           }),

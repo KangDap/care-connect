@@ -14,14 +14,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  rewrites() {
-    return Promise.resolve([
-      {
-        source: '/api/auth/paus/callback',
-        destination: '/api/auth/callback/paus',
-      },
-    ]);
-  },
 };
 
 export default withSentryConfig(nextConfig, {

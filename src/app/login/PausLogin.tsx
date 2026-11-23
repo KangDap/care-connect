@@ -25,9 +25,8 @@ export function PausLogin() {
     try {
       const result = await authClient.signIn.social({
         provider: PAUS_PROVIDER_ID,
-        // Redirect back to the page the user was on (or root if unknown)
-        callbackURL:
-          'https://careconnect.fmipa.unpad.ac.id/api/auth/paus/callback',
+        // Final destination after the server completes the OAuth callback.
+        callbackURL: '/',
       });
       if (result?.error) {
         throw new Error(result.error.message || 'PAuS unavailable');
