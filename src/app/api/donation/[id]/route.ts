@@ -18,7 +18,7 @@ export async function GET(
     const { id } = await params;
     const donationId = Number(id);
 
-    if (!donationId || isNaN(donationId)) {
+    if (!donationId || Number.isNaN(donationId)) {
       return fail('BAD_REQUEST', 'Invalid donation ID', 400);
     }
 
@@ -74,7 +74,7 @@ export async function PATCH(
     const { id } = await params;
     const donationId = Number(id);
 
-    if (!donationId || isNaN(donationId)) {
+    if (!donationId || Number.isNaN(donationId)) {
       return fail('BAD_REQUEST', 'Invalid donation ID', 400);
     }
 

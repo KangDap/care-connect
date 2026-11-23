@@ -30,6 +30,57 @@ import type {
   PsychologistPayoutSummary,
 } from './donation-distribution.types';
 
+async function validateReportBalance(
+  reportId: number | null | undefined,
+  requestedAmount: number,
+) {
+  if (!reportId) {
+    throw Errors.badRequest('reportId is required for REPORT target');
+  }
+  const report = await findReportById(reportId);
+  if (!report) throw Errors.notFound('Report not found');
+
+  const finances = await getReportFinances(reportId);
+  if (finances.remainingBalance === 0) {
+    throw Errors.unprocessable(
+      'Belum ada dana donasi yang tersedia untuk laporan ini (saldo Rp 0).',
+      { remainingBalance: 0, requestedAmount },
+    );
+  }
+  if (requestedAmount > finances.remainingBalance) {
+    throw Errors.unprocessable(
+      `Dana donasi tidak mencukupi untuk disalurkan. Sisa dana tersedia: Rp ${finances.remainingBalance.toLocaleString('id-ID')}`,
+      {
+        remainingBalance: finances.remainingBalance,
+        requestedAmount,
+      },
+    );
+  }
+}
+
+async function validatePlatformBalance(requestedAmount: number) {
+  const [platformDonations, platformDistributions] = await Promise.all([
+    getPlatformDonationsSum(),
+    getPlatformDistributionsSum(),
+  ]);
+  const remainingBalance = Math.max(
+    0,
+    platformDonations.amount - platformDistributions.amount,
+  );
+  if (remainingBalance === 0) {
+    throw Errors.unprocessable(
+      'Belum ada dana operasional & payout platform yang tersedia (saldo Rp 0).',
+      { remainingBalance: 0, requestedAmount },
+    );
+  }
+  if (requestedAmount > remainingBalance) {
+    throw Errors.unprocessable(
+      `Dana platform tidak mencukupi untuk disalurkan. Sisa dana tersedia: Rp ${remainingBalance.toLocaleString('id-ID')}`,
+      { remainingBalance, requestedAmount },
+    );
+  }
+}
+
 export class DonationDistributionService {
   static validateCreateDistribution(payload: unknown): CreateDistributionInput {
     return DonationDistributionSchema.validateCreateDistribution(payload);
@@ -244,7 +295,7 @@ export class DonationDistributionService {
       }
 
       const reportId = Number(groupId);
-      if (isNaN(reportId) || reportId <= 0) {
+      if (Number.isNaN(reportId) || reportId <= 0) {
         throw Errors.badRequest('Invalid group ID format');
       }
 
@@ -352,7 +403,7 @@ export class DonationDistributionService {
     id: number,
   ): Promise<DonationDistributionRecord> {
     try {
-      if (isNaN(id) || id <= 0) {
+      if (Number.isNaN(id) || id <= 0) {
         throw Errors.badRequest('Invalid distribution ID');
       }
 
@@ -388,58 +439,9 @@ export class DonationDistributionService {
     try {
       // 1. Balance validation
       if (input.targetType === DonationType.REPORT) {
-        if (!input.reportId) {
-          throw Errors.badRequest('reportId is required for REPORT target');
-        }
-
-        const report = await findReportById(input.reportId);
-        if (!report) {
-          throw Errors.notFound('Report not found');
-        }
-
-        const finances = await getReportFinances(input.reportId);
-
-        if (finances.remainingBalance === 0) {
-          throw Errors.unprocessable(
-            'Belum ada dana donasi yang tersedia untuk laporan ini (saldo Rp 0).',
-            { remainingBalance: 0, requestedAmount: input.amount },
-          );
-        }
-
-        if (input.amount > finances.remainingBalance) {
-          throw Errors.unprocessable(
-            `Dana donasi tidak mencukupi untuk disalurkan. Sisa dana tersedia: Rp ${finances.remainingBalance.toLocaleString('id-ID')}`,
-            {
-              remainingBalance: finances.remainingBalance,
-              requestedAmount: input.amount,
-            },
-          );
-        }
+        await validateReportBalance(input.reportId, input.amount);
       } else {
-        // Target is PLATFORM
-        const [platformDonations, platformDistributions] = await Promise.all([
-          getPlatformDonationsSum(),
-          getPlatformDistributionsSum(),
-        ]);
-
-        const remainingBalance = Math.max(
-          0,
-          platformDonations.amount - platformDistributions.amount,
-        );
-
-        if (remainingBalance === 0) {
-          throw Errors.unprocessable(
-            'Belum ada dana operasional & payout platform yang tersedia (saldo Rp 0).',
-            { remainingBalance: 0, requestedAmount: input.amount },
-          );
-        }
-
-        if (input.amount > remainingBalance) {
-          throw Errors.unprocessable(
-            `Dana platform tidak mencukupi untuk disalurkan. Sisa dana tersedia: Rp ${remainingBalance.toLocaleString('id-ID')}`,
-            { remainingBalance, requestedAmount: input.amount },
-          );
-        }
+        await validatePlatformBalance(input.amount);
       }
 
       // 2. Persist record

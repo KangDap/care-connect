@@ -101,7 +101,7 @@ export const getReportFinances = async (reportId: number) => {
   };
 };
 
-export const findReportById = async (reportId: number) => {
+export const findReportById = (reportId: number) => {
   return prisma.report.findUnique({
     where: { id: reportId },
     select: {
@@ -192,7 +192,7 @@ export const getReportsWithActivity = async (search?: string) => {
   });
 };
 
-export const createDistributionRecord = async (
+export const createDistributionRecord = (
   input: CreateDistributionInput & { createdById: string },
 ) => {
   return prisma.donationDistribution.create({
@@ -289,7 +289,7 @@ export const findDistributions = async (query: DistributionFilterQuery) => {
   return { records, totalCount, page, limit };
 };
 
-export const findDistributionById = async (id: number) => {
+export const findDistributionById = (id: number) => {
   return prisma.donationDistribution.findUnique({
     where: { id },
     include: {
@@ -311,7 +311,7 @@ export const findDistributionById = async (id: number) => {
   });
 };
 
-export const getTargetDistributions = async (
+export const getTargetDistributions = (
   targetType: DonationType,
   reportId?: number,
   limit = 20,
@@ -347,7 +347,7 @@ export const getTargetDistributions = async (
   });
 };
 
-export const getTargetDonations = async (
+export const getTargetDonations = (
   targetType: DonationType,
   reportId?: number,
   limit = 20,
@@ -381,7 +381,7 @@ export const getTargetDonations = async (
   });
 };
 
-export const getPsychologistsList = async () => {
+export const getPsychologistsList = () => {
   return prisma.user.findMany({
     where: { role: 'PSYCHOLOGIST' },
     select: {
@@ -392,10 +392,7 @@ export const getPsychologistsList = async () => {
   });
 };
 
-export const getCompletedConsultationsInPeriod = async (
-  start: Date,
-  end?: Date,
-) => {
+export const getCompletedConsultationsInPeriod = (start: Date, end?: Date) => {
   const where: Prisma.ConsultationWhereInput = {
     status: 'COMPLETED',
     date: {
@@ -429,7 +426,7 @@ export const getPlatformDonationsInPeriod = async (start: Date, end?: Date) => {
   return Number(result._sum.amount || 0);
 };
 
-export const getCompletedConsultationsTotalInPeriod = async (
+export const getCompletedConsultationsTotalInPeriod = (
   start: Date,
   end?: Date,
 ) => {

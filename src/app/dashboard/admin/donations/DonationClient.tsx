@@ -609,18 +609,20 @@ export function DonationClient({
           </label>
         </div>
 
-        {isPayoutHistoryLoading ? (
+        {isPayoutHistoryLoading && (
           <p className="py-8 text-center text-sm text-[#74816f]">
             Loading payout history…
           </p>
-        ) : payoutHistoryError ? (
+        )}
+        {!isPayoutHistoryLoading && payoutHistoryError && (
           <p
             role="alert"
             className="mt-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800"
           >
             {payoutHistoryError}
           </p>
-        ) : (
+        )}
+        {!isPayoutHistoryLoading && !payoutHistoryError && (
           <Table
             className="mt-5 rounded-t-none border-t-0 shadow-none"
             data={payoutHistory}

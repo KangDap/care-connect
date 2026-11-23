@@ -113,10 +113,10 @@ async function apiRequest<T>(url: string, init?: RequestInit): Promise<T> {
 function MessageCard({
   message,
   error = false,
-}: {
+}: Readonly<{
   message: string;
   error?: boolean;
-}) {
+}>) {
   return (
     <Card
       className={`p-6 text-sm ${error ? 'border-red-200 bg-red-50 text-red-800' : 'text-[#687563]'}`}
@@ -234,7 +234,7 @@ function HistorySection() {
           className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5 lg:items-end"
         >
           <label className="text-xs font-bold text-[#687563]">
-            Target Type
+            <span className="block">Target Type</span>
             <select
               value={targetType}
               onChange={(event) =>
@@ -248,7 +248,7 @@ function HistorySection() {
             </select>
           </label>
           <label className="text-xs font-bold text-[#687563]">
-            Start Date
+            <span className="block">Start Date</span>
             <input
               type="date"
               value={startDate}
@@ -258,7 +258,7 @@ function HistorySection() {
             />
           </label>
           <label className="text-xs font-bold text-[#687563]">
-            End Date
+            <span className="block">End Date</span>
             <input
               type="date"
               value={endDate}
@@ -283,11 +283,11 @@ function HistorySection() {
           </button>
         </form>
       </Card>
-      {error ? (
-        <MessageCard message={error} error />
-      ) : loading ? (
+      {error && <MessageCard message={error} error />}
+      {!error && loading && (
         <MessageCard message="Loading distribution history…" />
-      ) : (
+      )}
+      {!error && !loading && (
         <Table
           data={history?.distributions ?? []}
           keyExtractor={(record) => record.id}
@@ -355,14 +355,10 @@ export function AdminDonationDistribution() {
   useEffect(() => {
     let active = true;
     const currentRequest = `${targetFilter}:${search}`;
-    const params = new URLSearchParams({
-      targetType:
-        targetFilter === 'GROUP'
-          ? 'PLATFORM'
-          : targetFilter === 'REPORT'
-            ? 'REPORT'
-            : 'ALL',
-    });
+    let requestTargetType = 'ALL';
+    if (targetFilter === 'GROUP') requestTargetType = 'PLATFORM';
+    else if (targetFilter === 'REPORT') requestTargetType = 'REPORT';
+    const params = new URLSearchParams({ targetType: requestTargetType });
     if (search) params.set('search', search);
     const filteredGroupsRequest = apiRequest<{ groups: Group[] }>(
       `${GROUPS_URL}?${params}`,
@@ -405,6 +401,12 @@ export function AdminDonationDistribution() {
       (group.targetType === 'PLATFORM' || group.donationCount > 0) &&
       group.remainingBalance > 0,
   ).length;
+  let targetTypes: TargetType[] = ['PLATFORM', 'REPORT'];
+  if (targetFilter === 'GROUP') {
+    targetTypes = ['PLATFORM'];
+  } else if (targetFilter === 'REPORT') {
+    targetTypes = ['REPORT'];
+  }
 
   return (
     <div className="mx-auto max-w-[1440px] space-y-8 pb-10">
@@ -442,13 +444,12 @@ export function AdminDonationDistribution() {
           <option value="REPORT">Report</option>
         </select>
       </div>
-      {loading ? (
-        <MessageCard message="Loading distribution data…" />
-      ) : error ? (
-        <MessageCard message={error} error />
-      ) : !summary ? (
+      {loading && <MessageCard message="Loading distribution data…" />}
+      {!loading && error && <MessageCard message={error} error />}
+      {!loading && !error && !summary && (
         <MessageCard message="Distribution summary not yet available." />
-      ) : (
+      )}
+      {!loading && !error && summary && (
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <SummaryCard
             label="Eligible Donations"
@@ -477,14 +478,9 @@ export function AdminDonationDistribution() {
         </section>
       )}
 
-      {loading || error ? null : (
+      {!loading && !error && (
         <>
-          {(targetFilter === 'GROUP'
-            ? (['PLATFORM'] as const)
-            : targetFilter === 'REPORT'
-              ? (['REPORT'] as const)
-              : (['PLATFORM', 'REPORT'] as const)
-          ).map((targetType) => {
+          {targetTypes.map((targetType) => {
             const eligibleGroups = groups.filter(
               (group) =>
                 group.targetType === 'PLATFORM' || group.donationCount > 0,
@@ -501,24 +497,34 @@ export function AdminDonationDistribution() {
               targetType === 'REPORT'
                 ? targetGroups.slice((currentPage - 1) * 10, currentPage * 10)
                 : targetGroups;
+            const isPlatformTarget = targetType === 'PLATFORM';
+            const targetName = isPlatformTarget ? 'platform' : 'report';
+            const targetTitle = isPlatformTarget
+              ? 'Platform Donation Distribution'
+              : 'Report Donation Distribution';
+            const targetDescription = isPlatformTarget
+              ? 'Platform funds according to group allocations.'
+              : 'Balances and history for each report are displayed separately.';
+            const noTargetMessage = search
+              ? 'No targets matching search query.'
+              : `No ${targetName} targets available yet.`;
             return (
               <section key={targetType} className="space-y-4">
                 <div>
                   <h2 className="text-xl font-black text-[#193c1f]">
-                    {targetType === 'PLATFORM'
-                      ? 'Platform Donation Distribution'
-                      : 'Report Donation Distribution'}
+                    {targetTitle}
                   </h2>
                   <p className="mt-1 text-sm text-[#74816f]">
-                    {targetType === 'PLATFORM'
-                      ? 'Platform funds according to group allocations.'
-                      : 'Balances and history for each report are displayed separately.'}
+                    {targetDescription}
                   </p>
                 </div>
                 {targetGroups.length ? (
                   <div className="grid gap-4 lg:grid-cols-2">
                     {visibleGroups.map((group) => {
-                      const href = `/dashboard/admin/donations/distributions/${targetType === 'PLATFORM' ? 'platform/platform' : `report/${group.id}`}`;
+                      const distributionPath = isPlatformTarget
+                        ? 'platform/platform'
+                        : `report/${group.id}`;
+                      const href = `/dashboard/admin/donations/distributions/${distributionPath}`;
                       return (
                         <Link
                           key={`${group.targetType}-${group.id}`}
@@ -589,13 +595,7 @@ export function AdminDonationDistribution() {
                     })}
                   </div>
                 ) : (
-                  <MessageCard
-                    message={
-                      search
-                        ? 'No targets matching search query.'
-                        : `No ${targetType === 'PLATFORM' ? 'platform' : 'report'} targets available yet.`
-                    }
-                  />
+                  <MessageCard message={noTargetMessage} />
                 )}
                 {targetType === 'REPORT' && totalPages > 1 && (
                   <>
@@ -627,10 +627,10 @@ export function AdminDonationDistribution() {
 export function AdminDonationDistributionDetail({
   groupType,
   groupId,
-}: {
+}: Readonly<{
   groupType: 'platform' | 'report';
   groupId: string;
-}) {
+}>) {
   const [detail, setDetail] = useState<GroupDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -851,7 +851,7 @@ export function AdminDonationDistributionDetail({
           className="grid gap-4 sm:grid-cols-2"
         >
           <label className="text-xs font-bold text-[#687563]">
-            Recipient
+            <span className="block">Recipient</span>
             <input
               required
               maxLength={255}
@@ -863,7 +863,7 @@ export function AdminDonationDistributionDetail({
             />
           </label>
           <label className="text-xs font-bold text-[#687563]">
-            Distribution Amount
+            <span className="block">Distribution Amount</span>
             <input
               required
               type="number"
@@ -878,7 +878,7 @@ export function AdminDonationDistributionDetail({
             />
           </label>
           <label className="text-xs font-bold text-[#687563]">
-            Distribution Date
+            <span className="block">Distribution Date</span>
             <input
               type="date"
               value={distributedAt}
@@ -888,7 +888,7 @@ export function AdminDonationDistributionDetail({
             />
           </label>
           <label className="text-xs font-bold text-[#687563] sm:col-span-2">
-            Notes
+            <span className="block">Notes</span>
             <textarea
               value={notes}
               onChange={(event) => setNotes(event.target.value)}

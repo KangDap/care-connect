@@ -10,9 +10,9 @@ export const metadata = {
 
 export default async function DonationDistributionDetailPage({
   params,
-}: {
+}: Readonly<{
   params: Promise<{ groupType: string; groupId: string }>;
-}) {
+}>) {
   if (!paymentEnabled) {
     redirect('/dashboard/admin');
   }
