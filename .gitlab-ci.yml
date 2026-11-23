@@ -16,6 +16,9 @@ variables:
     sonar.qualitygate.wait=false
     sonar.exclusions=tests/**,**/*.test.ts,**/*.test.tsx,**/*.spec.ts,prisma/**,public/**
 
+  # Exclude the article route test fixture that contains the historical dummy credential.
+  SECRET_DETECTION_EXCLUDED_PATHS: 'tests/routes/article.route.test.ts,.gitlab/secret-detection-allowlist.toml'
+
 test:
   rules:
     - when: never
