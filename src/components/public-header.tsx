@@ -64,6 +64,24 @@ function getNavLinkClass(pathname: string, path: string) {
   }`;
 }
 
+function getAccountLink(
+  isLoggedIn: boolean,
+  dashboardLabel: string,
+  loginLabel: string,
+) {
+  return {
+    href: isLoggedIn ? '/dashboard' : '/login',
+    label: isLoggedIn ? dashboardLabel : loginLabel,
+  };
+}
+
+function getMobileMenuControl(isOpen: boolean) {
+  return {
+    label: isOpen ? 'Close menu' : 'Open menu',
+    icon: isOpen ? <X size={18} /> : <Menu size={18} />,
+  };
+}
+
 function PublicHeaderContent() {
   const { data: session } = authClient.useSession();
   const isLoggedIn = !!session?.user;
@@ -84,6 +102,12 @@ function PublicHeaderContent() {
     donate: t('header.donate'),
     campaign: t('header.campaign'),
   });
+  const accountLink = getAccountLink(
+    isLoggedIn,
+    t('header.dashboard'),
+    t('header.login'),
+  );
+  const mobileMenuControl = getMobileMenuControl(isMobileMenuOpen);
 
   return (
     <header className="sticky top-0 z-[100] w-full border-b border-[#d0d5cb] bg-[#f7f3ed]/90 px-4 py-4 backdrop-blur-md sm:px-6 lg:px-12">
@@ -140,15 +164,12 @@ function PublicHeaderContent() {
               <LanguageToggle compact />
               <ThemeToggle />
 
-              <Link
-                href={isLoggedIn ? '/dashboard' : '/login'}
-                className="hidden sm:block"
-              >
+              <Link href={accountLink.href} className="hidden sm:block">
                 <Button
                   variant="secondary"
                   className="rounded-lg px-5 py-2.5 md:px-8"
                 >
-                  {isLoggedIn ? t('header.dashboard') : t('header.login')}
+                  {accountLink.label}
                 </Button>
               </Link>
               <Button
@@ -156,9 +177,9 @@ function PublicHeaderContent() {
                 variant="outline"
                 onClick={() => setIsMobileMenuOpen((value) => !value)}
                 className="icon-button h-10 w-10 rounded-full p-0 xl:hidden"
-                aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+                aria-label={mobileMenuControl.label}
               >
-                {isMobileMenuOpen ? <X size={18} /> : <Menu size={18} />}
+                {mobileMenuControl.icon}
               </Button>
             </div>
           </>
@@ -188,11 +209,11 @@ function PublicHeaderContent() {
               </Link>
             ))}
             <Link
-              href={isLoggedIn ? '/dashboard' : '/login'}
+              href={accountLink.href}
               onClick={() => setIsMobileMenuOpen(false)}
               className="rounded-xl bg-[#193c1f] px-4 py-3 text-center text-[#f7f3ed]"
             >
-              {isLoggedIn ? t('header.dashboard') : t('header.login')}
+              {accountLink.label}
             </Link>
           </nav>
         </div>
