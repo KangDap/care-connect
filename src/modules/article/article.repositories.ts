@@ -27,12 +27,11 @@ export const findArticles = async (
   publishedOnly: boolean,
 ) => {
   const { page, limit, categoryId, search } = query;
+  const status: Prisma.ArticleWhereInput['status'] = publishedOnly
+    ? 'PUBLISHED'
+    : query.status;
   const where: Prisma.ArticleWhereInput = {
-    ...(publishedOnly
-      ? { status: 'PUBLISHED' }
-      : query.status
-        ? { status: query.status }
-        : {}),
+    ...(status ? { status } : {}),
     ...(categoryId ? { categoryId } : {}),
     ...(search
       ? {

@@ -7,7 +7,9 @@ import React from 'react';
 
 import { ArticleCover } from './article-cover';
 
-export function ArticleCard({ article }: { article: ArticleListItem }) {
+export function ArticleCard({
+  article,
+}: Readonly<{ article: ArticleListItem }>) {
   return (
     <Link
       href={`/forums/articles/${article.id}`}

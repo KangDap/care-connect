@@ -70,24 +70,32 @@ export function parseArticleContent(content: string): ArticleBlock[] {
       continue;
     }
 
-    const heading = /^(#{2,3})\s+(.+)$/.exec(trimmed);
-    if (heading) {
+    const headingLevel =
+      trimmed.startsWith('###') && /\s/.test(trimmed[3] ?? '')
+        ? 3
+        : trimmed.startsWith('##') && /\s/.test(trimmed[2] ?? '')
+          ? 2
+          : null;
+    if (headingLevel !== null) {
       flushParagraph();
       flushList();
-      const text = heading[2].trim();
+      const text = trimmed.slice(headingLevel + 1).trim();
       blocks.push({
         type: 'heading',
-        level: heading[1].length === 2 ? 2 : 3,
+        level: headingLevel,
         text,
         id: uniqueId(text),
       });
       continue;
     }
 
-    const bullet = /^[-*]\s+(.+)$/.exec(trimmed);
-    if (bullet) {
+    const bulletMarker = trimmed[0];
+    if (
+      (bulletMarker === '-' || bulletMarker === '*') &&
+      /\s/.test(trimmed[1] ?? '')
+    ) {
       flushParagraph();
-      list.push(bullet[1].trim());
+      list.push(trimmed.slice(2).trim());
       continue;
     }
 

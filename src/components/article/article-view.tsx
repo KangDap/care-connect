@@ -30,11 +30,11 @@ function CourseCta({
   ctaText,
   courseUrl,
   compact = false,
-}: {
+}: Readonly<{
   ctaText: string;
   courseUrl: string;
   compact?: boolean;
-}) {
+}>) {
   const valid = isSafeExternalUrl(courseUrl);
 
   return (
@@ -75,12 +75,12 @@ export function ArticleView({
   preview = false,
   breadcrumb,
   footer,
-}: {
+}: Readonly<{
   article: ArticleViewData;
   preview?: boolean;
   breadcrumb?: React.ReactNode;
   footer?: React.ReactNode;
-}) {
+}>) {
   const [copied, setCopied] = useState(false);
   const blocks = useMemo(
     () => parseArticleContent(article.content),

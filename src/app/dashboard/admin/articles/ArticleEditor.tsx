@@ -39,6 +39,27 @@ import { ARTICLE_CATEGORIES_HREF } from './article-management-tabs';
 
 type ToastState = { show: boolean; msg: string; type: 'success' | 'error' };
 
+function applyArticleSaveFieldErrors(
+  error: unknown,
+  setErrors: React.Dispatch<React.SetStateAction<ArticleFormErrors>>,
+  invalidateCategories: () => void,
+) {
+  if (!isArticleApiError(error)) return;
+  const fieldErrors = error.fieldErrors();
+  const knownFields = new Set(Object.keys(emptyArticleForm()));
+  const mapped: ArticleFormErrors = {};
+  for (const [field, message] of Object.entries(fieldErrors)) {
+    if (knownFields.has(field)) {
+      mapped[field as keyof ArticleFormValues] = message;
+    }
+  }
+  setErrors(mapped);
+
+  if (error.code === 'CONFLICT' || error.code === 'NOT_FOUND') {
+    invalidateCategories();
+  }
+}
+
 const FieldError = ({ message }: { message?: string }) =>
   message ? (
     <p className="mt-1 text-xs font-bold text-red-500" role="alert">
@@ -55,7 +76,9 @@ const CharCount = ({ value, max }: { value: string; max: number }) => (
 );
 
 /** Create/edit form. `articleId` null means create mode. */
-export function ArticleEditor({ articleId }: { articleId: number | null }) {
+export function ArticleEditor({
+  articleId,
+}: Readonly<{ articleId: number | null }>) {
   const isEdit = articleId !== null;
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -184,25 +207,13 @@ export function ArticleEditor({ articleId }: { articleId: number | null }) {
       }
     },
     onError: (error) => {
-      if (isArticleApiError(error)) {
-        if (error.status === 401) {
-          router.push('/login');
-          return;
-        }
-        const fieldErrors = error.fieldErrors();
-        const known = Object.keys(emptyArticleForm());
-        const mapped: ArticleFormErrors = {};
-        Object.entries(fieldErrors).forEach(([field, message]) => {
-          if (known.includes(field)) {
-            mapped[field as keyof ArticleFormValues] = message;
-          }
-        });
-        setErrors(mapped);
-        if (error.code === 'CONFLICT' || error.code === 'NOT_FOUND') {
-          // The chosen category may have been deleted meanwhile.
-          queryClient.invalidateQueries({ queryKey: articleKeys.categories });
-        }
+      if (isArticleApiError(error) && error.status === 401) {
+        router.push('/login');
+        return;
       }
+      applyArticleSaveFieldErrors(error, setErrors, () => {
+        queryClient.invalidateQueries({ queryKey: articleKeys.categories });
+      });
       const message = getArticleErrorMessage(
         error,
         'Failed to save the article.',

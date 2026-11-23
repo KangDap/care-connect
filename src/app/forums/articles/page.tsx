@@ -150,11 +150,8 @@ const ArticlesContent = () => {
               className="h-[52px] bg-[#EBE6DE]"
             />
           </div>
-          <div
-            className="flex gap-2 overflow-x-auto pb-1"
-            role="group"
-            aria-label="Filter by category"
-          >
+          <fieldset className="flex gap-2 overflow-x-auto pb-1">
+            <legend className="sr-only">Filter by category</legend>
             <button
               type="button"
               className={chipClass(!categoryId)}
@@ -175,17 +172,18 @@ const ArticlesContent = () => {
                 {category.name}
               </button>
             ))}
-          </div>
+          </fieldset>
         </div>
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_300px]">
           <section aria-live="polite">
-            {articlesQuery.isLoading ? (
+            {articlesQuery.isLoading && (
               <div className="py-20 text-center">
                 <Loader2 className="mb-4 inline-block h-8 w-8 animate-spin text-[#193c1f]" />
                 <p className="font-bold text-[#8ea087]">Fetching articles...</p>
               </div>
-            ) : articlesQuery.isError ? (
+            )}
+            {articlesQuery.isError && (
               <Card className="p-10 text-center">
                 <p className="mb-6 font-bold text-[#193c1f]">
                   {getArticleErrorMessage(
@@ -201,92 +199,100 @@ const ArticlesContent = () => {
                   Try Again
                 </Button>
               </Card>
-            ) : articles.length === 0 ? (
-              <Card className="p-12 text-center">
-                <BookOpen
-                  size={40}
-                  className="mx-auto mb-4 text-[#8ea087] opacity-60"
-                />
-                <p className="mb-2 font-black text-[#193c1f]">
-                  {isFiltered
-                    ? 'No articles match your search.'
-                    : 'No articles have been published yet.'}
-                </p>
-                {isFiltered && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSearchQuery('');
-                      router.replace(pathname, { scroll: false });
-                    }}
-                    className="text-sm font-bold text-[#8ea087] underline hover:text-[#193c1f]"
-                  >
-                    Reset filters
-                  </button>
-                )}
-              </Card>
-            ) : (
-              <div
-                className={`space-y-8 transition-opacity ${articlesQuery.isPlaceholderData ? 'opacity-60' : ''}`}
-              >
-                {featured && (
-                  <Link
-                    href={`/forums/articles/${featured.id}`}
-                    className="group block no-underline"
-                  >
-                    <Card className="grid rounded-[32px] transition-all duration-500 group-hover:shadow-2xl md:grid-cols-2">
-                      <ArticleCover
-                        imageUrl={featured.imageUrl}
-                        alt={featured.title}
-                        className="h-56 md:h-full md:min-h-[300px]"
-                        iconSize={56}
-                        priority
-                      />
-                      <div
-                        className="flex flex-col justify-center p-8"
-                        data-no-translate
-                      >
-                        <span className="mb-4 w-fit rounded-full bg-[#193c1f] px-3 py-1 text-[10px] font-black uppercase tracking-widest text-[#f7f3ed]">
-                          Latest · {featured.category.name}
-                        </span>
-                        <h2 className="mb-3 text-2xl font-black leading-tight tracking-tight text-[#193c1f] transition-colors group-hover:text-[#8ea087] md:text-3xl">
-                          {featured.title}
-                        </h2>
-                        <p className="mb-6 line-clamp-3 text-sm font-medium leading-relaxed text-[#193c1f]/60 md:text-base">
-                          {featured.summary}
-                        </p>
-                        <div className="flex items-center justify-between gap-2 text-xs font-bold text-[#8ea087]">
-                          <span>{formatArticleDate(featured.publishedAt)}</span>
-                          <span className="inline-flex items-center gap-1 uppercase tracking-[0.12em] text-[#193c1f]">
-                            Read article{' '}
-                            <ArrowRight size={14} strokeWidth={3} />
-                          </span>
-                        </div>
-                      </div>
-                    </Card>
-                  </Link>
-                )}
-
-                {gridArticles.length > 0 && (
-                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                    {gridArticles.map((article) => (
-                      <ArticleCard key={article.id} article={article} />
-                    ))}
-                  </div>
-                )}
-
-                {data && data.totalPages > 1 && (
-                  <Pagination
-                    currentPage={Math.min(page, data.totalPages)}
-                    totalPages={data.totalPages}
-                    onPageChange={(next) => {
-                      updateParams({ page: next > 1 ? String(next) : null });
-                      window.scrollTo({ top: 0, behavior: 'smooth' });
-                    }}
-                  />
-                )}
-              </div>
             )}
+            {!articlesQuery.isLoading &&
+              !articlesQuery.isError &&
+              articles.length === 0 && (
+                <Card className="p-12 text-center">
+                  <BookOpen
+                    size={40}
+                    className="mx-auto mb-4 text-[#8ea087] opacity-60"
+                  />
+                  <p className="mb-2 font-black text-[#193c1f]">
+                    {isFiltered
+                      ? 'No articles match your search.'
+                      : 'No articles have been published yet.'}
+                  </p>
+                  {isFiltered && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchQuery('');
+                        router.replace(pathname, { scroll: false });
+                      }}
+                      className="text-sm font-bold text-[#8ea087] underline hover:text-[#193c1f]"
+                    >
+                      Reset filters
+                    </button>
+                  )}
+                </Card>
+              )}
+            {!articlesQuery.isLoading &&
+              !articlesQuery.isError &&
+              articles.length > 0 && (
+                <div
+                  className={`space-y-8 transition-opacity ${articlesQuery.isPlaceholderData ? 'opacity-60' : ''}`}
+                >
+                  {featured && (
+                    <Link
+                      href={`/forums/articles/${featured.id}`}
+                      className="group block no-underline"
+                    >
+                      <Card className="grid rounded-[32px] transition-all duration-500 group-hover:shadow-2xl md:grid-cols-2">
+                        <ArticleCover
+                          imageUrl={featured.imageUrl}
+                          alt={featured.title}
+                          className="h-56 md:h-full md:min-h-[300px]"
+                          iconSize={56}
+                          priority
+                        />
+                        <div
+                          className="flex flex-col justify-center p-8"
+                          data-no-translate
+                        >
+                          <span className="mb-4 w-fit rounded-full bg-[#193c1f] px-3 py-1 text-[10px] font-black uppercase tracking-widest text-[#f7f3ed]">
+                            Latest · {featured.category.name}
+                          </span>
+                          <h2 className="mb-3 text-2xl font-black leading-tight tracking-tight text-[#193c1f] transition-colors group-hover:text-[#8ea087] md:text-3xl">
+                            {featured.title}
+                          </h2>
+                          <p className="mb-6 line-clamp-3 text-sm font-medium leading-relaxed text-[#193c1f]/60 md:text-base">
+                            {featured.summary}
+                          </p>
+                          <div className="flex items-center justify-between gap-2 text-xs font-bold text-[#8ea087]">
+                            <span>
+                              {formatArticleDate(featured.publishedAt)}
+                            </span>
+                            <span className="inline-flex items-center gap-1 uppercase tracking-[0.12em] text-[#193c1f]">
+                              Read article{' '}
+                              <ArrowRight size={14} strokeWidth={3} />
+                            </span>
+                          </div>
+                        </div>
+                      </Card>
+                    </Link>
+                  )}
+
+                  {gridArticles.length > 0 && (
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-3">
+                      {gridArticles.map((article) => (
+                        <ArticleCard key={article.id} article={article} />
+                      ))}
+                    </div>
+                  )}
+
+                  {data && data.totalPages > 1 && (
+                    <Pagination
+                      currentPage={Math.min(page, data.totalPages)}
+                      totalPages={data.totalPages}
+                      onPageChange={(next) => {
+                        updateParams({ page: next > 1 ? String(next) : null });
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                    />
+                  )}
+                </div>
+              )}
           </section>
 
           <aside className="space-y-6">
@@ -294,11 +300,13 @@ const ArticlesContent = () => {
               <h2 className="mb-4 text-sm font-black uppercase tracking-[0.12em] text-[#193c1f]">
                 Categories
               </h2>
-              {categoriesQuery.isLoading ? (
+              {categoriesQuery.isLoading && (
                 <p className="text-sm text-[#8ea087]">Loading...</p>
-              ) : categories.length === 0 ? (
+              )}
+              {!categoriesQuery.isLoading && categories.length === 0 && (
                 <p className="text-sm text-[#8ea087]">No categories yet.</p>
-              ) : (
+              )}
+              {!categoriesQuery.isLoading && categories.length > 0 && (
                 <ul className="space-y-3" data-no-translate>
                   {categories.map((category) => (
                     <li key={category.id}>

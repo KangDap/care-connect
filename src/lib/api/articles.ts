@@ -73,7 +73,7 @@ async function articleRequest<T>(
     });
   }
 
-  if (!result || result.success !== true) {
+  if (result?.success !== true) {
     const failure = (result as ArticleApiFailure | undefined)?.error;
     throw new ArticleApiError(response.status, {
       code: failure?.code ?? 'INTERNAL_SERVER_ERROR',

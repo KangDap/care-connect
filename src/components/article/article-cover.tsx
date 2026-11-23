@@ -15,13 +15,13 @@ export function ArticleCover({
   className = '',
   iconSize = 40,
   priority = false,
-}: {
+}: Readonly<{
   imageUrl: string | null;
   alt: string;
   className?: string;
   iconSize?: number;
   priority?: boolean;
-}) {
+}>) {
   const [failed, setFailed] = useState(false);
   const showImage = isSafeExternalUrl(imageUrl) && !failed;
 

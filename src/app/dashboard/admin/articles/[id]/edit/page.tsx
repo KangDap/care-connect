@@ -9,7 +9,7 @@ export const metadata = {
   description: 'Edit, preview, and publish an article.',
 };
 
-type PageProps = { params: Promise<{ id: string }> };
+type PageProps = Readonly<{ params: Promise<{ id: string }> }>;
 
 export default async function EditArticlePage({ params }: PageProps) {
   const { id } = await params;

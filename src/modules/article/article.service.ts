@@ -17,6 +17,24 @@ async function requireCategory(id: number) {
 }
 
 // Database constraints also protect against category changes between validation and writing.
+function translateWriteError(error: unknown, categoryDelete: boolean): never {
+  if (!(error instanceof Prisma.PrismaClientKnownRequestError)) throw error;
+
+  if (error.code === 'P2025') {
+    throw Errors.notFound('Article or category not found');
+  }
+  if (error.code === 'P2002') {
+    throw Errors.conflict('Article category name already exists');
+  }
+  if (error.code === 'P2003') {
+    const message = categoryDelete
+      ? 'Category is still used by articles. Reassign or delete those articles first.'
+      : 'Article category no longer exists';
+    throw Errors.conflict(message);
+  }
+  throw error;
+}
+
 async function write<T>(
   operation: () => Promise<T>,
   categoryDelete = false,
@@ -24,20 +42,7 @@ async function write<T>(
   try {
     return await operation();
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === 'P2025')
-        throw Errors.notFound('Article or category not found');
-      if (error.code === 'P2002')
-        throw Errors.conflict('Article category name already exists');
-      if (error.code === 'P2003') {
-        throw Errors.conflict(
-          categoryDelete
-            ? 'Category is still used by articles. Reassign or delete those articles first.'
-            : 'Article category no longer exists',
-        );
-      }
-    }
-    throw error;
+    translateWriteError(error, categoryDelete);
   }
 }
 

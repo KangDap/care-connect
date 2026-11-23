@@ -184,11 +184,8 @@ export function ArticlesAdminClient() {
       )}
 
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div
-          className="flex w-fit gap-1 rounded-2xl border border-[#d0d5cb] bg-white p-1"
-          role="group"
-          aria-label="Filter by status"
-        >
+        <fieldset className="flex w-fit gap-1 rounded-2xl border border-[#d0d5cb] bg-white p-1">
+          <legend className="sr-only">Filter by status</legend>
           {STATUS_TABS.map((tab) => {
             const active = (status ?? null) === tab.value;
             return (
@@ -206,7 +203,7 @@ export function ArticlesAdminClient() {
               </button>
             );
           })}
-        </div>
+        </fieldset>
         <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center md:w-auto">
           <div className="w-full sm:w-64">
             <Input
@@ -244,14 +241,15 @@ export function ArticlesAdminClient() {
         </p>
       )}
 
-      {articlesQuery.isLoading ? (
+      {articlesQuery.isLoading && (
         <div className="py-16 text-center">
           <Loader2 className="mb-3 inline-block h-7 w-7 animate-spin text-[#193c1f]" />
           <p className="text-sm font-bold text-[#8ea087]">
             Loading articles...
           </p>
         </div>
-      ) : articlesQuery.isError ? (
+      )}
+      {articlesQuery.isError && (
         <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center">
           <p className="mb-4 text-sm font-bold text-red-600">
             {forbidden
@@ -271,7 +269,8 @@ export function ArticlesAdminClient() {
             </Button>
           )}
         </div>
-      ) : (
+      )}
+      {!articlesQuery.isLoading && !articlesQuery.isError && (
         <Table
           data={articles}
           keyExtractor={(article) => article.id}
@@ -374,13 +373,9 @@ export function ArticlesAdminClient() {
                       }
                       className="rounded-xl p-2 text-[#8ea087] hover:bg-[#f7f3ed] hover:text-[#193c1f] disabled:opacity-40"
                     >
-                      {busy ? (
-                        <Loader2 size={16} className="animate-spin" />
-                      ) : isPublished ? (
-                        <EyeOff size={16} />
-                      ) : (
-                        <Send size={16} />
-                      )}
+                      {busy && <Loader2 size={16} className="animate-spin" />}
+                      {!busy && isPublished && <EyeOff size={16} />}
+                      {!busy && !isPublished && <Send size={16} />}
                     </button>
                     <button
                       type="button"

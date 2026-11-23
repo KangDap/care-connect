@@ -202,14 +202,15 @@ export function ArticleCategoriesPanel() {
         </Button>
       </div>
 
-      {categoriesQuery.isLoading ? (
+      {categoriesQuery.isLoading && (
         <div className="py-16 text-center">
           <Loader2 className="mb-3 inline-block h-7 w-7 animate-spin text-[#193c1f]" />
           <p className="text-sm font-bold text-[#8ea087]">
             Loading categories...
           </p>
         </div>
-      ) : categoriesQuery.isError ? (
+      )}
+      {categoriesQuery.isError && (
         <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-center">
           <p className="mb-4 text-sm font-bold text-red-600">
             {getArticleErrorMessage(
@@ -225,7 +226,8 @@ export function ArticleCategoriesPanel() {
             Try Again
           </Button>
         </div>
-      ) : (
+      )}
+      {!categoriesQuery.isLoading && !categoriesQuery.isError && (
         <Table
           data={categories}
           keyExtractor={(category) => category.id}
