@@ -61,6 +61,8 @@ COPY --from=builder /app/package.json ./package.json
 
 # Copy standalone build output
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+# Prisma CLI loads this from prisma.config.ts; Next standalone tracing omits it.
+COPY --from=builder /app/node_modules/dotenv ./node_modules/dotenv
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 RUN chown -R nextjs:nodejs /app
