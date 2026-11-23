@@ -1,10 +1,12 @@
 import { prisma } from '@/lib/prisma';
 
 export class AIRepository {
-  static async getReportsByIds(reportIds: (string | number)[]) {
+  static getReportsByIds(reportIds: (string | number)[]) {
     const numericIds = reportIds
-      .map((id) => (typeof id === 'number' ? id : parseInt(String(id), 10)))
-      .filter((id) => !isNaN(id));
+      .map((id) =>
+        typeof id === 'number' ? id : Number.parseInt(String(id), 10),
+      )
+      .filter((id) => !Number.isNaN(id));
 
     return prisma.report.findMany({
       where: {
@@ -19,10 +21,12 @@ export class AIRepository {
     });
   }
 
-  static async getConsultationsByIds(consultationIds: (string | number)[]) {
+  static getConsultationsByIds(consultationIds: (string | number)[]) {
     const numericIds = consultationIds
-      .map((id) => (typeof id === 'number' ? id : parseInt(String(id), 10)))
-      .filter((id) => !isNaN(id));
+      .map((id) =>
+        typeof id === 'number' ? id : Number.parseInt(String(id), 10),
+      )
+      .filter((id) => !Number.isNaN(id));
 
     return prisma.consultation.findMany({
       where: {
@@ -37,7 +41,7 @@ export class AIRepository {
     });
   }
 
-  static async getRecentReports(limit = 10) {
+  static getRecentReports(limit = 10) {
     return prisma.report.findMany({
       take: limit,
       orderBy: { createdAt: 'desc' },
@@ -50,7 +54,7 @@ export class AIRepository {
     });
   }
 
-  static async getReportsByStartDate(startDate: Date | null) {
+  static getReportsByStartDate(startDate: Date | null) {
     return prisma.report.findMany({
       where: startDate
         ? {
@@ -68,7 +72,7 @@ export class AIRepository {
     });
   }
 
-  static async getConsultationsByStartDate(startDate: Date | null) {
+  static getConsultationsByStartDate(startDate: Date | null) {
     return prisma.consultation.findMany({
       where: startDate
         ? {

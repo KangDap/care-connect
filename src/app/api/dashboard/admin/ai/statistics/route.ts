@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
 
     const result = await AIService.getStatisticalAnalysis({
       period: period as '1w' | '1m' | '3m' | '6m' | '1y' | 'all',
-      sampleSize: parseInt(sampleSize, 10),
+      sampleSize: Number.parseInt(sampleSize, 10),
     });
 
     return NextResponse.json({

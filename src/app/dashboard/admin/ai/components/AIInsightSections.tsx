@@ -20,17 +20,35 @@ const numberFormat = new Intl.NumberFormat('id-ID');
 const categoryLabel = (category: string) =>
   category.replaceAll('_', ' ').toLocaleLowerCase('id-ID');
 
+function PredictionCategory({
+  prediction,
+}: Readonly<{ prediction?: ClassifyResultItem }>) {
+  if (!prediction) return <span className="text-[#899286]">—</span>;
+  return (
+    <span className="inline-block whitespace-nowrap rounded-full bg-[#edf1e9] px-2.5 py-1 text-xs font-semibold capitalize text-[#38513b]">
+      {categoryLabel(prediction.predicted_category)}
+    </span>
+  );
+}
+
+function PredictionConfidence({
+  prediction,
+}: Readonly<{ prediction?: ClassifyResultItem }>) {
+  if (!prediction) return <span className="text-[#899286]">—</span>;
+  return `${(prediction.confidence * 100).toFixed(1)}%`;
+}
+
 export function StatCard({
   label,
   value,
   caption,
   icon: Icon,
-}: {
+}: Readonly<{
   label: string;
   value: number | string;
   caption: string;
   icon: LucideIcon;
-}) {
+}>) {
   return (
     <Card className="p-5 sm:p-6">
       <div className="flex items-start justify-between gap-3">
@@ -55,11 +73,11 @@ export function SectionPanel({
   type,
   data,
   onExport,
-}: {
+}: Readonly<{
   type: 'Laporan' | 'Konsultasi';
   data: SectionStatisticalAnalysis;
   onExport: (type: 'Laporan' | 'Konsultasi') => void;
-}) {
+}>) {
   const [currentPage, setCurrentPage] = useState(1);
   const [predictions, setPredictions] = useState<
     Record<string, ClassifyResultItem>
@@ -272,29 +290,21 @@ export function SectionPanel({
                 header: 'Prediksi AI',
                 headerClassName: 'w-[220px]',
                 className: 'whitespace-nowrap',
-                cell: (item) => {
-                  const prediction = predictions[String(item.id)];
-                  return prediction ? (
-                    <span className="inline-block whitespace-nowrap rounded-full bg-[#edf1e9] px-2.5 py-1 text-xs font-semibold capitalize text-[#38513b]">
-                      {categoryLabel(prediction.predicted_category)}
-                    </span>
-                  ) : (
-                    <span className="text-[#899286]">—</span>
-                  );
-                },
+                cell: (item) => (
+                  <PredictionCategory
+                    prediction={predictions[String(item.id)]}
+                  />
+                ),
               },
               {
                 header: 'Confidence',
                 headerClassName: 'w-[140px]',
                 className: 'whitespace-nowrap font-semibold text-[#53604f]',
-                cell: (item) => {
-                  const prediction = predictions[String(item.id)];
-                  return prediction ? (
-                    `${(prediction.confidence * 100).toFixed(1)}%`
-                  ) : (
-                    <span className="text-[#899286]">—</span>
-                  );
-                },
+                cell: (item) => (
+                  <PredictionConfidence
+                    prediction={predictions[String(item.id)]}
+                  />
+                ),
               },
               {
                 header: 'Tanggal',

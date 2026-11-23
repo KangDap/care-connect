@@ -18,6 +18,94 @@ import type {
 
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8000';
 
+type SectionItem = {
+  id: string | number;
+  title: string;
+  description: string;
+  category: string;
+  createdAt?: Date;
+  date?: Date;
+};
+
+function getCategoryBreakdown(items: SectionItem[]) {
+  const categoryCounts = new Map<string, number>();
+  const categoryItems = new Map<string, SectionItem[]>();
+
+  for (const item of items) {
+    const category = item.category || 'OTHER';
+    categoryCounts.set(category, (categoryCounts.get(category) ?? 0) + 1);
+    const itemsForCategory = categoryItems.get(category) ?? [];
+    itemsForCategory.push(item);
+    categoryItems.set(category, itemsForCategory);
+  }
+
+  const categoryBreakdown: CategoryStat[] = Array.from(categoryCounts).map(
+    ([category, count]) => ({
+      category,
+      count,
+      percentage: Number(((count / items.length) * 100).toFixed(1)),
+    }),
+  );
+  categoryBreakdown.sort((first, second) => second.count - first.count);
+  return { categoryBreakdown, categoryItems };
+}
+
+function getStratifiedSample(
+  categoryBreakdown: CategoryStat[],
+  categoryItems: Map<string, SectionItem[]>,
+  totalCount: number,
+  targetSampleSize: number,
+): StratifiedSampleItem[] {
+  const sample: StratifiedSampleItem[] = [];
+
+  for (const stat of categoryBreakdown) {
+    const stratumItems = categoryItems.get(stat.category) ?? [];
+    const stratumCount = stratumItems.length;
+    const stratumSampleSize = Math.max(
+      1,
+      Math.round((stratumCount / totalCount) * targetSampleSize),
+    );
+    const step = Math.max(1, Math.floor(stratumCount / stratumSampleSize));
+
+    for (
+      let index = 0;
+      index < stratumCount && sample.length < targetSampleSize;
+      index += step
+    ) {
+      const selected = stratumItems[index];
+      if (!selected) continue;
+      const itemDate = selected.createdAt || selected.date || new Date();
+      sample.push({
+        id: selected.id,
+        category: selected.category,
+        title: selected.title,
+        description: selected.description,
+        date: itemDate.toISOString(),
+      });
+    }
+  }
+
+  return sample;
+}
+
+function getSectionRecommendation(
+  isReport: boolean,
+  attentionRequired: boolean,
+  categoryName: string,
+  percentage: string,
+): string {
+  if (!attentionRequired) {
+    return isReport
+      ? 'Sebaran laporan relatif merata. Pertahankan sistem pemantauan berkala.'
+      : 'Jadwal konsultasi berjalan seimbang antar kategori.';
+  }
+
+  if (isReport) {
+    return `Perhatian Khusus: Kategori ${categoryName} mendominasi laporan (${percentage}). Disarankan meningkatkan tim investigasi dan koordinasi penanganan kasus pada kategori ini.`;
+  }
+  return `Perhatian Khusus: Topik ${categoryName} merupakan keluhan konsultasi tertinggi (${percentage}). Disarankan menambah alokasi jadwal psikolog spesialisasi ${categoryName}.`;
+}
+
 export class AIService {
   static async classify(input: ClassifyInput): Promise<ClassifyResponseData> {
     const validated = classifyInputSchema.parse(input);
@@ -109,20 +197,14 @@ export class AIService {
   }
 
   private static analyzeSectionData(
-    items: Array<{
-      id: string | number;
-      title: string;
-      description: string;
-      category: string;
-      createdAt?: Date;
-      date?: Date;
-    }>,
+    items: SectionItem[],
     targetSampleSize: number,
     sectionType: 'report' | 'consultation',
   ): SectionStatisticalAnalysis {
     const totalCount = items.length;
 
     if (totalCount === 0) {
+      const sectionLabel = sectionType === 'report' ? 'laporan' : 'konsultasi';
       return {
         totalCount: 0,
         dominantCategory: null,
@@ -131,30 +213,14 @@ export class AIService {
         stratifiedSample: [],
         sampleSize: 0,
         insights: {
-          summary: `Tidak ada data ${sectionType === 'report' ? 'laporan' : 'konsultasi'} pada periode ini.`,
+          summary: `Tidak ada data ${sectionLabel} pada periode ini.`,
           priorityCategories: [],
-          recommendation: `Belum ada tindakan khusus yang diperlukan karena tidak ada data ${sectionType === 'report' ? 'laporan' : 'konsultasi'}.`,
+          recommendation: `Belum ada tindakan khusus yang diperlukan karena tidak ada data ${sectionLabel}.`,
         },
       };
     }
 
-    const categoryCounts: Record<string, number> = {};
-    const categoryItemsMap: Record<string, typeof items> = {};
-
-    for (const item of items) {
-      const cat = item.category || 'OTHER';
-      categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
-      if (!categoryItemsMap[cat]) categoryItemsMap[cat] = [];
-      categoryItemsMap[cat].push(item);
-    }
-
-    const categoryBreakdown: CategoryStat[] = Object.entries(categoryCounts)
-      .map(([category, count]) => ({
-        category,
-        count,
-        percentage: Number(((count / totalCount) * 100).toFixed(1)),
-      }))
-      .sort((a, b) => b.count - a.count);
+    const { categoryBreakdown, categoryItems } = getCategoryBreakdown(items);
 
     const dominant = categoryBreakdown[0];
     const dominantCategory = dominant
@@ -166,38 +232,12 @@ export class AIService {
         }
       : null;
 
-    const stratifiedSample: StratifiedSampleItem[] = [];
-
-    for (const stat of categoryBreakdown) {
-      const stratumItems = categoryItemsMap[stat.category] || [];
-      const stratumCount = stratumItems.length;
-
-      const proportion = stratumCount / totalCount;
-      const stratumSampleSize = Math.max(
-        1,
-        Math.round(proportion * targetSampleSize),
-      );
-
-      const step = Math.max(1, Math.floor(stratumCount / stratumSampleSize));
-      for (
-        let i = 0;
-        i < stratumCount && stratifiedSample.length < targetSampleSize;
-        i += step
-      ) {
-        const selected = stratumItems[i];
-        if (selected) {
-          const itemDate = selected.createdAt || selected.date || new Date();
-          stratifiedSample.push({
-            id: selected.id,
-            category: selected.category,
-            title: selected.title,
-            description: selected.description,
-            date: itemDate.toISOString(),
-          });
-        }
-        if (stratifiedSample.length >= targetSampleSize) break;
-      }
-    }
+    const stratifiedSample = getStratifiedSample(
+      categoryBreakdown,
+      categoryItems,
+      totalCount,
+      targetSampleSize,
+    );
 
     const priorityCategories = categoryBreakdown
       .slice(0, 2)
@@ -210,13 +250,12 @@ export class AIService {
       ? `Terdaftar total ${totalCount} laporan. Kategori yang paling banyak dilaporkan adalah ${topCatName} (${topPct}).`
       : `Terdaftar total ${totalCount} sesi konsultasi. Kategori topik konsultasi terbanyak adalah ${topCatName} (${topPct}).`;
 
-    const recommendation = isReport
-      ? dominantCategory?.attentionRequired
-        ? `Perhatian Khusus: Kategori ${topCatName} mendominasi laporan (${topPct}). Disarankan meningkatkan tim investigasi dan koordinasi penanganan kasus pada kategori ini.`
-        : `Sebaran laporan relatif merata. Pertahankan sistem pemantauan berkala.`
-      : dominantCategory?.attentionRequired
-        ? `Perhatian Khusus: Topik ${topCatName} merupakan keluhan konsultasi tertinggi (${topPct}). Disarankan menambah alokasi jadwal psikolog spesialisasi ${topCatName}.`
-        : `Jadwal konsultasi berjalan seimbang antar kategori.`;
+    const recommendation = getSectionRecommendation(
+      isReport,
+      Boolean(dominantCategory?.attentionRequired),
+      topCatName,
+      topPct,
+    );
 
     return {
       totalCount,

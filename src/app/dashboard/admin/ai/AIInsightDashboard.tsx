@@ -82,12 +82,14 @@ export function AIInsightDashboard() {
 
   const availableCategories = useMemo(() => {
     if (!data) return [];
-    const sections =
-      source === 'reports'
-        ? [data.reports]
-        : source === 'consultations'
-          ? [data.consultations]
-          : [data.reports, data.consultations];
+    let sections: SectionStatisticalAnalysis[];
+    if (source === 'reports') {
+      sections = [data.reports];
+    } else if (source === 'consultations') {
+      sections = [data.consultations];
+    } else {
+      sections = [data.reports, data.consultations];
+    }
     return [
       ...new Set(
         sections.flatMap((section) =>
@@ -148,8 +150,9 @@ export function AIInsightDashboard() {
   }, [category, data]);
 
   const exportCsv = (type: 'Laporan' | 'Konsultasi') => {
-    const section =
-      type === 'Laporan' ? shownData?.reports : shownData?.consultations;
+    let section: SectionStatisticalAnalysis | undefined;
+    if (type === 'Laporan') section = shownData?.reports;
+    else section = shownData?.consultations;
     if (!section) return;
     const rows = [
       ['ID', 'Kategori', 'Jenis', 'Tanggal'],
@@ -306,7 +309,7 @@ export function AIInsightDashboard() {
         </Card>
       )}
 
-      {loading && !data ? (
+      {loading && !data && (
         <Card className="flex min-h-64 items-center justify-center p-8">
           <div className="text-center">
             <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-[#dce2d7] border-t-[#34563a]" />
@@ -315,7 +318,8 @@ export function AIInsightDashboard() {
             </p>
           </div>
         </Card>
-      ) : shownData ? (
+      )}
+      {shownData && (
         <>
           <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard
@@ -366,7 +370,7 @@ export function AIInsightDashboard() {
             terpilih, dan identitas pelapor tidak ditampilkan.
           </p>
         </>
-      ) : null}
+      )}
     </div>
   );
 }
