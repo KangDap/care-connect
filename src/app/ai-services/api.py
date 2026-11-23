@@ -185,7 +185,7 @@ class AnalyzeResponse(BaseModel):
     warnings: list[str] | None = None
 
 
-@app.post("/dashboard/admin/ai/analyze", response_model=AnalyzeResponse)
+@app.post("/dashboard/admin/ai/analyze")
 def analyze_reports(
     request: AnalyzeRequest,
 ) -> AnalyzeResponse:
@@ -329,7 +329,7 @@ class ClassifyResponse(BaseModel):
     results: list[ClassifyResultItem]
 
 
-@app.post("/dashboard/admin/ai/classify", response_model=ClassifyResponse)
+@app.post("/dashboard/admin/ai/classify")
 def classify_text(request: ClassifyRequest) -> ClassifyResponse:
     """
     Classify text or reports into predefined categories using TF-IDF + Logistic Regression.

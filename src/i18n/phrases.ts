@@ -907,8 +907,8 @@ export const phraseTranslations = {
     'Bergabunglah dengan inisiatif komunitas yang menghadirkan dukungan bermakna bagi mereka yang membutuhkan.',
   'Support for Together We Share, Together We Care Campaign':
     'Dukungan untuk Kampanye Bersama Berbagi, Bersama Peduli',
-  'Hello CareConnect team,\n\nI would like to support the \"Together We Share, Together We Care\" campaign. Please provide details on how to contribute.\n\nThank you.':
-    'Halo tim CareConnect,\n\nSaya ingin mendukung kampanye \"Bersama Berbagi, Bersama Peduli\". Mohon informasikan cara untuk berpartisipasi.\n\nTerima kasih.',
+  'Hello CareConnect team,\n\nI would like to support the "Together We Share, Together We Care" campaign. Please provide details on how to contribute.\n\nThank you.':
+    'Halo tim CareConnect,\n\nSaya ingin mendukung kampanye "Bersama Berbagi, Bersama Peduli". Mohon informasikan cara untuk berpartisipasi.\n\nTerima kasih.',
 
   // Additional Dashboard & Psychologist Management
   'Pending / Scheduled': 'Tertunda / Terjadwal',
