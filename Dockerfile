@@ -30,7 +30,8 @@ ENV NODE_ENV=production
 ENV NEXT_PUBLIC_REGISTRATION_ENABLED=false
 
 # Generate Prisma Client and build Next.js
-RUN npx prisma generate && npm run build
+RUN npx prisma generate
+RUN npm run build
 
 # 3. Production runner
 FROM base AS runner
