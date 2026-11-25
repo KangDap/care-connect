@@ -96,13 +96,6 @@ export function ReportClient({
   const [reportToDelete, setReportToDelete] = useState<number | null>(null);
   const [newStatus, setNewStatus] = useState<string>('PENDING');
 
-  const fmt = (v: number) =>
-    new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-    }).format(v);
-
   const fmtDate = (d: string) =>
     new Intl.DateTimeFormat('id-ID', {
       day: '2-digit',
