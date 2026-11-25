@@ -1,4 +1,5 @@
 import { getPausUserInfo } from '@/lib/auth/paus';
+import { reportAuthError } from '@/lib/auth/reporting';
 import {
   sendExistingUserSignUpAttemptEmail,
   sendResetPasswordEmail,
@@ -10,6 +11,11 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { admin, genericOAuth, openAPI, username } from 'better-auth/plugins';
 
 export const auth = betterAuth({
+  onAPIError: {
+    onError: (error) => {
+      reportAuthError(error);
+    },
+  },
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),

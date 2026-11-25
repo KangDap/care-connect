@@ -2,8 +2,10 @@ import { describe, expect, it, vi } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
   toNextJsHandler: vi.fn(() => ({
-    GET: vi.fn(),
-    POST: vi.fn(),
+    GET: vi.fn(async () => Response.json(null)),
+    POST: vi.fn(async () =>
+      Response.json({ url: 'https://provider.example.test' }),
+    ),
   })),
 }));
 
@@ -23,6 +25,13 @@ describe('API Route /api/auth/[...all]', () => {
 
     expect(route.GET).toBeDefined();
     expect(route.POST).toBeDefined();
+    expect(
+      (
+        await route.GET(
+          new Request('https://example.test/api/auth/get-session'),
+        )
+      ).status,
+    ).toBe(200);
     expect(mocks.toNextJsHandler).toHaveBeenCalled();
   });
 });

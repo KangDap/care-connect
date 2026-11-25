@@ -1,4 +1,4 @@
-import { auth } from '@/lib/auth/auth';
+import { runAuthRequest } from '@/lib/auth/reporting';
 import { NextRequest } from 'next/server';
 
 /**
@@ -7,7 +7,8 @@ import { NextRequest } from 'next/server';
  * with body field "provider". This route bridges the two formats seamlessly.
  */
 export async function POST(request: NextRequest) {
-  try {
+  return runAuthRequest(request, async () => {
+    const { auth } = await import('@/lib/auth/auth');
     const body = (await request.json().catch(() => ({}))) as Record<
       string,
       unknown
@@ -28,13 +29,5 @@ export async function POST(request: NextRequest) {
     });
 
     return await auth.handler(socialRequest);
-  } catch (error) {
-    return new Response(
-      JSON.stringify({
-        error: 'Failed to process OAuth2 sign-in',
-        details: error instanceof Error ? error.message : String(error),
-      }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } },
-    );
-  }
+  });
 }

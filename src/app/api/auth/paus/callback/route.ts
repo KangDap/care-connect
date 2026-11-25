@@ -1,4 +1,4 @@
-import { auth } from '@/lib/auth/auth';
+import { runAuthRequest } from '@/lib/auth/reporting';
 import { NextRequest } from 'next/server';
 
 /**
@@ -10,13 +10,16 @@ import { NextRequest } from 'next/server';
  * the authorization code and state are forwarded seamlessly to Better Auth.
  */
 export async function GET(request: NextRequest) {
-  const url = new URL(request.url);
-  url.pathname = '/api/auth/callback/paus';
+  return runAuthRequest(request, async () => {
+    const { auth } = await import('@/lib/auth/auth');
+    const url = new URL(request.url);
+    url.pathname = '/api/auth/callback/paus';
 
-  const callbackRequest = new Request(url.toString(), {
-    method: 'GET',
-    headers: request.headers,
+    const callbackRequest = new Request(url.toString(), {
+      method: 'GET',
+      headers: request.headers,
+    });
+
+    return await auth.handler(callbackRequest);
   });
-
-  return await auth.handler(callbackRequest);
 }
