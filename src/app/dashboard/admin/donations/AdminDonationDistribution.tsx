@@ -129,7 +129,7 @@ function MessageCard({
 }>) {
   return (
     <Card
-      className={`p-6 text-sm ${error ? 'border-red-200 bg-red-50 text-red-800' : 'text-[#687563]'}`}
+      className={`p-6 text-sm ${error ? 'border-red-200 bg-red-50 text-red-800' : 'text-[#8ea087]'}`}
     >
       {error && <AlertTriangle size={17} className="mr-2 inline-block" />}
       {message}
@@ -152,15 +152,15 @@ function SummaryCard({
     <Card className="p-5">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-bold uppercase tracking-wider text-[#74816f]">
+          <p className="text-xs font-bold uppercase tracking-wider text-[#8ea087]">
             {label}
           </p>
           <p className="mt-3 break-words text-xl font-black text-[#193c1f] sm:text-2xl">
             {value}
           </p>
-          <div className="mt-1 text-xs text-[#899286]">{description}</div>
+          <div className="mt-1 text-xs text-[#8ea087]">{description}</div>
         </div>
-        <span className="rounded-xl bg-[#edf1e9] p-3 text-[#34563a]">
+        <span className="rounded-xl bg-[#f7f3ed] p-3 text-[#193c1f]">
           <Icon size={20} />
         </span>
       </div>
@@ -234,7 +234,7 @@ function HistorySection() {
         <h2 className="text-xl font-black text-[#193c1f]">
           Distribution History
         </h2>
-        <p className="mt-1 text-sm text-[#74816f]">
+        <p className="mt-1 text-sm text-[#8ea087]">
           History of recorded distributions.
         </p>
       </div>
@@ -243,43 +243,43 @@ function HistorySection() {
           onSubmit={applyFilters}
           className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5 lg:items-end"
         >
-          <label className="text-xs font-bold text-[#687563]">
+          <label className="text-[11px] font-black uppercase tracking-widest text-[#8ea087]">
             <span className="block">Target Type</span>
             <select
               value={targetType}
               onChange={(event) =>
                 setTargetType(event.target.value as 'ALL' | TargetType)
               }
-              className="mt-1 block w-full rounded-xl border border-[#d0d5cb] bg-white px-3 py-2.5 text-sm text-[#193c1f]"
+              className="mt-1 block normal-case tracking-normal h-11 w-full rounded-xl border border-[#d0d5cb] bg-white px-3 text-sm font-medium text-[#193c1f] outline-none transition-all focus:border-[#8ea087] focus:ring-2 focus:ring-[#8ea087]/15"
             >
               <option value="ALL">All</option>
               <option value="PLATFORM">Platform</option>
               <option value="REPORT">Report</option>
             </select>
           </label>
-          <label className="text-xs font-bold text-[#687563]">
+          <label className="text-[11px] font-black uppercase tracking-widest text-[#8ea087]">
             <span className="block">Start Date</span>
             <input
               type="date"
               value={startDate}
               max={endDate || undefined}
               onChange={(event) => setStartDate(event.target.value)}
-              className="mt-1 block w-full rounded-xl border border-[#d0d5cb] bg-white px-3 py-2.5 text-sm text-[#193c1f]"
+              className="mt-1 block normal-case tracking-normal h-11 w-full rounded-xl border border-[#d0d5cb] bg-white px-3 text-sm font-medium text-[#193c1f] outline-none transition-all focus:border-[#8ea087] focus:ring-2 focus:ring-[#8ea087]/15"
             />
           </label>
-          <label className="text-xs font-bold text-[#687563]">
+          <label className="text-[11px] font-black uppercase tracking-widest text-[#8ea087]">
             <span className="block">End Date</span>
             <input
               type="date"
               value={endDate}
               min={startDate || undefined}
               onChange={(event) => setEndDate(event.target.value)}
-              className="mt-1 block w-full rounded-xl border border-[#d0d5cb] bg-white px-3 py-2.5 text-sm text-[#193c1f]"
+              className="mt-1 block normal-case tracking-normal h-11 w-full rounded-xl border border-[#d0d5cb] bg-white px-3 text-sm font-medium text-[#193c1f] outline-none transition-all focus:border-[#8ea087] focus:ring-2 focus:ring-[#8ea087]/15"
             />
           </label>
           <button
             type="submit"
-            className="rounded-xl bg-[#193c1f] px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50"
+            className="h-11 rounded-xl bg-[#193c1f] px-5 text-sm font-bold text-[#f7f3ed] shadow-sm transition-all hover:bg-[#2d5a35] active:scale-95 disabled:opacity-50"
             disabled={loading}
           >
             Apply Filters
@@ -287,7 +287,7 @@ function HistorySection() {
           <button
             type="button"
             onClick={resetFilters}
-            className="rounded-xl border border-[#d0d5cb] px-4 py-2.5 text-sm font-bold text-[#38513b]"
+            className="h-11 rounded-xl border border-[#d0d5cb] bg-white px-5 text-sm font-bold text-[#193c1f] transition-all hover:bg-[#f7f3ed] active:scale-95"
           >
             Reset
           </button>
@@ -411,15 +411,15 @@ export function AdminDonationDistribution() {
   }
 
   return (
-    <div className="mx-auto max-w-[1440px] space-y-8 pb-10">
+    <div className="space-y-6 md:space-y-8">
       <header>
         <p className="text-xs font-black uppercase tracking-[0.16em] text-[#8ea087]">
           Admin · Donations
         </p>
-        <h1 className="mt-2 text-2xl font-black tracking-tight text-[#193c1f] sm:text-3xl">
+        <h1 className="mt-2 text-2xl font-black leading-tight tracking-tight text-[#193c1f] sm:text-3xl md:text-[32px]">
           Distribution Management
         </h1>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-[#687563]">
+        <p className="mt-1 max-w-3xl text-sm font-medium text-[#8ea087] md:text-base">
           Manage fund allocation for platform and per-report donations based on
           balance.
         </p>
@@ -427,7 +427,7 @@ export function AdminDonationDistribution() {
       <div className="max-w-xs">
         <label
           htmlFor="distribution-target-filter"
-          className="text-xs font-bold text-[#687563]"
+          className="text-[11px] font-black uppercase tracking-widest text-[#8ea087]"
         >
           Target Type
         </label>
@@ -439,7 +439,7 @@ export function AdminDonationDistribution() {
             setReportPage(1);
             setReportPageSearch(search);
           }}
-          className="mt-1 block w-full rounded-xl border border-[#d0d5cb] bg-white px-3 py-2.5 text-sm text-[#193c1f]"
+          className="mt-1 block normal-case tracking-normal h-11 w-full rounded-xl border border-[#d0d5cb] bg-white px-3 text-sm font-medium text-[#193c1f] outline-none transition-all focus:border-[#8ea087] focus:ring-2 focus:ring-[#8ea087]/15"
         >
           <option value="ALL">All Targets</option>
           <option value="GROUP">Group (Platform)</option>
@@ -516,7 +516,7 @@ export function AdminDonationDistribution() {
                   <h2 className="text-xl font-black text-[#193c1f]">
                     {targetTitle}
                   </h2>
-                  <p className="mt-1 text-sm text-[#74816f]">
+                  <p className="mt-1 text-sm text-[#8ea087]">
                     {targetDescription}
                   </p>
                 </div>
@@ -531,12 +531,12 @@ export function AdminDonationDistribution() {
                         <Link
                           key={`${group.targetType}-${group.id}`}
                           href={href}
-                          className="block rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#68836a]"
+                          className="block rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#8ea087]"
                         >
                           <Card className="h-full p-5 transition hover:border-[#8ea087] hover:shadow-md">
                             <div className="flex items-start justify-between gap-3">
                               <div>
-                                <span className="rounded-full bg-[#edf1e9] px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-[#38513b]">
+                                <span className="rounded-full bg-[#f7f3ed] px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-[#193c1f]">
                                   {targetType === 'PLATFORM' ? (
                                     'Platform'
                                   ) : (
@@ -550,14 +550,14 @@ export function AdminDonationDistribution() {
                                   {group.name}
                                 </h3>
                                 {group.reportCategory && (
-                                  <p className="mt-1 text-xs text-[#74816f]">
+                                  <p className="mt-1 text-xs text-[#8ea087]">
                                     {group.reportCategory}
                                   </p>
                                 )}
                               </div>
                               <ArrowRight
                                 size={19}
-                                className="shrink-0 text-[#68836a]"
+                                className="shrink-0 text-[#8ea087]"
                               />
                             </div>
                             <dl className="mt-5 grid grid-cols-2 gap-4">
@@ -573,7 +573,7 @@ export function AdminDonationDistribution() {
                                 ],
                               ].map(([label, value]) => (
                                 <div key={String(label)}>
-                                  <dt className="text-[10px] font-bold uppercase tracking-wider text-[#899286]">
+                                  <dt className="text-[10px] font-bold uppercase tracking-wider text-[#8ea087]">
                                     {label}
                                   </dt>
                                   <dd className="mt-1 break-words font-bold text-[#193c1f]">
@@ -584,7 +584,7 @@ export function AdminDonationDistribution() {
                                 </div>
                               ))}
                             </dl>
-                            <p className="mt-4 border-t border-[#f0f2ed] pt-3 text-xs text-[#74816f]">
+                            <p className="mt-4 border-t border-[#f7f3ed] pt-3 text-xs text-[#8ea087]">
                               <span>{group.donationCount}</span>{' '}
                               <span>donations</span>
                               <span> · </span>
@@ -601,7 +601,7 @@ export function AdminDonationDistribution() {
                 )}
                 {targetType === 'REPORT' && totalPages > 1 && (
                   <>
-                    <p className="text-center text-xs text-[#74816f]">
+                    <p className="text-center text-xs text-[#8ea087]">
                       <span>Showing</span> {(currentPage - 1) * 10 + 1}–
                       {Math.min(currentPage * 10, targetGroups.length)}{' '}
                       <span>of</span> {targetGroups.length} <span>reports</span>
@@ -734,7 +734,7 @@ export function AdminDonationDistributionDetail({
         />
         <Link
           href="/dashboard/admin/donations/distributions"
-          className="inline-flex items-center gap-2 text-sm font-bold text-[#38513b] hover:underline"
+          className="inline-flex items-center gap-2 text-sm font-bold text-[#193c1f] hover:underline"
         >
           <ArrowLeft size={17} />
           Back to Distribution Management
@@ -750,24 +750,24 @@ export function AdminDonationDistributionDetail({
   const canDistribute = group.remainingBalance > 0;
 
   return (
-    <div className="mx-auto max-w-[1280px] space-y-6 pb-10">
+    <div className="space-y-6 md:space-y-8">
       <Link
         href="/dashboard/admin/donations/distributions"
-        className="inline-flex items-center gap-2 text-sm font-bold text-[#38513b] hover:underline"
+        className="inline-flex items-center gap-2 text-sm font-bold text-[#193c1f] hover:underline"
       >
         <ArrowLeft size={17} />
         Back to Distribution Management
       </Link>
       <header>
-        <span className="rounded-full bg-[#edf1e9] px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#38513b]">
+        <span className="rounded-full bg-[#f7f3ed] px-3 py-1 text-[10px] font-black uppercase tracking-wider text-[#193c1f]">
           {group.targetType === 'PLATFORM'
             ? 'Platform Donation Distribution'
             : 'Report Donation Distribution'}
         </span>
-        <h1 className="mt-3 break-words text-2xl font-black tracking-tight text-[#193c1f] sm:text-3xl">
+        <h1 className="mt-3 break-words text-2xl font-black leading-tight tracking-tight text-[#193c1f] sm:text-3xl md:text-[32px]">
           {group.name}
         </h1>
-        <p className="mt-2 text-sm text-[#687563]">
+        <p className="mt-1 text-sm font-medium text-[#8ea087] md:text-base">
           {group.reportId ? (
             <>
               <span>Report</span> #{group.reportId}
@@ -820,7 +820,7 @@ export function AdminDonationDistributionDetail({
           <h2 className="text-lg font-black text-[#193c1f]">
             Process Distribution
           </h2>
-          <p className="mt-1 text-sm text-[#74816f]">
+          <p className="mt-1 text-sm text-[#8ea087]">
             Available balance:{' '}
             <strong className="text-[#193c1f]">
               {formatMoney(group.remainingBalance)}
@@ -849,7 +849,7 @@ export function AdminDonationDistributionDetail({
           onSubmit={submitDistribution}
           className="grid gap-4 sm:grid-cols-2"
         >
-          <label className="text-xs font-bold text-[#687563]">
+          <label className="text-[11px] font-black uppercase tracking-widest text-[#8ea087]">
             <span className="block">Recipient</span>
             <input
               required
@@ -857,11 +857,11 @@ export function AdminDonationDistributionDetail({
               value={recipient}
               onChange={(event) => setRecipient(event.target.value)}
               disabled={!canDistribute || saving}
-              className="mt-1 block w-full rounded-xl border border-[#d0d5cb] px-3 py-2.5 text-sm font-normal text-[#193c1f] disabled:bg-gray-100"
+              className="mt-1 block normal-case tracking-normal w-full rounded-xl border border-[#d0d5cb] bg-white px-3 py-2.5 text-sm font-medium text-[#193c1f] outline-none transition-all focus:border-[#8ea087] focus:ring-2 focus:ring-[#8ea087]/15 disabled:bg-[#f7f3ed]"
               placeholder="Recipient name or purpose"
             />
           </label>
-          <label className="text-xs font-bold text-[#687563]">
+          <label className="text-[11px] font-black uppercase tracking-widest text-[#8ea087]">
             <span className="block">Distribution Amount</span>
             <input
               required
@@ -872,28 +872,28 @@ export function AdminDonationDistributionDetail({
               value={amount}
               onChange={(event) => setAmount(event.target.value)}
               disabled={!canDistribute || saving}
-              className="mt-1 block w-full rounded-xl border border-[#d0d5cb] px-3 py-2.5 text-sm font-normal text-[#193c1f] disabled:bg-gray-100"
+              className="mt-1 block normal-case tracking-normal w-full rounded-xl border border-[#d0d5cb] bg-white px-3 py-2.5 text-sm font-medium text-[#193c1f] outline-none transition-all focus:border-[#8ea087] focus:ring-2 focus:ring-[#8ea087]/15 disabled:bg-[#f7f3ed]"
               placeholder="Enter amount"
             />
           </label>
-          <label className="text-xs font-bold text-[#687563]">
+          <label className="text-[11px] font-black uppercase tracking-widest text-[#8ea087]">
             <span className="block">Distribution Date</span>
             <input
               type="date"
               value={distributedAt}
               onChange={(event) => setDistributedAt(event.target.value)}
               disabled={!canDistribute || saving}
-              className="mt-1 block w-full rounded-xl border border-[#d0d5cb] px-3 py-2.5 text-sm font-normal text-[#193c1f] disabled:bg-gray-100"
+              className="mt-1 block normal-case tracking-normal w-full rounded-xl border border-[#d0d5cb] bg-white px-3 py-2.5 text-sm font-medium text-[#193c1f] outline-none transition-all focus:border-[#8ea087] focus:ring-2 focus:ring-[#8ea087]/15 disabled:bg-[#f7f3ed]"
             />
           </label>
-          <label className="text-xs font-bold text-[#687563] sm:col-span-2">
+          <label className="text-[11px] font-black uppercase tracking-widest text-[#8ea087] sm:col-span-2">
             <span className="block">Notes</span>
             <textarea
               value={notes}
               onChange={(event) => setNotes(event.target.value)}
               disabled={!canDistribute || saving}
               rows={3}
-              className="mt-1 block w-full rounded-xl border border-[#d0d5cb] px-3 py-2.5 text-sm font-normal text-[#193c1f] disabled:bg-gray-100"
+              className="mt-1 block normal-case tracking-normal w-full rounded-xl border border-[#d0d5cb] bg-white px-3 py-2.5 text-sm font-medium text-[#193c1f] outline-none transition-all focus:border-[#8ea087] focus:ring-2 focus:ring-[#8ea087]/15 disabled:bg-[#f7f3ed]"
             />
           </label>
           <button
@@ -908,7 +908,7 @@ export function AdminDonationDistributionDetail({
       </Card>
       <section className="space-y-3">
         <div className="flex items-center gap-2">
-          <CircleDollarSign size={18} className="text-[#38513b]" />
+          <CircleDollarSign size={18} className="text-[#193c1f]" />
           <h2 className="text-lg font-black text-[#193c1f]">
             Donation Transactions
           </h2>
@@ -939,7 +939,7 @@ export function AdminDonationDistributionDetail({
       </section>
       <section className="space-y-3">
         <div className="flex items-center gap-2">
-          <Clock3 size={18} className="text-[#38513b]" />
+          <Clock3 size={18} className="text-[#193c1f]" />
           <h2 className="text-lg font-black text-[#193c1f]">
             Distribution History
           </h2>

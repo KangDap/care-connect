@@ -15,6 +15,40 @@ export const Card = ({
   </div>
 );
 
+/** Compact KPI tile shared by the dashboard overview pages. */
+export const StatCard = ({
+  icon,
+  label,
+  value,
+  hint,
+  className = '',
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: React.ReactNode;
+  hint?: string;
+  className?: string;
+}) => (
+  <Card className={`flex items-center gap-3 p-3 sm:p-4 md:p-5 ${className}`}>
+    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#f7f3ed] text-[#193c1f] md:h-11 md:w-11 md:rounded-2xl">
+      {icon}
+    </div>
+    <div className="min-w-0">
+      <p className="truncate text-[9px] font-black uppercase tracking-widest text-[#8ea087] sm:text-[10px]">
+        {label}
+      </p>
+      <p className="text-lg font-black leading-tight text-[#193c1f] sm:text-xl md:text-2xl">
+        {value}
+      </p>
+      {hint && (
+        <p className="mt-0.5 truncate text-[9px] font-black uppercase tracking-widest text-[#d1b698]">
+          {hint}
+        </p>
+      )}
+    </div>
+  </Card>
+);
+
 export const CardHeader = ({
   title,
   action,

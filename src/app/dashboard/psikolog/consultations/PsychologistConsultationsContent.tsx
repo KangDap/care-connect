@@ -1,6 +1,7 @@
 'use client';
 
 import { Badge } from '@/components/badge';
+import { PageHeader } from '@/components/page-header';
 import { Table } from '@/components/table';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -120,16 +121,14 @@ export default function PsychologistConsultationsContent({
 
   return (
     <div className="space-y-6 md:space-y-8 animate-fade-in">
-      <div>
-        <h2 className="text-2xl sm:text-3xl md:text-[32px] font-black text-[#193c1f]">
-          Patient Consultations
-        </h2>
-        <p className="text-[#8ea087] font-medium text-sm md:text-base">
-          {query
+      <PageHeader
+        title="Patient Consultations"
+        description={
+          query
             ? `Showing results for "${query}"`
-            : 'Manage your upcoming and history of patient sessions.'}
-        </p>
-      </div>
+            : 'Manage your upcoming and history of patient sessions.'
+        }
+      />
       <Table
         data={currentItems}
         keyExtractor={(row) => row.id}
@@ -272,7 +271,7 @@ export default function PsychologistConsultationsContent({
                       onClick={(e) => e.stopPropagation()}
                       className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all shadow-sm border ${
                         statusStr === 'ONGOING'
-                          ? 'bg-[#193c1f] text-white border-[#193c1f] hover:bg-[#122d17]'
+                          ? 'bg-[#193c1f] text-white border-[#193c1f] hover:bg-[#2d5a35]'
                           : 'bg-white text-[#8ea087] border-[#d0d5cb] hover:bg-[#f7f3ed] hover:text-[#193c1f]'
                       }`}
                     >

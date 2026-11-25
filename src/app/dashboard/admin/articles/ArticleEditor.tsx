@@ -273,7 +273,7 @@ export function ArticleEditor({
   const noCategories = categoriesQuery.isSuccess && categories.length === 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 md:space-y-8">
       <Toast
         show={toast.show}
         msg={toast.msg}
@@ -290,7 +290,7 @@ export function ArticleEditor({
             <ArrowLeft size={14} /> Back to Articles
           </Link>
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl font-black text-[#193c1f] sm:text-[32px]">
+            <h1 className="text-2xl font-black leading-tight tracking-tight text-[#193c1f] sm:text-3xl md:text-[32px]">
               {isEdit ? 'Edit Article' : 'New Article'}
             </h1>
             {isEdit && (

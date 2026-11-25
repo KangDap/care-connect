@@ -2,6 +2,7 @@
 
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
+import { PageHeader } from '@/components/page-header';
 import { Table } from '@/components/table';
 import { MessageSquare } from 'lucide-react';
 import Link from 'next/link';
@@ -133,25 +134,23 @@ export default function ConsultationsContent({
 
   return (
     <div className="space-y-6 md:space-y-8 animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl sm:text-3xl md:text-[32px] font-black text-[#193c1f]">
-            My Consultations
-          </h2>
-          <p className="text-[#8ea087] font-medium italic text-sm md:text-base">
-            {query
-              ? `Showing results for "${query}"`
-              : 'View and manage your consultation history.'}
-          </p>
-        </div>
-        <Button
-          onClick={() => router.push('/consultation?from=dashboard')}
-          variant="secondary"
-          className="whitespace-nowrap shadow-lg shrink-0"
-        >
-          + New Consultation
-        </Button>
-      </div>
+      <PageHeader
+        title="My Consultations"
+        description={
+          query
+            ? `Showing results for "${query}"`
+            : 'View and manage your consultation history.'
+        }
+        actions={
+          <Button
+            onClick={() => router.push('/consultation?from=dashboard')}
+            variant="secondary"
+            className="shrink-0 whitespace-nowrap px-5 py-3 text-sm"
+          >
+            + New Consultation
+          </Button>
+        }
+      />
       <Table
         data={currentItems}
         keyExtractor={(row) => row.id}
@@ -285,7 +284,7 @@ export default function ConsultationsContent({
                   }
                   className={`flex items-center justify-center w-10 h-10 rounded-xl transition-all shadow-sm border ${
                     row.status === 'ONGOING'
-                      ? 'bg-[#193c1f] text-white border-[#193c1f] hover:bg-[#122d17]'
+                      ? 'bg-[#193c1f] text-white border-[#193c1f] hover:bg-[#2d5a35]'
                       : 'bg-white text-[#8ea087] border-[#d0d5cb] hover:bg-[#f7f3ed] hover:text-[#193c1f]'
                   }`}
                 >

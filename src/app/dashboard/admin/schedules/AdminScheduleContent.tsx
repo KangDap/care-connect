@@ -305,7 +305,7 @@ export default function AdminSchedulePage() {
   }
 
   return (
-    <div className="space-y-8 pb-20">
+    <div className="space-y-6 pb-20 md:space-y-8">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3 sm:gap-4">
@@ -329,10 +329,10 @@ export default function AdminSchedulePage() {
             </svg>
           </Link>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-black text-[#193C1F] tracking-tight">
+            <h1 className="text-2xl font-black leading-tight tracking-tight text-[#193c1f] sm:text-3xl md:text-[32px]">
               Manage Schedule
             </h1>
-            <p className="text-sm text-[#8EA087] mt-1 font-medium">
+            <p className="mt-1 text-sm font-medium text-[#8ea087] md:text-base">
               Set available consultation days and time slots for{' '}
               {selectedPsy?.name || 'Psychologist'}.
             </p>
@@ -345,7 +345,7 @@ export default function AdminSchedulePage() {
           className={`w-full sm:w-auto rounded-xl sm:rounded-2xl px-5 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm ${
             saveSuccess
               ? 'scale-95 bg-green-500 text-white'
-              : 'bg-[#193c1f] text-white hover:bg-[#2d5c36]'
+              : 'bg-[#193c1f] text-white hover:bg-[#2d5a35]'
           }`}
         >
           {saveLoading ? (

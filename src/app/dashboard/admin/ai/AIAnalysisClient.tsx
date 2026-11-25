@@ -358,10 +358,10 @@ export function AIAnalysisClient({
             <Sparkles size={14} />
             {badgeLabel}
           </div>
-          <h1 className="text-2xl font-black leading-tight text-[#193C1F] md:text-[32px]">
+          <h1 className="text-2xl font-black leading-tight tracking-tight text-[#193c1f] sm:text-3xl md:text-[32px]">
             {title}
           </h1>
-          <p className="mt-1 max-w-3xl text-sm font-medium text-[#8EA087] md:text-base">
+          <p className="mt-1 max-w-3xl text-sm font-medium text-[#8ea087] md:text-base">
             {description}
           </p>
         </div>

@@ -1,5 +1,6 @@
 'use client';
 
+import { PageHeader } from '@/components/page-header';
 import { FileText, Tags } from 'lucide-react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
@@ -43,15 +44,11 @@ export function ArticleManagement() {
   const activeTab = parseArticleManagementTab(searchParams.get('tab'));
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-black text-[#193c1f] sm:text-[32px]">
-          Article Management
-        </h1>
-        <p className="font-medium text-[#8ea087]">
-          Write, publish, and manage educational articles and their categories.
-        </p>
-      </div>
+    <div className="space-y-6 md:space-y-8">
+      <PageHeader
+        title="Article Management"
+        description="Write, publish, and manage educational articles and their categories."
+      />
 
       <nav
         aria-label="Article management sections"

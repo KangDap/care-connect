@@ -1,5 +1,6 @@
 'use client';
 
+import { PageHeader } from '@/components/page-header';
 import { Table } from '@/components/table';
 import { Toast } from '@/components/toast';
 import Link from 'next/link';
@@ -104,7 +105,7 @@ export function ConsultationsClient({
   }, [consultations, searchQuery]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 md:space-y-8">
       <Toast
         show={toast.show}
         msg={toast.msg}
@@ -112,17 +113,13 @@ export function ConsultationsClient({
         onClose={() => setToast((prev) => ({ ...prev, show: false }))}
       />
 
-      <div>
-        <h1 className="text-[32px] font-black text-[#193c1f]">
-          All Consultations
-        </h1>
-        <p className="text-[#8ea087] font-medium">
-          Manage and monitor all platform consultations.
-        </p>
-      </div>
+      <PageHeader
+        title="All Consultations"
+        description="Manage and monitor all platform consultations."
+      />
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-5">
         {[
           {
             label: 'Scheduled',
@@ -145,11 +142,16 @@ export function ConsultationsClient({
             cls: 'text-red-700 bg-red-50 border-red-200',
           },
         ].map((item) => (
-          <div key={item.label} className={`p-4 rounded-xl border ${item.cls}`}>
-            <p className="text-xs font-bold uppercase tracking-wider opacity-70">
+          <div
+            key={item.label}
+            className={`rounded-2xl border p-4 shadow-sm md:rounded-3xl md:p-5 ${item.cls}`}
+          >
+            <p className="text-[10px] font-black uppercase tracking-widest opacity-70">
               {item.label}
             </p>
-            <p className="text-3xl font-black mt-1">{item.count}</p>
+            <p className="mt-1 text-2xl font-black leading-tight">
+              {item.count}
+            </p>
           </div>
         ))}
       </div>

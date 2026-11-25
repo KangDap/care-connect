@@ -164,14 +164,14 @@ export default function PsychologistScheduleView() {
   }, 0);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 md:space-y-8">
       {/* Header */}
-      <div className="flex items-start justify-between">
+      <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-[#193c1f] tracking-tight">
+          <h1 className="text-2xl font-black leading-tight tracking-tight text-[#193c1f] sm:text-3xl md:text-[32px]">
             My Consultation Schedule
-          </h2>
-          <p className="text-sm text-[#8ea087] mt-1 font-medium">
+          </h1>
+          <p className="mt-1 text-sm font-medium text-[#8ea087] md:text-base">
             Your availability schedule configured by Admin.
           </p>
         </div>

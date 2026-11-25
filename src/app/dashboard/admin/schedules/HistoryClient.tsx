@@ -2,6 +2,7 @@
 
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
+import { PageHeader } from '@/components/page-header';
 import { Table } from '@/components/table';
 import { Calendar, Loader2, Pencil, User } from 'lucide-react';
 import Image from 'next/image';
@@ -63,23 +64,18 @@ export default function HistoryClient() {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#193C1F] tracking-tight">
-            Psychologist Schedules
-          </h1>
-          <p className="text-sm text-[#8EA087] mt-1 font-medium">
-            Manage availability and consultation hours for all psychologists.
-          </p>
-        </div>
-        <Link href="/dashboard/admin/schedules/form" className="shrink-0">
-          <Button className="rounded-2xl px-5 sm:px-6 py-2.5 sm:py-3 text-sm shadow-sm">
-            <Calendar size={16} /> Manage Schedule
-          </Button>
-        </Link>
-      </div>
+    <div className="space-y-6 md:space-y-8">
+      <PageHeader
+        title="Psychologist Schedules"
+        description="Manage availability and consultation hours for all psychologists."
+        actions={
+          <Link href="/dashboard/admin/schedules/form" className="shrink-0">
+            <Button className="whitespace-nowrap px-5 py-3 text-sm">
+              <Calendar size={16} /> Manage Schedule
+            </Button>
+          </Link>
+        }
+      />
 
       {/* Table of Psychologists */}
       <Table

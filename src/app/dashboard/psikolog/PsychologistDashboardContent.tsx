@@ -1,7 +1,8 @@
 'use client';
 
 import { Badge } from '@/components/badge';
-import { Card } from '@/components/card';
+import { Card, StatCard } from '@/components/card';
+import { PageHeader } from '@/components/page-header';
 import { Table } from '@/components/table';
 import { Activity, CheckCircle, Clock, CreditCard } from 'lucide-react';
 import Link from 'next/link';
@@ -115,17 +116,14 @@ export default function PsychologistDashboardContent({
 
   return (
     <div className="space-y-6 md:space-y-8 animate-fade-in">
-      {/* Header */}
-      <div>
-        <h2 className="text-2xl sm:text-3xl md:text-[36px] font-black text-[#193c1f] tracking-tight leading-tight">
-          Welcome, {displayName}
-        </h2>
-        <p className="text-[#8ea087] text-sm md:text-[16px] font-medium mt-1">
-          {searchBarQuery
+      <PageHeader
+        title={`Welcome, ${displayName}`}
+        description={
+          searchBarQuery
             ? `Showing results for "${searchBarQuery}"`
-            : `You have ${pendingConsultationsCount} upcoming consultations to handle.`}
-        </p>
-      </div>
+            : `You have ${pendingConsultationsCount} upcoming consultations to handle.`
+        }
+      />
 
       {/* Stats Cards — 2 cols on mobile/sm, 4 on lg if paymentEnabled else 3 */}
       <div
@@ -135,34 +133,14 @@ export default function PsychologistDashboardContent({
             : 'grid-cols-2 lg:grid-cols-3'
         }`}
       >
-        {stats.map((item, index) => (
-          <Card
-            key={index}
-            className="flex items-center gap-3 md:gap-4 p-3 sm:p-4 md:p-5 rounded-[20px] md:rounded-[28px] bg-[#f7f3ed] border-0"
-          >
-            <div className="w-9 h-9 md:w-11 md:h-11 bg-[#EBE6DE] rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 text-[#193c1f]">
-              {item.icon}
-            </div>
-            <div className="min-w-0">
-              <p className="text-[8px] sm:text-[9px] md:text-[10px] uppercase font-black text-[#8ea087] tracking-widest truncate leading-tight mb-0.5">
-                {item.label}
-              </p>
-              <p
-                className={`font-bold text-[#193c1f] leading-tight ${
-                  item.highlight
-                    ? 'text-xs sm:text-sm md:text-base'
-                    : 'text-lg sm:text-xl md:text-2xl'
-                }`}
-              >
-                {item.val}
-              </p>
-              {item.highlight && (
-                <p className="text-[8px] md:text-[9px] text-[#d6a36c] font-black uppercase tracking-widest mt-0.5">
-                  This month
-                </p>
-              )}
-            </div>
-          </Card>
+        {stats.map((item) => (
+          <StatCard
+            key={item.label}
+            icon={item.icon}
+            label={item.label}
+            value={item.val}
+            hint={item.highlight ? 'This month' : undefined}
+          />
         ))}
       </div>
 

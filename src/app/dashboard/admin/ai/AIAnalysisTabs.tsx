@@ -16,10 +16,10 @@ export function AIAnalysisTabs() {
   const [activeTab, setActiveTab] = useState<AITab>('apriori');
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 md:space-y-8">
       <div
         aria-label="Jenis analisis AI"
-        className="flex w-fit flex-wrap gap-2 rounded-2xl border border-[#dce2d7] bg-white p-1.5"
+        className="flex w-fit flex-wrap gap-1 rounded-2xl border border-[#d0d5cb] bg-white p-1.5 shadow-sm"
         role="tablist"
       >
         {tabs.map((tab) => (
@@ -30,10 +30,10 @@ export function AIAnalysisTabs() {
             role="tab"
             aria-selected={activeTab === tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`rounded-xl px-4 py-2.5 text-sm font-bold transition-colors ${
+            className={`rounded-xl px-5 py-2.5 text-xs font-black uppercase tracking-[0.12em] transition-all ${
               activeTab === tab.id
-                ? 'bg-[#193c1f] text-white shadow-sm'
-                : 'text-[#687563] hover:bg-[#edf1e9] hover:text-[#193c1f]'
+                ? 'bg-[#193c1f] text-[#f7f3ed] shadow-sm'
+                : 'text-[#8ea087] hover:bg-[#f7f3ed] hover:text-[#193c1f]'
             }`}
           >
             {tab.label}

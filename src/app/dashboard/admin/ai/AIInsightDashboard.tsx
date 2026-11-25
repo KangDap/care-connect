@@ -183,7 +183,7 @@ export function AIInsightDashboard() {
   const consultationCount = shownData?.consultations.totalCount ?? 0;
 
   return (
-    <div className="mx-auto max-w-[1440px] space-y-6 pb-10 md:space-y-8">
+    <div className="space-y-6 md:space-y-8">
       <section className="relative overflow-hidden rounded-3xl bg-[#193c1f] px-6 py-8 text-white shadow-sm sm:px-9 sm:py-10">
         <div className="absolute -right-14 -top-20 h-64 w-64 rounded-full border-[40px] border-white/[0.04]" />
         <div className="relative max-w-3xl">
@@ -204,12 +204,12 @@ export function AIInsightDashboard() {
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div className="grid gap-3 sm:grid-cols-3">
             <label className="block">
-              <span className="mb-1.5 block text-xs font-bold text-[#687563]">
+              <span className="mb-1.5 block text-[11px] font-black uppercase tracking-widest text-[#8ea087]">
                 Rentang waktu
               </span>
               <span className="relative block">
                 <CalendarDays
-                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#74816f]"
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#8ea087]"
                   size={16}
                 />
                 <select
@@ -217,7 +217,7 @@ export function AIInsightDashboard() {
                   onChange={(event) =>
                     setPeriod(event.target.value as PeriodFilter)
                   }
-                  className="h-11 w-full appearance-none rounded-xl border border-[#dce2d7] bg-white pl-10 pr-3 text-sm font-medium text-[#344235] outline-none focus:border-[#68836a] focus:ring-2 focus:ring-[#68836a]/15"
+                  className="h-11 w-full appearance-none rounded-xl border border-[#d0d5cb] bg-white pl-10 pr-3 text-sm font-medium text-[#193c1f] outline-none transition-all focus:border-[#8ea087] focus:ring-2 focus:ring-[#8ea087]/15"
                 >
                   {periods.map((item) => (
                     <option key={item.value} value={item.value}>
@@ -228,7 +228,7 @@ export function AIInsightDashboard() {
               </span>
             </label>
             <label className="block">
-              <span className="mb-1.5 block text-xs font-bold text-[#687563]">
+              <span className="mb-1.5 block text-[11px] font-black uppercase tracking-widest text-[#8ea087]">
                 Sumber data
               </span>
               <select
@@ -236,7 +236,7 @@ export function AIInsightDashboard() {
                 onChange={(event) =>
                   setSource(event.target.value as DataSource)
                 }
-                className="h-11 w-full rounded-xl border border-[#dce2d7] bg-white px-3 text-sm font-medium text-[#344235] outline-none focus:border-[#68836a] focus:ring-2 focus:ring-[#68836a]/15"
+                className="h-11 w-full rounded-xl border border-[#d0d5cb] bg-white px-3 text-sm font-medium text-[#193c1f] outline-none transition-all focus:border-[#8ea087] focus:ring-2 focus:ring-[#8ea087]/15"
               >
                 <option value="all">Laporan & konsultasi</option>
                 <option value="reports">Laporan</option>
@@ -244,13 +244,13 @@ export function AIInsightDashboard() {
               </select>
             </label>
             <label className="block">
-              <span className="mb-1.5 block text-xs font-bold text-[#687563]">
+              <span className="mb-1.5 block text-[11px] font-black uppercase tracking-widest text-[#8ea087]">
                 Kategori
               </span>
               <select
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
-                className="h-11 w-full rounded-xl border border-[#dce2d7] bg-white px-3 text-sm font-medium capitalize text-[#344235] outline-none focus:border-[#68836a] focus:ring-2 focus:ring-[#68836a]/15"
+                className="h-11 w-full rounded-xl border border-[#d0d5cb] bg-white px-3 text-sm font-medium capitalize text-[#193c1f] outline-none transition-all focus:border-[#8ea087] focus:ring-2 focus:ring-[#8ea087]/15"
               >
                 <option value="all">Semua kategori</option>
                 {availableCategories.map((item) => (
@@ -263,13 +263,13 @@ export function AIInsightDashboard() {
           </div>
           <div>
             <label className="block min-w-[150px]">
-              <span className="mb-1.5 block text-xs font-bold text-[#687563]">
+              <span className="mb-1.5 block text-[11px] font-black uppercase tracking-widest text-[#8ea087]">
                 Ukuran sampel
               </span>
               <select
                 value={sampleSize}
                 onChange={(event) => setSampleSize(Number(event.target.value))}
-                className="h-11 w-full rounded-xl border border-[#dce2d7] bg-white px-3 text-sm font-medium text-[#344235] outline-none focus:border-[#68836a] focus:ring-2 focus:ring-[#68836a]/15"
+                className="h-11 w-full rounded-xl border border-[#d0d5cb] bg-white px-3 text-sm font-medium text-[#193c1f] outline-none transition-all focus:border-[#8ea087] focus:ring-2 focus:ring-[#8ea087]/15"
               >
                 {sampleSizes.map((size) => (
                   <option key={size} value={size}>
@@ -281,7 +281,7 @@ export function AIInsightDashboard() {
           </div>
         </div>
         {data && (
-          <p className="mt-3 text-xs text-[#899286]">
+          <p className="mt-3 text-xs text-[#8ea087]">
             Periode {periodName} · data sampai{' '}
             {new Intl.DateTimeFormat('id-ID', { dateStyle: 'medium' }).format(
               new Date(data.endDate),
@@ -312,8 +312,8 @@ export function AIInsightDashboard() {
       {loading && !data && (
         <Card className="flex min-h-64 items-center justify-center p-8">
           <div className="text-center">
-            <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-[#dce2d7] border-t-[#34563a]" />
-            <p className="mt-4 text-sm font-semibold text-[#687563]">
+            <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-[#d0d5cb] border-t-[#193c1f]" />
+            <p className="mt-4 text-sm font-semibold text-[#8ea087]">
               Memuat ringkasan data…
             </p>
           </div>
@@ -365,7 +365,7 @@ export function AIInsightDashboard() {
             )}
           </div>
 
-          <p className="rounded-xl border border-[#e3e7df] bg-white/70 px-4 py-3 text-xs leading-5 text-[#7b8478]">
+          <p className="rounded-xl border border-[#d0d5cb] bg-white/70 px-4 py-3 text-xs leading-5 text-[#8ea087]">
             Sampel dipilih secara terstratifikasi dari data pada periode
             terpilih, dan identitas pelapor tidak ditampilkan.
           </p>

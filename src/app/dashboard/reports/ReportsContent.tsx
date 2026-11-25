@@ -2,6 +2,7 @@
 
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
+import { PageHeader } from '@/components/page-header';
 import { Table } from '@/components/table';
 import { FileText } from 'lucide-react';
 import Link from 'next/link';
@@ -96,25 +97,23 @@ export default function ReportsContent({ reports }: ReportsContentProps) {
 
   return (
     <div className="space-y-6 md:space-y-8 animate-fade-in">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-2xl sm:text-3xl md:text-[32px] font-black text-[#193c1f]">
-            My Reports
-          </h2>
-          <p className="text-[#8ea087] font-medium text-sm md:text-base">
-            {query
-              ? `Showing results for "${query}"`
-              : 'Track the status of your submitted reports.'}
-          </p>
-        </div>
-        <Button
-          onClick={() => router.push('/report?from=dashboard')}
-          variant="secondary"
-          className="whitespace-nowrap shadow-lg shrink-0"
-        >
-          + New Report
-        </Button>
-      </div>
+      <PageHeader
+        title="My Reports"
+        description={
+          query
+            ? `Showing results for "${query}"`
+            : 'Track the status of your submitted reports.'
+        }
+        actions={
+          <Button
+            onClick={() => router.push('/report?from=dashboard')}
+            variant="secondary"
+            className="shrink-0 whitespace-nowrap px-5 py-3 text-sm"
+          >
+            + New Report
+          </Button>
+        }
+      />
 
       <Table
         data={currentItems}

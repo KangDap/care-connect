@@ -1,4 +1,5 @@
-import { Card } from '@/components/card';
+import { Card, StatCard } from '@/components/card';
+import { PageHeader } from '@/components/page-header';
 import type { ApiFailure, ApiSuccess } from '@/lib/api-response';
 import type { AdminDashboardData } from '@/modules/dashboard/dashboard.types';
 import { Activity, CreditCard, FileText, MessageSquare } from 'lucide-react';
@@ -86,47 +87,29 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="space-y-6 md:space-y-8">
-      <div>
-        <h1 className="text-2xl font-black leading-tight text-[#193C1F] md:text-[32px]">
-          Admin Dashboard
-        </h1>
-        <p className="mt-1 text-sm font-medium text-[#8EA087] md:text-base">
-          Platform overview {paymentEnabled ? '&' : 'and'} moderation center.
-        </p>
-      </div>
+      <PageHeader
+        title="Admin Dashboard"
+        description={`Platform overview ${paymentEnabled ? '&' : 'and'} moderation center.`}
+      />
 
       {/* Stats Cards */}
       <div
         className={`grid gap-3 md:gap-5 ${paymentEnabled ? 'grid-cols-2 lg:grid-cols-4' : 'grid-cols-1 sm:grid-cols-3'}`}
       >
         {baseStats.map(({ label, value, detail, icon: Icon }) => (
-          <Card key={label} className="p-2 sm:p-4 md:p-5 shadow-sm">
-            <div className="flex items-center gap-1.5 sm:gap-3">
-              <div className="w-7 h-7 sm:w-9 sm:h-9 md:w-10 md:h-10 bg-[#F7F3ED] rounded-lg md:rounded-xl flex items-center justify-center shrink-0">
-                <Icon
-                  className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-[#193C1F]"
-                  strokeWidth={2.5}
-                />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-[7.5px] sm:text-[10px] md:text-xs text-[#8EA087] font-bold uppercase tracking-wider truncate">
-                  {label}
-                </p>
-                <h3 className="text-sm sm:text-xl md:text-3xl font-black text-[#193C1F] leading-tight truncate">
-                  {value}
-                </h3>
-                <span className="text-[6.5px] sm:text-[8px] md:text-[9px] font-black uppercase tracking-widest text-amber-600 bg-amber-50 px-1 py-0.5 rounded-full border border-amber-200 inline-block mt-0.5 whitespace-nowrap">
-                  {detail}
-                </span>
-              </div>
-            </div>
-          </Card>
+          <StatCard
+            key={label}
+            icon={<Icon size={20} strokeWidth={2.5} />}
+            label={label}
+            value={value}
+            hint={detail}
+          />
         ))}
       </div>
 
       {/* Donation Summary Row — only when payment enabled */}
       {paymentEnabled && (
-        <div className="grid grid-cols-3 gap-1.5 sm:gap-3 md:gap-5">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 md:gap-5">
           {[
             {
               label: 'Today',
@@ -143,15 +126,12 @@ export default async function AdminDashboardPage() {
           ].map((item) => (
             <div
               key={item.label}
-              className="bg-[#193C1F] text-white rounded-lg sm:rounded-2xl p-1.5 sm:p-4 md:p-5 shadow-sm min-w-0 overflow-hidden"
+              className="min-w-0 overflow-hidden rounded-2xl bg-[#193C1F] p-4 text-white shadow-sm md:rounded-3xl md:p-5"
             >
-              <p className="text-[#8EA087] text-[7px] sm:text-[10px] md:text-xs font-bold uppercase tracking-wider mb-0.5 sm:mb-2 opacity-80 truncate">
+              <p className="mb-1 truncate text-[10px] font-black uppercase tracking-widest text-[#8EA087] md:text-xs">
                 {item.label}
               </p>
-              <p
-                className="text-[9px] sm:text-sm md:text-base font-black leading-tight hyphens-auto"
-                style={{ wordBreak: 'break-word', overflowWrap: 'anywhere' }}
-              >
+              <p className="text-lg font-black leading-tight md:text-xl">
                 {item.value}
               </p>
             </div>
@@ -161,15 +141,15 @@ export default async function AdminDashboardPage() {
 
       {/* Charts Row */}
       <div
-        className={`grid grid-cols-1 gap-6 ${paymentEnabled ? 'lg:grid-cols-3' : 'lg:grid-cols-2'}`}
+        className={`grid grid-cols-1 gap-5 md:gap-8 ${paymentEnabled ? 'lg:grid-cols-3' : 'lg:grid-cols-2'}`}
       >
         {/* Donations Line Chart — only when payment enabled */}
         {paymentEnabled && (
           <Card className="lg:col-span-1 p-4 sm:p-5 md:p-6 min-w-0">
-            <h4 className="font-black text-[#193C1F] mb-1 text-sm md:text-base">
+            <h3 className="text-lg font-black tracking-tight text-[#193C1F] sm:text-xl">
               Donations (7 Days)
-            </h4>
-            <p className="text-[#8EA087] text-[10px] md:text-xs mb-4">
+            </h3>
+            <p className="mb-4 mt-0.5 text-xs font-medium text-[#8EA087]">
               Total amount per day
             </p>
             <div className="h-[250px] md:h-[300px] w-full min-w-0">
@@ -180,10 +160,10 @@ export default async function AdminDashboardPage() {
 
         {/* Reports Bar Chart */}
         <Card className="p-4 sm:p-5 md:p-6 min-w-0">
-          <h4 className="font-black text-[#193C1F] mb-1 text-sm md:text-base">
+          <h3 className="text-lg font-black tracking-tight text-[#193C1F] sm:text-xl">
             Reports by Status
-          </h4>
-          <p className="text-[#8EA087] text-[10px] md:text-xs mb-4">
+          </h3>
+          <p className="mb-4 mt-0.5 text-xs font-medium text-[#8EA087]">
             Distribution of all reports
           </p>
           <div className="h-[250px] md:h-[300px] w-full min-w-0">
@@ -193,10 +173,10 @@ export default async function AdminDashboardPage() {
 
         {/* Consultations Bar Chart */}
         <Card className="p-4 sm:p-5 md:p-6 min-w-0">
-          <h4 className="font-black text-[#193C1F] mb-1 text-sm md:text-base">
+          <h3 className="text-lg font-black tracking-tight text-[#193C1F] sm:text-xl">
             Consultations by Status
-          </h4>
-          <p className="text-[#8EA087] text-[10px] md:text-xs mb-4">
+          </h3>
+          <p className="mb-4 mt-0.5 text-xs font-medium text-[#8EA087]">
             Distribution of all consultations
           </p>
           <div className="h-[250px] md:h-[300px] w-full min-w-0">
@@ -208,18 +188,18 @@ export default async function AdminDashboardPage() {
       {/* Recent Donations Table — only when payment enabled */}
       {paymentEnabled && (
         <Card className="p-0">
-          <div className="p-4 sm:p-5 md:p-6 border-b border-[#D0D5CB]/50 flex justify-between items-center bg-[#FDFCFB]">
+          <div className="flex items-center justify-between gap-3 border-b border-[#D0D5CB]/50 bg-[#FDFCFB] p-4 sm:p-5 md:p-6">
             <div>
-              <h4 className="font-black text-[#193C1F] text-sm md:text-base">
+              <h3 className="text-lg font-black tracking-tight text-[#193C1F] sm:text-xl">
                 Recent Donations
-              </h4>
-              <p className="text-[#8EA087] text-[10px] md:text-xs mt-0.5">
+              </h3>
+              <p className="mt-0.5 text-xs font-medium text-[#8EA087]">
                 Latest successful transactions
               </p>
             </div>
             <NextLink
               href="/dashboard/admin/donations"
-              className="text-[11px] md:text-sm font-black text-[#193C1F] hover:opacity-70 transition-opacity bg-[#F7F3ED] px-3 py-1.5 md:px-4 md:py-2 rounded-xl border border-[#D0D5CB]"
+              className="text-[11px] md:text-sm font-black text-[#193C1F] hover:opacity-70 transition-opacity bg-[#F7F3ED] px-3 py-1.5 rounded-xl border border-[#D0D5CB] whitespace-nowrap"
             >
               View All →
             </NextLink>

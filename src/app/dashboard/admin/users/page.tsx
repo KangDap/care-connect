@@ -1,3 +1,4 @@
+import { PageHeader } from '@/components/page-header';
 import { Prisma } from '@/generated/prisma/client';
 import { prisma } from '@/lib/prisma';
 
@@ -43,15 +44,11 @@ export default async function AdminUsersPage({ searchParams }: PageProps) {
   const totalPages = Math.ceil(totalCount / perPage);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-[32px] font-black text-[#193c1f]">
-          Users Moderation
-        </h1>
-        <p className="text-[#8ea087] font-medium">
-          Manage and moderate user accounts in the platform.
-        </p>
-      </div>
+    <div className="space-y-6 md:space-y-8">
+      <PageHeader
+        title="Users Moderation"
+        description="Manage and moderate user accounts in the platform."
+      />
 
       <UsersClient
         users={users}

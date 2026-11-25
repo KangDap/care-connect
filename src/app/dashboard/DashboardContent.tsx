@@ -2,7 +2,8 @@
 
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
-import { Card } from '@/components/card';
+import { Card, StatCard } from '@/components/card';
+import { PageHeader } from '@/components/page-header';
 import { Table } from '@/components/table';
 import { Activity, CreditCard, FileText } from 'lucide-react';
 import Link from 'next/link';
@@ -125,58 +126,51 @@ export default function DashboardContent({
 
   return (
     <div className="space-y-6 md:space-y-8 animate-fade-in">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-        <div>
-          <h2 className="text-2xl sm:text-3xl md:text-[36px] font-black text-[#193c1f] tracking-tight leading-tight">
-            Welcome back, {displayName}
-          </h2>
-          <p className="text-[#8ea087] text-sm md:text-[16px] font-medium mt-1">
-            {searchBarQuery
-              ? `Showing results for "${searchBarQuery}"`
-              : pendingReportsCount > 0
-                ? `You have ${pendingReportsCount} pending reports.`
-                : 'No pending reports right now.'}
-          </p>
-        </div>
-        <div
-          className={`grid gap-1 sm:flex sm:flex-wrap sm:gap-2 ${
-            paymentEnabled ? 'grid-cols-3' : 'grid-cols-2'
-          }`}
-        >
-          <Button
-            suppressHydrationWarning
-            onClick={() => router.push('/consultation?from=dashboard')}
-            variant="secondary"
-            className="text-[10px] sm:text-xs md:text-sm px-1.5 py-1 sm:px-3 shadow-md truncate"
-          >
-            + New Consultation
-          </Button>
-          <Button
-            suppressHydrationWarning
-            onClick={() => router.push('/report?from=dashboard')}
-            variant="outline"
-            className="text-[10px] sm:text-xs md:text-sm px-1.5 py-1 sm:px-3 shadow-md truncate"
-          >
-            + New Report
-          </Button>
-          {paymentEnabled && (
+      <PageHeader
+        title={`Welcome back, ${displayName}`}
+        description={
+          searchBarQuery
+            ? `Showing results for "${searchBarQuery}"`
+            : pendingReportsCount > 0
+              ? `You have ${pendingReportsCount} pending reports.`
+              : 'No pending reports right now.'
+        }
+        actions={
+          <div className="flex flex-wrap gap-2">
             <Button
               suppressHydrationWarning
-              onClick={() => router.push('/donation?from=dashboard')}
-              variant="outline"
-              className="text-[10px] sm:text-xs md:text-sm px-1.5 py-1 sm:px-3 shadow-md truncate"
+              onClick={() => router.push('/consultation?from=dashboard')}
+              variant="secondary"
+              className="px-4 py-2.5 text-xs sm:px-5 sm:py-3 sm:text-sm"
             >
-              + New Donation
+              + New Consultation
             </Button>
-          )}
-        </div>
-      </div>
+            <Button
+              suppressHydrationWarning
+              onClick={() => router.push('/report?from=dashboard')}
+              variant="outline"
+              className="px-4 py-2.5 text-xs sm:px-5 sm:py-3 sm:text-sm"
+            >
+              + New Report
+            </Button>
+            {paymentEnabled && (
+              <Button
+                suppressHydrationWarning
+                onClick={() => router.push('/donation?from=dashboard')}
+                variant="outline"
+                className="px-4 py-2.5 text-xs sm:px-5 sm:py-3 sm:text-sm"
+              >
+                + New Donation
+              </Button>
+            )}
+          </div>
+        }
+      />
 
       {/* Stats Cards */}
       <div
-        className={`grid gap-2 md:gap-4 ${
-          paymentEnabled ? 'grid-cols-3' : 'grid-cols-2'
+        className={`grid gap-3 md:gap-5 ${
+          paymentEnabled ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-2'
         }`}
       >
         {[
@@ -199,29 +193,13 @@ export default function DashboardContent({
                 },
               ]
             : []),
-        ].map((item, index) => (
-          <Card
-            key={index}
-            className="flex items-center gap-2 rounded-[16px] md:rounded-[24px] bg-[#f7f3ed] p-2 sm:p-4 md:p-5 border-0"
-          >
-            <div className="w-6 h-6 sm:w-9 sm:h-9 md:w-11 md:h-11 bg-[#EBE6DE] rounded-lg md:rounded-2xl flex items-center justify-center shrink-0 text-[#193c1f]">
-              {item.icon}
-            </div>
-            <div className="min-w-0">
-              <p className="text-[9px] sm:text-[10px] uppercase font-black text-[#8ea087] tracking-widest truncate">
-                {item.label}
-              </p>
-              <p
-                className={`${
-                  item.label === 'Donations Given'
-                    ? 'text-sm sm:text-base md:text-lg'
-                    : 'text-xl sm:text-2xl md:text-[28px]'
-                } font-bold text-[#193c1f] leading-tight truncate`}
-              >
-                {item.val}
-              </p>
-            </div>
-          </Card>
+        ].map((item) => (
+          <StatCard
+            key={item.label}
+            icon={item.icon}
+            label={item.label}
+            value={item.val}
+          />
         ))}
       </div>
 

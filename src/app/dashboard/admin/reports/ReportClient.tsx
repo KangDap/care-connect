@@ -4,6 +4,7 @@ import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
 import { Input } from '@/components/input';
 import { Modal } from '@/components/modal';
+import { PageHeader } from '@/components/page-header';
 import { Table } from '@/components/table';
 import { Toast } from '@/components/toast';
 import { FileText, Pencil, Trash2 } from 'lucide-react';
@@ -206,7 +207,7 @@ export function ReportClient({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 md:space-y-8">
       <Toast
         show={toastState.show}
         msg={toastState.msg}
@@ -214,21 +215,17 @@ export function ReportClient({
         onClose={() => setToastState({ ...toastState, show: false })}
       />
 
-      <div>
-        <h1 className="text-[32px] font-black text-[#193c1f]">
-          Reports Moderation
-        </h1>
-        <p className="text-[#8ea087] font-medium">
-          Review and manage all incident reports.
-        </p>
-      </div>
+      <PageHeader
+        title="Reports Moderation"
+        description="Review and manage all incident reports."
+      />
 
-      <div className="flex gap-2 flex-wrap items-center">
+      <div className="flex gap-3 flex-wrap items-center">
         {tabs.map((tab) => (
           <Link
             key={tab.value}
             href={buildReportsHref(tab.value)}
-            className={`px-4 py-2 rounded-xl text-sm font-bold transition-all border ${
+            className={`px-5 py-2.5 rounded-xl text-sm font-bold transition-all border ${
               activeTab === tab.value
                 ? 'bg-[#193c1f] text-white border-[#193c1f]'
                 : 'bg-white text-[#193c1f] border-[#d0d5cb] hover:border-[#193c1f]'

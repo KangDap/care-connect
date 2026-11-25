@@ -4,6 +4,7 @@ import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
 import { Card } from '@/components/card';
 import { Input } from '@/components/input';
+import { PageHeader } from '@/components/page-header';
 import { Table } from '@/components/table';
 import { Toast } from '@/components/toast';
 import Link from 'next/link';
@@ -250,7 +251,7 @@ export function DonationClient({
   }, [donations, searchQuery]);
 
   return (
-    <div className="space-y-6 md:space-y-10">
+    <div className="space-y-6 md:space-y-8">
       <Toast
         show={toast.show}
         msg={toast.msg}
@@ -259,27 +260,23 @@ export function DonationClient({
       />
 
       {/* Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl sm:text-3xl md:text-[40px] font-black text-[#193c1f] tracking-tight leading-tight">
-            Donation &amp; Payouts
-          </h1>
-          <p className="text-[#8ea087] font-medium mt-2">
-            Monitor platform revenue and calculate psychologist shares.
-          </p>
-        </div>
-        <Link
-          href="/dashboard/admin/donations/distributions"
-          className="inline-flex w-fit items-center rounded-xl bg-[#193c1f] px-4 py-3 text-sm font-bold text-white transition hover:bg-[#2d5a35]"
-        >
-          Distribution Management
-        </Link>
-      </div>
+      <PageHeader
+        title="Donation &amp; Payouts"
+        description="Monitor platform revenue and calculate psychologist shares."
+        actions={
+          <Link
+            href="/dashboard/admin/donations/distributions"
+            className="inline-flex w-fit shrink-0 items-center justify-center whitespace-nowrap rounded-2xl bg-[#193c1f] px-5 py-3 text-sm font-bold text-[#f7f3ed] no-underline shadow-sm transition-all hover:bg-[#2d5a35] active:scale-95"
+          >
+            Distribution Management
+          </Link>
+        }
+      />
 
       {/* Summary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 items-stretch">
         {/* Card 1: Revenue */}
-        <Card className="p-3 sm:p-4 md:p-6 shadow-md relative group flex flex-col h-full rounded-2xl md:rounded-3xl border border-[#D0D5CB]/50">
+        <Card className="relative group flex h-full flex-col p-4 md:p-6">
           <div className="relative z-10 flex flex-col h-full">
             <div className="flex items-center gap-2 mb-3 md:mb-6">
               <div className="p-1.5 md:p-2 bg-[#193c1f] rounded-lg text-white shrink-0">
@@ -295,7 +292,7 @@ export function DonationClient({
                   <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                 </svg>
               </div>
-              <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-[#8ea087]">
+              <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-[#8ea087]">
                 Revenue {months[currentMonth - 1]}
               </p>
             </div>
@@ -312,7 +309,7 @@ export function DonationClient({
             {/* Monthly Breakdown */}
             <div className="grid grid-cols-2 gap-3 mb-4 md:mb-8 py-3 md:py-5 border-y border-[#D0D5CB]/50">
               <div>
-                <p className="text-[7px] md:text-[8px] font-black uppercase tracking-widest text-[#8ea087] mb-0.5 md:mb-1">
+                <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-[#8ea087] mb-0.5 md:mb-1">
                   Monthly Platform (10%)
                 </p>
                 <p className="font-bold text-xs md:text-sm text-[#193c1f]">
@@ -320,10 +317,10 @@ export function DonationClient({
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-[7px] md:text-[8px] font-black uppercase tracking-widest text-[#d6a36c] mb-0.5 md:mb-1">
+                <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-[#d1b698] mb-0.5 md:mb-1">
                   Monthly Psych (90%)
                 </p>
-                <p className="font-black text-xs md:text-sm text-[#d6a36c]">
+                <p className="font-black text-xs md:text-sm text-[#d1b698]">
                   {fmt(summary.psychologistPool)}
                 </p>
               </div>
@@ -331,7 +328,7 @@ export function DonationClient({
 
             <div className="mt-auto flex justify-between items-end pt-2">
               <div className="flex flex-col">
-                <span className="text-[8px] font-bold uppercase tracking-widest text-[#8ea087] mb-1">
+                <span className="text-[9px] font-bold uppercase tracking-widest text-[#8ea087] mb-1">
                   All Time Platform
                 </span>
                 <span className="font-bold text-xs text-[#193c1f]">
@@ -339,10 +336,10 @@ export function DonationClient({
                 </span>
               </div>
               <div className="flex flex-col items-end">
-                <span className="text-[8px] font-bold uppercase tracking-widest text-[#d6a36c] mb-1">
+                <span className="text-[9px] font-bold uppercase tracking-widest text-[#d1b698] mb-1">
                   All Time Psych
                 </span>
-                <span className="font-black text-sm text-[#d6a36c] leading-none">
+                <span className="font-black text-sm text-[#d1b698] leading-none">
                   {fmt(summary.allTimeTotal * 0.9)}
                 </span>
               </div>
@@ -351,7 +348,7 @@ export function DonationClient({
         </Card>
 
         {/* Card 2: Sessions */}
-        <Card className="p-3 sm:p-4 md:p-6 border border-[#f7f3ed] shadow-md relative group flex flex-col h-full rounded-2xl md:rounded-3xl">
+        <Card className="relative group flex h-full flex-col p-4 md:p-6">
           <div className="relative z-10 flex flex-col h-full">
             <div className="flex items-center gap-2 mb-3 md:mb-6">
               <div className="p-1.5 md:p-2 bg-[#f7f3ed] rounded-lg text-[#193c1f]">
@@ -370,7 +367,7 @@ export function DonationClient({
                   <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                 </svg>
               </div>
-              <p className="text-[8px] md:text-[10px] font-black text-[#8ea087] uppercase tracking-[0.2em]">
+              <p className="text-[9px] md:text-[10px] font-black text-[#8ea087] uppercase tracking-[0.2em]">
                 Monthly Sessions
               </p>
             </div>
@@ -387,7 +384,7 @@ export function DonationClient({
             {/* Session Stats */}
             <div className="grid grid-cols-2 gap-3 mb-4 md:mb-8 py-3 md:py-5 border-y border-[#f7f3ed]">
               <div>
-                <p className="text-[7px] md:text-[8px] font-black text-[#8ea087] uppercase tracking-widest mb-0.5 md:mb-1">
+                <p className="text-[9px] md:text-[10px] font-black text-[#8ea087] uppercase tracking-widest mb-0.5 md:mb-1">
                   Avg. Sessions
                 </p>
                 <p className="font-bold text-xs md:text-sm text-[#193c1f]">
@@ -399,7 +396,7 @@ export function DonationClient({
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-[7px] md:text-[8px] font-black text-[#8ea087] uppercase tracking-widest mb-0.5 md:mb-1">
+                <p className="text-[9px] md:text-[10px] font-black text-[#8ea087] uppercase tracking-widest mb-0.5 md:mb-1">
                   Active Psych
                 </p>
                 <p className="font-black text-xs md:text-sm text-[#193c1f]">
@@ -410,7 +407,7 @@ export function DonationClient({
 
             <div className="mt-auto flex justify-between items-end pt-2">
               <div className="flex flex-col">
-                <span className="text-[8px] font-bold text-[#8ea087] uppercase tracking-widest mb-1">
+                <span className="text-[9px] font-bold text-[#8ea087] uppercase tracking-widest mb-1">
                   Total (All Time)
                 </span>
                 <span className="font-bold text-xs text-[#193c1f]">
@@ -425,10 +422,10 @@ export function DonationClient({
         </Card>
 
         {/* Card 3: Top Payout */}
-        <Card className="p-3 sm:p-4 md:p-6 shadow-md relative group flex flex-col h-full rounded-2xl md:rounded-3xl border border-[#D0D5CB]/50">
+        <Card className="relative group flex h-full flex-col p-4 md:p-6">
           <div className="relative z-10 flex flex-col h-full">
             <div className="flex items-center gap-2 mb-3 md:mb-6">
-              <div className="p-1.5 md:p-2 bg-[#193c1f] rounded-lg text-[#d6a36c] shrink-0">
+              <div className="p-1.5 md:p-2 bg-[#193c1f] rounded-lg text-[#d1b698] shrink-0">
                 <svg
                   className="w-4 h-4 md:w-5 md:h-5"
                   viewBox="0 0 24 24"
@@ -443,7 +440,7 @@ export function DonationClient({
                   <path d="M3 9h18" />
                 </svg>
               </div>
-              <p className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-[#8ea087]">
+              <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-[#8ea087]">
                 Top Share Est.
               </p>
             </div>
@@ -459,7 +456,7 @@ export function DonationClient({
             {/* Payout Stats */}
             <div className="grid grid-cols-2 gap-3 mb-4 md:mb-8 py-3 md:py-5 border-y border-[#D0D5CB]/50">
               <div>
-                <p className="text-[7px] md:text-[8px] font-black uppercase tracking-widest text-[#8ea087] mb-0.5 md:mb-1">
+                <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-[#8ea087] mb-0.5 md:mb-1">
                   Average Share
                 </p>
                 <p className="font-bold text-xs md:text-sm text-[#193c1f]">
@@ -471,7 +468,7 @@ export function DonationClient({
                 </p>
               </div>
               <div className="text-right">
-                <p className="text-[7px] md:text-[8px] font-black uppercase tracking-widest text-[#8ea087] mb-0.5 md:mb-1">
+                <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-[#8ea087] mb-0.5 md:mb-1">
                   Total Pool
                 </p>
                 <p className="font-black text-xs md:text-sm text-[#193c1f]">
@@ -481,7 +478,7 @@ export function DonationClient({
             </div>
 
             <div className="mt-auto pt-2">
-              <p className="text-[8px] md:text-[10px] font-black uppercase tracking-widest text-[#8ea087] leading-relaxed">
+              <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-[#8ea087] leading-relaxed">
                 <span>Highest estimate based on</span>
                 <br />
                 <span>{"this month's session share."}</span>
@@ -513,7 +510,7 @@ export function DonationClient({
               onChange={(e) =>
                 handleTimeChange(Number(e.target.value), currentYear)
               }
-              className="rounded-2xl bg-white px-3 py-2 text-xs font-black text-[#193c1f] hover:bg-[#F1B166]"
+              className="rounded-2xl bg-white px-3 py-2 text-xs font-black text-[#193c1f] hover:bg-[#d1b698]"
             >
               {months.map((m, i) => (
                 <option key={m} value={i + 1}>
@@ -527,7 +524,7 @@ export function DonationClient({
               onChange={(e) =>
                 handleTimeChange(currentMonth, Number(e.target.value))
               }
-              className="rounded-2xl bg-white px-3 py-2 text-xs font-black text-[#193c1f] hover:bg-[#F1B166]"
+              className="rounded-2xl bg-white px-3 py-2 text-xs font-black text-[#193c1f] hover:bg-[#d1b698]"
             >
               {years.map((y) => (
                 <option key={y} value={y}>
@@ -610,7 +607,7 @@ export function DonationClient({
         </div>
 
         {isPayoutHistoryLoading && (
-          <p className="py-8 text-center text-sm text-[#74816f]">
+          <p className="py-8 text-center text-sm text-[#8ea087]">
             Loading payout history…
           </p>
         )}

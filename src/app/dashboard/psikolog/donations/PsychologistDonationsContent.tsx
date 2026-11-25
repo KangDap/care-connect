@@ -1,6 +1,7 @@
 'use client';
 
-import { Card } from '@/components/card';
+import { Card, StatCard } from '@/components/card';
+import { PageHeader } from '@/components/page-header';
 import { Table } from '@/components/table';
 import { Activity, CreditCard, Users } from 'lucide-react';
 
@@ -66,46 +67,30 @@ export default function PsychologistDonationsContent({
 
   return (
     <div className="space-y-6 md:space-y-8 animate-fade-in">
-      {/* Header */}
-      <div>
-        <h2 className="text-2xl sm:text-3xl md:text-[32px] font-black text-[#193c1f] tracking-tight">
-          Donation Transparency
-        </h2>
-        <p className="text-[#8ea087] font-medium text-sm md:text-base mt-1">
-          Track how community donations are distributed based on your clinical
-          contributions.
-        </p>
-      </div>
+      <PageHeader
+        title="Donation Transparency"
+        description="Track how community donations are distributed based on your clinical contributions."
+      />
 
-      {/* Summary Cards — 1 col mobile, 3 on sm+ */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4">
+      {/* Summary Cards */}
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5">
         {statCards.map((item, index) => (
-          <Card
-            key={index}
-            className={`
-              flex items-center gap-2 bg-[#f7f3ed] border-0 p-2 sm:p-4 md:p-5
-              rounded-[16px] md:rounded-[28px]
-              ${statCards.length === 3 && index === 2 ? 'col-span-2 md:col-span-1' : ''}
-            `}
-          >
-            <div className="w-6 h-6 sm:w-9 sm:h-9 md:w-11 md:h-11 bg-[#EBE6DE] rounded-lg md:rounded-2xl flex items-center justify-center shrink-0 text-[#193c1f]">
-              {item.icon}
-            </div>
-
-            <div className="min-w-0">
-              <p className="text-[9px] sm:text-[10px] uppercase font-black text-[#8ea087] tracking-widest truncate">
-                {item.label}
-              </p>
-              <p className="text-base sm:text-lg md:text-[22px] font-bold text-[#193c1f] leading-tight truncate">
-                {item.val}
-              </p>
-            </div>
-          </Card>
+          <StatCard
+            key={item.label}
+            icon={item.icon}
+            label={item.label}
+            value={item.val}
+            className={
+              statCards.length === 3 && index === 2
+                ? 'col-span-2 md:col-span-1'
+                : ''
+            }
+          />
         ))}
       </div>
 
       {/* Formula Info */}
-      <Card className="flex gap-4 md:gap-6 items-center p-4 md:p-6 rounded-[20px] md:rounded-[28px]">
+      <Card className="flex items-center gap-4 p-4 md:gap-6 md:p-6">
         <div className="w-10 h-10 md:w-12 md:h-12 bg-[#f7f3ed] rounded-full flex items-center justify-center shrink-0 font-black text-[#193c1f] text-sm md:text-base">
           i
         </div>

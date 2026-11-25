@@ -2,6 +2,7 @@
 
 import { Badge } from '@/components/badge';
 import { Button } from '@/components/button';
+import { PageHeader } from '@/components/page-header';
 import { Table } from '@/components/table';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
@@ -357,7 +358,7 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
   };
 
   return (
-    <div className="w-full space-y-8 animate-fade-in">
+    <div className="w-full space-y-6 md:space-y-8 animate-fade-in">
       {/* Payment Notice Banner */}
       {paymentNotice && (
         <div
@@ -371,25 +372,22 @@ export default function DonationsContent({ donations }: DonationsContentProps) {
       )}
 
       {/* Sub-Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-2xl sm:text-3xl font-black text-[#193c1f] tracking-tight">
-            Donation Records
-          </h2>
-          <p className="text-[#8ea087] text-sm font-medium mt-0.5">
-            {query
-              ? `Showing results for "${query}"`
-              : 'Detailed history log of your donations.'}
-          </p>
-        </div>
-        <Button
-          onClick={() => router.push('/donation')}
-          variant="secondary"
-          className="whitespace-nowrap shadow-md bg-[#193c1f] text-white hover:bg-[#132e18] shrink-0"
-        >
-          + New Donation
-        </Button>
-      </div>
+      <PageHeader
+        title="Donation Records"
+        description={
+          query
+            ? `Showing results for "${query}"`
+            : 'Detailed history log of your donations.'
+        }
+        actions={
+          <Button
+            onClick={() => router.push('/donation')}
+            className="shrink-0 whitespace-nowrap px-5 py-3 text-sm"
+          >
+            + New Donation
+          </Button>
+        }
+      />
 
       {/* Table Section */}
       <Table

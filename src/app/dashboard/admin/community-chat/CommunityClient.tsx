@@ -3,6 +3,7 @@
 import { ForumModal } from '@/components/ForumModal';
 import { Alert } from '@/components/alert';
 import { Button } from '@/components/button';
+import { PageHeader } from '@/components/page-header';
 import { Toast } from '@/components/toast';
 import { MessageSquarePlus } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -170,7 +171,7 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
   }, [channels, searchQuery]);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 md:space-y-8">
       <Toast
         show={toastState.show}
         msg={toastState.msg}
@@ -186,23 +187,19 @@ export function CommunityClient({ channels }: { channels: Channel[] }) {
         type="danger"
         confirmText="Delete Channel"
       />
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-black text-[#193c1f] sm:text-[32px]">
-            Community Channels
-          </h1>
-          <p className="text-[#8ea087] font-medium">
-            Manage community channel topics.
-          </p>
-        </div>
-        <Button
-          onClick={() => setIsCreateModalOpen(true)}
-          className="h-11 w-full shrink-0 whitespace-nowrap rounded-xl px-4 py-0 text-xs font-black uppercase tracking-[0.08em] shadow-sm sm:w-auto"
-        >
-          <MessageSquarePlus size={16} className="shrink-0" />
-          Create Channel
-        </Button>
-      </div>
+      <PageHeader
+        title="Community Channels"
+        description="Manage community channel topics."
+        actions={
+          <Button
+            onClick={() => setIsCreateModalOpen(true)}
+            className="shrink-0 whitespace-nowrap px-5 py-3 text-sm"
+          >
+            <MessageSquarePlus size={16} className="shrink-0" />
+            Create Channel
+          </Button>
+        }
+      />
 
       <CommunityTable
         channels={filteredChannels}
