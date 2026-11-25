@@ -42,11 +42,10 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
+ENV PATH="/app/node_modules/.bin:${PATH}"
 
-# Install Prisma CLI globally for DB initialization and migrations
 # Create nextjs user with a valid home directory (fixes /nonexistent EACCES)
-RUN npm install -g prisma@7.8.0 && \
-    addgroup --system --gid 1001 nodejs && \
+RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 --home /home/nextjs nextjs && \
     mkdir -p /home/nextjs && \
     chown -R nextjs:nodejs /home/nextjs
@@ -60,13 +59,18 @@ COPY --from=builder /app/package.json ./package.json
 
 # Copy standalone build output
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-# Prisma CLI loads this from prisma.config.ts; Next standalone tracing omits it.
-COPY --from=builder /app/node_modules/dotenv ./node_modules/dotenv
+# Include the locked dependency tree for migrations, including the local Prisma
+# CLI (a devDependency) and imports that standalone tracing does not include.
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 RUN chown -R nextjs:nodejs /app
 
 USER nextjs
+
+# Fail the build if migration config dependencies cannot resolve as the runtime
+# user. This check neither loads .env nor connects to a database.
+RUN node -e "require.resolve('prisma/config'); require.resolve('dotenv/config')"
 
 EXPOSE 3000
 
