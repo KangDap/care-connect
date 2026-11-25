@@ -9,7 +9,7 @@ import { NextRequest } from 'next/server';
  * This route ensures that if PAuS redirects directly to /api/auth/paus/callback,
  * the authorization code and state are forwarded seamlessly to Better Auth.
  */
-export async function GET(request: NextRequest) {
+export function GET(request: NextRequest) {
   return runAuthRequest(request, async () => {
     const { auth } = await import('@/lib/auth/auth');
     const url = new URL(request.url);

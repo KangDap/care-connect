@@ -19,6 +19,8 @@ variables:
   # Exclude the article route test fixture that contains the historical dummy credential.
   SECRET_DETECTION_EXCLUDED_PATHS: 'tests/routes/article.route.test.ts,.gitlab/secret-detection-allowlist.toml'
 
+  DB_MIGRATE: 'prisma migrate deploy --config ./prisma.config.ts'
+
 # Disable Auto‑DevOps test stage (kept from original file)
 test:
   rules:

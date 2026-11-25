@@ -36,7 +36,7 @@ export function reportServerError(error: unknown, feature: 'auth' | 'article') {
   }
   const tags: Record<string, string> = { feature, error_code: code };
   const model = record?.meta?.modelName;
-  if (typeof model === 'string' && /^[A-Za-z_][A-Za-z0-9_]{0,59}$/.test(model))
+  if (typeof model === 'string' && /^[A-Za-z_]\w{0,59}$/.test(model))
     tags.db_model = model;
   // A reporting transport must not prevent returning the original API failure.
   let reference = randomUUID() as string;

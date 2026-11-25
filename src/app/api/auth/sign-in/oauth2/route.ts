@@ -6,7 +6,7 @@ import { NextRequest } from 'next/server';
  * Better Auth natively registers generic OAuth providers under /api/auth/sign-in/social
  * with body field "provider". This route bridges the two formats seamlessly.
  */
-export async function POST(request: NextRequest) {
+export function POST(request: NextRequest) {
   return runAuthRequest(request, async () => {
     const { auth } = await import('@/lib/auth/auth');
     const body = (await request.json().catch(() => ({}))) as Record<
