@@ -116,7 +116,7 @@ export const auth = betterAuth({
 
                 tokenUrl:
                   process.env.PAUS_TOKEN_URL ||
-                  'https://paus.unpad.ac.id/oauth/token',
+                  'https://paus.unpad.ac.id/oauth/access-token',
 
                 userInfoUrl:
                   process.env.PAUS_USER_INFO_URL ||
