@@ -1,4 +1,5 @@
 import { getPausUserInfo } from '@/lib/auth/paus';
+import { exchangePausToken } from '@/lib/auth/paus-token';
 import { reportAuthError } from '@/lib/auth/reporting';
 import {
   sendExistingUserSignUpAttemptEmail,
@@ -105,6 +106,7 @@ export const auth = betterAuth({
                 clientSecret: process.env.PAUS_CLIENT_SECRET,
                 scopes: ['user.basic'],
                 pkce: false,
+                getToken: exchangePausToken,
 
                 redirectURI: process.env.PAUS_REDIRECT_URI,
 
