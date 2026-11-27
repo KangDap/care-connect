@@ -1,5 +1,4 @@
 import * as Sentry from '@sentry/nextjs';
-import { validateAuthorizationCode } from 'better-auth/oauth2';
 
 type ExchangeData = {
   code: string;
@@ -35,7 +34,7 @@ function safeCode(value: unknown) {
 
 export async function exchangePausToken(data: ExchangeData) {
   const endpoint =
-    process.env.PAUS_TOKEN_URL || 'https://paus.unpad.ac.id/oauth/token';
+    process.env.PAUS_TOKEN_URL || 'https://paus.unpad.ac.id/oauth/access-token';
   const redirectURI = process.env.PAUS_REDIRECT_URI || data.redirectURI;
   const started = Date.now();
   const context = {
@@ -51,17 +50,51 @@ export async function exchangePausToken(data: ExchangeData) {
     pkce: false,
   };
   try {
-    const tokens = await validateAuthorizationCode({
-      code: data.code,
-      redirectURI: data.redirectURI,
-      deviceId: data.deviceId,
-      options: {
-        clientId: process.env.PAUS_CLIENT_ID || '',
-        clientSecret: process.env.PAUS_CLIENT_SECRET,
-        redirectURI: process.env.PAUS_REDIRECT_URI,
+    if (!process.env.PAUS_CLIENT_ID || !process.env.PAUS_CLIENT_SECRET) {
+      throw new Error('PAuS client credentials are not configured');
+    }
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Accept: 'application/json',
       },
-      tokenEndpoint: endpoint,
+      body: new URLSearchParams({
+        client_id: process.env.PAUS_CLIENT_ID,
+        client_secret: process.env.PAUS_CLIENT_SECRET,
+        grant_type: 'authorization_code',
+        redirect_uri: redirectURI,
+        code: data.code,
+      }),
+      cache: 'no-store',
+      redirect: 'manual',
+      signal: AbortSignal.timeout(10000),
     });
+    const payload = record(await response.json().catch(() => null));
+    if (
+      !response.ok ||
+      payload.error ||
+      typeof payload.access_token !== 'string' ||
+      !payload.access_token.trim()
+    ) {
+      throw Object.assign(new Error('PAuS token response was rejected'), {
+        status: response.status,
+        error: safeCode(payload.error),
+        redirectRefused: response.status >= 300 && response.status < 400,
+      });
+    }
+    const expiresIn = Number(payload.expires_in);
+    const tokens = {
+      accessToken: payload.access_token,
+      tokenType:
+        typeof payload.token_type === 'string' ? payload.token_type : 'bearer',
+      ...(Number.isFinite(expiresIn) && expiresIn > 0
+        ? { accessTokenExpiresAt: new Date(Date.now() + expiresIn * 1000) }
+        : {}),
+      ...(typeof payload.refresh_token === 'string'
+        ? { refreshToken: payload.refresh_token }
+        : {}),
+    };
     try {
       Sentry.captureMessage('PAuS token exchange succeeded', {
         level: 'info',
@@ -91,9 +124,7 @@ export async function exchangePausToken(data: ExchangeData) {
       http_status: typeof status === 'number' ? status : undefined,
       provider_error: safeCode(details.error) ?? safeCode(body.error),
       network_code: safeCode(details.code) ?? safeCode(cause.code),
-      redirect_refused:
-        error instanceof Error &&
-        error.message.includes('returned an HTTP redirect'),
+      redirect_refused: details.redirectRefused === true,
     };
     try {
       Sentry.captureException(new Error('PAuS token exchange failed'), {
