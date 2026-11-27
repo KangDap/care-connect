@@ -118,10 +118,6 @@ export const auth = betterAuth({
                   process.env.PAUS_TOKEN_URL ||
                   'https://paus.unpad.ac.id/oauth/access-token',
 
-                userInfoUrl:
-                  process.env.PAUS_USER_INFO_URL ||
-                  'https://paus.unpad.ac.id/api/user',
-
                 getUserInfo: async (tokens) =>
                   tokens.accessToken
                     ? getPausUserInfo(tokens.accessToken)
