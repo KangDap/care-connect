@@ -6,6 +6,7 @@ import { Header } from '@/components/header';
 import { Input } from '@/components/input';
 import { useTranslation } from '@/components/providers/i18n-provider';
 import { authClient } from '@/lib/auth/auth-client';
+import { signOutAndRedirect } from '@/lib/auth/sign-out';
 import type { ChatMessage } from '@/modules/community-chat/community-chat.types';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -289,8 +290,7 @@ export default function CommunityChatContent() {
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
-    await authClient.signOut();
-    router.replace('/login');
+    await signOutAndRedirect();
   };
 
   if (isPending)

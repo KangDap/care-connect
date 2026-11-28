@@ -5,6 +5,7 @@ import { Button } from '@/components/button';
 import { Header } from '@/components/header';
 import { Input } from '@/components/input';
 import { authClient } from '@/lib/auth/auth-client';
+import { signOutAndRedirect } from '@/lib/auth/sign-out';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, Paperclip, Send, X } from 'lucide-react';
 import Image from 'next/image';
@@ -68,9 +69,7 @@ export default function ConsultationChatContent() {
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
-    await authClient.signOut();
-    router.replace('/login');
-    router.refresh();
+    await signOutAndRedirect();
   };
 
   useEffect(() => {

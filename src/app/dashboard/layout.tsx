@@ -4,7 +4,7 @@ import { Alert } from '@/components/alert';
 import { Header } from '@/components/header';
 import { Logo } from '@/components/logo';
 import { useTranslation } from '@/components/providers/i18n-provider';
-import { authClient } from '@/lib/auth/auth-client';
+import { signOutAndRedirect } from '@/lib/auth/sign-out';
 import {
   BookOpen,
   BrainCircuit,
@@ -19,7 +19,7 @@ import {
   Users,
 } from 'lucide-react';
 import Link from 'next/link';
-import { usePathname, useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import React, { useState } from 'react';
 
 const paymentEnabled = process.env.NEXT_PUBLIC_PAYMENT_ENABLED === 'true';
@@ -79,7 +79,6 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const router = useRouter();
   const { t } = useTranslation();
   const [themeState, setThemeState] = useState<'light' | 'dark'>('light');
   const [mounted, setMounted] = useState(false);
@@ -128,9 +127,7 @@ export default function DashboardLayout({
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
-    await authClient.signOut();
-    router.replace('/login');
-    router.refresh();
+    await signOutAndRedirect();
   };
 
   return (

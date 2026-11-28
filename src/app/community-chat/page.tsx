@@ -4,6 +4,7 @@ import { Alert } from '@/components/alert';
 import { Header } from '@/components/header';
 import { useTranslation } from '@/components/providers/i18n-provider';
 import { authClient } from '@/lib/auth/auth-client';
+import { signOutAndRedirect } from '@/lib/auth/sign-out';
 import { useQuery } from '@tanstack/react-query';
 import { ArrowLeft, Users } from 'lucide-react';
 import Image from 'next/image';
@@ -38,8 +39,7 @@ export default function CommunityChatList() {
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
-    await authClient.signOut();
-    router.replace('/login');
+    await signOutAndRedirect();
   };
 
   if (isPending) {

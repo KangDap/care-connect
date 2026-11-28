@@ -7,6 +7,7 @@ import { Input } from '@/components/input';
 import { PublicHeader } from '@/components/public-header';
 import { Toast } from '@/components/toast';
 import { authClient } from '@/lib/auth/auth-client';
+import { signOutAndRedirect } from '@/lib/auth/sign-out';
 import type { ConsultationScheduleSlot } from '@/modules/consultation/consultation.types';
 import { Check, Info, Lock, Send, Upload, X } from 'lucide-react';
 import Link from 'next/link';
@@ -42,9 +43,7 @@ export default function ConsultationPage() {
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
-    await authClient.signOut();
-    router.replace('/login');
-    router.refresh();
+    await signOutAndRedirect();
   };
 
   const formRef = React.useRef<HTMLFormElement>(null);

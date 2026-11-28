@@ -3,6 +3,7 @@
 import { Alert } from '@/components/alert';
 import { Header } from '@/components/header';
 import { authClient } from '@/lib/auth/auth-client';
+import { signOutAndRedirect } from '@/lib/auth/sign-out';
 import { useQuery } from '@tanstack/react-query';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -52,9 +53,7 @@ export default function ConsultationChatList() {
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
-    await authClient.signOut();
-    router.replace('/login');
-    router.refresh();
+    await signOutAndRedirect();
   };
 
   if (isPending || !session?.user) {
