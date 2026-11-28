@@ -116,8 +116,7 @@ export const auth = betterAuth({
 
                 userInfoUrl: process.env.PAUS_USER_INFO_URL,
 
-                // PAuS uses redirect_uri rather than the OIDC logout parameter.
-                // Provider logout is handled by our dedicated POST route.
+                // Logout ends only the local session; retain the PAuS SSO session.
                 disableProviderLogout: true,
 
                 getUserInfo: async (tokens) =>
