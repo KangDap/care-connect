@@ -6,7 +6,7 @@ const stableId = z.union([
   z.number().int().nonnegative(),
 ]);
 
-const pausProfile = z
+const flatProfile = z
   .object({
     id: stableId.optional(),
     sub: stableId.optional(),
@@ -16,7 +16,32 @@ const pausProfile = z
     email_verified: z.boolean().optional(),
     emailVerified: z.boolean().optional(),
   })
-  .refine((profile) => profile.id !== undefined || profile.sub !== undefined);
+  .refine((profile) => profile.id !== undefined || profile.sub !== undefined)
+  .transform((profile) => ({
+    id: String(profile.id ?? profile.sub),
+    name: profile.name ?? profile.nama ?? profile.email.split('@')[0],
+    email: profile.email,
+    emailVerified:
+      profile.email_verified === true || profile.emailVerified === true,
+  }));
+
+const attributeProfile = z
+  .object({
+    attributes: z.object({
+      paus_id: z.object({ attribute_value: stableId }),
+      nama: z.object({ attribute_value: z.string().trim().min(1) }),
+      email: z.object({ attribute_value: z.string().trim().pipe(z.email()) }),
+    }),
+  })
+  .transform(({ attributes }) => ({
+    id: String(attributes.paus_id.attribute_value),
+    name: attributes.nama.attribute_value,
+    email: attributes.email.attribute_value,
+    // PAuS status is not evidence of email ownership verification.
+    emailVerified: false,
+  }));
+
+const pausProfile = z.union([attributeProfile, flatProfile]);
 
 function safeEndpoint(value: string) {
   try {
@@ -98,12 +123,5 @@ export async function getPausUserInfo(accessToken: string) {
     return null;
   }
 
-  const profile = result.data;
-  return {
-    id: String(profile.id ?? profile.sub),
-    name: profile.name ?? profile.nama ?? profile.email.split('@')[0],
-    email: profile.email,
-    emailVerified:
-      profile.email_verified === true || profile.emailVerified === true,
-  };
+  return result.data;
 }
