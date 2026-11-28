@@ -33,8 +33,7 @@ function safeCode(value: unknown) {
 }
 
 export async function exchangePausToken(data: ExchangeData) {
-  const endpoint =
-    process.env.PAUS_TOKEN_URL || 'https://paus.unpad.ac.id/oauth/access-token';
+  const endpoint = process.env.PAUS_TOKEN_URL || '';
   const redirectURI = process.env.PAUS_REDIRECT_URI || data.redirectURI;
   const started = Date.now();
   const context = {
@@ -50,6 +49,9 @@ export async function exchangePausToken(data: ExchangeData) {
     pkce: false,
   };
   try {
+    if (!endpoint) {
+      throw new Error('PAUS_TOKEN_URL is not configured');
+    }
     if (!process.env.PAUS_CLIENT_ID || !process.env.PAUS_CLIENT_SECRET) {
       throw new Error('PAuS client credentials are not configured');
     }

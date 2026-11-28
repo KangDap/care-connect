@@ -110,13 +110,9 @@ export const auth = betterAuth({
 
                 redirectURI: process.env.PAUS_REDIRECT_URI,
 
-                authorizationUrl:
-                  process.env.PAUS_AUTHORIZATION_URL ||
-                  'https://paus.unpad.ac.id/oauth',
+                authorizationUrl: process.env.PAUS_AUTHORIZATION_URL,
 
-                tokenUrl:
-                  process.env.PAUS_TOKEN_URL ||
-                  'https://paus.unpad.ac.id/oauth/access-token',
+                tokenUrl: process.env.PAUS_TOKEN_URL,
 
                 getUserInfo: async (tokens) =>
                   tokens.accessToken

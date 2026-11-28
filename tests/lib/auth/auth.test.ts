@@ -70,33 +70,6 @@ const importAuthAndGetConfig = async () => {
 };
 
 describe('Auth Server Configuration Unit Testing', () => {
-  it('registers PAuS with the Suara-compatible endpoint, no PKCE and the environment callback', async () => {
-    vi.resetModules();
-    vi.stubEnv('PAUS_CLIENT_ID', 'paus-test-client');
-    vi.stubEnv('PAUS_CLIENT_SECRET', 'paus-test-secret');
-    vi.stubEnv('PAUS_AUTHORIZATION_URL', '');
-    vi.stubEnv(
-      'PAUS_REDIRECT_URI',
-      'http://localhost:3000/api/auth/paus/callback',
-    );
-    try {
-      await importAuthAndGetConfig();
-      expect(mocks.genericOAuth).toHaveBeenCalledWith({
-        config: [
-          expect.objectContaining({
-            providerId: 'paus',
-            scopes: ['user.basic'],
-            pkce: false,
-            authorizationUrl: 'https://paus.unpad.ac.id/oauth',
-            redirectURI: 'http://localhost:3000/api/auth/paus/callback',
-          }),
-        ],
-      });
-    } finally {
-      vi.unstubAllEnvs();
-    }
-  });
-
   beforeEach(() => {
     vi.resetModules();
     vi.clearAllMocks();

@@ -43,8 +43,13 @@ function reportUserInfoFailure(extra: Record<string, unknown>) {
 }
 
 export async function getPausUserInfo(accessToken: string) {
-  const baseUrl =
-    process.env.PAUS_USER_INFO_URL || 'https://paus.unpad.ac.id/api/user';
+  const baseUrl = process.env.PAUS_USER_INFO_URL || '';
+  if (!baseUrl) {
+    reportUserInfoFailure({
+      configuration_error: 'PAUS_USER_INFO_URL_MISSING',
+    });
+    return null;
+  }
   const url = new URL(baseUrl);
   url.searchParams.set('access_token', accessToken);
 
