@@ -114,6 +114,10 @@ export const auth = betterAuth({
 
                 tokenUrl: process.env.PAUS_TOKEN_URL,
 
+                userInfoUrl: process.env.PAUS_USER_INFO_URL,
+
+                endSessionEndpoint: process.env.PAUS_SIGN_OUT_URL,
+
                 getUserInfo: async (tokens) =>
                   tokens.accessToken
                     ? getPausUserInfo(tokens.accessToken)
